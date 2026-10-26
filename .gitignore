@@ -1,0 +1,74 @@
+# AIOSON — keep shared project memory and tool contracts
+!AGENTS.md
+!CLAUDE.md
+!OPENCODE.md
+!.claude/
+!.claude/**
+!.codex/
+!.codex/**
+!.aioson/
+!.aioson/**
+# AIOSON — managed framework files (do not commit)
+.aioson/config.md
+.aioson/skills/
+.aioson/schemas/
+.aioson/tasks/
+.aioson/templates/
+.aioson/advisors/
+.aioson/mcp/servers.md
+# AIOSON — user-installed skills (versioned with project)
+!.aioson/installed-skills/
+!.aioson/installed-skills/**
+# AIOSON — custom agents (versioned with project)
+!.aioson/my-agents/
+!.aioson/my-agents/**
+# AIOSON — local-only artifacts
+aioson-logs/
+aioson-models.json
+.aioson/backups/
+.aioson/.backups/
+.aioson/cloud-imports/
+.aioson/runtime/
+.aioson/preview.json
+# AIOSON — single-writer store locks and their temp files (local-only)
+.aioson/context/.*.lock/
+.aioson/context/.*-lock-*/
+.aioson/context/*.json.*.tmp
+.aioson/context/*.md.*.tmp
+.aioson/mcp/presets/
+.aioson/install.json
+.aioson/mcp/servers.local.json
+.aioson/profiler-reports/*
+!.aioson/profiler-reports/.gitkeep
+# AIOSON — regenerable browser evidence (captures and walkthrough snapshots; the reports beside them stay tracked)
+.aioson/context/visual-screenshots/
+.aioson/context/features/*/visual-screenshots/
+.aioson/context/done/*/dossier/visual-screenshots/
+.aioson/context/done/*/briefings/visual-screenshots/
+.aioson/briefings/*/visual-screenshots/
+.aioson/context/browser/*/
+.aioson/context/features/*/browser/*/
+.aioson/context/done/*/dossier/browser/*/
+.aioson/context/done/*/briefings/browser/*/
+.aioson/briefings/*/browser/*/
+aios-qa-screenshots/
+.claude/settings.local.json
+*:Zone.Identifier
+# AIOSON — shared agent scratch caches (local-only)
+mappings/
+researchs/
+squad-searches/
+# FitPulse — runtime and build artifacts (the store packager honors this file, so the user database never travels)
+node_modules/
+/data/
+/dist/
+server/generated/
+test-results/
+playwright-report/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.env
+.env.*
+!.env.example

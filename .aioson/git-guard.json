@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "description": "Project-specific overrides for aioson git:guard. allowPaths affects path rules only; contentAllowPaths is a legacy whole-file bypass; prefer scoped contentAllowRules with an audit reason.",
+  "allowPaths": [],
+  "contentAllowPaths": [],
+  "contentAllowRules": [
+    {
+      "path": ".aioson/docs/deployer/app-readiness.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "Docs mention the ?access_token= query-string pattern as a logging risk; no credential value present (line 39)."
+    },
+    {
+      "path": ".aioson/docs/integrations/aioson-endpoint-protocol.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "Table documents the api_key parameter name and transport (query/header); no credential value present (line 340)."
+    },
+    {
+      "path": ".aioson/docs/integrations/auth-integration-gaps.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "Gap analysis cites the legacy ?token= query parameter by name; no credential value present (lines 100, 213, 441)."
+    },
+    {
+      "path": ".aioson/docs/integrations/farmacia-implementation-review.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "Response-shape example uses the masked placeholder \"***configured***\"; no credential value present (lines 75-76)."
+    },
+    {
+      "path": ".aioson/docs/integrations/platform-architecture.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "Architecture note names the legacy ?token= compat path; no credential value present (line 385)."
+    }
+  ],
+  "blockPaths": [
+    "node_modules/**",
+    "aioson-logs/**"
+  ],
+  "allowExtensions": [],
+  "blockExtensions": []
+}
