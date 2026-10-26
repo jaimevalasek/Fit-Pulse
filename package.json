@@ -1,0 +1,60 @@
+{
+  "name": "fitpulse",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/prepare-app.mjs --migrate && concurrently -k -n api,web \"tsx server/main.ts\" \"vite\"",
+    "start": "node scripts/prepare-app.mjs --migrate && concurrently -k -n api,web \"tsx server/main.ts\" \"vite preview\"",
+    "postinstall": "node -e \"const fs=require('node:fs');const cp=require('node:child_process');const s='scripts/prepare-app.mjs';if(!fs.existsSync(s)){console.warn('postinstall: '+s+' not found, skipping app preparation');process.exit(0)}process.exit(cp.spawnSync(process.execPath,[s,'--generate','--migrate','--build'],{stdio:'inherit'}).status??1)\"",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "smoke:migrate": "node scripts/smoke-migrate.mjs",
+    "smoke:boot": "node scripts/smoke-boot.mjs",
+    "smoke:store-package": "node scripts/smoke-store-package.mjs"
+  },
+  "dependencies": {
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@prisma/adapter-better-sqlite3": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@radix-ui/react-alert-dialog": "1.2.1",
+    "@radix-ui/react-label": "2.1.17",
+    "@radix-ui/react-slot": "1.5.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@vitejs/plugin-react": "6.1.2",
+    "better-sqlite3": "12.11.1",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "concurrently": "10.0.6",
+    "express": "5.3.0",
+    "pdfkit": "0.20.2",
+    "prisma": "7.10.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "7.18.4",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "vite": "8.3.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.12.0",
+    "@types/pdfkit": "^0.17.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "unpdf": "^1.9.1",
+    "vitest": "^5.0.5"
+  }
+}

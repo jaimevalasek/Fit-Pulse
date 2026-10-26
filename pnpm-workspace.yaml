@@ -1,0 +1,8 @@
+allowBuilds:
+  better-sqlite3: true
+  prisma: true
+  "@prisma/engines": true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@types/pdfkit@0.17.7'
+strictDepBuilds: false

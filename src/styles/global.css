@@ -1,0 +1,882 @@
+/* Only the app's own sources are scanned. Automatic detection would also read the AIOSON folders,
+   logs and test output (the folder is not a git repository, so .gitignore does not apply): every
+   write there made the dev server reload the page, and their words became classes in the bundle. */
+@import "tailwindcss" source(none);
+@source "../";
+@import "./tokens.css";
+
+/* Bind Tailwind to the app tokens. The default palette and shadows are dropped:
+   no structural blue can leak in, and depth comes only from borders. */
+@theme inline {
+  --color-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+
+  --color-ground: var(--ground);
+  --color-ground-sunken: var(--ground-sunken);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-solid: var(--solid);
+  --color-text: var(--text);
+  --color-text-soft: var(--text-soft);
+  --color-text-muted: var(--text-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-bronze: var(--bronze);
+  --color-bronze-contrast: var(--bronze-contrast);
+  --color-gold: var(--gold);
+  --color-gold-contrast: var(--gold-contrast);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-wash: var(--wash);
+  --color-ok: var(--ok);
+  --color-ok-wash: var(--ok-wash);
+  --color-warn: var(--warn);
+  --color-warn-wash: var(--warn-wash);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --color-danger-contrast: var(--peril-contrast);
+  --color-scrim: var(--scrim);
+
+  --font-sans: var(--font-structure);
+  --font-serif: var(--font-human);
+  --font-mono: var(--font-machine);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+
+  --ease-app: var(--ease);
+}
+
+@layer base {
+  html {
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--font-structure);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--line-strong) var(--ground);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ground);
+    font-variant-numeric: tabular-nums;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* D-04 dust: nebula in the app metal plus gold/bronze sparks, a single fixed layer */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(2px 2px at 78% 14%, var(--gold) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 66% 22%, var(--bronze) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 88% 30%, var(--gold) 50%, transparent 51%),
+      radial-gradient(2px 2px at 58% 9%, var(--bronze) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 93% 8%, var(--bronze) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 71% 36%, var(--gold) 50%, transparent 51%),
+      radial-gradient(900px 460px at 80% -8%, color-mix(in oklab, var(--bronze) 15%, transparent), transparent 72%),
+      radial-gradient(700px 380px at 6% 110%, color-mix(in oklab, var(--gold) 6%, transparent), transparent 70%);
+    animation: breathe 8s ease-in-out infinite;
+  }
+
+  :root[data-theme="light"] body::before {
+    animation: none;
+    opacity: 0.55;
+  }
+
+  ::selection {
+    background: var(--bronze);
+    color: var(--bronze-contrast);
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+    caret-color: var(--bronze);
+  }
+
+  /* Keyboard focus is always visible, in gold */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+  }
+
+  a {
+    color: var(--bronze);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-structure);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--t-36);
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    font-size: var(--t-24);
+  }
+
+  h3 {
+    font-size: var(--t-18);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+}
+
+/* Human voice: the serif italic that speaks to the owner */
+@utility voice-human {
+  font-family: var(--font-human);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--bronze);
+}
+
+/* Machine voice: mono uppercase meta line (D-01) */
+@utility meta-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-machine);
+  font-size: var(--t-12);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.62;
+    filter: brightness(0.82);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Report center (CAP-ra-report-center): options on the left, the paged preview on the right.
+   The sheets paint with the paper palette of the PDF (`--p-*`, set by ReportSheet from
+   shared/report/paperPalette.ts), never with the app theme. */
+@layer components {
+  .report-center {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .report-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .report-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .report-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--touch);
+    padding: 0 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    background: none;
+    color: var(--text-soft);
+    font: 600 0.9375rem var(--font-structure);
+    cursor: pointer;
+  }
+  .report-type[aria-checked="true"] {
+    border-color: var(--bronze);
+    background: var(--wash);
+    color: var(--text);
+  }
+  .report-type[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .report-switch {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-height: var(--touch);
+    padding: 4px 0;
+    cursor: pointer;
+  }
+  .report-switch input {
+    appearance: none;
+    position: relative;
+    flex: none;
+    width: 40px;
+    height: 24px;
+    margin: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: var(--surface-raised);
+    cursor: pointer;
+  }
+  .report-switch input::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .report-switch input:checked {
+    border-color: var(--bronze);
+    background: var(--wash);
+  }
+  .report-switch input:checked::after {
+    transform: translateX(16px);
+    background: var(--bronze);
+  }
+  .report-switch b {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  .report-switch small {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  .report-preview {
+    position: sticky;
+    top: 16px;
+    min-width: 0;
+  }
+  .report-preview-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .report-preview-label {
+    padding-top: 10px;
+    font: 500 0.8125rem var(--font-machine);
+    color: var(--text-muted);
+  }
+  .report-pages {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-height: calc(100vh - 160px);
+    overflow: auto;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--ground-sunken);
+    scroll-snap-type: y proximity;
+    scrollbar-color: color-mix(in oklab, var(--text-muted) 55%, transparent) transparent;
+  }
+  .report-sheet-skeleton {
+    flex: none;
+    aspect-ratio: 210 / 297;
+    border-radius: 4px;
+    background: color-mix(in oklab, var(--surface-raised) 80%, transparent);
+  }
+
+  .report-delivery {
+    display: flex;
+    flex: 1 1 260px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .report-delivery-panel {
+    width: 100%;
+    max-width: 44ch;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    font-size: 0.875rem;
+    text-align: left;
+  }
+  .report-delivery-panel.is-error {
+    border-color: var(--danger);
+    background: var(--danger-wash);
+  }
+
+  /* One A4 page: the 210 x 297 shape, growing only if a block ever needs more room */
+  .report-sheet {
+    position: relative;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    aspect-ratio: 210 / 297;
+    container-type: inline-size;
+    contain: paint;
+    border-radius: 3px;
+    background: var(--p-paper);
+    color: var(--p-ink);
+    font-weight: 400;
+    letter-spacing: 0;
+    scroll-snap-align: start;
+  }
+  .report-sheet::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 40%;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--p-accent) 22%, transparent) 85%, var(--p-accent));
+  }
+  .sheet-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2.4cqw;
+    padding: 8cqw 8cqw 3cqw;
+    font-size: 2.3cqw;
+    line-height: 1.45;
+  }
+  .sheet-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 2cqw;
+    margin: 0 8cqw 4.5cqw;
+    padding-top: 1.6cqw;
+    border-top: 1px solid var(--p-line);
+    font: 500 1.9cqw/1.3 var(--font-machine);
+    color: var(--p-muted);
+  }
+  .sheet-title {
+    font-size: 4.4cqw;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .sheet-heading {
+    margin: 1cqw 0 0;
+    font-size: 2.9cqw;
+    font-weight: 600;
+  }
+  .sheet-soft {
+    color: var(--p-soft);
+  }
+  .sheet-muted {
+    color: var(--p-muted);
+  }
+  .sheet-accent {
+    color: var(--p-accent);
+  }
+  .sheet-strong {
+    font-weight: 600;
+  }
+  .sheet-small {
+    font-size: 1.9cqw;
+  }
+  .sheet-mono {
+    font-family: var(--font-machine);
+    font-variant-numeric: tabular-nums;
+  }
+  .sheet-rule {
+    display: block;
+    width: 10cqw;
+    height: 0.6cqw;
+    background: var(--p-accent);
+  }
+  .sheet-cover {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 3cqw;
+  }
+  .sheet-cover-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2cqw;
+  }
+  .sheet-cover-brand img {
+    max-width: 30cqw;
+    max-height: 13cqw;
+    object-fit: contain;
+    object-position: left;
+  }
+  .sheet-cover-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2.4cqw;
+    margin-top: 18cqw;
+  }
+  .sheet-cover-title {
+    font-size: 6.4cqw;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .sheet-cover-subject {
+    font-size: 4.4cqw;
+    font-weight: 600;
+    color: var(--p-soft);
+  }
+  .sheet-cover-closing {
+    display: flex;
+    flex-direction: column;
+    gap: 1cqw;
+    margin-top: auto;
+    padding-top: 2cqw;
+    border-top: 1px solid var(--p-line);
+  }
+  .sheet-facts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2cqw;
+    margin: 0;
+  }
+  .sheet-facts div {
+    display: grid;
+    grid-template-columns: 28cqw 1fr;
+    gap: 2cqw;
+  }
+  .sheet-facts dt {
+    font-size: 1.9cqw;
+    color: var(--p-muted);
+  }
+  .sheet-facts dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .sheet-key-numbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20cqw, 1fr));
+    gap: 2cqw;
+    margin: 0;
+    padding: 2.4cqw 0;
+    list-style: none;
+    border-block: 1px solid var(--p-line);
+  }
+  .sheet-key-numbers b {
+    display: block;
+    font-size: 4cqw;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+  .sheet-key-numbers span {
+    display: block;
+    font-size: 1.9cqw;
+    line-height: 1.3;
+    color: var(--p-muted);
+  }
+  .sheet-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 1cqw;
+  }
+  .sheet-stage-steps {
+    display: flex;
+    gap: 1.2cqw;
+  }
+  .sheet-stage-steps span {
+    flex: 1;
+    height: 1.2cqw;
+    border-radius: 0.6cqw;
+    background: var(--p-track);
+  }
+  .sheet-stage-steps span.is-on {
+    background: var(--p-accent);
+  }
+  .sheet-stage-title {
+    font-size: 3.4cqw;
+    font-weight: 700;
+  }
+  .sheet-actions,
+  .sheet-risks {
+    display: flex;
+    flex-direction: column;
+    gap: 2cqw;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sheet-actions li {
+    display: grid;
+    grid-template-columns: 5cqw 1fr auto;
+    gap: 1.6cqw;
+    align-items: start;
+  }
+  .sheet-action-number {
+    font-size: 3cqw;
+    font-weight: 600;
+    color: var(--p-accent);
+  }
+  .sheet-actions strong,
+  .sheet-risks strong {
+    display: block;
+    font-size: 2.5cqw;
+    line-height: 1.3;
+  }
+  .sheet-actions small {
+    display: block;
+    font-size: 2cqw;
+    color: var(--p-soft);
+  }
+  .sheet-tag {
+    display: inline-block;
+    padding: 0.5cqw 1.2cqw;
+    border: 1px solid;
+    border-radius: 0.8cqw;
+    font: 500 1.7cqw/1.2 var(--font-machine);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .sheet-risks li {
+    display: grid;
+    grid-template-columns: 5cqw 1fr;
+    gap: 1.6cqw;
+  }
+  .sheet-risk-number,
+  .sheet-matrix-mark {
+    display: grid;
+    place-items: center;
+    width: 4.2cqw;
+    height: 4.2cqw;
+    border-radius: 50%;
+    background: var(--p-soft);
+    color: var(--p-paper);
+    font: 600 2cqw var(--font-machine);
+  }
+  .sheet-risk-number.is-high,
+  .sheet-matrix-mark.is-high {
+    background: var(--p-danger);
+  }
+  .sheet-risk-number.is-medium,
+  .sheet-matrix-mark.is-medium {
+    background: var(--p-copper);
+  }
+  .sheet-risk-score {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2cqw;
+    margin: 0.6cqw 0;
+    font-size: 1.9cqw;
+  }
+  .sheet-spread {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3cqw;
+    align-items: start;
+  }
+  .sheet-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6cqw;
+  }
+  .sheet-group-label {
+    margin: 0 0 1cqw;
+    font-size: 2.2cqw;
+    font-weight: 600;
+    color: var(--p-soft);
+  }
+  .sheet-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6cqw;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sheet-bar-head,
+  .sheet-bar-note {
+    display: flex;
+    justify-content: space-between;
+    gap: 2cqw;
+  }
+  .sheet-bar-note {
+    font-size: 1.8cqw;
+  }
+  .sheet-alert {
+    color: var(--p-copper);
+    white-space: nowrap;
+  }
+  .sheet-track {
+    position: relative;
+    height: 2.2cqw;
+    margin: 0.8cqw 0;
+    border-radius: 0.6cqw;
+    background: var(--p-track);
+  }
+  .sheet-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 0.6cqw;
+    background: var(--p-accent);
+  }
+  .sheet-fill.is-low {
+    background: var(--p-copper);
+  }
+  .sheet-threshold {
+    position: absolute;
+    top: -0.8cqw;
+    bottom: -0.8cqw;
+    border-left: 1px dashed var(--p-muted);
+  }
+  .sheet-matrix-figure {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4cqw;
+    margin: 0;
+  }
+  .sheet-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6cqw;
+  }
+  .sheet-matrix-row {
+    display: grid;
+    grid-template-columns: 3cqw repeat(var(--matrix-size, 5), minmax(0, 1fr));
+    gap: 0.6cqw;
+  }
+  .sheet-matrix-cell {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4cqw;
+    aspect-ratio: 1;
+    border: 1px solid var(--p-line);
+    border-radius: 0.6cqw;
+    background: var(--p-accent-wash);
+  }
+  .sheet-matrix-cell.is-medium {
+    background: var(--p-copper-wash);
+  }
+  .sheet-matrix-cell.is-high {
+    background: var(--p-danger-wash);
+  }
+  .sheet-matrix-score {
+    position: absolute;
+    top: 0.4cqw;
+    left: 0.6cqw;
+    font: 500 1.4cqw var(--font-machine);
+    color: var(--p-muted);
+  }
+  .sheet-matrix-mark {
+    width: 3.2cqw;
+    height: 3.2cqw;
+    font-size: 1.6cqw;
+  }
+  .sheet-matrix-axis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 1.7cqw var(--font-machine);
+    color: var(--p-muted);
+  }
+  .sheet-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1cqw 2.4cqw;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.8cqw;
+  }
+  .sheet-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8cqw;
+  }
+  .sheet-legend-swatch {
+    width: 2cqw;
+    height: 2cqw;
+    border: 1px solid var(--p-line);
+    border-radius: 0.4cqw;
+    background: var(--p-accent-wash);
+  }
+  .sheet-legend-swatch.is-medium {
+    background: var(--p-copper-wash);
+  }
+  .sheet-legend-swatch.is-high {
+    background: var(--p-danger-wash);
+  }
+  .sheet-explained {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8cqw;
+    margin: 0;
+  }
+  .sheet-explained dt {
+    font-weight: 600;
+  }
+  .sheet-explained dd {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+  .sheet-explained b {
+    font-size: 3cqw;
+    font-weight: 500;
+  }
+  .sheet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1cqw;
+    margin: 0;
+    padding-left: 3cqw;
+  }
+  .sheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.9cqw;
+  }
+  .sheet-table th {
+    padding: 1cqw 0.6cqw;
+    border-bottom: 1px solid var(--p-ink);
+    font-weight: 600;
+    text-align: left;
+    color: var(--p-soft);
+  }
+  .sheet-table td {
+    padding: 1cqw 0.6cqw;
+    border-bottom: 1px solid var(--p-line);
+    vertical-align: top;
+  }
+  .sheet-notice {
+    padding: 2cqw 2.4cqw;
+    border: 1px solid var(--p-line);
+    border-radius: 1cqw;
+    background: var(--p-panel);
+    color: var(--p-soft);
+  }
+
+  /* 390 px and other narrow screens: the options above, the sheets stacked in the page flow */
+  @media (max-width: 860px) {
+    .report-center {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+    }
+    .report-preview {
+      position: static;
+    }
+    .report-pages {
+      max-height: none;
+      overflow: visible;
+      padding: 12px;
+    }
+    .report-delivery {
+      align-items: stretch;
+    }
+    .report-delivery-panel {
+      max-width: none;
+    }
+  }
+}
+
+/* The reprint band (700 ms) and the page entry (220 ms) only run when the owner did not ask for
+   less motion; with prefers-reduced-motion: reduce the sheets appear in their final state (AC-ra-58) */
+@keyframes report-reprint {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(250%);
+    opacity: 0;
+  }
+}
+
+@keyframes report-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes report-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .report-sheet {
+    animation: report-page-in var(--dur) var(--ease);
+  }
+  .report-sheet.is-reprinted::after {
+    animation: report-reprint 700ms var(--ease) 1;
+  }
+  .report-sheet-skeleton {
+    animation: report-skeleton-pulse 1.4s var(--ease) infinite;
+  }
+  .report-switch input,
+  .report-switch input::after {
+    transition:
+      background var(--fast) var(--ease),
+      border-color var(--fast) var(--ease),
+      transform var(--fast) var(--ease);
+  }
+}

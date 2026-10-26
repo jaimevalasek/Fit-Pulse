@@ -1,0 +1,487 @@
+/*
+ * Styles of the questionnaire file a client opens offline (RULE-ra-11).
+ * Tokens follow "Tinta & Ouro" (src/styles/tokens.css): ink by default, porcelain when the
+ * system asks for a light theme. Fonts are the system stacks of the identity: nothing is
+ * embedded and nothing is fetched, so this sheet points at no other file.
+ */
+:root {
+  --ground: #0b0a08;
+  --ground-sunken: #0f0d0a;
+  --surface: #161310;
+  --surface-raised: #1d1914;
+  --text: #f5f1e8;
+  --text-soft: #cdc5b4;
+  --text-muted: #958c7a;
+  --line: rgba(224, 203, 163, 0.14);
+  --line-strong: rgba(233, 214, 177, 0.28);
+  --bronze: #a8c07a;
+  --bronze-contrast: #0b0a08;
+  --gold: #e8ba52;
+  --gold-contrast: #0b0a08;
+  --patina: #6ec6a2;
+  --copper: #d8895b;
+  --peril: #ee7c7c;
+  --wash: rgba(168, 192, 122, 0.13);
+  --ok-wash: rgba(110, 198, 162, 0.14);
+  --warn-wash: rgba(216, 137, 91, 0.14);
+  --font-structure: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --font-human: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-machine: "JetBrains Mono", "Cascadia Code", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --ground: #f1ede3;
+    --ground-sunken: #e9e4d6;
+    --surface: #f9f6ee;
+    --surface-raised: #fffdf7;
+    --text: #1c1710;
+    --text-soft: #4c4436;
+    --text-muted: #6b6252;
+    --line: rgba(92, 74, 44, 0.14);
+    --line-strong: rgba(92, 74, 44, 0.26);
+    --bronze: #55692a;
+    --bronze-contrast: #fffdf7;
+    --gold: #8a6512;
+    --gold-contrast: #fffdf7;
+    --patina: #177a58;
+    --copper: #824421;
+    --peril: #9e2d37;
+    --wash: rgba(85, 105, 42, 0.13);
+    --ok-wash: rgba(23, 122, 88, 0.14);
+    --warn-wash: rgba(130, 68, 33, 0.14);
+    color-scheme: light;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font: 400 1rem/1.55 var(--font-structure);
+  -webkit-text-size-adjust: 100%;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 20px 72px;
+}
+
+.client-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--bronze);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.brand-mark img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.brand-name {
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.title {
+  margin-top: 28px;
+  font-size: 2rem;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--text-soft);
+}
+
+.notice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+}
+
+.notice-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font: 700 0.8125rem/1 var(--font-structure);
+  color: var(--copper);
+}
+
+/* On a narrow screen or a touch device the notice stops being a side note. */
+@media (max-width: 700px), (pointer: coarse) {
+  .notice {
+    border-color: var(--copper);
+    background: var(--warn-wash);
+    color: var(--text);
+    font-weight: 600;
+  }
+}
+
+.rail {
+  display: flex;
+  gap: 6px;
+  margin-top: 22px;
+}
+
+.rail a {
+  flex: 1;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--line-strong);
+  position: relative;
+}
+
+.rail a::after {
+  content: "";
+  position: absolute;
+  inset: -16px 0;
+}
+
+.rail a.done {
+  background: var(--patina);
+}
+
+.rail a.current {
+  background: var(--bronze);
+}
+
+.progress {
+  margin-top: 10px;
+  font: 400 0.8125rem var(--font-machine);
+  color: var(--text-muted);
+}
+
+.panel {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.panel h2 {
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+}
+
+.panel .intro {
+  margin-top: 6px;
+  color: var(--text-soft);
+  font-family: var(--font-human);
+  font-style: italic;
+}
+
+.question {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.question-title {
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
+
+.heading-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.help-toggle {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bronze);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.help-toggle[aria-expanded="true"] {
+  background: var(--wash);
+}
+
+.help-text {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--bronze);
+  background: var(--wash);
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.choice,
+.mode-option {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.choice input,
+.mode-option input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--bronze);
+}
+
+.choice.selected,
+.mode-option.selected {
+  border-color: var(--bronze);
+  background: var(--wash);
+}
+
+.choice.unknown {
+  border-style: dashed;
+}
+
+.mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.field-grid {
+  display: grid;
+  gap: 4px 16px;
+  margin-top: 14px;
+}
+
+@media (min-width: 640px) {
+  .field-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.field label {
+  font-size: 0.9375rem;
+  color: var(--text-soft);
+}
+
+.input,
+select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--ground-sunken);
+  font-size: 1rem;
+}
+
+.input.mono {
+  font-family: var(--font-machine);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--peril);
+}
+
+.narrow {
+  max-width: 280px;
+}
+
+.medium {
+  max-width: 380px;
+}
+
+.field-error {
+  min-height: 1.25em;
+  color: var(--peril);
+  font-size: 0.875rem;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+  grid-column: 1 / -1;
+}
+
+.total-row output {
+  font-family: var(--font-machine);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--text-soft);
+}
+
+.btn-primary {
+  border-color: var(--bronze);
+  background: var(--bronze);
+  color: var(--bronze-contrast);
+}
+
+/* Gold is for the decision gate: saving the answers. */
+.btn-gold {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--gold-contrast);
+}
+
+.link {
+  color: var(--bronze);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.review-rows {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-rows li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.chip {
+  padding: 2px 10px;
+  border: 1px solid var(--patina);
+  border-radius: 999px;
+  background: var(--ok-wash);
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.saved h2 {
+  font-size: 1.5rem;
+}
+
+.file-path {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--ground-sunken);
+  font: 400 0.9375rem var(--font-machine);
+  overflow-wrap: anywhere;
+}
+
+.saved h3 {
+  margin-top: 26px;
+  font-size: 1.25rem;
+}
+
+.saved p {
+  margin-top: 6px;
+  color: var(--text-soft);
+}
+
+.fallback {
+  margin: 40px auto;
+  max-width: 560px;
+  padding: 0 20px;
+}

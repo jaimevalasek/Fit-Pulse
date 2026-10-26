@@ -1,0 +1,91 @@
+/*
+ * FitPulse design tokens ("Tinta & Ouro", app metal: antique bronze).
+ * Default theme is ink (dark); porcelain (light) switches through :root[data-theme="light"].
+ * Gold is reserved for the brand and the gates. No structural blue anywhere.
+ */
+:root {
+  /* Foundations: ink */
+  --ground: #0b0a08;
+  --ground-sunken: #0f0d0a;
+  --surface: #161310;
+  --surface-raised: #1d1914;
+  --solid: #242019;
+  --text: #f5f1e8;
+  --text-soft: #cdc5b4;
+  --text-muted: #958c7a;
+  --line: rgba(224, 203, 163, 0.14);
+  --line-strong: rgba(233, 214, 177, 0.28);
+
+  /* Materials */
+  --bronze: #a8c07a;
+  --bronze-contrast: #0b0a08;
+  --gold: #e8ba52;
+  --gold-contrast: #0b0a08;
+  --patina: #6ec6a2;
+  --copper: #d8895b;
+  --peril: #ee7c7c;
+  --peril-contrast: #0b0a08;
+  --scrim: rgba(5, 4, 3, 0.72);
+
+  /* Voices: structure, human, machine */
+  --font-structure: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-human: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-machine: "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+
+  /* Semantic aliases (components use these) */
+  --accent: var(--bronze);
+  --accent-contrast: var(--bronze-contrast);
+  --wash: color-mix(in oklab, var(--bronze) 13%, transparent);
+  --ok: var(--patina);
+  --ok-wash: color-mix(in oklab, var(--patina) 14%, transparent);
+  --warn: var(--copper);
+  --warn-wash: color-mix(in oklab, var(--copper) 14%, transparent);
+  --danger: var(--peril);
+  --danger-wash: color-mix(in oklab, var(--peril) 14%, transparent);
+  --focus-ring: var(--gold);
+
+  /* Scale */
+  --t-12: 0.75rem;
+  --t-14: 0.875rem;
+  --t-16: 1rem;
+  --t-18: 1.125rem;
+  --t-24: 1.5rem;
+  --t-36: 2.25rem;
+  --t-56: 3.5rem;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --control: 40px;
+  --touch: 44px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --fast: 160ms;
+  --dur: 220ms;
+
+  color-scheme: dark;
+}
+
+/* Porcelain (light) */
+:root[data-theme="light"] {
+  --ground: #f1ede3;
+  --ground-sunken: #e9e4d6;
+  --surface: #f9f6ee;
+  --surface-raised: #fffdf7;
+  --solid: #fffdf7;
+  --text: #1c1710;
+  --text-soft: #4c4436;
+  --text-muted: #6b6252;
+  --line: rgba(92, 74, 44, 0.14);
+  --line-strong: rgba(92, 74, 44, 0.26);
+
+  --bronze: #55692a;
+  --bronze-contrast: #fffdf7;
+  --gold: #8a6512;
+  --gold-contrast: #fffdf7;
+  --patina: #177a58;
+  --copper: #824421;
+  --peril: #9e2d37;
+  --peril-contrast: #fffdf7;
+  --scrim: rgba(28, 23, 16, 0.42);
+
+  color-scheme: light;
+}

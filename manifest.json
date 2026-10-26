@@ -1,0 +1,30 @@
+{
+  "slug": "fitpulse",
+  "name": "FitPulse",
+  "version": "0.2.0",
+  "description": "Diagnóstico de maturidade de crescimento para pequenas empresas: estágio, trava e 3 ações, tudo no seu computador.",
+  "runtime": "node",
+  "has_api": true,
+  "stack": "split",
+  "processes": {
+    "frontend": {
+      "port_env": "PORT",
+      "framework": "vite"
+    },
+    "backend": {
+      "port_env": "BACKEND_PORT",
+      "framework": "node"
+    }
+  },
+  "webview_target": "frontend",
+  "compatibility": {
+    "min_play_version": "0.1.92",
+    "min_runtime_version": "1.0.0",
+    "max_runtime_version": "1.x",
+    "sidecar_contract": "ndjson-v1",
+    "schema_version": 2,
+    "requires_migration": true
+  },
+  "packages": [],
+  "systems": []
+}

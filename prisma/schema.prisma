@@ -1,0 +1,141 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../server/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum DiagnosisStatus {
+  draft
+  completed
+}
+
+model Company {
+  id                 String              @id @default(uuid())
+  name               String
+  segment            String
+  salesChannel       String              @map("sales_channel")
+  annualRevenueRange String?             @map("annual_revenue_range")
+  cnpj               String?
+  archivedAt         DateTime?           @map("archived_at")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  diagnoses          Diagnosis[]
+  generatedFiles     GeneratedFile[]
+  diaryEntries       DiaryEntry[]
+  questionnaireSends QuestionnaireSend[]
+
+  @@map("companies")
+}
+
+model Diagnosis {
+  id               String           @id @default(uuid())
+  companyId        String           @map("company_id")
+  company          Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  status           DiagnosisStatus  @default(draft)
+  archivedAt       DateTime?        @map("archived_at")
+  answers          Json             @default(dbgenerated("'{}'"))
+  calculator       Json             @default(dbgenerated("'{}'"))
+  currentBlock     Int              @default(1) @map("current_block")
+  rulesVersion     Int?             @map("rules_version")
+  result           Json?
+  stage            Int?
+  completedAt      DateTime?        @map("completed_at")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  actionProgress   ActionProgress[] @relation("ActionProgressOwner")
+  inheritedActions ActionProgress[] @relation("ActionProgressInheritedFrom")
+
+  @@index([companyId, status])
+  @@map("diagnoses")
+}
+
+// What the owner tracks about each of the 3 actions of a completed diagnosis' plan. The diagnosis result
+// stays untouched (RULE-ra-01); "current" and "closed" plans are derived, never stored. A row is born when
+// the diagnosis is completed, already carrying what repeated from the previous plan (RULE-ra-05); a
+// completed diagnosis of version 1 has none until its first edit. `status` and `ownerRole` hold the keys of
+// `shared/domain/actionProgress.ts` as text, so a new key needs no migration. `dueDate` is `YYYY-MM-DD`.
+model ActionProgress {
+  id              String     @id @default(uuid())
+  diagnosisId     String     @map("diagnosis_id")
+  diagnosis       Diagnosis  @relation("ActionProgressOwner", fields: [diagnosisId], references: [id], onDelete: Cascade)
+  actionKey       String     @map("action_key")
+  status          String     @default("todo")
+  dueDate         String?    @map("due_date")
+  ownerRole       String?    @map("owner_role")
+  note            String?
+  inheritedFromId String?    @map("inherited_from_id")
+  inheritedFrom   Diagnosis? @relation("ActionProgressInheritedFrom", fields: [inheritedFromId], references: [id], onDelete: SetNull)
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  @@unique([diagnosisId, actionKey])
+  @@index([inheritedFromId])
+  @@map("action_progress")
+}
+
+// One noted month of the company's monthly diary (CAP-ra-diary): what was spent to win customers and
+// how many new customers came. `month` is `YYYY-MM` and never changes (RULE-ra-08); the pair
+// (company, month) is unique, so the same month cannot be noted twice. The spend is in whole cents
+// and lives in `spendParts` (JSON, the 6 parts of the calculator that were filled in) or, for "Só sei
+// o total", in `spendTotalCents`. A cent total goes past 32 bits (R$ 99.999.999,99), hence `BigInt`.
+model DiaryEntry {
+  id              String   @id @default(uuid())
+  companyId       String   @map("company_id")
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  month           String
+  newCustomers    Int      @map("new_customers")
+  spendParts      Json?    @map("spend_parts")
+  spendTotalCents BigInt?  @map("spend_total_cents")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, month])
+  @@map("diary_entries")
+}
+
+// One questionnaire file the consultant saved for a company (CAP-ra-remote-questionnaire). A row is
+// born when the file is saved and waits for the answers: `answeredAt` empty means "aguardando resposta".
+// Importing the client's file fills `answeredAt`, `clientSavedAt` (the moment the client saved, read from
+// the file) and `draftId`, the draft the answers became; the timeline marks that draft with them. `draftId`
+// has no foreign key on purpose: a discarded or concluded draft leaves the row as it was.
+model QuestionnaireSend {
+  id            String    @id @default(uuid())
+  companyId     String    @map("company_id")
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  fileName      String    @map("file_name")
+  sentAt        DateTime  @map("sent_at")
+  answeredAt    DateTime? @map("answered_at")
+  clientSavedAt DateTime? @map("client_saved_at")
+  draftId       String?   @map("draft_id")
+
+  @@index([companyId, answeredAt])
+  @@index([draftId])
+  @@map("questionnaire_sends")
+}
+
+model Preference {
+  key   String @id
+  value String
+
+  @@map("preferences")
+}
+
+// A file the app itself saved in the Downloads folder. "Open" and "show in folder" name it by id
+// and never by path. `companyId` is empty for a file that belongs to no single company (the portfolio PDF).
+model GeneratedFile {
+  id        String   @id @default(uuid())
+  companyId String?  @map("company_id")
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  kind      String
+  fileName  String   @map("file_name")
+  directory String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([companyId, kind, createdAt])
+  @@map("generated_files")
+}
