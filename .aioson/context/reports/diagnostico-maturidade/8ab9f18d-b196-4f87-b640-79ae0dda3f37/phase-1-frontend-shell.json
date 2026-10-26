@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "9f457638-43b8-49da-b89f-2ca0f2147219",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-shell",
+  "started_at": "2026-10-23T03:24:00Z",
+  "finished_at": "2026-10-23T03:33:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "vite.config.ts",
+    "index.html",
+    "components.json",
+    "src/main.tsx",
+    "src/App.tsx",
+    "src/styles/tokens.css",
+    "src/styles/global.css",
+    "src/components/layout/AppShell.tsx",
+    "src/lib/utils.ts",
+    "src/components/ui/button.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "AC-dm-43 and AC-dm-50 runtime evidence (tests/e2e/shell.spec.ts: FitPulse visible, never V-Stage, no password field, document.fonts.check for Inter and JetBrains Mono, external requests blocked) cannot run in this unit: the spec, playwright.config.ts and the backend process belong to other units/integration.",
+      "command": "pnpm test:e2e -- tests/e2e/shell.spec.ts"
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Play dev-link (Settings -> Instalar App -> Linkar pasta) showing the shell with a green badge needs the Play desktop and the backend lane; not runnable here.",
+      "command": "dev-link no Play"
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "src/App.tsx routes #/empresas, #/empresa/:companyId, #/diagnostico/:diagnosisId and #/resultado/:diagnosisId render a PendingScreen (data-state=\"pending\", 'Esta tela ainda está sendo preparada.') until the companies/questionnaire/result units replace each route element; '/' redirects to #/empresas and unknown routes show NotFoundScreen."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "The theme toggle and tour buttons of the prototype top bar are not in AppShell: theme persistence (preferences) and the tour belong to Phase 3 units. The shell ships brand 'FitPulse', nav (Empresas), main region and the 'Pular para o conteúdo' skip link."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "summary": "tsc --noEmit && vite build succeeded (TS 7.0.2, Vite 8.3.5); dist/assets/index-*.css 59 kB, index-*.js 291 kB.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-shell-dev/build.log"
+    },
+    {
+      "kind": "dist_inspection",
+      "ac": ["AC-dm-50"],
+      "summary": "dist/assets has inter-latin-{400,500,600,700}-normal-*.woff2 and jetbrains-mono-latin-{400,500}-normal-*.woff2 (plus other subsets), 40 @font-face rules with families Inter and JetBrains Mono, 0 external url() in CSS, 0 external href/src in dist/index.html. JS only contains non-fetched URL strings (react.dev error docs text, XML namespaces, reactrouter.com warning text). No default Tailwind blue palette in CSS (--color-* reset).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-shell-dev/dist-check.json"
+    },
+    {
+      "kind": "runtime_probe",
+      "ac": ["AC-dm-43", "AC-dm-50"],
+      "summary": "vite preview with PORT=5791 served http://127.0.0.1:5791/ with <title>FitPulse</title> and /assets/inter-latin-400-normal-*.woff2 as 200 font/woff2. The probe process exited 127 from a libuv assertion at Node shutdown on Windows after the result was printed (result ok=true); the Host-header sub-probe is not evidence (fetch cannot override Host).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-shell-dev/preview-probe.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "vite.config.ts proxies /api to http://127.0.0.1:${BACKEND_PORT||3301} with changeOrigin=false, so requests reach the backend with the browser's Host (127.0.0.1:PORT or localhost:PORT). server/http/requestGuards.ts must accept 127.0.0.1/localhost on PORT as well as BACKEND_PORT, or every proxied call gets 403. Server and preview both bind 127.0.0.1 with strictPort.",
+      "paths": ["vite.config.ts", "server/http/requestGuards.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for CAP-dm-play-runtime shell: run `pnpm test:e2e -- tests/e2e/shell.spec.ts` once playwright.config.ts, fixtures and backend exist (expects 'FitPulse' in the header, no 'V-Stage', no password input, document.fonts.check('16px Inter') and ('16px \"JetBrains Mono\"')), then dev-link in the Play.",
+      "paths": ["tests/e2e/shell.spec.ts", "src/components/layout/AppShell.tsx"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "Tokens (src/styles/tokens.css) use English names: --ground, --ground-sunken, --surface, --surface-raised, --solid, --text, --text-soft, --text-muted, --line, --line-strong, --bronze(-contrast), --gold(-contrast), --patina, --copper, --peril(-contrast), --scrim, --accent, --wash, --ok/--warn/--danger(+ -wash), --focus-ring, --font-structure/-human/-machine, --t-*, --r-*, --control (40px), --touch (44px), --ease/--fast/--dur. Theme: :root = ink (dark), :root[data-theme=\"light\"] = porcelain. Tailwind utilities from @theme inline: bg-ground, bg-surface, bg-surface-raised, text-text, text-text-soft, text-text-muted, border-line, border-line-strong, bg-bronze, text-bronze-contrast, bg-gold, bg-danger, text-danger-contrast, bg-wash, text-ok/warn/danger, bg-scrim, font-sans/serif/mono, rounded-sm/md/lg, ease-app; plus utilities voice-human and meta-line. The default Tailwind color palette and all shadows are reset (no blue-*, gray-*, shadow-*): use tokens and borders.",
+      "paths": ["src/styles/tokens.css", "src/styles/global.css"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "src/components/ui/button.tsx exports Button and buttonVariants with variant: default (neutral outline) | metal (bronze, main action) | gate (gold, gates only) | destructive | ghost | link, size: default | sm | lg | icon (44px touch target under 640px), asChild via @radix-ui/react-slot, type defaults to 'button'. AppShell wraps the routes in src/App.tsx; replace each PendingScreen element there with the real page (companies: empresas, empresa/:companyId; questionnaire: diagnostico/:diagnosisId; result: resultado/:diagnosisId). HashRouter/Link/NavLink come from 'react-router' v7.",
+      "paths": ["src/components/ui/button.tsx", "src/App.tsx"]
+    }
+  ]
+}

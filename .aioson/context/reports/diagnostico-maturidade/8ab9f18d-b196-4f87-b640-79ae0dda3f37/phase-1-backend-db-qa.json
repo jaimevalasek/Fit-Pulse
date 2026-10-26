@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "95a958b0-ba9c-4098-9e91-d400d36d31b3",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "unit": "phase-1-backend-db",
+  "phase": "1-backend-db",
+  "wave": 2,
+  "capabilities": ["CAP-dm-play-runtime"],
+  "acceptance_criteria": ["AC-dm-45"],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:37:23Z",
+  "finished_at": "2026-10-23T03:40:00Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-45",
+      "path": "package.json",
+      "summary": "Clean `pnpm install` was not run, so the postinstall chain (prepare-app --generate --migrate --build, with DATABASE_URL unset it targets data/fitpulse.db) is unverified end to end. Not run here because it rewrites the shared node_modules and runs generate, migrate and build across all wave-2 units; the implementer also deferred it to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-45",
+      "path": "scripts/smoke-migrate.mjs",
+      "summary": "The manual half of AC-dm-45 (a real update of an installed app through the AIOSON Play store, with owner data kept) was not run. It needs the Play desktop app and a previously installed version, which this environment cannot provide. The automated schema-change and data-preservation half is covered by smoke-migrate and passes."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-45",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "The 'datafile never travels in the published package' half of AC-dm-45 belongs to unit phase-1-backend-package (scripts/smoke-store-package.mjs). It is not due for this unit and was not checked here; deferred to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "node scripts/smoke-migrate.mjs (Done when / Verification)",
+      "result": "PASS, exit code 0. Five steps: first install via prepare-app --migrate on a temp DB; owner data seeded (companies, drafts, completed diagnoses, preferences); synthetic RedefineTables release applied; data identical after update; repeat deploy reports no pending migrations and the company->diagnoses cascade still works. Final line '[smoke-migrate] PASS'.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-qa/smoke-migrate.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-qa/smoke-migrate.exit"
+    },
+    {
+      "check": "pnpm exec tsc --noEmit (whole project, supporting check for prismaClient.ts and testDatabase.ts)",
+      "result": "exit 0, empty output",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-qa/tsc.exit"
+    },
+    {
+      "check": "Static review against the implementer's contract claims",
+      "result": "server/db/prismaClient.ts exports createPrismaClient(databaseUrl = resolveDatabaseUrl()) and applies busy_timeout=5000, journal_mode=WAL and foreign_keys=ON on connect. tests/helpers/testDatabase.ts exports createTestDatabase(options) returning a flat TestDatabase; resetData() covers companies, diagnoses and preferences, which are the only three models in prisma/schema.prisma. scripts/prepare-app.mjs exports APP_ROOT and runPackageBin, runs the steps only when executed directly, and exits 2 on an unknown flag. The migration SQL creates the same three tables and the diagnoses_company_id_status_idx index that schema.prisma declares. better-sqlite3 is a direct dependency, so smoke-migrate.mjs resolves it. Agent-reported only; no separate runtime probe was run in this attempt."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Before declaring the capability done, run a clean `pnpm install` once all wave-2 units are merged. The postinstall should run scripts/prepare-app.mjs --generate --migrate --build and succeed. Confirm the data/ folder and the generated Prisma client appear, and that no database is written unless DATABASE_URL is unset (it then uses data/fitpulse.db). This check was not run in QA.",
+      "paths": ["package.json", "scripts/prepare-app.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "AC-dm-45 manual walkthrough (not runnable here): in the AIOSON Play desktop app, install a previous build of the app with owner data, then update it to the new build. Confirm the owner data survives and the app starts. The automated half is scripts/smoke-migrate.mjs, which passes.",
+      "paths": ["scripts/smoke-migrate.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Process observation outside this unit's scope (recorded as aioson observation OBS-af8fbe, risk): the implementer ran `cat .env` in its session, which printed the OPENROUTER_API_KEY value into session output. Nothing was written to a file. Consider rotating that key. No code change is needed for this unit.",
+      "paths": [".env"]
+    },
+    {
+      "to": "unit:phase-1-backend-package",
+      "kind": "question",
+      "text": "AC-dm-45's 'datafile never travels in the published package' half is owned by scripts/smoke-store-package.mjs in your unit. Please confirm it covers data/ and prisma/*.db, and that it uses the APP_ROOT and runPackageBin exports from scripts/prepare-app.mjs as the implementer described."
+    }
+  ],
+  "notes": "No corrections were needed. Local Done when and Verification pass. Capability-wide checks are deferred to integration as listed in findings. Temporary logs are only in the run-scoped execution-temp folder, not the project root."
+}

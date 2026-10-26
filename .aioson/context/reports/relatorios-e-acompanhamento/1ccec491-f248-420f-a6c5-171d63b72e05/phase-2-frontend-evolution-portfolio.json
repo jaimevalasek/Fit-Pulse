@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "f0105fc3-9a0a-4303-bc6b-3026205ff22c",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-2-frontend-evolution-portfolio",
+  "started_at": "2026-10-26T00:10:15Z",
+  "finished_at": "2026-10-26T00:15:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/history/ComparePage.tsx",
+    "src/features/reports/ReportOptions.tsx",
+    "src/features/reports/PortfolioReportPage.tsx",
+    "src/features/home/ConsultantHome.tsx",
+    "src/App.tsx"
+  ],
+  "summary": "ComparePage now takes its wording from shared/content/comparisonCopy.ts (STAGE_MOVES, directionOf, formatDelta, formatComparisonMonth, recalculationNotice), so the screen and the evolution PDF use the same text (AC-ra-13). ReportOptions has a controlled type picker (diagnosis/evolution) with roving keyboard focus, plus 'De'/'Até' selects. 'De' offers every diagnosis except the latest; 'Até' offers only diagnoses after 'De'. Changing 'De' moves 'Até' to the next diagnosis when needed. The default range is the two latest diagnoses (AC-ra-12, AC-ra-14). The new props are optional, so ReportCenterPage keeps compiling unchanged. PortfolioReportPage serves route relatorios/carteira. In owner mode it explains the report and links to Configurações. With no active companies (consultant home companyCount 0) it offers 'Cadastrar a primeira empresa' (AC-ra-16). Otherwise it shows 'O que entra' and reuses useReportPreview, ReportPreview and ReportDelivery with kind 'portfolio'. ConsultantHome has a 'Relatório da carteira' link, and App.tsx has the route.",
+  "findings": [
+    {
+      "kind": "integration_wiring_required",
+      "severity": "medium",
+      "text": "ReportCenterPage.tsx is not in this unit's allowed files, so the evolution option still shows as off in the live center. Integration needs to keep reportType and evolutionRange state in ReportWorkspace, starting from defaultEvolutionRange(diagnoses). It should pass evolutionSupported, reportType, onReportTypeChange, evolutionRange and onEvolutionRangeChange to ReportOptions, and build the selection {kind:'evolution', fromId, toId} when the type is evolution.",
+      "paths": ["src/features/reports/ReportCenterPage.tsx"]
+    },
+    {
+      "kind": "integration_wiring_required",
+      "severity": "medium",
+      "text": "ReportSelection in src/api/reportApi.ts only covers {kind:'diagnosis'}, and src/api is outside the frontend lane's write paths. PortfolioReportPage uses `{ kind: 'portfolio' } as unknown as ReportSelection` to get past this, and the evolution selection in ReportCenterPage needs the same type. Integration should add the evolution and portfolio members to the union (per IF-001), then remove the cast.",
+      "paths": ["src/api/reportApi.ts", "src/features/reports/PortfolioReportPage.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "The e2e checks for AC-ra-14 and AC-ra-16 (pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts) were not run. They belong to sibling and integration units, and they depend on the wiring above plus the server portfolio schema member. ESLint is not installed in this project (pnpm exec eslint: not found)."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "PASS — tsc --noEmit with no errors (include: src, server, shared, tests)"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "ReportOptions now exports ReportType, EvolutionRange, defaultEvolutionRange(diagnoses), diagnosesAfter(diagnoses, fromId) and rangeWithFrom(diagnoses, range, fromId), and takes optional props reportType, onReportTypeChange, evolutionRange and onEvolutionRangeChange. Evolution is offered only when evolutionSupported is true and both callbacks are passed. To wire it in ReportCenterPage.ReportWorkspace: keep useState<ReportType>('diagnosis') and useState(defaultEvolutionRange(diagnoses)). Selection = type === 'evolution' && range ? { kind: 'evolution', fromId: range.fromId, toId: range.toId } : the current diagnosis selection. Pass evolutionSupported plus the four props. Select ids: report-from and report-to (labels 'De'/'Até').",
+      "paths": ["src/features/reports/ReportOptions.tsx", "src/features/reports/ReportCenterPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "src/api/reportApi.ts ReportSelection needs to become `{ kind: 'diagnosis'; diagnosisId; includeAnswers } | { kind: 'evolution'; fromId; toId } | { kind: 'portfolio' }` (IF-001). Then replace PORTFOLIO_SELECTION in PortfolioReportPage.tsx with a plain typed literal (drop the `as unknown as` cast). Also check that server/validation/reportSchemas.ts accepts kind 'portfolio'; the phase-2-backend-portfolio note says the schema member still has to be added. Without it the portfolio preview returns 400.",
+      "paths": ["src/api/reportApi.ts", "server/validation/reportSchemas.ts", "src/features/reports/PortfolioReportPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "PortfolioReportPage detects an empty portfolio from GET /api/home?mode=consultant companyCount === 0 (the same source as the consultant home), not from the 409 portfolio_empty, because useReportPreview only keeps the error message. Test ids: portfolio-report, portfolio-owner-mode, portfolio-open-settings, portfolio-empty, portfolio-first-company, portfolio-options, home-portfolio-report (ConsultantHome link). Remaining checks: pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/portfolioReport.spec.ts tests/e2e/history.spec.ts tests/e2e/home.spec.ts after the wiring above.",
+      "paths": ["src/features/reports/PortfolioReportPage.tsx", "src/features/home/ConsultantHome.tsx"]
+    }
+  ]
+}

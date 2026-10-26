@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "ba836604-ba4b-455d-bf46-b13621123a9c",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "started_at": "2026-10-23T03:16:00Z",
+  "finished_at": "2026-10-23T03:47:11Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/services/domainError.ts",
+    "server/http/errorHandler.ts",
+    "server/http/requestGuards.ts",
+    "server/services/assistantSummaryService.ts",
+    "server/routes/playRoutes.ts",
+    "server/app.ts",
+    "server/main.ts",
+    "tests/api/playRoutes.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "title": "AC-dm-42 end-to-end completion through the API was not exercised",
+      "detail": "The PRD evidence for AC-dm-42 reads 'depois de uma conclusão real pela API'. companyRoutes/diagnosisRoutes and evaluateDiagnosis do not exist in this wave, so tests/api/playRoutes.test.ts seeds companies and diagnoses directly through Prisma, using a fully typed DiagnosisResult that carries money in cents plus answers and calculator JSON, and asserts the summary exposes exactly the five fields and none of those values. The 'real completion' variant is deferred to integration (see messages).",
+      "paths": ["tests/api/playRoutes.test.ts"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "title": "Real SIGTERM/SIGINT delivery to server/main.ts not exercised on win32",
+      "detail": "Windows does not deliver POSIX signals to a child via kill, so the shutdown path was run by emitting SIGINT inside the process (keep-alive connection open): it logged 'SIGINT received', closed the server and the Prisma client and exited with code 0. A real signal on macOS/Linux was not run.",
+      "paths": ["server/main.ts"]
+    },
+    {
+      "kind": "cross_unit_defect",
+      "severity": "low",
+      "title": "prismaClient.ts leaks the SQLite handle when the connection PRAGMAs fail",
+      "detail": "In FitPulseSqliteAdapterFactory.connect(), if adapter.executeScript(CONNECTION_PRAGMAS) throws (e.g. 'file is not a database'), the adapter returned by super.connect() is never disposed. On Windows the file stays held until the process exits, and rmSync of its folder fails with EPERM. Harmless in production (the process exits), but it affects test cleanup. Belongs to phase-1-backend-db; not edited here. The new test removes its temp folders best-effort for this reason.",
+      "paths": ["server/db/prismaClient.ts"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "title": "'pnpm test -- <file>' runs the whole suite",
+      "detail": "pnpm 11 forwards the '--', so the command becomes `vitest run \"--\" \"tests/api/playRoutes.test.ts\"` and vitest runs every test file (6 files, 234 tests at the time, all passing). The Done-when command therefore also depends on sibling test files. `vitest run tests/api/playRoutes.test.ts` runs only this unit's file (48 tests).",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "title": "LAN reachability probes time out on Windows instead of being refused",
+      "detail": "Connecting to a non-loopback IPv4 of this machine on the backend port returned 'timeout' (Windows drops the packet), not ECONNREFUSED. Control run: a listener on 0.0.0.0 was reachable through the same address (CONNECTED), a listener on 127.0.0.1 was not, and a closed port also timed out. So 'never connected' is the reliable pass criterion on win32. scripts/smoke-boot.mjs (phase-1-backend-package) expects 'conexão recusada' and should accept refused or timeout.",
+      "paths": ["scripts/smoke-boot.mjs"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm test -- tests/api/playRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 6 passed (6), Tests 234 passed (234)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-dev/vitest-official.log"
+    },
+    {
+      "kind": "command",
+      "command": "vitest run tests/api/playRoutes.test.ts (isolated, 5 repeats for flakiness)",
+      "exit_code": 0,
+      "result": "Tests 48 passed (48) on every run",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-dev/vitest-repeat1.log .. vitest-repeat5.log"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (tsc --noEmit over src, server, shared, tests)",
+      "exit_code": 0,
+      "result": "no diagnostics",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-dev/typecheck.log"
+    },
+    {
+      "kind": "manual_boot",
+      "command": "tsx script that imports server/main.ts with a temp migrated database and a free BACKEND_PORT",
+      "exit_code": 0,
+      "result": "listens on 127.0.0.1:<port>; /api/health 200 {ok:true}; /api/aioson-play 200 with FitPulse/fitpulse/0.1.0 and api_base_url from BACKEND_PORT; /api/assistant/summary 200 {companies:[]}; the 3 non-loopback IPv4 addresses never connected; emitted SIGINT with a keep-alive connection open -> clean shutdown, exit 0",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-dev/boot-main.log"
+    },
+    {
+      "kind": "coverage",
+      "ac": ["AC-dm-41", "AC-dm-42"],
+      "interfaces": ["IF-001", "IF-010"],
+      "result": "AC-dm-41: schema built from manifest.json, exactly GET /api/health and GET /api/assistant/summary, each answers 200, events [], api_base_url from BACKEND_PORT (explicit dep and env). AC-dm-42: five fields per active company from the latest completed non-archived diagnosis; drafts, archived diagnoses, archived companies and companies without a diagnosis are excluded; no seeded money value, 'R$' or answer key in the body. IF-001: 503 database_unavailable proven against three real Prisma failure shapes (missing folder, non-database file, missing schema) while /api/health stays 200. IF-010: 403 host_not_allowed (foreign, lookalike, userinfo, LAN IP, no/empty Host), 415 json_required (text/plain, form, multipart, no content type; PUT/PATCH too), no CORS headers even on a cross-origin preflight, 400 invalid_json, 413 payload_too_large above 1 MB, 404 not_found, DomainError with details, ZodError -> 400 validation_failed with fields, 500 internal_error without leaking the cause."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "server/app.ts exports createApp(deps: AppDependencies), AppDependencies { prisma, now, downloadsDir, backendPort? }, resolveBackendPort(env) and DEFAULT_BACKEND_PORT (3301). It mounts only the play routes today. Mount companyRoutes, diagnosisRoutes, historyRoutes, reportRoutes, homeRoutes and preferenceRoutes in createApp between createPlayRoutes(...) and notFoundHandler, passing what they need from deps (now and downloadsDir are already there for the report and backup phases). Do NOT add them to the endpoints list of GET /api/aioson-play: RULE-dm-17 limits the assistant to health and the summary, and the test pins exactly those two.",
+      "paths": ["server/app.ts", "server/routes/playRoutes.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The backup import (up to 10 MB, IF-009) must mount its router BEFORE the global `app.use(express.json({ limit: \"1mb\" }))` line in server/app.ts, with its own `express.json({ limit: \"10mb\" })`: body-parser skips a request that is already parsed. The Host and JSON-content-type guards run before both parsers, so they still apply to it.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Error contract for every route (IF-010): `{ error: { code, message, ...extra } }`. Throw `new DomainError(status, code, message, details?)` from server/services/domainError.ts; `details` keys are merged into `error` (e.g. { pendingBlocks } for 422 incomplete) and cannot overwrite code/message. A ZodError thrown by a route or service becomes 400 validation_failed with `fields: Record<string,string>` keyed by the dotted path (`nested.count`), first message per field, and `_root` for an issue that points at no field (ROOT_FIELD exported from server/http/errorHandler.ts). Express 5 forwards rejected async handlers, so routes need no try/catch. Other codes already produced: host_not_allowed 403, json_required 415, payload_too_large 413, invalid_json 400, not_found 404, database_unavailable 503, internal_error 500 (logged to stderr, cause never returned).",
+      "paths": ["server/http/errorHandler.ts", "server/services/domainError.ts"]
+    },
+    {
+      "to": "unit:phase-1-frontend-primitives",
+      "kind": "contract_change",
+      "text": "src/api/httpClient.ts must send `Content-Type: application/json` on EVERY POST/PUT/PATCH, including body-less ones such as archive, restore and complete (send `{}` or an empty body with the header). The server answers 415 json_required otherwise, by design, to block cross-site no-cors writes. The error body is `{ error: { code, message, fields?, ...extra } }`; `fields` is keyed by dotted path with `_root` for form-level issues. DELETE needs no content type.",
+      "paths": ["src/api/httpClient.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-package",
+      "kind": "note",
+      "text": "On Windows a connection to a non-loopback IPv4 of the machine on the backend port times out instead of being refused (control run: a 0.0.0.0 listener connects through the same address, a 127.0.0.1 listener does not). scripts/smoke-boot.mjs should pass when the connection is refused OR times out, and fail only when it connects.",
+      "paths": ["scripts/smoke-boot.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "To complete AC-dm-42 as the PRD words it ('depois de uma conclusão real pela API'): once companyRoutes and diagnosisRoutes exist, add a case to tests/api/playRoutes.test.ts (or the diagnosis test) that creates a company and completes a diagnosis through the API, then calls GET /api/assistant/summary and checks the same exact-fields / no-money / no-answers assertions. The current test seeds the rows with Prisma. Note also that the summary returns `lockingDimension` as the display name of the lowest-scoring dimension (e.g. DIMENSIONS.re.name), `stageName` next to `stage`, and leaves out active companies that have no completed non-archived diagnosis; the Settings text 'O que o assistente do Play pode ler' should list exactly: nome, estágio, dimensão que mais trava, data do último diagnóstico.",
+      "paths": ["tests/api/playRoutes.test.ts", "server/services/assistantSummaryService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining CAP-dm-play-runtime checks outside this unit: `node scripts/smoke-boot.mjs` (loopback-only listen on both ports, proxy through the Vite port: the guard accepts the Vite Host because it only checks the hostname, so the proxy must not rewrite Host to anything but 127.0.0.1/localhost), `pnpm build`, `pnpm test:e2e`, `node scripts/smoke-store-package.mjs` and the dev-link in the Play. server/main.ts was only exercised by the ad-hoc boot described in evidence.",
+      "paths": ["server/main.ts"]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "c5a93c9c-3a86-42eb-a4ab-953a3982ecb3",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "unit": "phase-3-frontend-settings",
+  "phase": "3-frontend-settings",
+  "wave": 8,
+  "capabilities": ["CAP-dm-settings"],
+  "acceptance_criteria": ["AC-dm-39"],
+  "started_at": "2026-10-23T01:53:06-03:00",
+  "finished_at": "2026-10-23T01:58:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-39",
+      "path": "src/features/settings/SettingsPage.tsx",
+      "summary": "AssistantSection says the assistant reads each 'empresa ativa', but assistantSummaryService (server/services/assistantSummaryService.ts) omits active companies that have no completed, non-archived diagnosis. The copy is slightly over-broad; no data is exposed beyond the RULE-dm-17 fields."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-38, AC-dm-39, AC-dm-46",
+      "path": "tests/e2e/settings.spec.ts",
+      "summary": "`pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts` was not run: tests/e2e/ does not exist yet (checked). Those specs belong to 4-integration-e2e-features. Runtime evidence for the settings screen and its accessibility is deferred to integration."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Once 4-integration-e2e-features creates tests/e2e/settings.spec.ts and tests/e2e/accessibility.spec.ts, run `pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts` from the project root with the app served by the Play (or `pnpm start`). Selectors: radiogroups aria-label 'Modo de uso' and 'Tema', select #settings-focus-company (owner mode only), data-aioson-id settings-assistant-fields, theme-toggle, mode-chip. The whole UI is gated on GET /api/preferences; if that route is not mounted, every screen shows 'Não foi possível abrir o FitPulse'. server/app.ts mounts createPreferenceRoutes at line 55 (checked).",
+      "paths": ["src/features/settings/SettingsPage.tsx", "src/components/layout/AppShell.tsx", "src/features/preferences/PreferencesProvider.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Preferences contract checked against server/services/preferenceService.ts and server/validation/preferenceSchemas.ts: GET returns focusCompanyId null for an archived company; PUT is partial; focusCompanyId null clears it; tourSeen merges per key. src/api/preferencesApi.ts and PreferencesProvider.tsx match this shape.",
+      "paths": ["src/api/preferencesApi.ts", "src/features/preferences/PreferencesProvider.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "summary": "tsc --noEmit && vite build exit 0; 0 'error TS' lines; 'built in 1.20s'. Full output saved in the run temp directory (build.log, ends with EXIT_CODE=0).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-settings-qa/build.log"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=src/api/preferencesApi.ts,src/features/preferences/PreferencesProvider.tsx,src/features/settings/SettingsPage.tsx,src/components/layout/AppShell.tsx,src/main.tsx,src/App.tsx",
+      "exit_code": 0,
+      "summary": "7/224 enforced rules over 6 files: 0 violations (code-size, coupling, source-code-language, status-change-confirmation).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-settings-qa/rules-check.log"
+    },
+    {
+      "kind": "inspection",
+      "summary": "Read all six unit files against the contract: preferencesApi partial PUT/GET types; PreferencesProvider loads before render, applies data-theme and color-scheme, restores the last saved value on a failed save and only the newest save writes its answer; main.tsx wraps App in PreferencesProvider; App.tsx routes and AppShell nav links (empresa/:companyId, configuracoes, inicio placeholder) resolve to existing components."
+    },
+    {
+      "kind": "ac",
+      "ac": "AC-dm-39",
+      "summary": "SettingsPage renders 'Como ler os resultados' (guidance, calculation version per diagnosis, RULES_VERSION for new ones, no change to old scores) and 'O que o assistente do Play pode ler' (health; name, stage, weakest dimension and last-diagnosis date for each active company; no money values or answers). Matches server/services/assistantSummaryService.ts fields and /api/health, with the low copy note above."
+    },
+    {
+      "kind": "check_not_run",
+      "command": "pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts",
+      "summary": "Not run: specs do not exist yet (see findings[])."
+    }
+  ]
+}

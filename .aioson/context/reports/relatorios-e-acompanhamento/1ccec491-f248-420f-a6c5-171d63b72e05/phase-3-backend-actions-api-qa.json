@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "a2b1a5d4-55fd-44ad-a9f6-5e6c5e45fb93",
+  "unit": "phase-3-backend-actions-api",
+  "phase": "3-backend-actions-api",
+  "wave": 5,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T20:43:00-03:00",
+  "finished_at": "2026-10-25T20:47:00-03:00",
+  "timestamps_note": "Approximate: started_at is set before the first verification run (vitest reported 'Start at 20:44:23'); finished_at is set at report writing.",
+  "verdict": "PASS",
+  "capabilities": ["CAP-ra-action-tracking", "CAP-ra-action-inheritance"],
+  "acceptance_criteria": ["AC-ra-29", "AC-ra-31", "AC-ra-32"],
+  "interfaces": ["IF-005"],
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-inheritance",
+      "ac": "AC-ra-32",
+      "path": "tests/api/actionRoutes.test.ts",
+      "summary": "Deferred to integration: the diary half of AC-ra-32 (deleting the company also deletes its diary) is not verified. The diary table belongs to Phase 4 and does not exist yet. The unit's company-delete test (line 606) proves only the action_progress cascade and that the other company's rows are kept."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-29",
+      "path": "tests/api/actionRoutes.test.ts",
+      "summary": "Deferred to integration: the PDF half of AC-ra-29 (the PDF of a previous diagnosis stays the same after tracking changes) is not verified. It needs the 'Andamento das ações' page and report documents from the phase-3-backend-action-reports unit. The API half is verified by the 'stored result never changes' suite (line 533)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-29",
+      "path": "tests/e2e/actions.spec.ts",
+      "summary": "Not run by this review: the Playwright specs tests/e2e/actions.spec.ts, tests/e2e/result.spec.ts and tests/e2e/history.spec.ts. They are outside this unit's Done-when and need a browser run of the app against the real backend. Owned by integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-29",
+      "path": "package.json",
+      "summary": "Not run by this review: pnpm build and node scripts/smoke-migrate.mjs. They are outside this unit's Done-when. The integration owner should run them once every wave-5 unit has landed."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-29",
+      "path": "manifest.json",
+      "summary": "Not run: the walkthrough of the actions flow in the AIOSON Play dev-link (webview renders, badge green). It needs the Play runtime, which this environment cannot start."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-005 carries two error codes that the plan did not list: 409 diagnosis_not_completed (GET and PATCH on a draft; a draft has no actions) and 404 action_not_found (actionKey not in the diagnosis plan). PATCH also answers 400 validation_failed with fields._root for unknown keys (ownerName, result, diagnosisId). Record these in the IF-005 contract so the frontend and the walkthrough match.",
+      "paths": ["server/services/actionService.ts", "server/validation/actionSchemas.ts", "src/api/actionsApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks for the capability-wide pass: (1) AC-ra-32 diary cascade once the Phase 4 diary table exists; (2) AC-ra-29 PDF comparison of a previous diagnosis once the reports unit's 'Andamento das ações' page exists; (3) run pnpm build, node scripts/smoke-migrate.mjs and the Playwright specs tests/e2e/actions.spec.ts, result.spec.ts and history.spec.ts against the app; (4) walk the actions flow in the Play dev-link.",
+      "paths": ["tests/e2e/actions.spec.ts", "tests/e2e/result.spec.ts", "tests/e2e/history.spec.ts", "scripts/smoke-migrate.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Design decision accepted by this review: an archived diagnosis is left out of the company's closed list, and its plan answers isCurrent=false (PATCH 409 plan_closed). Overdue is true only for the current plan (RULE-ra-06). Ordering of 'newest' is completedAt desc then id asc in both listCompleted and listCompletedRecords, so the timeline and the action plan agree.",
+      "paths": ["server/services/actionService.ts", "server/repositories/diagnosisRepository.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/actionRoutes.test.ts tests/api/diagnosisRoutes.test.ts tests/api/historyRoutes.test.ts tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 4 passed (4); Tests 189 passed (189); no corrections applied before this run",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-qa/done-when.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-qa/done-when.exit"
+    },
+    {
+      "command": "pnpm typecheck (tsc --noEmit, whole repository)",
+      "exit_code": 0,
+      "result": "tsc --noEmit completed with no diagnostics; the log holds only the command line",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-qa/typecheck.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-qa/typecheck.exit"
+    },
+    {
+      "command": "read-only code review of the 9 unit files against PRD AC-ra-29, AC-ra-31, AC-ra-32 (PRD lines 305-309) and the IF-005 contract",
+      "exit_code": 0,
+      "result": "No defect found in actionService.ts, actionRoutes.ts, actionSchemas.ts, app.ts, actionsApi.ts, diagnosisRepository.ts (completeDraft, listCompletedRecords), diagnosisService.ts (complete) or the shared inheritance and overdue rules. Test titles cover the repeated, new and closed actions, archive/restore, company-delete cascade and the stored result staying unchanged."
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "1774e97e-5f95-4bfd-81c2-96840fe637a8",
+  "unit": "phase-2-frontend-history",
+  "phase": "2-frontend-history",
+  "wave": 7,
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:40:00Z",
+  "finished_at": "2026-10-23T04:45:00Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-history"],
+    "acceptance_criteria": ["AC-dm-30", "AC-dm-31"],
+    "interfaces": ["IF-005"],
+    "done_when": "pnpm build sai com 0"
+  },
+  "corrections": [
+    {
+      "path": "src/features/history/ComparePage.tsx",
+      "summary": "The comparison load treated every 409 as no_previous_diagnosis. A draft id opened at comparar/:id gets 409 diagnosis_not_completed from the server, which showed 'Ainda não há o que comparar'. The check now matches error.code === \"no_previous_diagnosis\" (ApiError exposes code, httpClient.ts:27), so other 409s fall through to the generic retryable error state."
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-history",
+      "ac": "AC-dm-30",
+      "path": "tests/e2e/history.spec.ts",
+      "summary": "Capability e2e check `pnpm test:e2e -- tests/e2e/history.spec.ts` could not run: the file does not exist (Glob found no tests/e2e/history*.spec.ts). It belongs to the integration/test units and is deferred integration evidence, not this unit's Done when."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-history",
+      "ac": "AC-dm-30",
+      "path": "src/features/companies/CompanyPage.tsx",
+      "summary": "Play dev-link walkthrough of the company timeline (archive, restore, discard, compare, empty state) was not run: no preview is running (.aioson/preview.json absent in this session). Deferred to integration."
+    },
+    {
+      "kind": "advisory",
+      "severity": "low",
+      "cap": "CAP-dm-history",
+      "ac": "AC-dm-31",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "rules:check reports a MED coupling advisory: ResultPage imports 16 internal modules (limit 15). Not a build or rule failure; the implementer moved compare helpers into ComparePage to keep it from growing further. Integration may want to split it when the export PDF button is added in the frontend report unit."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred history checks once the e2e spec and a preview exist: (1) pnpm build; (2) pnpm test:e2e -- tests/e2e/history.spec.ts; (3) Play dev-link walkthrough of Empresa > Diagnósticos: archive, restore (focus moves to the restored row), discard draft, Comparar link only on canCompare=true rows, and the empty state data-aioson-id=company-empty. Selectors: ul[data-aioson-id=company-timeline] li[data-row-id][data-status]; buttons data-action=diag-archive|diag-restore|diag-discard; details[data-aioson-id=company-archived-diagnoses]; dialogs data-aioson-id=diagnosis-archive-confirm|diagnosis-restore-confirm|diagnosis-discard-confirm.",
+      "paths": ["src/features/companies/CompanyPage.tsx", "src/features/history/CompanyTimeline.tsx", "src/features/history/ComparePage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Comparing a draft (GET /api/diagnoses/:id/comparison on a non-completed diagnosis) now shows the generic 'Não foi possível abrir a comparação' state with retry, not the 'Ainda não há o que comparar' state. Only 409 no_previous_diagnosis produces the empty state.",
+      "paths": ["src/features/history/ComparePage.tsx"]
+    },
+    {
+      "to": "unit:phase-2-frontend-report",
+      "kind": "note",
+      "text": "ResultHeader (src/features/result/ResultPage.tsx) has a right-side actions div holding CompareWithLink; place the 'Exportar PDF' button next to it. ResultPage is already at 16 imports (limit 15).",
+      "paths": ["src/features/result/ResultPage.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm build (initial, before correction)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-history-qa/build1.log",
+      "result": "tsc --noEmit && vite build exit 0; no TS errors. The server/report/pdfRenderer.ts(300,9) error the implementer saw is no longer present."
+    },
+    {
+      "check": "pnpm build (after ComparePage correction)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-history-qa/build2.log",
+      "result": "exit 0, built in 1.97s, no TS errors."
+    },
+    {
+      "check": "read review: historyApi.ts, App.tsx, CompanyTimeline.tsx, CompanyPage.tsx, ComparePage.tsx, ResultPage.tsx header",
+      "exit_code": 0,
+      "log": null,
+      "result": "Routes, IF-005 paths and types, archive/restore/discard via ConfirmDialog (closes only on success), canCompare gating, company-diagnoses removed and company-empty wired, comparison 409 handling (corrected), CompareWithLink in header actions. Hooks run before early returns in all reviewed components."
+    },
+    {
+      "check": "server cross-check: server/services/historyService.ts requireCompleted and compare",
+      "exit_code": 0,
+      "log": null,
+      "result": "Draft -> 409 diagnosis_not_completed (L212-219); no earlier diagnosis -> 409 no_previous_diagnosis (L257-263). Confirms the correction."
+    },
+    {
+      "check": "Glob tests/e2e/history*.spec.ts",
+      "exit_code": 0,
+      "log": null,
+      "result": "No files found."
+    }
+  ]
+}

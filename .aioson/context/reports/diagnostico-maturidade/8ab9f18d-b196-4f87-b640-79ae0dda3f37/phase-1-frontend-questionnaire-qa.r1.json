@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "23d839e5-7c66-4ade-be3b-d63aa3c79243",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-questionnaire",
+  "wave": 5,
+  "started_at": "2026-10-23T04:09:30Z",
+  "finished_at": "2026-10-23T04:12:30Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "previous_findings_resolution": [
+    {
+      "previous": "R1 HIGH (round 1): a server-detected incomplete diagnosis never lists the pending blocks because httpClient keeps only error.details and the server sends pendingBlocks beside code/message.",
+      "resolution": "Resolved inside the unit. src/api/diagnosesApi.ts completeDiagnosis -> withPendingBlocks (L61-91) rereads the stored draft on a 422 incomplete without a block list and recomputes the list with the shared pendingBlocks(); readPendingBlocks (L94-98) then returns the list. Reproduced independently with 6 vitest cases (see evidence): server shape yields the 8 expected blocks with a POST then GET; details shape reads directly with no GET; 409, failed GET and network failure yield null. The transport mismatch itself (src/api/httpClient.ts) is still present; see finding 3."
+    },
+    {
+      "previous": "R2 (round 1): runtime walkthrough not run (answer, reload, 'Salvo automaticamente', gate confirm/cancel, discard confirm/cancel).",
+      "resolution": "Still not run in this review. Needs a running backend and a browser; reported as finding 1 (verification_not_run)."
+    },
+    {
+      "previous": "R3 (round 1): discard confirmation date used savedAt because IF-003 had no createdAt.",
+      "resolution": "Resolved. src/features/diagnosis/QuestionnairePage.tsx:172 passes diagnosis.createdAt (optional in the Diagnosis type, src/api/diagnosesApi.ts:23) and falls back to draft.savedAt only when it is absent. Build type-checks it."
+    },
+    {
+      "previous": "LOW (QA round 1, own finding): a 422 without a block list made readPendingBlocks return [] and the gate showed nothing.",
+      "resolution": "Resolved. readPendingBlocks returns null for an empty or missing list (src/api/diagnosesApi.ts:94-98) and CompletionGate.tsx runCompletion (L110-116) shows COMPLETE_ERROR. Probe case 'draft fetch fails' and 'network failure' cover the null path."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "Runtime walkthrough not run: answer a question, reload #/diagnostico/:id and check the answer persists, 'Salvo automaticamente às HH:MM', 'Ver meu resultado' with pending blocks (alert links), gate confirm and cancel, 'Descartar rascunho' confirm and cancel. Command: none single; manual browser pass against the running app (pnpm dev or the Play preview) with the backend. Not run because it needs a running backend and a browser, and this unattended session does not allow a detached server.",
+      "failure_scenario": "Not observed. The autosave and gate behaviour are verified by reading and by the mocked-fetch probe only; a wiring defect between the screens and the live backend would not be caught here."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "End-to-end specs tests/e2e/questionnaire.spec.ts and tests/e2e/calculator.spec.ts not run. They need the running app and backend, which this session cannot start. Command to run by integration: the project's Playwright e2e script against the running app, then record exit code and log."
+    },
+    {
+      "severity": "medium",
+      "kind": "contract_mismatch",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-14",
+      "path": "src/api/httpClient.ts",
+      "summary": "The 422 incomplete body from the server carries pendingBlocks beside code and message (server/services/diagnosisService.ts:90, server/http/errorHandler.ts:77), but httpClient toApiError (src/api/httpClient.ts:60-73) keeps only error.details. The questionnaire works around it with one extra GET of the draft (diagnosesApi.ts withPendingBlocks), so AC-dm-14 is met on the user path, but the transport and server disagree and the workaround duplicates the server completeness check on the client. Owner outside this unit: phase-1-backend-diagnoses (nest the list under error.details) or phase-1-frontend-primitives (keep unknown error keys in details). Integration decides which.",
+      "failure_scenario": "If the server rules change without the client's shared check changing too, the recomputed list could differ from the server list. Today both use shared/domain/completeness.ts, so no observed defect."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "build",
+      "command": "pnpm build",
+      "result": "exit 0 (tsc --noEmit && vite build, built in 1.24s)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build.exit"
+    },
+    {
+      "kind": "regression_probe",
+      "command": "pnpm exec vitest run --config .aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/vitest.probe.config.ts",
+      "result": "exit 0; 1 file, 6 tests passed. Cases: R1 server shape (422 error.pendingBlocks -> POST then GET -> list recovered); details shape (single POST, list read directly); empty server list with incomplete draft (list recomputed); 409 diagnosis_not_draft -> null with one call; draft GET 500 after 422 -> null; network failure -> null.",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1.exit"
+    },
+    {
+      "kind": "regression_probe_correction",
+      "command": "same vitest command, first run",
+      "result": "exit 1; 1 failed | 5 passed. The failing case was this review's own expectation for an empty server list (it expected null). The code correctly recomputed 8 blocks from the empty draft. The expectation was corrected to the recomputed list and the run was repeated (exit 0). The failed run is kept for transparency; the product code was not changed.",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1-run1-failed.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1-run1-failed.exit"
+    },
+    {
+      "kind": "static_review",
+      "command": "read src/api/diagnosesApi.ts, src/features/diagnosis/CompletionGate.tsx (runCompletion), src/api/httpClient.ts (toApiError), server/services/diagnosisService.ts (L85-90, L204-206), QuestionnairePage.tsx (L46-48, L172)",
+      "result": "IF-003 routes used by diagnosesApi.ts: POST /api/companies/:id/diagnoses, GET/PATCH/DELETE /api/diagnoses/:id, POST /api/diagnoses/:id/complete; all match the contract. The screens use diagnosis.createdAt and completedAt only as declared optional fields. 409 is not read as pending blocks. Round-1 field-usage review of the screens (no field outside IF-003) was not repeated in full this attempt."
+    },
+    {
+      "kind": "verification_not_run",
+      "command": "browser walkthrough and tests/e2e/questionnaire.spec.ts, tests/e2e/calculator.spec.ts",
+      "result": "not run; see findings 1 and 2"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "422 incomplete transport mismatch is still open. Recommended: nest pendingBlocks under error.details in server/http/errorHandler.ts (owner phase-1-backend-diagnoses) or keep unknown error keys in details in src/api/httpClient.ts toApiError (owner phase-1-frontend-primitives). When aligned, withPendingBlocks in src/api/diagnosesApi.ts sees details and skips its extra GET; no frontend change is needed.",
+      "paths": ["server/http/errorHandler.ts", "src/api/httpClient.ts", "src/api/diagnosesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Regression probe lives only in the run-scoped execution-temp directory and is removed on engine completion. Move the 6 cases (mock fetch: POST /api/diagnoses/:id/complete 422 incomplete with and without a list, GET draft) into tests/unit so they survive, as the implementer suggested. Then run the e2e specs and the browser walkthrough listed in findings 1 and 2: start the app and backend with the project's dev script, answer a question, reload the diagnosis URL, confirm 'Salvo automaticamente às HH:MM', click 'Ver meu resultado' with an unanswered block, confirm the pending alert links, cancel and confirm the gate, then cancel and confirm 'Descartar rascunho'."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "dd212abf-8b5b-4657-b48b-d9c090fe5662",
+  "unit": "phase-1-backend-document",
+  "wave": 1,
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T23:01:51Z",
+  "finished_at": "2026-10-25T23:04:00Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-report-center", "CAP-ra-diagnosis-report", "CAP-ra-polish"],
+    "acceptance_criteria": ["AC-ra-05", "AC-ra-09", "AC-ra-10", "AC-ra-11", "AC-ra-23"],
+    "interfaces": ["IF-004"],
+    "done_when": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/confidenceText.test.ts tests/unit/forbiddenTerms.test.ts passa",
+    "local_pass_only": true
+  },
+  "corrections": [
+    {
+      "path": "server/report/reportModel.ts",
+      "summary": "progressTag now shows the 'vencida' tag only for an open action (todo or doing), per RULE-ra-06 / BR-ra-11. Before, a caller that sent overdue=true for a done action would print 'Feita · vencida'."
+    },
+    {
+      "path": "tests/unit/reportModel.test.ts",
+      "summary": "Added regression test 'never marks a done action as overdue (RULE-ra-06)' in the action tracking block; it expects 'Feita' with tone ok for done actions flagged overdue."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Status vocabulary mismatch. ReportActionStatus in server/report/reportModel.ts is todo | doing | done | notApplicable, while shared/domain/actionProgress.ts ACTION_STATUSES is todo | in_progress | done | not_applicable. No caller exists yet in this wave, so nothing breaks today, but the route/service that builds ReportActionProgress[] must map in_progress -> doing and not_applicable -> notApplicable (or the document contract must adopt the domain names). Also the caller must compute overdue only for open states (todo, in_progress); the document now enforces this too.",
+      "paths": ["server/report/reportModel.ts", "shared/domain/actionProgress.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred PDF-level checks for AC-ra-05, 06, 07, 08, 09, 10, 11 are owned by the renderer unit (phase-1-backend-pdf): tests/unit/pdfRenderer.test.ts must draw ReportDocument from shared/report/reportDocument.ts. Run them with: pnpm exec vitest run tests/unit/pdfRenderer.test.ts. Expected checks: text per page, summary on one page, dimensions start on the next page, every page fits one A4, grayscale print of the dimensions page. The renderer must also drop the weakest-dimension sentence (see the next note).",
+      "paths": ["server/report/pdfRenderer.ts", "tests/unit/pdfRenderer.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Before the AC-ra-10 gate, confirm that no exported PDF still prints the weakest-dimension sentence. The legacy v1 renderer server/report/pdfRenderer.ts (line 248) still writes 'O estágio da empresa fica limitado pela dimensão mais fraca.' Check with: grep for 'dimensão mais fraca' under server/report and shared/report; it must return nothing once the renderer moves to ReportDocument.",
+      "paths": ["server/report/pdfRenderer.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks of this capability that are not run in this unit and remain for integration: tests/api/reportRoutes.test.ts for the new /api/reports/preview and /export routes; the Playwright report, result and accessibility specs; pnpm build; node scripts/smoke-migrate.mjs; aioson harness:check . --slug=relatorios-e-acompanhamento; and the dev-link walkthrough in the Play. pnpm exec tsc --noEmit already passes after the corrections above.",
+      "paths": []
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diagnosis-report",
+      "ac": "AC-ra-05",
+      "path": "server/report/pdfRenderer.ts",
+      "summary": "PDF-level checks (text per page, summary on one page, dimensions start on the next page, one A4 per page, grayscale print) were not run. They need the renderer that draws a ReportDocument (pdfRenderer.ts, pdfBlocks.ts, pdfCharts.ts, tests/unit/pdfRenderer.test.ts), owned by phase-1-backend-pdf. This unit proves the document at data level only. Reported to integration as a deferred check; not a defect of this unit."
+    },
+    {
+      "kind": "integration_dependency",
+      "severity": "medium",
+      "cap": "CAP-ra-diagnosis-report",
+      "ac": "AC-ra-05",
+      "path": "shared/domain/actionProgress.ts",
+      "summary": "Status vocabulary differs between the document contract (todo|doing|done|notApplicable) and the domain (todo|in_progress|done|not_applicable). Nothing calls buildDiagnosisDocument yet, so no failure today; the caller must map the names before integration."
+    },
+    {
+      "kind": "integration_dependency",
+      "severity": "low",
+      "cap": "CAP-ra-polish",
+      "ac": "AC-ra-10",
+      "path": "server/report/pdfRenderer.ts",
+      "summary": "The legacy v1 renderer still prints 'O estágio da empresa fica limitado pela dimensão mais fraca.' at line 248, which AC-ra-10 forbids in any PDF. The document unit does not produce that sentence (reportCopy.ts DIMENSIONS_INTRO and the Como ler text are the approved ones). The defect is in the sibling renderer unit, which is still in progress, so it is deferred to integration and must be cleared before the AC-ra-10 gate."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/confidenceText.test.ts tests/unit/forbiddenTerms.test.ts",
+      "result": "PASS, exit 0, 3 files, 50 tests (before the correction)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-qa/vitest-unit.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-qa/vitest-unit.exit"
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/confidenceText.test.ts tests/unit/forbiddenTerms.test.ts",
+      "result": "PASS, exit 0, 3 files, 51 tests (after the correction and the new regression test)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-qa/vitest-unit-after-fix.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-qa/vitest-unit-after-fix.exit"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "result": "PASS, exit 0, no output after the correction",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-qa/tsc.exit"
+    },
+    {
+      "kind": "review",
+      "command": "read against AC-ra-05, AC-ra-09, AC-ra-10, AC-ra-11, AC-ra-23 in .aioson/context/prd-relatorios-e-acompanhamento.md and the approved text in its '## Conteúdo v2' section",
+      "result": "reportCopy.ts 'Como ler' sections, dimensions intro, guidance warning and confidence wording match the approved text word for word. The forbidden-term list in forbiddenTerms.test.ts matches RULE-dm-14 (V1-V4, Método V4, V4 Company, PPA, CREP, vacinas). buildDiagnosisDocument puts answers only when includeAnswers is on (24 questions plus 6 calculator numbers), and the answers appendix reads the typed values only in that case. Confidence wording always uses 'itens' (AC-ra-23)."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "c3eb0c73-a798-4bc9-9ef9-461410d87760",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-3-frontend-actions",
+  "started_at": "2026-10-25T23:44:16Z",
+  "finished_at": "2026-10-25T23:51:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/components/form/DateField.tsx",
+    "src/components/feedback/UndoNotice.tsx",
+    "src/features/actions/useActionStatus.ts",
+    "src/features/actions/ActionProgressRow.tsx",
+    "src/features/actions/ActionEditDialog.tsx",
+    "src/features/actions/CompanyActionsTab.tsx",
+    "src/features/companies/CompanyTabs.tsx",
+    "src/App.tsx",
+    "src/features/result/ActionPlanList.tsx",
+    "src/features/result/ResultPage.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability e2e (pnpm exec playwright test tests/e2e/actions.spec.ts) was not run: tests/e2e/actions.spec.ts belongs to a sibling unit and is not part of this unit's Done when; AC-ra-26/27/28/30/63 browser evidence is deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Play dev-link walkthrough (change status + undo, reload, edit one action, closed plan in #/resultado/d1) was not run: no live Play preview in this unattended session."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "src/App.tsx has no route for empresa/:companyId/relatorios although CompanyTabs and ResultPage link to it (ReportCenterPage is unrouted). Outside this unit's scope; left untouched."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "ActionPlanList.progress is optional so src/features/home/OwnerHome.tsx (not in this unit) keeps compiling with plan only; 'Suas 3 ações' with editable progress on the owner home is Phase 5 (AC-ra-26 home part)."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-frontend-actions-dev/typecheck.log",
+      "summary": "tsc --noEmit over src, server, shared, tests: no errors"
+    },
+    {
+      "kind": "inspection",
+      "summary": "Screens use only IF-005 (src/api/actionsApi.ts): CompanyActionsTab -> getCompanyActions; ResultPage -> getDiagnosisActions (+ getCompanyActions only to date a closed plan); useActionStatus and ActionEditDialog -> updateAction. No direct fetch."
+    },
+    {
+      "kind": "ac_mapping",
+      "summary": "AC-ra-26: ActionProgressRow shows status, deadline chip (Prazo/Sem prazo/Vencida em), owner role chip and note in the Ações tab and the result. AC-ra-27: useActionStatus saves at once, UndoNotice role=status shows '\"{title}\" agora está {estado}.' with Desfazer for 6000 ms; undo PATCHes the previous status. AC-ra-28: ActionEditDialog with DateField (inputMode numeric, maxLength 10, DD/MM/AAAA mask, getDateError on blur), role select without name field, note maxLength 500 with counter; PATCH keyed by diagnosisId/actionKey; dialog reseeds from the saved row. AC-ra-30: result of a replaced plan (isCurrent=false) renders ClosedPlanRows without controls with 'Encerrada em {data} · {estado}'. AC-ra-63: CompanyActionsTab empty state 'Ainda não há ações' explaining actions come from a completed diagnosis, with 'Continuar o diagnóstico' (draft) or 'Começar o diagnóstico'."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred capability checks: pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts, plus the Play dev-link walkthrough (status change + Desfazer + reload; Editar on one action; #/resultado/<older> shows closed actions without controls; #/empresa/<id>/acoes without completed diagnosis shows the empty state). Stable hooks: data-aioson-id company-actions, actions-list, actions-empty, closed-actions, action-<diagnosisId>-<actionKey>, status-<diagnosisId>-<actionKey> (select, label 'Estado de {title}'), edit-<diagnosisId>-<actionKey> (button name 'Editar prazo, responsável e nota de {title}'), action-status-notice (+ -undo), action-edit-modal/-form/-due/-role/-note/-note-count/-submit, result-actions-list, result-actions-closed, result-plan-closed.",
+      "paths": ["src/features/actions/ActionProgressRow.tsx", "src/features/actions/CompanyActionsTab.tsx", "src/features/actions/ActionEditDialog.tsx", "src/components/feedback/UndoNotice.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "src/App.tsx has no <Route path=\"relatorios\"> under empresa/:companyId, yet CompanyTabs ('Relatórios') and ResultPage link to /empresa/:id/relatorios. Wire ReportCenterPage there if no other unit owns it.",
+      "paths": ["src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "ActionPlanList now takes an optional progress prop (ActionPlanProgress: loading | error{retry} | ready{isCurrent, actions, closedBy}). Without it, it renders the static plan as before; OwnerHome ('Suas 3 ações', Phase 5) can pass progress or reuse TrackedActionRows from src/features/actions/ActionProgressRow.tsx to get editable status + undo.",
+      "paths": ["src/features/result/ActionPlanList.tsx", "src/features/actions/ActionProgressRow.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The 'Ações' tab has no overdue counter badge (prototype shows 'N vencidas'): Company has no overdue field; add it when the portfolio/home followup exposes it.",
+      "paths": ["src/features/companies/CompanyTabs.tsx"]
+    }
+  ]
+}

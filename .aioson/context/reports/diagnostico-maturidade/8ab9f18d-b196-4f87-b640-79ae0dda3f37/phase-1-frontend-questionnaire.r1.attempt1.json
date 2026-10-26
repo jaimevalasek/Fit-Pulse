@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "dae7c413-1bb9-477b-9dff-d969980adba8",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-questionnaire",
+  "started_at": "2026-10-23T04:25:00Z",
+  "finished_at": "2026-10-23T04:29:30Z",
+  "verdict": "PASS",
+  "changed_files": ["src/api/diagnosesApi.ts"],
+  "findings": [
+    {
+      "kind": "resolved",
+      "severity": "high",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-14",
+      "path": "src/api/diagnosesApi.ts",
+      "summary": "Round 1 high finding resolved on two levels. (1) src/api/httpClient.ts readErrorDetails now folds extra error keys (pendingBlocks) into ApiError.details, so readPendingBlocks reads the server 422 directly. (2) diagnosesApi.completeDiagnosis keeps a defensive fallback: on 422 incomplete without a block list it GETs the draft and runs the shared pendingBlocks() the server uses. Dev probe 3/3 pass. The QA round-1 probe (phase-1-frontend-questionnaire-qa/questionnaire-r1.probe.test.ts) passes 5/6: in the 'R1 server shape' case readPendingBlocks returns the right blocks, but its call-sequence assertion expects an extra GET that no longer happens because httpClient now keeps the list. That assertion is obsolete; the visible behavior is correct."
+    },
+    {
+      "kind": "resolved",
+      "severity": "critical",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-13",
+      "path": "src/api/httpClient.ts",
+      "summary": "Upstream 415 json_required on body-less POSTs (start/complete) is fixed in the shared client: request() now sets Content-Type application/json for every method in JSON_WRITE_METHODS. diagnosesApi start/complete go through that client unchanged; requireJsonWrites stays in place."
+    },
+    {
+      "kind": "resolved",
+      "severity": "low",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-16",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "The discard dialog shows Diagnosis.createdAt (sent by the server) and falls back to the last save time only when createdAt is missing (QuestionnairePage.tsx:172)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "No runtime walkthrough in a browser (answer, reload #/diagnostico/:id, 'Salvo automaticamente às HH:MM', pending alert, gold gate confirm/cancel, discard confirm/cancel). It needs a running server and browser, and the single-session rule forbids a detached server here. tests/e2e/questionnaire.spec.ts and tests/e2e/calculator.spec.ts belong to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/build-r1a1.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/typecheck-r1a1.log"
+    },
+    {
+      "command": "npx vitest run --config <dev temp dir>/vitest.probe.config.ts (dev probe + QA r1 probe)",
+      "exit_code": 1,
+      "result": "8 passed, 1 failed: the only failure is the obsolete call-sequence assertion in the QA probe ('R1 server shape' expects an extra GET); readPendingBlocks returns the expected blocks there. Dev probe pending.probe.test.ts 3/3 pass. Round-1 probe-before (exit 1) and probe-after (exit 0) logs are kept in the same directory.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/probe-r1a1.log"
+    },
+    {
+      "check": "IF-003 only",
+      "result": "src/features/diagnosis/* make no direct fetch or /api/ calls; every call goes through diagnosesApi (POST /api/companies/:id/diagnoses, GET/PATCH/DELETE /api/diagnoses/:id, POST /api/diagnoses/:id/complete) with the IF-003 fields."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "AC-dm-14: httpClient readErrorDetails now carries the 422 error.pendingBlocks in ApiError.details, so the client reads the list directly. diagnosesApi keeps a fallback GET plus the shared pendingBlocks() only for the case where the list is missing. The QA round-1 probe assertion that expects that extra GET is obsolete; the blocks it checks are correct.",
+      "paths": ["src/api/diagnosesApi.ts", "src/api/httpClient.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Still to run (needs server + browser): pnpm test:e2e -- tests/e2e/questionnaire.spec.ts tests/e2e/calculator.spec.ts. Check: answer a question, reload #/diagnostico/:id and see the same answers plus 'Salvo automaticamente às HH:MM'; 'Ver meu resultado' with gaps shows role=alert with links ?bloco=N; with everything answered the gold 'Concluir o diagnóstico?' opens, and Cancelar keeps the draft; 'Descartar rascunho' confirm/cancel shows the createdAt date.",
+      "paths": ["src/features/diagnosis/QuestionnairePage.tsx", "src/features/diagnosis/CompletionGate.tsx", "src/features/diagnosis/useDraftAutosave.ts"]
+    }
+  ]
+}

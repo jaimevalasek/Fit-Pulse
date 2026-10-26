@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "a8e8b005-ae92-4cce-a504-79979e1d4ec8",
+  "unit_id": "phase-1-frontend-company-tabs",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T22:49:27Z",
+  "finished_at": "2026-10-25T22:53:06Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/App.tsx",
+    "src/features/companies/CompanyPage.tsx",
+    "src/features/companies/CompanyTabs.tsx",
+    "src/features/companies/CompanyDiagnosesTab.tsx"
+  ],
+  "summary": "CompanyPage is now the company layout: breadcrumb, header, CompanyTabs, the status notice, and an <Outlet> whose context holds { company, reload, onStartDiagnosis, onStatusAction }. CompanyDiagnosesTab is the index route and shows the same v1 content: the CompanyTimeline, the empty state that starts the first diagnosis, the note about prefilled answers, and the archive/restore/delete links. CompanyTabs uses NavLink route tabs (data-aioson-id tab-diagnosticos / tab-relatorios, aria-current=page). They sit right under the header so 'Relatórios' is in the first fold. The bronze line under the active tab draws only under prefers-reduced-motion: no-preference. App.tsx nests the index child under empresa/:companyId.",
+  "findings": [
+    {
+      "kind": "integration_pending",
+      "severity": "medium",
+      "summary": "The nested route 'relatorios' was not added to App.tsx because src/features/reports/ReportCenterPage.tsx does not exist yet (unit phase-1-frontend-report-center, wave 4). Until integration adds the route, the 'Relatórios' tab links to /empresa/:companyId/relatorios, which falls through to the NotFound screen.",
+      "paths": ["src/App.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "AC-ra-61 e2e (the 'Relatórios' button in the first fold at 1280 and 390 px, on the company page and on the result) was not run. tests/e2e/report.spec.ts belongs to another unit, and the result-page button belongs to phase-1-frontend-result.",
+      "paths": ["tests/e2e/report.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "PASS, 0 TS errors",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-company-tabs-dev/typecheck.log"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/companies.spec.ts tests/e2e/history.spec.ts",
+      "exit_code": 0,
+      "result": "15 passed. The index tab keeps the v1 timeline, empty state, archive/restore/delete and the 390 px + axe checks on the timeline.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-company-tabs-dev/e2e.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire the report center in src/App.tsx inside the empresa/:companyId route, next to the index child: import { ReportCenterPage } from \"@/features/reports/ReportCenterPage\" and add <Route path=\"relatorios\" element={<ReportCenterPage />} />. The CompanyTabs 'Relatórios' link (data-aioson-id=\"tab-relatorios\") already points there.",
+      "paths": ["src/App.tsx"]
+    },
+    {
+      "to": "unit:phase-1-frontend-report-center",
+      "kind": "contract_change",
+      "text": "ReportCenterPage renders as a child of the company layout. Read the company with useCompanyOutlet() from \"@/features/companies/CompanyPage\". It returns CompanyOutletContext { company: Company; reload(): void; onStartDiagnosis?(companyId): Promise<{id}>; onStatusAction(action) }. StartDiagnosisButton is exported from the same module for the empty state (BR-ra-01). The layout already renders the header and the tabs, so the page should render only its own content, with its own h2.",
+      "paths": ["src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the AC-ra-61 check once the report route and the result button exist: pnpm exec playwright test tests/e2e/report.spec.ts at 1280 and 390 px. The company-page selector is [data-aioson-id=\"tab-relatorios\"]. The tab nav has aria-label 'Seções da empresa' and data-aioson-tour 'abas'.",
+      "paths": ["tests/e2e/report.spec.ts", "src/features/companies/CompanyTabs.tsx"]
+    }
+  ]
+}

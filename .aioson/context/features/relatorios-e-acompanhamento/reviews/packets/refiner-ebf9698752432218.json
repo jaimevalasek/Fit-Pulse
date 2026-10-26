@@ -1,0 +1,32 @@
+{
+  "packet_id": "sha256:ebf96987524322187716ed83d82e1a7fdc65e50e817ad25e30e8122ee5010074",
+  "schema_version": "review-packet/v1",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "agent": "refiner",
+  "profile": "framing",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+    "sha256": "fd0a1e854d4c618a0fead55259159119ee5ebbf4ce004756610bdebc8e12caba",
+    "bytes": 28133
+  },
+  "authorities": [
+    {
+      "kind": "project-context",
+      "path": ".aioson/context/project.context.md",
+      "sha256": "aa5d52c18597a00efa424f8855b0eee6f05a4f0158a574686e3c128c20db102c",
+      "bytes": 5400
+    }
+  ],
+  "reference_path": ".aioson/skills/process/review-intelligence/references/framing.md",
+  "challenge_lenses": [
+    "problem",
+    "user-value",
+    "scope",
+    "assumptions",
+    "future-state",
+    "ownership"
+  ],
+  "max_passes": 2,
+  "prepared_at": "2026-10-24T23:35:44.670Z"
+}

@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "724b3a9a-a5b1-4578-a9b6-b51f72b64fe9",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-questionnaire",
+  "started_at": "2026-10-23T03:45:00Z",
+  "finished_at": "2026-10-23T04:03:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/diagnosesApi.ts",
+    "src/features/diagnosis/QuestionnairePage.tsx",
+    "src/features/diagnosis/BlockRail.tsx",
+    "src/features/diagnosis/AnchoredQuestion.tsx",
+    "src/features/diagnosis/useDraftAutosave.ts",
+    "src/features/diagnosis/CompletionGate.tsx",
+    "src/features/diagnosis/CalculatorBlock.tsx",
+    "src/features/diagnosis/UnitEconomicsPanel.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Runtime walkthrough of the questionnaire (answer, reload and resume, pending alert, gold gate, discard) was not run: server/routes/diagnosisRoutes.ts does not exist yet (unit phase-1-backend-diagnoses), so the IF-003 routes cannot answer. The e2e specs tests/e2e/questionnaire.spec.ts and tests/e2e/calculator.spec.ts belong to integration.",
+      "paths": ["src/features/diagnosis/QuestionnairePage.tsx", "src/api/diagnosesApi.ts"]
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "summary": "IF-003 Diagnosis has no createdAt, so the discard confirmation reads 'Descartar o rascunho de {data}?' with the date of the last save (savedAt, seeded from updatedAt). If integration adds createdAt to IF-003, swap the date in DiscardDraftDialog.",
+      "paths": ["src/features/diagnosis/QuestionnairePage.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/build.log",
+      "summary": "tsc --noEmit && vite build passed after the final edit (built in 794ms)."
+    },
+    {
+      "kind": "static_check",
+      "summary": "src/api/diagnosesApi.ts calls only the IF-003 routes: POST /api/companies/:id/diagnoses, GET/PATCH/DELETE /api/diagnoses/:id, POST /api/diagnoses/:id/complete. The screens read only id, companyId, status, answers, calculator, currentBlock and updatedAt of Diagnosis; PATCH sends only answers, calculator and currentBlock (1..8)."
+    },
+    {
+      "kind": "implementation",
+      "ac": "AC-dm-12",
+      "summary": "useDraftAutosave saves each choice at once with PATCH /api/diagnoses/:id (typed values after a 600 ms pause, flushed on pagehide and on unmount), one request at a time; SaveStatus shows 'Salvo automaticamente às HH:MM' (seeded from updatedAt on reopen) and an error with 'Tentar salvar de novo'."
+    },
+    {
+      "kind": "implementation",
+      "ac": "AC-dm-14",
+      "summary": "CompletionGate: 'Ver meu resultado' (gold) with pending blocks from shared pendingBlocks() shows role=alert data-aioson-id=quiz-missing listing the blocks with links (?bloco=N) and does not conclude; a 422 incomplete uses error.details.pendingBlocks. With everything answered it opens the gate ConfirmDialog 'Concluir o diagnóstico?'; cancel keeps the draft; confirm flushes, shows 'Calculando o seu diagnóstico' and navigates to #/resultado/:id."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run once phase-1-backend-diagnoses lands: pnpm test:e2e -- tests/e2e/questionnaire.spec.ts tests/e2e/calculator.spec.ts, plus a manual pass: Empresa -> 'Começar o primeiro diagnóstico' -> answer, reload #/diagnostico/:id and check answers + 'Salvo automaticamente às HH:MM', 'Ver meu resultado' with gaps, gate confirm/cancel, 'Descartar rascunho' confirm/cancel.",
+      "paths": ["src/features/diagnosis/QuestionnairePage.tsx", "src/features/diagnosis/CompletionGate.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Selectors for e2e: rail nav aria-label 'Blocos do diagnóstico' with links #/diagnostico/:id?bloco=1..8 (aria-current=step, sr-only '(respondido)'); questions fieldset data-aioson-id=item-{questionId}; '?' buttons with aria-expanded; calculator data-aioson-id=cac-ltv-calculator, panel calc-output, fields calc-{spend|newCustomers|averagePurchase|purchasesPerYear|relationshipLength|margin}, inputs #spend-{part}, #new-customers, #average-purchase, #margin; quiz-next, quiz-finish, quiz-missing; draft-saved; diagnosis-discard + dialog diagnosis-discard-confirm; gate dialog diagnosis-complete-confirm; overlay diagnosis-calculating.",
+      "paths": ["src/features/diagnosis/BlockRail.tsx", "src/features/diagnosis/CalculatorBlock.tsx", "src/features/diagnosis/CompletionGate.tsx"]
+    },
+    {
+      "to": "unit:phase-1-backend-diagnoses",
+      "kind": "note",
+      "text": "The frontend PATCH always sends the whole answers map and the whole calculator object when they change (works whether the server merges or replaces), and currentBlock as 1..8. It reads 422 incomplete pendingBlocks from error.details.pendingBlocks (or details as an array). After a discard it navigates to #/empresa/:companyId.",
+      "paths": ["src/api/diagnosesApi.ts", "src/features/diagnosis/useDraftAutosave.ts"]
+    },
+    {
+      "to": "unit:phase-1-frontend-result",
+      "kind": "note",
+      "text": "src/App.tsx now routes diagnostico/:diagnosisId to QuestionnairePage and passes onStartDiagnosis={startDiagnosis} to CompanyPage; resultado/:diagnosisId still holds PendingScreen for you to replace. The questionnaire redirects a completed diagnosis to #/resultado/:id and navigates there (replace) after a successful completion. Diagnosis type is exported from src/api/diagnosesApi.ts with result?: DiagnosisResult and getDiagnosis(id, signal).",
+      "paths": ["src/App.tsx", "src/api/diagnosesApi.ts"]
+    }
+  ]
+}

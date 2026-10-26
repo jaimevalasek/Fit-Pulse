@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "4a15381d-acfc-4b66-b274-ad74b47e775b",
+  "unit": "phase-4-backend-diary-domain",
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T20:19:34-03:00",
+  "finished_at": "2026-10-25T20:22:00-03:00",
+  "verdict": "PASS",
+  "capabilities": ["CAP-ra-diary", "CAP-ra-diary-prefill"],
+  "acceptance_criteria": ["AC-ra-41", "AC-ra-44", "AC-ra-45"],
+  "corrections": [],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred from this unit: server/report/reportModel.ts reads calculator.spendParts only (lines 465 and 486). A draft whose spend is calculator.spendTotalCents (the diary's 'Só sei o total') prints R$ 0,00 and no parts in 'Seus números'. Use resolveSpendCents (shared/domain/unitEconomics.ts) and show the origin with getCostDiaryOrigin / formatCostDiaryOrigin (AC-ra-46). Same check for server/report/evolutionDocument.ts. Verify by generating a report from a draft whose diary has only totals for 3 months."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "kind": "cross_unit_gap",
+      "cap": "CAP-ra-diary-prefill",
+      "ac": "AC-ra-46",
+      "path": "server/report/reportModel.ts",
+      "summary": "Report model reads only spendParts (lines 465, 486); a total-only diary-derived spend prints R$ 0,00 in 'Seus números'. Deferred to the report unit and integration; outside this unit's files and Done-when, so not a defect of this unit."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts",
+      "exit_code": 0,
+      "result": "6 files passed, 353 tests passed",
+      "log_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-qa/vitest-done-when.log",
+      "exit_code_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-qa/vitest-done-when.exit"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors",
+      "log_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-qa/tsc.log",
+      "exit_code_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-qa/tsc.exit"
+    },
+    {
+      "kind": "review",
+      "result": "Read shared/domain/diaryPrefill.ts, diary.ts, unitEconomics.ts, dates.ts month helpers (160-237), completeness.ts (no diary logic); checked AC-ra-41, AC-ra-44, AC-ra-45 against PRD text (prd-relatorios-e-acompanhamento.md lines 318-322) and their tests (diary.test.ts:167/236/329; diaryPrefill.test.ts:68/146/171/259; unitEconomics.test.ts:466+). No defect found. AC-ra-45 confidence cap verified through computeConfidence."
+    },
+    {
+      "kind": "check",
+      "result": "Git is not available for this workspace (not a repository), so the version-1 expectations were checked by position only: unitEconomics.test.ts v1 describes (lines 1-465) precede the appended diary block (466+). Agent-reported, not diff-proven."
+    }
+  ]
+}

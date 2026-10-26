@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "944e4257-bfd9-4049-99d2-c8f203642129",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:45:00Z",
+  "finished_at": "2026-10-23T03:53:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "shared/domain/actionPlan.ts",
+    "shared/domain/evaluateDiagnosis.ts",
+    "tests/fixtures/rulesV2.ts",
+    "tests/unit/evaluateDiagnosis.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "The literal command `pnpm test -- tests/unit/evaluateDiagnosis.test.ts` forwards a literal `--` to vitest, which then ignores the file filter and runs the whole unit/api suite (8 files, 439 tests, all passed at that time, exit 0). The focused run `pnpm exec vitest run tests/unit/evaluateDiagnosis.test.ts` ran only this unit's file (44 tests, exit 0).",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "SIG-04 -> `dep` is decided from the risks list passed to the plan (the displayed risks, capped at 5), so the plan stays consistent with what the result shows. With rules v1 SIG-04 (score 12) can never be dropped by the cap: at most six signals can fire together and the dropped one is SIG-07 (score 8)."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/evaluateDiagnosis.test.ts",
+      "exit_code": 0,
+      "result": "1 file passed, 44 tests passed (G1-G4 exact: scores, stage, lock, weakest dimension, risks, plan, confidence, unit economics; invest only with stage>=3 + measured cost + high confidence over a 192-input grid; same-stage different-weak-dimension plans differ; purity, JSON round trip, rulesV2 changes the result)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-dev/test-focused.log"
+    },
+    {
+      "command": "pnpm test -- tests/unit/evaluateDiagnosis.test.ts",
+      "exit_code": 0,
+      "result": "8 files passed, 439 tests passed (whole suite, see finding about the literal `--`)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-dev/test.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/evaluateDiagnosis.test.ts tests/unit/diagnosisRules.test.ts",
+      "exit_code": 0,
+      "result": "2 files passed, 205 tests passed after restoring a mutation check",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-dev/final.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors in the project at the time of the run",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-dev/tsc.log"
+    },
+    {
+      "command": "mutation check: invest eligibility with `origin !== \"unknown\"` instead of `=== \"measured\"`",
+      "exit_code": 1,
+      "result": "1 test failed (isInvestEligible follows the same three conditions); source restored afterwards and the suite passes again",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-dev/mutation.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "evaluateDiagnosis(input: DiagnosisInput, rules: Rules): DiagnosisResult is exported from shared/domain/evaluateDiagnosis.ts. It is pure, takes no clock, db or network, and returns plain JSON-safe data with rulesVersion = rules.version (rulesV1.version is 1). The persistence/service layer should call it with rulesV1 at completion and store the whole result plus rulesVersion; a past result must never be recomputed with newer rules (RULE-dm-11).",
+      "paths": ["shared/domain/evaluateDiagnosis.ts", "shared/domain/types.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "DiagnosisResult.plan holds ActionKey values only. Resolve the texts with ACTION_CATALOG[key] (title, reason, howTo) from shared/content/actionCatalog.ts; the risks resolve with getRiskInfo(signalId) and the stage/lock texts with shared/content/stageContent.ts. shared/domain/actionPlan.ts also exports buildActionPlan and isInvestEligible if a caller needs the plan rules on their own.",
+      "paths": ["shared/domain/actionPlan.ts", "shared/content/actionCatalog.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/fixtures/rulesV2.ts exports rulesV2: rulesV1 with version 2 and stage3.minProductChannel 70. A case with Produto e canal at 67 (G3 with pc1, pc2, pc3 all 2) is stage 3 / lock co / plan [co, invest, pc] under v1 and stage 2 / lock pc / plan [pc, co, mm] under v2, so it can drive the persistence test for AC-dm-22 and the comparison test for AC-dm-31.",
+      "paths": ["tests/fixtures/rulesV2.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Not run by this unit (belongs to integration): tests/api/diagnosisRoutes.test.ts (the capability verification command lists it; it is owned by another unit), AC-dm-22 persistence with a rules swap, AC-dm-19/21/23/24/49 e2e checks and the AC-dm-27 timing measurement in the Play on Windows."
+    }
+  ]
+}

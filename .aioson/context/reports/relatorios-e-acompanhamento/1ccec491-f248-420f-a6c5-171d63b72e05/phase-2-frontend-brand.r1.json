@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "dcd291db-08ca-49e4-b78c-2a0d1c361908",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-2-frontend-brand",
+  "started_at": "2026-10-25T23:55:00Z",
+  "finished_at": "2026-10-26T00:05:00Z",
+  "verdict": "BLOCKED",
+  "files_changed": [],
+  "findings": [
+    {
+      "kind": "integration_defect",
+      "severity": "high",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "src/features/reports/",
+      "summary": "Reproduced: src/features/reports/ still holds 8 files, src/features/report-center/ does not exist, and the importers are still src/App.tsx:12, src/features/result/ResultPage.tsx:23 and src/features/settings/BrandSection.tsx:13. The repair (phase-7-backend-release.r2.json root_cause.fix) must move all 8 files together, because ReportPreview.tsx imports ./ReportSheet and ReportSheet.tsx imports ./ReportSheetCharts. This unit owns only ReportSheet.tsx and BrandSection.tsx of the affected files. The other files are owned as follows: ReportCenterPage, ReportDelivery, ReportPreview, ReportSheetCharts and useReportPreview by phase-1-frontend-report-center; ReportOptions and PortfolioReportPage by phase-2-frontend-evolution-portfolio (with phase-1-frontend-report-center); src/App.tsx by phase-2-frontend-evolution-portfolio (also phase-1-frontend-company-tabs, phase-3-frontend-actions, phase-4-frontend-diary); src/features/result/ResultPage.tsx by phase-1-frontend-result (also phase-3-frontend-actions). Moving only ReportSheet.tsx would break ReportPreview.tsx, and re-implementing the cover inside BrandSection.tsx would still leave App.tsx and ResultPage.tsx importing the dropped folder. So no local patch fixes the store build, and no file was changed."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "`node scripts/smoke-store-package.mjs` was not rerun. It stops at step 1/8 until the rename lands, and the rename is outside this unit's files."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-20, AC-ra-21",
+      "path": "tests/e2e/brand.spec.ts",
+      "summary": "Capability-wide checks remain for integration: `pnpm exec playwright test tests/e2e/brand.spec.ts`, and the Play dev-link walkthrough (save a PNG logo and a JPG logo, then export the three PDFs)."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "package.json",
+      "summary": "A plain `pnpm typecheck` exits 1 here before tsc runs. pnpm's deps-status check starts `pnpm install`, and the postinstall `prisma migrate deploy` fails with 'database is locked' on data/fitpulse.db, probably because a running preview holds the database. `pnpm --config.verify-deps-before-run=false typecheck` (which runs tsc --noEmit) exits 0."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-dev/typecheck-r1b.log",
+      "summary": "tsc --noEmit passes on the current tree (the local Done when)."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-dev/typecheck-r1.log",
+      "summary": "Failed in pnpm's automatic install (postinstall prisma migrate: database is locked) before tsc ran, so this is not a type error."
+    },
+    {
+      "kind": "inspection",
+      "summary": "BrandSection.tsx calls only @/api/brandApi (getBrand, saveBrand, saveBrandLogo, removeBrandLogo, resetBrand, brandLogoUrl), which is IF-003. Its only import from the reports folder is @/features/reports/ReportSheet (line 13)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "The fix for AC-ra-54 needs one atomic cross-unit change that no single frontend unit owns. (1) Move all 8 files from src/features/reports/ to src/features/report-center/ (PortfolioReportPage.tsx, ReportCenterPage.tsx, ReportDelivery.tsx, ReportOptions.tsx, ReportPreview.tsx, ReportSheet.tsx, ReportSheetCharts.tsx, useReportPreview.ts). Their relative imports stay valid. (2) Update the 3 importers: src/App.tsx:12 (owner phase-2-frontend-evolution-portfolio), src/features/result/ResultPage.tsx:23 (owner phase-1-frontend-result / phase-3-frontend-actions) and src/features/settings/BrandSection.tsx:13 (owner phase-2-frontend-brand). Change '@/features/reports/' to '@/features/report-center/'. Also check src/App.tsx for an import of ReportCenterPage. (3) Delete src/features/reports/. (4) Run `pnpm --config.verify-deps-before-run=false typecheck`, `pnpm build`, then `node scripts/smoke-store-package.mjs` (expect 8/8, about 5 minutes). Owners of the moved files: phase-1-frontend-report-center (ReportCenterPage, ReportDelivery, ReportPreview, ReportSheet, ReportSheetCharts, useReportPreview, plus the first version of ReportOptions) and phase-2-frontend-evolution-portfolio (ReportOptions, PortfolioReportPage). This unit may change only ReportSheet.tsx and BrandSection.tsx, and moving those alone breaks ReportPreview.tsx.",
+      "paths": [
+        "src/features/reports/",
+        "src/features/report-center/",
+        "src/App.tsx",
+        "src/features/result/ResultPage.tsx",
+        "src/features/settings/BrandSection.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Plain `pnpm typecheck` / `pnpm build` can fail before running. pnpm's verify-deps triggers `pnpm install`, and its postinstall runs `prisma migrate deploy` on data/fitpulse.db, which fails with 'database is locked' while a preview holds the database. Use `--config.verify-deps-before-run=false`, or stop the preview first.",
+      "paths": ["package.json", "scripts/prepare-app.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Still open from r0: `pnpm exec playwright test tests/e2e/brand.spec.ts` and the Play dev-link walkthrough (PNG and JPG logos, the three PDFs with the brand). The selectors are listed in phase-2-frontend-brand.json.",
+      "paths": ["src/features/settings/BrandSection.tsx"]
+    }
+  ]
+}

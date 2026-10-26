@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "dd61897b-f3a7-48f8-89a2-04e5e7a40106",
+  "unit": "phase-3-frontend-home",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:55:04Z",
+  "finished_at": "2026-10-23T05:02:10Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/homeApi.ts",
+    "src/features/home/HomePage.tsx",
+    "src/features/home/OwnerHome.tsx",
+    "src/features/home/ConsultantHome.tsx",
+    "src/features/home/ScoreTrend.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "The previous attempt's upstream finding (Content-Type missing on bodyless POST) is already fixed in the current file: request() sets Content-Type: application/json for every JSON_WRITE_METHODS call. Nothing was edited there by this unit."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "IF-007 owner `latest` as implemented in server/services/homeService.ts carries weakestDimension but not its score, so the padlock note reads 'O que mais trava agora: <dimensão>' without the '· NN/100' the prototype shows. AC-dm-32 only asks for the dimension, so it is met; the score would need the backend to add it."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/features/home/ConsultantHome.tsx",
+      "summary": "CompaniesPage supports only ?estagio=, ?busca= and ?arquivadas=1, so the prototype's 'Ver lista' links (?filtro=parados|antigos|risco) were not shipped. Each row in the attention lists links straight to its company (/empresa/:id), and the ladder steps link to /empresas?estagio=N."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-level checks `pnpm test:e2e -- tests/e2e/home.spec.ts` (AC-dm-32..35, 390 px, reduced motion) and the runtime visual check belong to 4-integration-e2e-features; the spec does not exist yet and is outside this unit's files."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-home-dev/build.log",
+      "summary": "tsc --noEmit && vite build: built with no type errors, after aligning the client to the real server/services/homeService.ts shape"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=<6 unit files>",
+      "exit_code": 0,
+      "summary": "0 violations (file/function size, coupling, no import cycles, English identifiers)"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "src/api/homeApi.ts mirrors IF-007 exactly as server/services/homeService.ts implements it: OwnerHomeView {mode, company{id,name}, latest{id,completedAt,stage,previous{stage,completedAt}|null,lock,weakestDimension,plan,confidence}|null, draft TimelineDraft|null, trend[{diagnosisId,completedAt,stage,averageScore,rulesVersion}] oldest first} and ConsultantHomeView {mode, companyCount, byStage[4]{stage,count,companies[]}, withoutDiagnosis, staleDrafts{draftId,updatedAt,idleDays}, overdue{diagnosisId,lastDiagnosisAt,daysSince}, highRisk{diagnosisId,signalId,riskScore}}. The owner call sends no companyId, so the server picks the saved focus and then the first active company; its 404 company_not_found is shown as the 'Cadastrar a primeira empresa' empty state. A change to these fields must update homeApi.ts.",
+      "paths": ["src/api/homeApi.ts", "server/services/homeService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "data-aioson-id hooks for tests/e2e/home.spec.ts. Owner mode: home-owner, home-last-date, escada (StageLadder), home-trava, home-weakest, home-see-result, result-actions (ActionPlanList), home-draft, home-continue-draft, home-evolution, score-trend, score-trend-summary, home-compare, home-new-diag. No completed diagnosis: home-first-diagnosis with home-start-first ('Começar o primeiro diagnóstico') or home-continue-draft. No company: home-owner-empty / home-consult-empty with home-first-company ('Cadastrar a primeira empresa', which opens CompanyFormDialog and then navigates to /empresa/:id). Consultant mode: home-consultant, consult-active-count, escada steps as links /empresas?estagio=N (data-step, data-count), consult-summary, consult-stalled, consult-old (never-diagnosed companies are listed first as 'Nunca diagnosticada'), consult-risk; rows carry data-company-id and link to /empresa/:id. Loading/error: home-loading, home-error (with retry). The home adds no animation, so AC-dm-47 holds trivially here. To run: pnpm test:e2e -- tests/e2e/home.spec.ts after 3-backend-home is merged.",
+      "paths": ["src/features/home/HomePage.tsx", "src/features/home/OwnerHome.tsx", "src/features/home/ConsultantHome.tsx", "src/features/home/ScoreTrend.tsx"]
+    },
+    {
+      "to": "unit:phase-3-frontend-first-run",
+      "kind": "note",
+      "text": "App.tsx now routes `inicio` to <HomePage/>; the index route still redirects to /empresas, so first-run decides what '/' opens. HomePage reads usePreferences(): usageMode 'consultant' gives the consultant home and anything else (owner or null) gives the owner home. It reloads when usageMode or focusCompanyId changes. OwnerHome exports StartDiagnosisButton and ConsultantHome exports NewCompanyButton if you need them. The tour anchors from the prototype (data-aioson-tour) were not added because OnboardingTour is your file; add them through your own component or ask integration.",
+      "paths": ["src/App.tsx", "src/features/home/HomePage.tsx"]
+    }
+  ]
+}

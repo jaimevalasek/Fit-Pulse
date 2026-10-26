@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "317f5a81-1136-4c32-83b2-20bb0fea45a3",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "prisma/**",
+    "server/**",
+    "shared/**",
+    "src/api/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/fixtures/**",
+    "manifest.json",
+    "system.json",
+    "package.json"
+  ],
+  "unit": "phase-7-backend-backup",
+  "started_at": "2026-10-26T00:46:00Z",
+  "finished_at": "2026-10-26T01:03:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/validation/backupSchemas.ts",
+    "server/services/backupService.ts",
+    "src/api/backupApi.ts",
+    "tests/api/backupRoutes.test.ts",
+    "tests/api/playRoutes.test.ts"
+  ],
+  "files_unchanged_by_design": [
+    "server/services/assistantSummaryService.ts",
+    "server/routes/playRoutes.ts"
+  ],
+  "acceptance": {
+    "AC-ra-55": "Export now writes formatVersion 2 / schemaVersion 2 with actionProgress[], diaryEntries[], questionnaireSends[], brand ({name,phone,email,website,logo{mimeType,dataBase64,updatedAt}} or null) and reevaluationIntervalDays (60|90|120|180|null); generated_files is left out (it holds a local path). Import reads the envelope first, then formatVersion 1 through the old strict schema and 2 through the new strict one; it inserts only what is missing, in one transaction (ids and the places 'action of a diagnosis' / 'month of a company' already taken are skipped); the brand and the interval only enter when the destination has no brand.* key / no reevaluation_interval_days key; nothing is deleted or overwritten. tests/api/backupRoutes.test.ts covers: full round trip (every table equal, the screens answer the same, logo bytes equal, re-export of the import equals the original file), a version 1 file imports, a version 1 file with a new key is refused, own data/brand/interval are kept, idempotent second import, whole-import rollback when the diary write fails, and 33 new tampered-file cases refused with 422 backup_invalid. The e2e half of the evidence (tests/e2e/backup.spec.ts) is outside this unit.",
+    "AC-ra-56": "GET /api/aioson-play is unchanged and lists only GET /api/health and GET /api/assistant/summary (both answer 200); readAssistantSummary is unchanged. The new describe AC-ra-56 in tests/api/playRoutes.test.ts seeds an action note, a diary month, a sent questionnaire, the full brand with logo and the interval, and proves the summary response is deeply equal to the one before they existed, has only the five documented keys, and contains none of those values (RULE-dm-17)."
+  },
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "tests/e2e/backup.spec.ts (second half of the AC-ra-55 evidence: copy with brand, actions and diary reproduced in another database through the screen) was not written or run: that file, src/features/settings/BackupSection.tsx and tests/e2e/** are not in this unit's allowed files.",
+      "paths": [
+        "tests/e2e/backup.spec.ts",
+        "src/features/settings/BackupSection.tsx"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "AC-ra-54 and the real Play update (manifest.json 0.2.0 / schema_version 2 / requires_migration, system.json, package.json 0.2.0, scripts/smoke-migrate.mjs, scripts/smoke-store-package.mjs, pnpm build, whole pnpm test, pnpm test:e2e, aioson harness:check) are phase-wide checks outside this unit's allowed files and were not run; only the unit's own vitest command and tsc --noEmit were run.",
+      "paths": [
+        "manifest.json",
+        "system.json",
+        "package.json",
+        "scripts/smoke-migrate.mjs",
+        "scripts/smoke-store-package.mjs"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/backupRoutes.test.ts tests/api/playRoutes.test.ts",
+      "exit_code": 0,
+      "result": "2 files passed, 143 tests passed (backupRoutes 92, playRoutes 51)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-dev/vitest-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-dev/vitest-final.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no errors after the changes",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-dev/tsc3.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-dev/tsc3.exit"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-009 counts grew. POST /api/backup/export answers { fileName, directory, companies, diagnoses, actions, diaryEntries, questionnaireSends, brand, reevaluationInterval } and POST /api/backup/import answers { imported, skipped } with the same seven numeric keys each. brand and reevaluationInterval are 0 or 1 (imported.brand 1 = the brand of the file came in; skipped.brand 1 = the file had one but this installation already has its own). The types in src/api/backupApi.ts (BackupCounts, BackupExport, BackupImport) already carry them. Backup file layout: formatVersion 2, schemaVersion 2 (BACKUP_FORMAT_VERSION / BACKUP_SCHEMA_VERSION in server/validation/backupSchemas.ts); a formatVersion 1 file is still accepted.",
+      "paths": [
+        "src/api/backupApi.ts",
+        "server/services/backupService.ts",
+        "server/validation/backupSchemas.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "src/features/settings/BackupSection.tsx still shows only companies and diagnoses (it compiles: the new keys are additive). The frontend unit that owns it should show actions, diaryEntries, questionnaireSends and, if wanted, a notice that the brand / interval of the file were kept out from skipped.brand / skipped.reevaluationInterval.",
+      "paths": [
+        "src/features/settings/BackupSection.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Not done here because they are outside this unit's allowed files: manifest.json (version 0.2.0, compatibility.schema_version 2, requires_migration true), system.json and package.json (0.2.0, dependencies unchanged), scripts/smoke-migrate.mjs, scripts/smoke-store-package.mjs, tests/e2e/backup.spec.ts, tests/e2e/accessibility.spec.ts. Then run: pnpm build; pnpm test; pnpm test:e2e; node scripts/smoke-migrate.mjs; node scripts/smoke-boot.mjs; node scripts/smoke-store-package.mjs; aioson harness:check . --slug=relatorios-e-acompanhamento; and the update of a version 1 install with data in the Play (Settings -> Instalar App -> Linkar pasta).",
+      "paths": [
+        "manifest.json",
+        "system.json",
+        "package.json",
+        "scripts/smoke-migrate.mjs",
+        "scripts/smoke-store-package.mjs",
+        "tests/e2e/backup.spec.ts",
+        "tests/e2e/accessibility.spec.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The importBackup helper in tests/e2e/support/fixtures.ts (around line 249) spreads an exported backup and replaces companies/diagnoses; it still works with the version 2 file because the other lists travel along, but the e2e author should know the file is now version 2. The doc comment of server/routes/backupRoutes.ts still says the export answers { fileName, directory, companies, diagnoses }; it is outdated (file outside this unit, comment only).",
+      "paths": [
+        "tests/e2e/support/fixtures.ts",
+        "server/routes/backupRoutes.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The previous attempt of this unit failed with an engine error 'database is locked', not a code defect; the code and both test files ran clean here (tsc and vitest exit 0).",
+      "paths": []
+    }
+  ]
+}

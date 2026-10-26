@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "d3e84081-e361-4e66-8bb6-19da601e8b4b",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-2-frontend-brand",
+  "started_at": "2026-10-25T23:10:00Z",
+  "finished_at": "2026-10-25T23:38:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/components/form/PhoneField.tsx",
+    "src/features/settings/brandLogoImage.ts",
+    "src/features/settings/BrandSection.tsx",
+    "src/features/settings/SettingsPage.tsx"
+  ],
+  "files_unchanged": [
+    "src/features/reports/ReportSheet.tsx (CoverBlock from phase-1 already draws logo, name, contactLine and credit)",
+    "src/components/feedback/ConfirmDialog.tsx (reused as is, per plan)"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-wide checks not run in this unit: `pnpm exec playwright test tests/e2e/brand.spec.ts` (spec does not exist yet / owned by integration) and the Play dev-link walkthrough (save PNG and JPG logos, export the three PDFs). They depend on sibling backend units and integration."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "eslint is not installed in the project (`pnpm exec eslint` -> command not found); lint was not run. `aioson rules:check` over the 4 changed files reported 0 violations (size, coupling, English identifiers, no native dialogs)."
+    },
+    {
+      "kind": "decision",
+      "severity": "low",
+      "summary": "Name limit follows AC-ra-20 (80 characters), not the prototype (60). The picked logo stays pending (thumbnail + size hint) until 'Salvar marca', as in the prototype: Save sends PUT /api/brand then PUT /api/brand/logo; a refused logo keeps the saved fields and shows the server message in the logo field. 'Remover logo' on a never-saved pending logo just drops it without a dialog (nothing stored is lost); with a saved logo it uses ConfirmDialog."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "0 TS errors",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-dev/typecheck.log"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=<4 changed files>",
+      "exit_code": 0,
+      "result": "0 violations, RULES=OK"
+    },
+    {
+      "kind": "static",
+      "summary": "IF-003 only: BrandSection imports getBrand/saveBrand/saveBrandLogo/removeBrandLogo/resetBrand/brandLogoUrl from src/api/brandApi.ts and isApiError; no other API module. Cover preview is built client-side from the saved Brand and drawn by ReportSheet (same CoverBlock as the report preview)."
+    },
+    {
+      "kind": "ac_mapping",
+      "summary": "AC-ra-20: name (maxLength 80, label by usage mode: 'Nome que aparece no relatório' in owner mode, 'Nome de quem entrega' in consultant mode), PhoneField (inputmode=tel, mask via shared maskPhoneInput, blur error 'Telefone inválido. Use (11) 91234-5678.'), e-mail/site with getEmailError/getWebsiteError on blur and aria-invalid via TextField; 'Salvar marca' (data-aioson-id=brand-save) updates the cover preview from the server answer. AC-ra-21: brandLogoImage checks size <= 2 MB and PNG/JPEG magic bytes before decoding, shrinks to 600 px on the longer side in the same format, refuses with 'Use uma imagem PNG ou JPG de até 2 MB.' leaving everything unchanged; 'Remover logo' and 'Voltar para a marca FitPulse' go through ConfirmDialog (AC-ra-59)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm exec playwright test tests/e2e/brand.spec.ts` and the Play dev-link check once the backend brand units are merged. Selectors available: section data-aioson-id=brand-section; form brand-form; inputs #brand-name, #brand-phone, #brand-email, #brand-website, file input #brand-logo-file (label data-aioson-id=brand-logo-upload); buttons brand-save, brand-logo-remove, brand-reset; dialogs brand-logo-remove-confirm ('Remover logo') and brand-reset-confirm ('Apagar a marca'); status line brand-status ('Marca salva. Os próximos PDFs saem com ela.'); logo error #brand-logo-error (role=alert); preview data-aioson-id=brand-cover-preview containing a report-sheet.",
+      "paths": ["src/features/settings/BrandSection.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The cover preview mirrors server/report/documentParts.ts (resolveBrand: blank name -> 'FitPulse'; contact line 'phone · email · site'; credit 'Preparado por X com o FitPulse em DD/MM/AAAA' / 'Gerado com o FitPulse em ...') without importing server code, and uses brandLogoUrl(logoUpdatedAt) as the <img> src. If the server copy changes, update previewCoverPage in BrandSection.tsx or move the shared copy to shared/.",
+      "paths": ["src/features/settings/BrandSection.tsx", "server/report/documentParts.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "GET /api/brand/logo must be readable by a plain <img> (no Bearer header) for the thumbnail and the preview; brandApi.ts comments say so, confirm in the e2e.",
+      "paths": ["src/api/brandApi.ts"]
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "fab0c137-4aa1-4832-85f7-82b04cb91ab5",
+  "unit": "phase-1-backend-formats",
+  "phase": "1-backend-formats",
+  "wave": 2,
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "capabilities": ["CAP-dm-company", "CAP-dm-unit-economics"],
+  "acceptance_criteria": ["AC-dm-08"],
+  "started_at": "2026-10-23T03:36:00Z",
+  "finished_at": "2026-10-23T03:41:00Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_note",
+      "severity": "low",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-08",
+      "path": "package.json",
+      "summary": "The Done-when command `pnpm test -- tests/unit/cnpj.test.ts tests/unit/money.test.ts` does not filter: pnpm forwards a literal `--` to `vitest run`, which ran all 4 test files / 146 tests (including sibling units' questionBank and forbiddenTerms tests). It exits 0 now, so the unit's Done-when is met, but the command is not scoped to this unit and will fail if a sibling test fails. Scoped equivalent: `pnpm exec vitest run tests/unit/cnpj.test.ts tests/unit/money.test.ts` (2 files, 128 tests, exit 0)."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/unit/cnpj.test.ts tests/unit/money.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 4 passed (4), Tests 146 passed (146). The `--` form ran the whole suite.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-qa/done-when.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-qa/done-when.exit"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/cnpj.test.ts tests/unit/money.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 2 passed (2), Tests 128 passed (128). Only this unit's files.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-qa/scoped-unit.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-qa/scoped-unit.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "No type errors reported across the project at the time of the run.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-qa/tsc.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-qa/tsc.exit"
+    },
+    {
+      "command": "Manual review: shared/content/companyOptions.ts labels vs .aioson/briefings/diagnostico-maturidade/prototype.html; BR-dm-14 wording vs .aioson/context/prd-diagnostico-maturidade.md",
+      "exit_code": 0,
+      "result": "All 18 segment/channel/revenue labels appear verbatim in the prototype. The BR-dm-14 sentence matches the PRD. The band thresholds (<1, 1-3, 3-5 inclusive, >5), the one-decimal ratio, payback rounded up and 'não se paga' match RULE-dm-03, BR-dm-03, BR-dm-15 and AC-dm-51. The implementer's message signatures match the code: maskCnpjInput, maskMoneyInput (cents null when empty), formatRatio, getRatioBand, formatRatioWithBand, formatPayback, the *_KEYS tuples, *_LABELS, *_OPTIONS and get*Label.",
+      "log": null,
+      "exit_log": null
+    },
+    {
+      "command": "node probe: ratio half-up rounding, Math.round(r*10) vs exponent-shift, over 0.00..1000.00 in 0.01 steps",
+      "exit_code": 0,
+      "result": "0 mismatches. No change to displayNumbers.ts needed.",
+      "log": null,
+      "exit_log": null
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Scope the Done-when check to this unit with `pnpm exec vitest run tests/unit/cnpj.test.ts tests/unit/money.test.ts` or `pnpm test tests/unit/cnpj.test.ts tests/unit/money.test.ts` (no `--`). The `--` form in the plan runs the full suite under pnpm 11 / vitest 5.0.5. Keep the full-suite form only if a full run is acceptable.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks not owned by this unit (not run by QA here). Run after the frontend and e2e units land, with the app started by `pnpm dev`: (a) `pnpm exec playwright test tests/e2e/companies.spec.ts` for AC-dm-08 (aria-invalid and inline message on blur, inputmode numeric, maxlength 18, mask while typing) and AC-dm-17; (b) `pnpm exec playwright test tests/e2e/calculator.spec.ts` for AC-dm-15 and AC-dm-51 on the real screen; (c) `pnpm exec vitest run tests/unit/unitEconomics.test.ts` for formulas, rounding, BR-dm-14 and BR-dm-15 once shared/domain/unitEconomics.ts exists. These were not run by QA because the files are owned by other units.",
+      "paths": ["tests/e2e/companies.spec.ts", "tests/e2e/calculator.spec.ts", "tests/unit/unitEconomics.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Product decision needed before release: the PRD fixes the CNPJ as 14 numeric digits (AC-dm-08, IF-002). The implementer reports that the Receita Federal may issue alphanumeric CNPJs from July 2026. That claim is not verified here. isValidCnpj rejects any non-digit, so such a company would be refused. No change was made because the PRD says numeric.",
+      "paths": ["shared/format/cnpj.ts"]
+    },
+    {
+      "to": "unit:phase-1-frontend-primitives",
+      "kind": "contract_change",
+      "text": "Confirmed against the code: maskCnpjInput(rawValue, caret?, previous?) returns { value, caret }; maskMoneyInput(rawValue, caret?, previous?) returns { value, caret, cents } with cents null when empty. Pass e.target.value, e.target.selectionStart and the value held before the keystroke, then restore the caret in a layout effect. Backspace over a separator relies on `previous`.",
+      "paths": ["shared/format/cnpj.ts", "shared/format/money.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-rules",
+      "kind": "contract_change",
+      "text": "Confirmed against the code: formatRatio(ratio) gives 'x,y×' with one decimal half up, and 'não calculado' for null, NaN, Infinity or negative. getRatioBand(ratio) judges the exact ratio: <1 critical, 1 to <3 attention, 3 to 5 inclusive healthy, >5 invest_more, null when unknown. formatRatioWithBand gives '0,0× Crítico' for 0. formatPayback(months | 'never' | null) rounds up and gives 'não se paga' for 'never' or Infinity.",
+      "paths": ["shared/format/displayNumbers.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-companies",
+      "kind": "note",
+      "text": "Confirmed: SEGMENT_KEYS, SALES_CHANNEL_KEYS and ANNUAL_REVENUE_RANGE_KEYS are as const tuples ready for z.enum. The *_LABELS records, *_OPTIONS arrays of { key, label } and get*Label(key) helpers return the key itself for unknown values. Store the CNPJ as 14 digits, validated with isValidCnpj.",
+      "paths": ["shared/content/companyOptions.ts", "shared/format/cnpj.ts"]
+    }
+  ]
+}

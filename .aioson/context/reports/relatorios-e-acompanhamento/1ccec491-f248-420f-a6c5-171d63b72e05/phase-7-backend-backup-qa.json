@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "cc63c478-a720-44b6-aad1-09d413689679",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-7-backend-backup",
+  "wave": 10,
+  "capabilities": ["CAP-ra-data-continuity"],
+  "acceptance_criteria": ["AC-ra-55", "AC-ra-56"],
+  "interfaces": ["IF-012"],
+  "started_at": "2026-10-26T01:02:00Z",
+  "finished_at": "2026-10-26T01:05:40Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-55",
+      "path": "tests/e2e/backup.spec.ts",
+      "summary": "Second half of AC-ra-55 evidence (copy with brand, actions and diary reproduced in another database through the screen) was not run: tests/e2e/backup.spec.ts is not written and is outside this unit's files; it also needs src/features/settings/BackupSection.tsx (phase-7-frontend-backup). Command not run: pnpm test:e2e. Reason: outside this unit's Done-when; integration-owned."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "manifest.json",
+      "summary": "Phase-wide release checks were not run by this lane review: pnpm build, full pnpm test, node scripts/smoke-migrate.mjs, node scripts/smoke-boot.mjs, node scripts/smoke-store-package.mjs and aioson harness:check. They cover manifest.json, system.json, package.json and scripts/* owned by phase-7-backend-release, which is still implementing concurrently, so a run now would race its edits. The unit's Done-when is only the two vitest files, which passed."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/backupRoutes.test.ts tests/api/playRoutes.test.ts",
+      "exit_code": 0,
+      "result": "2 test files passed, 143 tests passed (backupRoutes and playRoutes), duration 38.63s",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-qa/vitest.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-qa/vitest.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no errors (empty log)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-backup-qa/tsc.exit"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-009 counts confirmed in code. POST /api/backup/export answers { fileName, directory, companies, diagnoses, actions, diaryEntries, questionnaireSends, brand, reevaluationInterval }; POST /api/backup/import answers { imported, skipped }, each with the same seven numeric keys. brand and reevaluationInterval are 0 or 1 (skipped.brand = 1 means the file had a brand but this installation already has its own). Types are in src/api/backupApi.ts, server/services/backupService.ts and server/validation/backupSchemas.ts.",
+      "paths": ["src/api/backupApi.ts", "server/services/backupService.ts", "server/validation/backupSchemas.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "src/features/settings/BackupSection.tsx still shows only companies and diagnoses. The owning frontend unit (phase-7-frontend-backup) should show actions, diaryEntries, questionnaireSends and, if wanted, a notice for brand / reevaluationInterval kept out of skipped.",
+      "paths": ["src/features/settings/BackupSection.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Outdated comment only: the doc comment at the top of server/routes/backupRoutes.ts (around line 11) still says export answers { fileName, directory, companies, diagnoses }. Verified by grep. File is outside this unit; fix it in the owning lane.",
+      "paths": ["server/routes/backupRoutes.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/e2e/support/fixtures.ts importBackup (around line 249) spreads an exported backup and replaces companies and diagnoses. It still works with a version 2 file because the other lists travel along, but the e2e author should know the file is now version 2.",
+      "paths": ["tests/e2e/support/fixtures.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Deferred checks to run at integration, once phase-7-backend-release and phase-7-frontend-backup have finished: (1) pnpm build; (2) pnpm test; (3) pnpm test:e2e, including tests/e2e/backup.spec.ts for AC-ra-55 end to end; (4) node scripts/smoke-migrate.mjs; (5) node scripts/smoke-boot.mjs; (6) node scripts/smoke-store-package.mjs; (7) aioson harness:check over manifest.json, system.json, package.json, scripts/smoke-migrate.mjs, scripts/smoke-store-package.mjs, tests/e2e/backup.spec.ts, tests/e2e/accessibility.spec.ts. Also confirm manifest.json 0.2.0 / schema_version 2 / requires_migration true, as the unit's contract change expects.",
+      "paths": ["manifest.json", "system.json", "package.json", "scripts/smoke-migrate.mjs", "scripts/smoke-store-package.mjs", "tests/e2e/backup.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The 'database is locked' failure of the previous attempt of this unit did not reproduce in this review: both vitest and tsc exited 0 on the first run here.",
+      "paths": []
+    }
+  ]
+}

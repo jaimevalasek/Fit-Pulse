@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "c8325eec-cf35-412a-b150-77354acbd29c",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "unit": "phase-7-backend-release",
+  "wave": 11,
+  "scope": {
+    "capabilities": ["CAP-ra-data-continuity"],
+    "acceptance_criteria": ["AC-ra-54"]
+  },
+  "started_at": "2026-10-26T01:12:00Z",
+  "finished_at": "2026-10-26T01:17:00Z",
+  "verdict": "BLOCKED",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "integration_defect",
+      "severity": "high",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "src/features/reports/",
+      "summary": "Prior r0 finding 1 is NOT resolved. src/features/reports/ still holds 8 files and src/features/report-center/ does not exist. The installed packager's DEV_ONLY_DIRS includes 'reports', so `node scripts/smoke-store-package.mjs` drops all 8 files at step 1/8 (exit 1, observed at 01:16Z). src/App.tsx:12, src/features/result/ResultPage.tsx:23 and src/features/settings/BrandSection.tsx:13 still import @/features/reports/*, so the store package cannot build. Outside this unit's write paths and correction budget. The fix is a frontend-lane rename (e.g. src/features/report-center) with its importers, then an integration rerun of smoke-store-package.mjs."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "Prior r0 finding 2 (full store smoke not run) is now run: it fails at step 1/8 on the finding above, so steps 2/8 to 8/8 were not reached in this attempt and remain unobserved here. The implementer reports they passed on a scratch copy, which this review did not reproduce. Integration must rerun the full smoke after the frontend rename and expect 8/8 PASS."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "manifest.json",
+      "summary": "Prior r0 finding 3 remains not run. A real 0.1.0 -> 0.2.0 update of an installation with data through the AIOSON Play (Settings -> Instalar App -> Linkar pasta, or local package) and the green badge need the Play desktop app, which this environment cannot run."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": ".aioson/system-packages/fitpulse/fitpulse-0.2.0.json",
+      "summary": "Prior r0 finding 4 remains. The stray 1.2 MB packager output is still present. The smoke run in this attempt regenerated it (size 1250984 bytes, mtime 01:16Z). It is outside this unit's write paths and was not deleted by this review. It is safe to delete."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node --check scripts/smoke-store-package.mjs",
+      "result": "PASS, exit 0",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/check-store.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/check-store.exit",
+      "exit": 0
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "result": "PASS, exit 0, output '[smoke-migrate] PASS', 6/6 steps (release 0.1.0 with owner data -> prepare-app --migrate applies migrations -> companies, diagnoses, drafts and preferences identical, four new tables empty -> repeated deploy no-op -> rebuild keeps old and new rows -> cascades hold). Foreground run, completed.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/smoke-migrate.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/smoke-migrate.exit",
+      "exit": 0
+    },
+    {
+      "command": "node scripts/smoke-store-package.mjs",
+      "prior_finding": "r0 finding 1 and r0 finding 2 (reproduction)",
+      "result": "FAIL, exit 1 at step 1/8: 'the package dropped 8 project file(s) the app needs to build', all 8 files of src/features/reports/ listed (PortfolioReportPage.tsx, ReportCenterPage.tsx, ReportDelivery.tsx, ReportOptions.tsx, ReportPreview.tsx, ReportSheet.tsx, ReportSheetCharts.tsx, useReportPreview.ts). Steps 2/8 to 8/8 not reached. Root cause confirmed in installed @jaimevalasek/aioson src/commands/store-system.js line 263: DEV_ONLY_DIRS = ['reports', 'test-results', 'playwright-report', 'aios-qa-screenshots', '.opencode', ...]. Foreground run, completed; the run took about 1 second.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/smoke-store.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/smoke-store.exit",
+      "exit": 1
+    },
+    {
+      "command": "read-only importer and folder check (grep features/reports; ls src/features/report-center)",
+      "prior_finding": "r0 finding 1",
+      "result": "src/features/reports/ still has 8 files; src/features/report-center/ absent; importers remain at src/App.tsx:12, src/features/result/ResultPage.tsx:23, src/features/settings/BrandSection.tsx:13. No rename has landed."
+    },
+    {
+      "command": "stray artifact check (ls .aioson/system-packages/fitpulse/)",
+      "prior_finding": "r0 finding 4",
+      "result": "fitpulse-0.2.0.json still present before and after the smoke run; the smoke run regenerated it (1250984 bytes, mtime 01:16Z). Not deleted (outside write paths)."
+    },
+    {
+      "command": "manifest.json / system.json / package.json version and migration check (r0 evidence, not rerun in this attempt)",
+      "result": "r0 recorded version 0.2.0 in all three, manifest compatibility.schema_version 2, requires_migration true. The unit's files were not changed in this attempt, so this is carried forward and not independently rechecked."
+    },
+    {
+      "command": "Play desktop update with data and green badge",
+      "prior_finding": "r0 finding 3",
+      "result": "NOT RUN. Needs the AIOSON Play desktop app, which this environment cannot run. See findings."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Release blocker for AC-ra-54 is unchanged: the store package omits src/features/reports/** (packager DEV_ONLY_DIRS includes 'reports'). Steps: (1) frontend lane renames src/features/reports to a kept name (e.g. src/features/report-center) and updates the importers in src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx (grep 'features/reports' in src/ and tests/ for any other importer); (2) rerun `node scripts/smoke-store-package.mjs` (foreground, about 5 min, long timeout) and expect 8/8 PASS; (3) rerun the remaining phase checks; (4) real 0.1.0 -> 0.2.0 update in the Play with data and the green badge, then delete .aioson/system-packages/fitpulse/fitpulse-0.2.0.json.",
+      "paths": ["src/features/reports/", "src/App.tsx", "src/features/result/ResultPage.tsx", "src/features/settings/BrandSection.tsx", "scripts/smoke-store-package.mjs"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "question",
+      "text": "Can the frontend lane rename src/features/reports (8 files) to a folder name the aioson packager keeps (e.g. report-center) and update its importers? This is still the only blocker for AC-ra-54 at the store-package step. The backend unit did not touch these paths.",
+      "paths": ["src/features/reports/", "src/App.tsx", "src/features/result/ResultPage.tsx", "src/features/settings/BrandSection.tsx"]
+    }
+  ]
+}

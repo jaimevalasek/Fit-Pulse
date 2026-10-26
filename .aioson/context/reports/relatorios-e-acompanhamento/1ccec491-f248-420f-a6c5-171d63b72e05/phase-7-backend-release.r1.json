@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "ae513087-53a7-4f71-b5e6-de47eebb973a",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "prisma/**",
+    "server/**",
+    "shared/**",
+    "src/api/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/fixtures/**",
+    "manifest.json",
+    "system.json",
+    "package.json"
+  ],
+  "unit": "phase-7-backend-release",
+  "rework_round": 1,
+  "started_at": "2026-10-26T01:12:00Z",
+  "finished_at": "2026-10-26T01:15:25Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "scripts/smoke-store-package.mjs"
+  ],
+  "findings": [
+    {
+      "kind": "integration_defect",
+      "severity": "high",
+      "scope": "CAP-ra-data-continuity / AC-ra-54",
+      "path": "src/features/reports/",
+      "text": "Reproduced again at the start of this rework: `node scripts/smoke-store-package.mjs` exits 1 at step 1/8 and lists the 8 files `aioson system:package .` drops from src/features/reports/ (PortfolioReportPage, ReportCenterPage, ReportDelivery, ReportOptions, ReportPreview, ReportSheet, ReportSheetCharts, useReportPreview). Cause: DEV_ONLY_DIRS in @jaimevalasek/aioson src/commands/store-system.js drops every folder named `reports` at any depth. Re-checked the packager's walk(): outside --build the only escape hatches are `build_output_dirs` (build mode only) and `.aioson/build-options.json` include (only under .aioson), so nothing in manifest.json, system.json or package.json can keep src/features/reports in the package. src/** belongs to the frontend lane and the folder was still unrenamed (no src/features/report-center) when this round started. The release cannot be installed from the store until the frontend lane renames the folder (e.g. src/features/report-center) and fixes the imports in src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx (grep for `features/reports`), including any tests/e2e or tests/unit import of that path."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "scope": "scripts/smoke-store-package.mjs full pass",
+      "text": "The full store smoke cannot pass until the folder rename above lands; it was run in this round and exits 1 on the packager drop (log r1-smoke-store.log). In the previous round the rest of the flow (steps 2/8-8/8) passed on a scratch copy that restored the 8 files in memory. The unit Done-when only needs `node --check` on it, which passes."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "scope": "update real no Play",
+      "text": "Updating a real 0.1.0 installation with data in the Play (Settings -> Instalar App -> Linkar pasta, or local package) and the green badge were not run: they need the Play desktop app."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "scope": "working tree",
+      "path": ".aioson/system-packages/fitpulse/fitpulse-0.2.0.json",
+      "text": "Stray 1.2 MB output of an earlier inspection run of `aioson system:package .`. Deleting it was denied earlier in this run, so it was left in place and is safe to delete. Because the folder already exists, the smoke treats it as the owner's and will not remove it. Change made this round: the smoke's cleanup now also removes the descriptor file when this run created it, so a clean tree is left clean after the smoke even when the folder already existed."
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "Rename the folder src/features/reports to a name the aioson packager keeps (suggestion: src/features/report-center) and update every import (`@/features/reports/...` and relative paths) in src/**, tests/e2e/** and tests/unit/**. The packager (store-system.js DEV_ONLY_DIRS) drops any directory named `reports`, so the store package misses the 8 report files and `vite build` fails in the postinstall of a store install or update. Do not rename to another name in the DEV_ONLY_DIRS list (reports, test-results, playwright-report, aios-qa-screenshots, .opencode, .qwen, .agents, .gemini, .cursor, .windsurf).",
+      "paths": [
+        "src/features/reports/",
+        "src/App.tsx",
+        "src/features/result/ResultPage.tsx",
+        "src/features/settings/BrandSection.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "After the frontend rename: run `node scripts/smoke-store-package.mjs` (about 5 minutes; foreground, long timeout) and expect PASS with 8 steps; it fails at step 1/8 with the list of dropped files if the rename is incomplete. Then update a real 0.1.0 installation with data in the Play (Settings -> Instalar App -> Linkar pasta, or local package), confirm companies, diagnoses, drafts and preferences intact and the green badge. Delete .aioson/system-packages/fitpulse/fitpulse-0.2.0.json (stray output)."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "result": "PASS, exit 0 (6 steps: v1 database with owner data -> prepare-app --migrate applies the 4 new migrations -> data identical, new tables empty -> repeated deploy no-op -> later rebuild keeps rows -> cascades work)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/r1-smoke-migrate.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/r1-smoke-migrate.exit"
+    },
+    {
+      "command": "node --check scripts/smoke-store-package.mjs",
+      "result": "PASS, exit 0 (run before and after this round's cleanup edit)",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/r1-check2.exit"
+    },
+    {
+      "command": "node scripts/smoke-store-package.mjs",
+      "result": "FAIL as expected, exit 1 at step 1/8: the package dropped 8 files from src/features/reports/ (packager DEV_ONLY_DIRS). Reproduces the QA finding; not part of the unit Done-when.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/r1-smoke-store.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/r1-smoke-store.exit"
+    }
+  ]
+}

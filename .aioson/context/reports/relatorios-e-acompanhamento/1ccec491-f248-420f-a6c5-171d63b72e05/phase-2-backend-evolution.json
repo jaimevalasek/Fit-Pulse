@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "b7744fad-2a55-4ba8-97c1-0b0d078f4570",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T23:35:36Z",
+  "finished_at": "2026-10-25T23:46:44Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "Capability-level checks outside this unit's Done when were not run: `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts` (AC-ra-12 interaction report-type-evolution, AC-ra-14 'Até' only offers later diagnoses) and the evolution case of tests/unit/forbiddenTerms.test.ts. They depend on ReportOptions.tsx / ComparePage.tsx / report.spec.ts / forbiddenTerms.test.ts, which are not in this unit's allowed files, and on a built UI.",
+      "paths": ["src/features/reports/ReportOptions.tsx", "tests/e2e/report.spec.ts", "tests/unit/forbiddenTerms.test.ts"]
+    },
+    {
+      "kind": "contract_deviation",
+      "severity": "low",
+      "text": "AC-ra-12 says 'estágio antes → depois'. None of the four PDF fonts (Inter 400/600, JetBrains Mono 400/500, checked with fontkit hasGlyphForCodePoint) has U+2192, so an arrow would be silently dropped from the PDF. The evolution document writes 'antes para depois' ('1 para 3', 'R$ 150,00 para R$ 80,00'); a unit test asserts no '→' reaches the document. Up/down arrows (U+2191/2193) and the minus sign exist.",
+      "paths": ["server/report/evolutionDocument.ts"]
+    },
+    {
+      "kind": "contract_deviation",
+      "severity": "low",
+      "text": "'Antes e depois' spans three sheets (summary + one sheet of bars per group: 'Encaixes do negócio' and 'Frentes de crescimento') instead of one. Paired before/after bars use the existing dimensionBars block (about 63 pt per bar): 16 bars (about 1000 pt) cannot fit one A4 sheet, and a new overlay block would need shared/report/reportDocument.ts, pdfCharts.ts and the preview, which are not in this unit's files. Page ids: before-after, before-after-fit, before-after-front.",
+      "paths": ["server/report/evolutionDocument.ts"]
+    },
+    {
+      "kind": "deferred_by_plan",
+      "severity": "medium",
+      "text": "The diary half of 'O que foi feito no período' is built and unit-tested (EvolutionPeriod.diary: DiaryChartPoint[], last 6 months in a table) but reportService passes no diary: there is no diary storage in prisma/schema.prisma until Phase 4. Until then the page appears only when the earlier plan has tracked actions.",
+      "paths": ["server/services/reportService.ts", "server/report/evolutionDocument.ts"]
+    },
+    {
+      "kind": "assumption",
+      "severity": "low",
+      "text": "'Sem andamento' is read as: none of the earlier plan's actions has anything recorded (state other than 'A fazer', deadline, owner or note). Rows born at completion with defaults (RULE-ra-05) do not make the page appear. When something is recorded, all actions of the stored (not recalculated) plan are listed, untouched ones as 'A fazer'. Overdue uses the local day of the app clock (RULE-ra-06).",
+      "paths": ["server/services/reportService.ts"]
+    },
+    {
+      "kind": "duplication",
+      "severity": "low",
+      "text": "evolutionDocument.ts repeats the small status-tone map and overdue tag of reportModel.ts (progressTag / STATUS_TONES are not exported and reportModel.ts is not in this unit's files). Exporting progressTag from reportModel.ts would remove it."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/api/historyRoutes.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "3 files passed, 113 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-evolution-dev/done-when.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/compareDiagnoses.test.ts tests/unit/forbiddenTerms.test.ts tests/unit/pdfRenderer.test.ts tests/unit/reportModel.test.ts",
+      "exit_code": 0,
+      "result": "4 files passed, 98 tests passed (neighbours of the changed shared/server code)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-evolution-dev/neighbours.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors in the whole project at the time of the run",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-evolution-dev/tsc2.log"
+    },
+    {
+      "text": "tests/unit/evolutionDocument.test.ts (24 tests): page list with and without 'O que foi feito no período'; cover/brand; stage, average, cost per customer, lock before/now; 16 paired bars with the written difference; same pair as compareDiagnoses with rulesV2 (recalculated numbers and the exact recalculation notice); no forbidden term and the warning on 'Antes e depois' and 'Como ler'; every page, including the fullest period page and a long brand name, renders on A4 with renderReportPdf; service tests on a real SQLite: preview, export name 'Academia Foco-evolucao-2026-04-14-a-2026-10-23.pdf' with an evolution_pdf record, period page from tracked ActionProgress rows, and refusals (out of order, same diagnosis, two companies, archived, draft, not found)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-001 now accepts the evolution: GET /api/reports/preview?kind=evolution&fromId=..&toId=.. and POST /api/reports/export {kind:'evolution', fromId, toId}. Export returns {fileId,fileName,directory} with fileName '{empresa}-evolucao-{de}-a-{ate}.pdf' and a generated_files row of kind 'evolution_pdf'. Refusals: 404 diagnosis_not_found; 409 diagnosis_not_completed, different_companies, diagnosis_archived, comparison_out_of_order (also when De and Até are the same diagnosis). Missing/empty ids fail with 400 validation_failed. src/api/reportApi.ts still types only the diagnosis selection (frontend lane).",
+      "paths": ["server/validation/reportSchemas.ts", "server/services/reportService.ts", "server/services/historyService.ts", "src/api/reportApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "HistoryService.comparePair(fromId, toId) returns { companyId, comparison, previous, current } where each side has { id, completedAt, storedResult, comparedResult }; comparison is exactly what compare(id) returns for the same pair. shared/domain/compareDiagnoses.ts gained the additive export compareWithResults() (compareDiagnoses unchanged in behavior).",
+      "paths": ["server/services/historyService.ts", "shared/domain/compareDiagnoses.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "server/app.ts builds createReportService without `rules`; the service defaults to rulesV1, which equals today's app rules. Pass `rules` there (one line) so a custom rules object also reaches the evolution recalculation. app.ts is being edited by phase-3-backend-actions-api, so it was left untouched.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "src/features/history/ComparePage.tsx should import DELTA_WORDS, STAGE_MOVES, formatDelta, formatComparisonMonth and recalculationNotice from shared/content/comparisonCopy.ts (same wording as today's screen) so AC-ra-13 'mesmo aviso' holds by construction. ReportOptions needs 'De'/'Até' (Até only later diagnoses, adjusted when De changes, AC-ra-14) and must send kind 'evolution' with fromId/toId. The preview must draw the evolution pages with existing blocks only (keyNumbers, facts, notice, dimensionBars, actions, table); no arrows in text.",
+      "paths": ["src/features/history/ComparePage.tsx", "src/features/reports/ReportOptions.tsx", "shared/content/comparisonCopy.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for this capability: add the evolution PDF to tests/unit/forbiddenTerms.test.ts, add the De/Até pair and AC-ra-14 to tests/e2e/report.spec.ts, then run `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts`. When Phase 4 adds the diary, pass its months of the period as `period.diary` (DiaryChartPoint[], oldest first) in prepareEvolution.",
+      "paths": ["tests/unit/forbiddenTerms.test.ts", "tests/e2e/report.spec.ts", "server/services/reportService.ts"]
+    }
+  ]
+}

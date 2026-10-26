@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "2bb13bb1-eb57-4c8a-aa9c-3d9f68e394f0",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-6-backend-questionnaire-api",
+  "started_at": "2026-10-26T00:40:02Z",
+  "finished_at": "2026-10-26T00:50:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "prisma/schema.prisma",
+    "prisma/migrations/20261026000300_questionnaire_sends/migration.sql",
+    "server/validation/questionnaireSchemas.ts",
+    "server/repositories/questionnaireRepository.ts",
+    "server/repositories/diagnosisRepository.ts",
+    "server/services/questionnaireService.ts",
+    "server/routes/questionnaireRoutes.ts",
+    "server/app.ts",
+    "src/api/questionnaireApi.ts",
+    "tests/api/questionnaireRoutes.test.ts"
+  ],
+  "acceptance": {
+    "AC-ra-48": "POST /api/companies/:id/questionnaire saves {empresa}-questionario-{AAAA-MM-DD}.html in Downloads, registers generated_files (questionnaire_html) and questionnaire_sends together, and answers { fileId, fileName, directory, sentAt, message } (message = approved text plus the brand name line). The fileId works with POST /api/files/:fileId/reveal; the company is listed by questionnaireRepository.listAwaiting. Covered in tests/api/questionnaireRoutes.test.ts.",
+    "AC-ra-51": "POST /api/companies/:id/questionnaire-answers creates the draft with the 24 answers and 6 numbers (validated by diagnosisPatchSchema), marks the waiting sends answered with draftId and clientSavedAt in the same transaction, and the draft completes through the normal gate. Covered in tests.",
+    "AC-ra-52": "Other company (422 answers_other_company with both names), newer formatVersion or questionnaireVersion (422 answers_newer_version), content that does not fit (422 answers_incompatible), corrupted or not an answers file (422 answers_invalid) and over 1 MB (413 payload_too_large, by the service and by the 2 MB route parser). Every refusal is asserted to leave diagnoses and sends identical. Covered in tests.",
+    "AC-ra-53": "Existing draft: 409 draft_exists with draftCreatedAt and nothing changed; replaceDraft true swaps in one transaction (a single draft remains, the swap is rolled back if afterCreate fails, two simultaneous imports end with one draft). Covered in tests."
+  },
+  "findings": [
+    {
+      "kind": "other_unit_failure",
+      "severity": "low",
+      "text": "pnpm exec tsc --noEmit exits 1, but only on src/features/home/OwnerHome.tsx and src/features/home/ScoreTrend.tsx (missing HomeTrendPoint export from src/api/homeApi and OwnerHomeData.trend). Those belong to concurrent home/frontend work, not to this unit; no error mentions a file of this unit.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx", "src/api/homeApi.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/diagnosisRoutes.test.ts",
+      "result": "PASS - 2 files, 137 tests (28 in questionnaireRoutes), exit 0, re-run after the last edit",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-dev/vitest-done2.log"
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "result": "PASS - 5/5 steps including the new 20261026000300_questionnaire_sends migration, exit 0",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-dev/smoke-migrate.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/companyRoutes.test.ts tests/api/backupRoutes.test.ts tests/api/fileRoutes.test.ts tests/api/historyRoutes.test.ts tests/api/brandRoutes.test.ts tests/unit/questionnaireFile.test.ts",
+      "result": "PASS - 6 files, 236 tests, exit 0 (neighbor regression check after the schema and app.ts change)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-dev/vitest-neighbors.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "result": "exit 1 only from OwnerHome.tsx and ScoreTrend.tsx of another unit; zero errors in this unit's files",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-dev/tsc2.log"
+    },
+    {
+      "command": "pnpm exec prisma migrate diff --from-schema <schema without the model> --to-schema prisma/schema.prisma --script; pnpm exec prisma generate",
+      "result": "migration.sql is that output verbatim (CREATE TABLE and 2 CREATE INDEX only); Prisma client regenerated"
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "IF-011. POST /api/companies/:id/questionnaire (body {}) answers 200 { fileId, fileName, directory, sentAt (ISO), message }; 404 company_not_found; 500 write_failed (its message already says 'Nada foi alterado.'). POST /api/companies/:id/questionnaire-answers takes { content: string (the text of the .fitpulse file), replaceDraft?: boolean } and answers 201 { draftId, clientSavedAt (ISO) }. Errors (ApiError.details holds the extra keys): 409 draft_exists { draftCreatedAt (ISO) } -> open the 'Substituir o rascunho de {data}?' modal and repeat with replaceDraft: true; 422 answers_other_company { fileCompanyName, currentCompanyName } (message already 'Este arquivo é de X, não de Y.'); 422 answers_newer_version, answers_incompatible, answers_invalid ('Este arquivo não é um arquivo de respostas do FitPulse.'); 413 payload_too_large (file over 1 MB; same message when the 2 MB body parser stops it); 400 validation_failed when content is missing. The server message of the import refusals does NOT include 'Nada foi alterado.' nor 'Escolher outro arquivo': the dialog adds both. 'Mostrar na pasta' = POST /api/files/:fileId/reveal with the fileId of the send.",
+      "paths": ["server/routes/questionnaireRoutes.ts", "src/api/questionnaireApi.ts"]
+    },
+    {
+      "to": "unit:phase-6-backend-questionnaire-attention",
+      "kind": "contract_change",
+      "text": "Table questionnaire_sends (model QuestionnaireSend: id, companyId, fileName, sentAt, answeredAt, clientSavedAt, draftId; draftId has NO foreign key; cascade from companies). 'aguardando' = answeredAt IS NULL. Use createQuestionnaireRepository(prisma) from server/repositories/questionnaireRepository.ts: listAwaiting(companyId?) returns the sends still waiting, newest first; findClientSavedAtByDraft(draftId) returns Date | null for the timeline mark 'Respostas do cliente, salvas em {data}' (null for a draft that was not imported). An import marks ALL waiting sends of the company answered; with none waiting it inserts a row (fileName 'respostas-{empresa}.fitpulse', sentAt = answeredAt = import time) so every imported draft has its mark. For bulk reads, query questionnaireSend.draftId from your own repository code instead of one call per draft.",
+      "paths": ["server/repositories/questionnaireRepository.ts", "prisma/schema.prisma"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "diagnosisRepository gained importDraft(companyId, values, { replace, afterCreate(tx, record) }) returning company_not_found | draft_exists { draftCreatedAt } | imported { record }: one transaction, and it replaces ALL drafts of the company when replace is true. A draft created by import is a normal draft (currentBlock 1, no diary marks). questionnaireService keeps clientSavedAt at or before the import time (a client clock set ahead is clamped).",
+      "paths": ["server/repositories/diagnosisRepository.ts", "server/services/questionnaireService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Backup and restore (IF-009, server/services/backupService.ts and backupSchemas.ts) do not carry questionnaire_sends, so a restored backup forgets which companies were waiting for answers (nothing else breaks: an import with no waiting send records itself). Decide in Phase 7 whether the backup should include them; this unit did not touch the backup files."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks outside this unit's Done-when that still have to run once the frontend and attention units land: pnpm build; pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts; pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts; the Q-10 matrix (Gmail/Outlook/WhatsApp x Chrome/Edge/Firefox/Safari) approved by the owner; and the dev-link walkthrough in the Play (send, answer in another browser, import, review, conclude)."
+    }
+  ]
+}

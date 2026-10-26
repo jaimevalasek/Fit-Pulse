@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "44dd0a54-20d6-4124-8dd1-431242e65f50",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "unit": "phase-1-frontend-result",
+  "wave": 5,
+  "capabilities": ["CAP-ra-polish", "CAP-ra-report-center"],
+  "acceptance_criteria": ["AC-ra-01", "AC-ra-23", "AC-ra-24", "AC-ra-25"],
+  "started_at": "2026-10-25T23:32:35Z",
+  "finished_at": "2026-10-25T23:33:26Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-polish",
+      "ac": "AC-ra-24",
+      "path": "tests/e2e/result.spec.ts",
+      "summary": "Not run here: pnpm exec playwright test tests/e2e/result.spec.ts tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts. Needs the integrated build and a running app; covers the RiskList layout at 390 px and 1280 px (AC-ra-24) and AC-ra-61. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-report-center",
+      "ac": "AC-ra-25",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "Not run here: Play dev-link walkthrough (result -> Exportar PDF -> PDF salvo -> Fechar; result/home -> Relatórios opens the center on the right diagnosis). Needs the Play desktop app and an integrated build. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "low",
+      "cap": "CAP-ra-polish",
+      "ac": "AC-ra-24",
+      "path": "src/features/result/RiskList.tsx",
+      "summary": "Not independently run: pnpm exec eslint on the changed files. The implementer reported ESLint is not installed in the project; this was not re-checked here. tsc is the only static check that ran."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm typecheck (tsc --noEmit)",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-result-qa/typecheck.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-result-qa/typecheck.exitcode"
+    },
+    {
+      "check": "grep -rln ExportReportDialog src shared server tests",
+      "result": "PASS",
+      "detail": "no matches (grep exit 1); src/features/result/ExportReportDialog.tsx is absent and nothing imports it"
+    },
+    {
+      "check": "grep -rn describeConfidence src shared server tests",
+      "result": "PASS",
+      "detail": "no matches (grep exit 1); ResultPage.tsx and ConfidenceNote.tsx no longer reference the removed export"
+    },
+    {
+      "check": "pnpm exec vitest run tests/unit/confidenceText.test.ts",
+      "result": "PASS",
+      "exit_code": 0,
+      "detail": "1 file, 4 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-result-qa/vitest-confidenceText.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-result-qa/vitest-confidenceText.exitcode"
+    },
+    {
+      "check": "code review: AC-ra-23 wiring",
+      "result": "PASS",
+      "detail": "ConfidenceNote.tsx and ResultPage.tsx header meta line use formatConfidenceStatement from shared/format/confidenceText.ts; the local describeConfidence is gone"
+    },
+    {
+      "check": "code review: AC-ra-24 wiring",
+      "result": "PASS",
+      "detail": "RiskList.tsx labels 'Probabilidade P de 5', 'Impacto I de 5', 'Nota P × I = N' use whitespace-nowrap; grid is sm:grid-cols-[160px_minmax(0,1fr)]. Visual check at 390/1280 px not run here."
+    },
+    {
+      "check": "code review: AC-ra-25 / AC-ra-01 wiring",
+      "result": "PASS",
+      "detail": "ResultHeader: 'Relatórios' link data-aioson-id=result-reports to /empresa/{companyId}/relatorios?diagnostico={diagnosisId}; ResultExport wraps ReportDelivery onExport=exportReport(diagnosisId), shows result-export-close 'Fechar' only after a successful save and remounts ReportDelivery on close. ReportDelivery catches onExport rejections. OwnerHome.tsx home-reports link to /empresa/{companyId}/relatorios."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred checks after integration: (1) pnpm exec playwright test tests/e2e/result.spec.ts tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts, including the RiskList layout at 390 px and 1280 px for AC-ra-24 and AC-ra-61; (2) Play dev-link walkthrough: open a result -> Exportar PDF (data-aioson-id=report-export) -> PDF salvo (report-pdf-saved) -> Fechar (result-export-close); then result/home -> Relatórios (result-reports / home-reports) opens the center on the right diagnosis.",
+      "paths": ["tests/e2e/result.spec.ts", "tests/e2e/report.spec.ts", "tests/e2e/accessibility.spec.ts", "src/features/result/ResultPage.tsx", "src/features/home/OwnerHome.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "ConfidenceNote no longer exports describeConfidence; consumers use formatConfidenceStatement from shared/format/confidenceText.ts. src/features/result/ExportReportDialog.tsx is retired and has no importers.",
+      "paths": ["src/features/result/ConfidenceNote.tsx", "shared/format/confidenceText.ts"]
+    }
+  ]
+}

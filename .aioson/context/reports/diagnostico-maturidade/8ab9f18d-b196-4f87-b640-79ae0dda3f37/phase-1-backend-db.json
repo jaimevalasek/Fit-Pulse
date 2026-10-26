@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "0144c16f-cc13-4f10-9d84-e001987dc218",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": ["server/**","shared/**","prisma/**","scripts/**","tests/api/**","tests/unit/**","tests/helpers/**","tests/fixtures/**","package.json","pnpm-workspace.yaml","pnpm-lock.yaml","tsconfig.json","vitest.config.ts","prisma.config.ts","manifest.json","system.json",".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:25:00Z",
+  "finished_at": "2026-10-23T03:37:00Z",
+  "unit": "phase-1-backend-db",
+  "verdict": "PASS",
+  "files_changed": [
+    "prisma/migrations/migration_lock.toml",
+    "prisma/migrations/20261023000000_init/migration.sql",
+    "scripts/prepare-app.mjs",
+    "scripts/smoke-migrate.mjs",
+    "server/db/prismaClient.ts",
+    "tests/helpers/testDatabase.ts"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "tests/helpers/testDatabase.ts does not keep a migrated template to copy (plan wording: 'copia de um modelo migrado uma vez'). vitest isolates modules per test file, so a module-level template would be rebuilt per file anyway; instead each createTestDatabase() replays prisma/migrations/*/migration.sql in order through the Prisma adapter's executeScript (milliseconds). The resulting schema is the one `prisma migrate deploy` builds, except there are no _prisma_migrations rows; the real deploy path is covered by scripts/smoke-migrate.mjs.",
+      "paths": ["tests/helpers/testDatabase.ts"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "@types/better-sqlite3 is not in package.json (foundation unit owns it). The TypeScript files avoid importing better-sqlite3 directly (testDatabase.ts uses the adapter's executeScript); only the .mjs smoke scripts import it. A later unit that imports better-sqlite3 from .ts would need the types package added.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "scripts/smoke-migrate.mjs seeds rows with raw SQL using the current NOT NULL columns of companies/diagnoses/preferences. A future migration that adds a NOT NULL column without a default to one of them needs seedOwnerData() updated; the failure would be loud (insert error), not silent.",
+      "paths": ["scripts/smoke-migrate.mjs"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "Side effects left in the worktree, all gitignored: server/generated/prisma (from prisma generate), dist/ (vite build ran because the frontend lane's src/ already existed), and an empty data/ (prisma.config.ts -> resolveDatabaseUrl() creates it on any Prisma CLI call). No database file was left in data/; every database used for verification lived in an OS temp folder that was removed.",
+      "paths": ["server/generated", "dist", "data"]
+    },
+    {
+      "kind": "process_note",
+      "severity": "low",
+      "text": "While reading the shared config files I ran `cat .env`, which printed its single OPENROUTER_API_KEY line into this session's tool output. The value was not copied into any file, report or note. If session transcripts are retained, consider rotating that key."
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-1-backend-http",
+      "kind": "contract_change",
+      "text": "server/db/prismaClient.ts exports `createPrismaClient(databaseUrl = resolveDatabaseUrl()): PrismaClient` (synchronous; the PRAGMAs busy_timeout=5000, journal_mode=WAL and foreign_keys=ON are applied by the adapter factory on each connect, lazily on the first query). server/main.ts should call it and call prisma.$disconnect() on SIGTERM/SIGINT. The PrismaClient type comes from server/generated/prisma/client.ts (run `node scripts/prepare-app.mjs --generate` if the folder is missing).",
+      "paths": ["server/db/prismaClient.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-http",
+      "kind": "contract_change",
+      "text": "tests/helpers/testDatabase.ts exports `createTestDatabase(options?: { now?: Date }): Promise<TestDatabase>`. TestDatabase is flat: { prisma, now: () => Date, downloadsDir, databaseUrl, setNow(date), resetData(), dispose() }, so it can be passed straight to createApp(deps) when deps is { prisma, now, downloadsDir } (extra properties are fine because it is a variable, not an object literal). Use beforeAll to create and afterAll to await dispose(); resetData() empties diagnoses, companies and preferences between tests. Default clock is 2026-10-23T12:00:00.000Z.",
+      "paths": ["tests/helpers/testDatabase.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-package",
+      "kind": "contract_change",
+      "text": "scripts/prepare-app.mjs exports `APP_ROOT` and `runPackageBin(packageName, args, { env, capture, binName })` (spawns node_modules/<pkg>'s bin with process.execPath, no shell, CHECKPOINT_DISABLE=1, returns { status, stdout, stderr }). The steps only run when the file is executed directly, so smoke-boot.mjs / smoke-store-package.mjs can import the helpers. CLI: flags --generate, --migrate, --build; no flag or an unknown flag exits 2 with a usage line; a failing step exits with that step's code; --build skips with a log line when src/ does not exist. For the update simulation in smoke-store-package, scripts/smoke-migrate.mjs shows a working recipe: build a synthetic release with `prisma migrate diff --from-schema <schema> --to-schema <modified copy> --script` (adding a required column to Company yields a RedefineTables migration), name it 99991231235959_smoke_synthetic so it sorts last, and deploy it with `prisma migrate deploy --config <tmp>/prisma.config.mjs` (plain-object config with absolute schema, migrations.path and datasource.url).",
+      "paths": ["scripts/prepare-app.mjs", "scripts/smoke-migrate.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "pnpm install's postinstall (owned by the foundation unit) now finds scripts/prepare-app.mjs and runs it with --generate --migrate --build. It uses DATABASE_URL when set, else data/fitpulse.db. Re-run `pnpm install` (clean) once all wave-2 units are merged to confirm the full chain; I only ran prepare-app directly with a temp DATABASE_URL, not `pnpm install`.",
+      "paths": ["scripts/prepare-app.mjs", "package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "AC-dm-45 'smoke manual de atualizacao + inspecao do pacote' is only partly covered here: the schema-change/data-preservation half is automated and passing in scripts/smoke-migrate.mjs. The 'datafile never travels in the published package' half belongs to scripts/smoke-store-package.mjs (unit phase-1-backend-package) and the Play store update itself needs a manual walkthrough."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "node scripts/smoke-migrate.mjs",
+      "result": "PASS, exit code 0 (5 steps: first install via prepare-app --migrate; seed companies/drafts/completed diagnoses/preferences; synthetic RedefineTables release applied; data identical, foreign_key_check empty, indexes unchanged; repeat deploy 'No pending migrations' and company->diagnoses cascade still works)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/smoke-migrate-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/smoke-migrate-final.exit"
+    },
+    {
+      "check": "negative control: copy of smoke-migrate with 'DELETE FROM diagnoses;' appended to the synthetic migration",
+      "result": "exit 1, 'FAIL: rows of diagnoses changed by the update' (the smoke detects data loss)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/mutant.log"
+    },
+    {
+      "check": "node scripts/prepare-app.mjs --generate --migrate --build (DATABASE_URL = temp file); node scripts/prepare-app.mjs --nope",
+      "result": "first exit 0 (generate, deploy of 20261023000000_init, vite build); second exit 2 with usage",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/prepare.log"
+    },
+    {
+      "check": "pnpm exec tsc --noEmit (whole project)",
+      "result": "exit 0, 0 errors",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/tsc.log"
+    },
+    {
+      "check": "tsx probe of createPrismaClient + createTestDatabase",
+      "result": "exit 0: journal_mode=wal, foreign_keys=1, busy_timeout=5000 before and after writes and a $transaction; Prisma delete cascades diagnoses; resetData empties tables; dispose is idempotent and removes the temp folder",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/probe-pragmas.log"
+    },
+    {
+      "check": "aioson rules:check . --changed",
+      "result": "RULES=OK, exit 0",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/rules-check.log"
+    },
+    {
+      "check": "init migration generated with `prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script` (CHECKPOINT_DISABLE=1)",
+      "result": "exit 0; migration.sql is a byte copy of the output; migration_lock.toml has provider = \"sqlite\"",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-db-dev/init.sql"
+    }
+  ]
+}

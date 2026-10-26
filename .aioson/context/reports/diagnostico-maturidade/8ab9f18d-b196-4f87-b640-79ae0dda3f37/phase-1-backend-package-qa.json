@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "e206324f-5e4e-4848-82df-18a8b110d000",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "unit": "phase-1-backend-package",
+  "phase": "1-backend-package",
+  "capabilities": ["CAP-dm-play-runtime"],
+  "acceptance_criteria": ["AC-dm-44"],
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "writable_roots": [],
+  "unit_files": ["system.json", "scripts/smoke-boot.mjs", "scripts/smoke-store-package.mjs"],
+  "started_at": "2026-10-23T03:44:00Z",
+  "finished_at": "2026-10-23T03:52:00Z",
+  "verdict": "PASS",
+  "corrections": [
+    {
+      "path": "scripts/smoke-boot.mjs",
+      "summary": "assertNotReachableFromNetwork accepted only ECONNREFUSED; now accepts ECONNREFUSED or timeout (both mean not reachable), still fails when a LAN address connects. Windows drops the SYN on non-loopback IPv4 in some setups, as reported by the phase-1-backend-http lane."
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-44",
+      "path": "scripts/smoke-boot.mjs",
+      "summary": "Manual AC-dm-44 check from a second computer on the same network was not run (no second machine in this session). Capability-wide; deferred to integration. Steps: start the app with PORT and BACKEND_PORT set to free ports, then from another computer on the LAN connect to the host's LAN IP on both ports and confirm the connection is refused or times out."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": null,
+      "path": "manifest.json",
+      "summary": "Play dev-link check (Settings > Instalar App > Linkar pasta; green badge and webview render) was not run because the AIOSON Play desktop app is not available in this session. Capability-wide; deferred to integration."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-45",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "The source-mode package still includes tests/helpers/testDatabase.ts (the packager drops only *.test.*, *.spec.* and test folders). It is outside this unit's Done-when and inert at runtime; reported by the implementer."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-dm-play-runtime",
+      "ac": null,
+      "path": "system.json",
+      "summary": "The packager's default --dry-run list also ships AGENTS.md, CLAUDE.md, plans/ and agents/_shared/*. No secrets or data are included (no .env, no data/, no *.db). Packager behaviour is outside this unit; flagged for the integration owner to decide."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-dm-play-runtime",
+      "ac": null,
+      "path": "C:\\Users\\jaime\\AppData\\Local\\Temp\\fp-scratch-boot.W6nZSh",
+      "summary": "A scratch fake-app folder left by the implementer still exists in the OS temp directory, outside the workspace. QA did not delete it. Safe to remove."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node --check scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-qa/check-boot.log",
+      "result": "Syntax OK, run before and after the correction (check-boot-after-fix.log)."
+    },
+    {
+      "command": "node --check scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-qa/check-store.log"
+    },
+    {
+      "command": "aioson system:package . --dry-run",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-qa/dry-run-after-fix.log",
+      "result": "FitPulse 0.1.0, 75 files. No data/ entry, no *.db entry, no pnpm/npm/yarn/bun lockfile. The only 'lock' match is prisma/migrations/migration_lock.toml, a Prisma migration file. Earlier run (dry-run.log, 71 files) also exit 0."
+    },
+    {
+      "command": "node scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-qa/smoke-boot.log",
+      "result": "PASS against the real app: backend /api/health, UI root and proxied /api/health answered on injected ports; both ports refused connections on 3 external IPv4 addresses; ports released after stop."
+    },
+    {
+      "command": "system.json vs manifest.json field comparison",
+      "exit_code": 0,
+      "result": "slug fitpulse, name FitPulse, version 0.1.0 and description match in both files."
+    },
+    {
+      "command": "LAN probe on this host (loopback listener and closed port, probed on each external IPv4)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-qa/probe-lan.log",
+      "result": "ECONNREFUSED on all three addresses in both cases. The timeout branch is not reproduced on this host; the correction is based on the http-lane report."
+    }
+  ],
+  "not_rerun": [
+    "node scripts/smoke-store-package.mjs (outside Done-when; heavy pnpm install and two boots). Implementer evidence: store-real-1.log, 8/8 steps PASS."
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "scripts/smoke-boot.mjs LAN check now passes when a non-loopback connection is refused or times out, and fails only on connected. Exported helper names are unchanged.",
+      "paths": ["scripts/smoke-boot.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Answer to the phase-1-backend-db QA question: scripts/smoke-store-package.mjs covers data/ (any file under data/) and *.db / *.db-journal / *.db-wal / *.db-shm in its package-content check (REQUIRED/forbidden rules, lines ~37-38). It imports APP_ROOT from scripts/prepare-app.mjs. It does not import runPackageBin, because installing the package runs the generate, migrate and build steps through the install lifecycle. The implementer's description of its imports was slightly broader than the code; no code change needed.",
+      "paths": ["scripts/smoke-store-package.mjs", "scripts/prepare-app.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred capability-wide checks: (1) AC-dm-44 cross-computer probe, steps in findings[0]. (2) Play dev-link badge and webview check, steps in findings[1]. (3) Optional full re-run of node scripts/smoke-store-package.mjs (needs registry access or a warm pnpm store; allow several minutes).",
+      "paths": ["scripts/smoke-boot.mjs", "scripts/smoke-store-package.mjs"]
+    }
+  ]
+}

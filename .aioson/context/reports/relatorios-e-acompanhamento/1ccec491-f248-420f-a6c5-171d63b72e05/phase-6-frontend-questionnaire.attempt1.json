@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "3cf0c5d2-351e-49a8-9103-9dbd6c350e9f",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-6-frontend-questionnaire",
+  "started_at": "2026-10-26T01:33:30Z",
+  "finished_at": "2026-10-26T01:40:00Z",
+  "verdict": "PASS",
+  "summary": "Upstream repair re-check. The rename the earlier attempt reported (src/features/reports -> src/features/report-center) is already in the tree: src/features/reports/ no longer exists, src/features/report-center/ holds the 8 report screens, and src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx import @/features/report-center/*. This unit needed no source edit. The questionnaire work from the earlier attempt is still in place: SendQuestionnaireDialog.tsx and ImportAnswersDialog.tsx call only sendQuestionnaire/importAnswers from src/api/questionnaireApi.ts (IF-011), plus revealSavedFile for 'Mostrar na pasta', and use no raw fetch. CompanyPage, CompanyTimeline, ConsultantHome and CompaniesPage are unchanged from that attempt. tsc --noEmit (the body of the typecheck script) exits 0.",
+  "files_changed": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "path": "package.json",
+      "summary": "`pnpm typecheck` exited 1 twice. pnpm's pre-run dependency check started `pnpm install` because the concurrent unit phase-7-backend-release changed package.json. The postinstall (scripts/prepare-app.mjs --migrate) then failed in `prisma migrate deploy` with 'SQLite database error: database is locked': the Play preview is running on :3543 (.aioson/preview.json) and holds data/fitpulse.db. No type error was involved. The script body, `node node_modules/typescript/bin/tsc --noEmit`, exited 0. The logs are typecheck-attempt1.log, typecheck-attempt1-retry.log and tsc-direct-attempt1.log in the run temp dir."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "The full store smoke (8 steps) was not rerun here. The script belongs to the concurrent phase-7-backend-release unit, which is still under review, and the rerun was assigned to integration. The rename that blocked step 1/8 is now present in the tree."
+    }
+  ],
+  "evidence": [
+    {"kind": "inspection", "summary": "ls src/features: report-center/ present (PortfolioReportPage, ReportCenterPage, ReportDelivery, ReportOptions, ReportPreview, ReportSheet, ReportSheetCharts, useReportPreview); reports/ absent; no import of @/features/reports remains under src."},
+    {"kind": "inspection", "summary": "src/features/questionnaire/*.tsx import only sendQuestionnaire/importAnswers (src/api/questionnaireApi.ts, IF-011), isApiError and revealSavedFile; grep 'fetch(' finds nothing."},
+    {"kind": "command", "command": "node node_modules/typescript/bin/tsc --noEmit", "exit_code": 0, "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-dev/tsc-direct-attempt1.log"},
+    {"kind": "command", "command": "pnpm typecheck", "exit_code": 1, "note": "failed in pnpm's auto-install postinstall (prisma migrate deploy: database is locked), before tsc ran", "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-dev/typecheck-attempt1-retry.log"}
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm typecheck` again once phase-7-backend-release has settled package.json and the Play preview (port 3543) is stopped, or after `pnpm install` has finished with the database unlocked. pnpm's dependency check reinstalls on a package.json change, and its postinstall migrate fails while the preview holds data/fitpulse.db. tsc --noEmit itself passes.",
+      "paths": ["package.json", "scripts/prepare-app.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The upstream rename src/features/reports -> src/features/report-center is already in place, and the imports in App.tsx, ResultPage.tsx and BrandSection.tsx point to it. Rerun `node scripts/smoke-store-package.mjs` (about 5 min, foreground) and expect 8/8. Deferred phase-6 checks: pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts; pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts (AC-ra-48, 51, 52, 53, 59); and in the Play dev-link: send, answer in another browser, import, review and conclude.",
+      "paths": ["scripts/smoke-store-package.mjs", "src/features/report-center/"]
+    }
+  ]
+}

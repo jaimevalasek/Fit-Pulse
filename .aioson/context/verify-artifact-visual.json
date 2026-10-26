@@ -1,0 +1,1094 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "visual",
+  "slug": "relatorios-e-acompanhamento",
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [
+    "cross-project palette repetition / visual fingerprint: accent hue ~124° on a dark ground resembles recent project \"aioson-capture\" (Δ10°, same hue family on the same ground pole) — palette, type, composition, material and motion fingerprints are compared; this source similarity is a review hint, not proof of identical rendered layouts. Draw a diversified start with `aioson design:seed` (or extract the owner's identity), or record the product reason for continuity",
+    "entry / mobile: 1 tap target(s) under 44px (input 40x24)",
+    "loading / mobile: 1 tap target(s) under 44px (input 40x24)",
+    "error / mobile: 1 tap target(s) under 44px (input 40x24)",
+    "success / mobile: 1 tap target(s) under 44px (input 40x24)"
+  ],
+  "checks": [
+    {
+      "id": "visual",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "declarations": 1391,
+    "scoped_declarations": 198,
+    "css_scope": {
+      "scoped": true,
+      "excluded_selectors": [
+        "#main.entering>*",
+        "a",
+        "h1",
+        "h2",
+        "p",
+        "h3",
+        ".m-only",
+        ".sr-only",
+        ".mono",
+        ".human",
+        ".soft",
+        ".muted",
+        ".shell",
+        ".topbar",
+        ".brand",
+        ".brand-mark",
+        ".brand b",
+        ".brand small",
+        ".main-nav",
+        ".main-nav a",
+        ".main-nav a:hover",
+        ".tools",
+        ".mode-btn",
+        ".mode-btn:hover",
+        ".icon-btn",
+        ".icon-btn:hover",
+        ".icon",
+        ".page-head",
+        ".crumb",
+        ".page-head h1",
+        ".page-head .meta",
+        ".head-actions",
+        ".tabs",
+        ".tabs a",
+        ".tabs a:hover",
+        ".tabs .count",
+        ".tabs .count.attn",
+        ".tabs .attn-dot",
+        ".pauta",
+        ".section-title",
+        ".section-sub",
+        ".btn",
+        ".btn:hover",
+        ".btn:active",
+        ".btn-primary",
+        ".btn-primary:hover",
+        ".btn-gold",
+        ".btn-gold:hover",
+        ".btn-danger",
+        ".btn-danger:hover",
+        ".btn-text",
+        ".btn-text:hover",
+        ".chip",
+        ".chip-ok",
+        ".chip-warn",
+        ".chip-danger",
+        ".chip-accent",
+        ".chips",
+        ".rows",
+        ".rows>li",
+        ".panel",
+        ".notice",
+        ".notice.warn",
+        ".notice.danger",
+        ".empty-state",
+        ".empty-state h2",
+        ".empty-state p",
+        ".field",
+        ".field>label",
+        ".field .label",
+        ".input",
+        ".input:focus",
+        "select.input",
+        "textarea.input",
+        ".adorn",
+        ".adorn:focus-within",
+        ".adorn>span",
+        ".adorn>input",
+        ".adorn>input:focus",
+        ".help",
+        ".err",
+        ".field.has-error .input",
+        ".field.has-error .adorn",
+        ".form-grid",
+        ".form-grid .full",
+        ".switch",
+        ".switch input",
+        ".switch input::after",
+        ".switch input:checked",
+        ".switch input:checked::after",
+        ".switch b",
+        ".switch small",
+        ".radio-row",
+        ".radio-row input",
+        ".scrim",
+        ".dialog",
+        ".dialog h2",
+        ".dialog .consequence",
+        ".dialog-actions",
+        ".file-path",
+        ".busy",
+        ".spinner",
+        ".result-mark",
+        ".result-mark.ok",
+        ".result-mark.bad",
+        ".result-mark .icon",
+        ".result-mark.ok .icon",
+        ".result-mark.bad .icon",
+        ".tour-veil",
+        ".tour-pop",
+        ".tour-pop h2",
+        ".tour-pop p",
+        ".tour-pop .step",
+        ".tour-pop .dialog-actions",
+        ".home-grid",
+        ".focal",
+        ".countdown",
+        ".countdown .big",
+        ".timeline-bar",
+        ".timeline-bar .track",
+        ".timeline-bar .fill",
+        ".timeline-bar .now",
+        ".timeline-ends",
+        ".lock-line",
+        ".lock-line .human",
+        ".widgets",
+        ".widget",
+        ".widget:hover",
+        ".widget h2",
+        ".widget .value",
+        ".widget .sub",
+        ".widget .go",
+        ".stage-bars",
+        ".stage-col",
+        ".stage-col:hover",
+        ".stage-col .bar",
+        ".stage-col.none .bar",
+        ".stage-col .n",
+        ".stage-col .l",
+        ".act",
+        ".act-n",
+        ".act h3",
+        ".act-reason",
+        ".act-meta",
+        ".act-note",
+        ".act-ctrl",
+        ".act.closed",
+        ".act.is-done h3",
+        ".diary-top",
+        ".dots",
+        ".dots i",
+        ".dots i.on",
+        ".chart",
+        ".chart .col",
+        ".chart .bar",
+        ".chart .col:last-child .bar",
+        ".chart .v",
+        ".chart-x",
+        ".chart-x span",
+        ".month-row",
+        ".month-row .m",
+        ".month-row .num",
+        ".month-row .lbl",
+        ".month-row .cac",
+        ".month-actions",
+        ".rep-types",
+        ".seg",
+        ".reports",
+        ".rep-controls",
+        ".rep-preview",
+        ".preview-head",
+        ".preview-head .mono",
+        ".pages",
+        ".export-notice",
+        ".brand-line",
+        ".brand-line img",
+        ".brand-line .mono-mark",
+        ".skeleton-page",
+        ".paper.reveal",
+        ".paper.reveal.in",
+        ".paper::after",
+        ".paper.reprint::after",
+        ".paper",
+        ".pg",
+        ".pg h3",
+        ".pg h4",
+        ".pg .p-soft",
+        ".pg .p-muted",
+        ".pg .p-mono",
+        ".pg .p-human",
+        ".pg .p-rule",
+        ".pg .p-lines",
+        ".pg-foot",
+        ".cover-brand",
+        ".cover-brand img",
+        ".cover-brand .mono-mark",
+        ".cover-brand b",
+        ".cover-brand span",
+        ".cover-title",
+        ".cover-company",
+        ".mini-ladder",
+        ".mini-ladder i",
+        ".mini-ladder i.on",
+        ".mini-ladder i.trail",
+        ".mini-ladder-l",
+        ".mini-ladder-l span",
+        ".mini-ladder-l span.on",
+        ".p-kpis",
+        ".p-kpis b",
+        ".p-kpis span",
+        ".p-acts",
+        ".p-acts li",
+        ".p-acts .n",
+        ".p-acts strong",
+        ".p-acts small",
+        ".p-tag",
+        ".p-tag.ok",
+        ".p-tag.warn",
+        ".p-tag.bad",
+        ".p-bars",
+        ".p-bar",
+        ".p-track",
+        ".p-track .f",
+        ".p-track .f.low",
+        ".p-track .f.before",
+        ".p-track .t50",
+        ".p-bar .v",
+        ".p-bar small",
+        ".p-group",
+        ".matrix",
+        ".matrix .c",
+        ".matrix .c.lo",
+        ".matrix .c.md",
+        ".matrix .c.hi",
+        ".matrix .ax",
+        ".matrix .dot",
+        ".p-risks",
+        ".p-risks li",
+        ".p-risks .dot",
+        ".p-table",
+        ".p-table th",
+        ".p-table td",
+        ".p-cols",
+        ".p-chart",
+        ".p-chart div",
+        ".p-chart i",
+        ".p-chart span",
+        ".p-chart-x",
+        ".p-chart-x span",
+        ".settings-sec",
+        ".logo-box",
+        ".logo-box .thumb",
+        ".logo-box .thumb img",
+        ".logo-box .thumb .mono-mark",
+        ".demo-row",
+        ".cover-preview",
+        ".client-shell",
+        ".client-head",
+        ".client-brand",
+        ".client-brand .logo",
+        ".client-brand .logo img",
+        ".rail",
+        ".rail button",
+        ".rail button.done",
+        ".rail button.cur",
+        ".choice",
+        ".choice input",
+        ".co-row",
+        ".co-row a.name",
+        ".co-row a.name:hover",
+        ".filters",
+        ".filter",
+        ".result-panel",
+        ".result-panel .stage-word",
+        ".act-meta .chip",
+        ".tl-row",
+        ".tl-row .d",
+        ".tl-row h3",
+        ".co-row .hide-m",
+        ".d-only",
+        ".rep-types .seg",
+        ".head-actions .btn",
+        ".month-row .month-actions"
+      ],
+      "uncertain_selectors": [
+        ":root[data-theme=\"light\"]",
+        ":root[data-theme=\"light\"] body::before",
+        ":root[data-theme=\"light\"] body::after",
+        "#main.entering>*:nth-child(2)",
+        "#main.entering>*:nth-child(3)",
+        "#main.entering>*:nth-child(4)",
+        "#main.entering>*:nth-child(n+5)",
+        ".main-nav a[aria-current=\"page\"]",
+        ".tabs a[aria-current=\"page\"]",
+        ".tabs a[aria-current=\"page\"]::after",
+        ".btn[disabled],.btn[aria-disabled=\"true\"]",
+        ".radio-row:has(input:checked)",
+        ".toast",
+        ".tour-target",
+        ".seg[aria-checked=\"true\"]",
+        ".seg[aria-disabled=\"true\"]",
+        ".choice:has(input:checked)",
+        ".filter[aria-current=\"true\"]"
+      ],
+      "dynamic_markup": true,
+      "limitation": "Source reachability only; cascade, visibility, selector relationships and runtime states require browser inspection."
+    },
+    "composition_signature": null,
+    "token_adherence_pct": 81,
+    "tokenized_values": 21,
+    "literal_values": 5,
+    "spacing_on_grid": 6,
+    "spacing_off_grid": 0,
+    "depth_strategies": [],
+    "depth_counts": {
+      "borders": 2,
+      "shadows": 0,
+      "blur": 0
+    },
+    "font_families": [
+      "inter"
+    ],
+    "display_face": null,
+    "font_delivery": {
+      "font_face_blocks": 0,
+      "webfont_linked": true,
+      "stylesheet_urls": [
+        "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      ],
+      "declared_families": [
+        "inter",
+        "jetbrains mono"
+      ],
+      "delivered_families": [
+        "inter"
+      ],
+      "undelivered_families": [],
+      "delivered": true
+    },
+    "max_font_size_px": 15,
+    "font_size_count": 1,
+    "fluid_type": false,
+    "keyframes": 10,
+    "animated_declarations": 6,
+    "reduced_motion_handled": true,
+    "motion": {
+      "designed": true,
+      "transition_only": false,
+      "transitions": 1,
+      "keyframes": 10,
+      "keyframe_names": [
+        "dust",
+        "breathe",
+        "ui-fade",
+        "ui-rise",
+        "ui-page",
+        "ui-pulse",
+        "batuta-draw",
+        "reprint",
+        "spin",
+        "grow"
+      ],
+      "applied_keyframes": 4,
+      "applied_keyframe_names": [
+        "breathe",
+        "dust",
+        "batuta-draw",
+        "ui-rise"
+      ],
+      "unapplied_keyframes": [
+        "ui-fade",
+        "ui-page",
+        "ui-pulse",
+        "reprint",
+        "spin",
+        "grow"
+      ],
+      "animated_declarations": 6,
+      "ambient_loops": 2,
+      "signature": true,
+      "signature_kinds": [
+        "animated backdrop"
+      ],
+      "scroll_reveal": true,
+      "reduced_motion_handled": true,
+      "reduced_motion_declared": true,
+      "reduced_motion_effective": true
+    },
+    "states_present": [
+      "loading",
+      "empty",
+      "error",
+      "disabled",
+      "focus"
+    ],
+    "states_missing": [],
+    "interactive_surface": true,
+    "surface_capabilities": {
+      "focusable": false,
+      "controls": false,
+      "data_entry": false,
+      "async_work": true,
+      "collections": true
+    },
+    "states_owed": [
+      "loading",
+      "empty",
+      "error",
+      "disabled"
+    ],
+    "states_unmet": [],
+    "max_card_nesting": 1,
+    "max_card_sibling_run": 3,
+    "card_sibling_class": "panel",
+    "emoji_glyphs": [],
+    "em_dash_prose": 0,
+    "prototype_anchors": true,
+    "primary_marker": true,
+    "tour_marker": true,
+    "media_elements": 4,
+    "media_evidence": {
+      "status": "absent",
+      "candidates": 0,
+      "verified": 0,
+      "unverified": 0,
+      "items": []
+    },
+    "native_dialog_calls": [],
+    "structured_inputs_without_semantics": [],
+    "destructive_controls": 2,
+    "dialog_machinery": true,
+    "kanban_surface": false,
+    "dnd_markers": false,
+    "management_surface": false,
+    "widget_markers": true,
+    "palette": {
+      "color_literals": 79,
+      "chromatic_share_pct": 53,
+      "hue_clusters": 5,
+      "accent_hue": 124,
+      "accent_chroma": 0.097,
+      "ground": {
+        "hex": "#0b0a08",
+        "l": 0.15,
+        "c": 0.005,
+        "h": 86,
+        "pole": "dark"
+      },
+      "origin": "identity",
+      "provenance": {
+        "reason": "identity_record",
+        "draw": null,
+        "closest_candidate": null,
+        "delta_deg": null
+      }
+    },
+    "tells": {
+      "active": 0,
+      "present": [],
+      "gradient_text": 0,
+      "colored_side_border": 0,
+      "kicker_above_heading": 0,
+      "icon_tile_stack": 0,
+      "chromatic_glow": 0,
+      "block_shadow": 0,
+      "saturated_display_faces": [],
+      "bounce_easing": 0,
+      "tiny_text": 0,
+      "buzzwords": 0,
+      "negation_pivots": 0,
+      "sanctioned_faces": [
+        "inter"
+      ]
+    },
+    "surface_mode": {
+      "mode": "operate",
+      "source": "declared",
+      "detected": "operate",
+      "operate_score": 5,
+      "brand_score": 1,
+      "operate_signals": [
+        "data table",
+        "sidebar shell",
+        "dense forms",
+        "toolbar / tabs"
+      ],
+      "brand_signals": [
+        "section rhythm"
+      ]
+    },
+    "utility_classes": {
+      "tokens": 699,
+      "utility": 2,
+      "share": 0
+    },
+    "embedded_assets": {
+      "bytes": 0,
+      "authored_style_bytes": 0,
+      "authored_style_share_pct": 0,
+      "markup_bytes": 0,
+      "markup_share_pct": 0,
+      "quarantined_bytes": 0,
+      "kinds": {}
+    },
+    "craft": {
+      "measured": true,
+      "mode": "operate",
+      "active_levers": 4,
+      "lever_count": 4,
+      "levers": {
+        "typeface": true,
+        "material": true,
+        "motion": true,
+        "chrome": true
+      },
+      "material_techniques": [
+        "gradients",
+        "modern color"
+      ],
+      "material_depth": 1,
+      "browser_surfaces": {
+        "count": 4,
+        "present": [
+          "::selection",
+          "caret-color",
+          "scrollbar",
+          ":focus-visible"
+        ]
+      },
+      "weight": {
+        "scored": false,
+        "reason": "operate surface: the premium axis is precision, not weight"
+      },
+      "precision": {
+        "scored": true,
+        "score": 100,
+        "bar": 60,
+        "grades": {
+          "typeface": 2,
+          "tokens": 2,
+          "rhythm": 2,
+          "states": 2,
+          "chrome": 2,
+          "tells": 2,
+          "dialect": 2
+        }
+      },
+      "unapplied_effects": [],
+      "gradient_count": 7,
+      "layered_shadow_declarations": 0,
+      "grain_noise": false,
+      "blend_modes": 0,
+      "mask_layers": 0,
+      "modern_color_functions": 8,
+      "background_images": 0,
+      "transition_declarations": 1,
+      "scroll_reveal": true,
+      "modern_css": [
+        "container queries",
+        ":has()",
+        "fluid clamp() type",
+        "aspect-ratio",
+        "oklch/color-mix",
+        "text-wrap balance",
+        "scroll-driven reveals"
+      ],
+      "modern_css_capabilities": {
+        "features": [
+          "container queries",
+          ":has()",
+          "fluid clamp() type",
+          "aspect-ratio",
+          "oklch/color-mix",
+          "text-wrap balance",
+          "scroll-driven reveals"
+        ],
+        "capabilities": {
+          "architecture": {
+            "present": [
+              "container queries",
+              ":has()"
+            ],
+            "count": 2,
+            "active": true
+          },
+          "responsive": {
+            "present": [
+              "fluid clamp() type",
+              "aspect-ratio"
+            ],
+            "count": 2,
+            "active": true
+          },
+          "color": {
+            "present": [
+              "oklch/color-mix"
+            ],
+            "count": 1,
+            "active": true
+          },
+          "typography": {
+            "present": [
+              "text-wrap balance"
+            ],
+            "count": 1,
+            "active": true
+          },
+          "interaction": {
+            "present": [],
+            "count": 0,
+            "active": false
+          },
+          "motion": {
+            "present": [
+              "scroll-driven reveals"
+            ],
+            "count": 1,
+            "active": true
+          },
+          "performance": {
+            "present": [],
+            "count": 0,
+            "active": false
+          }
+        },
+        "active_capabilities": 5,
+        "capability_count": 7
+      }
+    },
+    "design_choices": {
+      "register": "quiet",
+      "composition_family": "framed-plate adaptado como folha de papel sobre a tinta",
+      "material_family": "tinta quente com fios finos e troca tonal de slot; papel porcelana com a sua própria paleta fixa (bronze escuro, cobre e perigo do tema claro)",
+      "motion_family": "feedback de estado de 160 a 220 ms; a página nova da prévia entra com fade de 220 ms; prefers-reduced-motion deixa tudo estático"
+    },
+    "files": [
+      ".aioson/briefings/relatorios-e-acompanhamento/prototype.html"
+    ],
+    "corpus": {
+      "documents": 1,
+      "stylesheets": 0,
+      "components": 0,
+      "files_total": 1,
+      "truncated": 0
+    },
+    "motion_ambition": {
+      "asked": 7,
+      "signature_asked": false,
+      "met": true,
+      "delivered": {
+        "signature": true,
+        "signature_kinds": [
+          "animated backdrop"
+        ],
+        "keyframes": 10,
+        "animated_declarations": 6,
+        "ambient_loops": 2,
+        "scroll_reveal": true
+      }
+    },
+    "manifest_visual_direction": true,
+    "manifest_runtime_matrix": [
+      {
+        "name": "entry",
+        "route": "#/empresa/c1/relatorios",
+        "state": null
+      },
+      {
+        "name": "loading",
+        "route": "#/empresa/c1/relatorios?state=loading",
+        "state": "loading"
+      },
+      {
+        "name": "empty",
+        "route": "#/empresa/c1/diario?state=empty",
+        "state": "empty"
+      },
+      {
+        "name": "error",
+        "route": "#/empresa/c1/relatorios?state=error",
+        "state": "error"
+      },
+      {
+        "name": "success",
+        "route": "#/empresa/c1/relatorios?state=success",
+        "state": "success"
+      }
+    ],
+    "manifest_quality_evidence": true,
+    "manifest_identity": ".aioson/briefings/relatorios-e-acompanhamento/identity.md",
+    "manifest_references": "extracted",
+    "manifest_seed_labels": [],
+    "palette_repeat": {
+      "project": "aioson-capture",
+      "delta_deg": 10,
+      "reason": "same hue family on the same ground pole",
+      "same_face": false,
+      "same_composition": false,
+      "same_material": true,
+      "same_motion": false
+    },
+    "fingerprint_recorded": true,
+    "assurance": {
+      "verdict": "pass",
+      "reasons": [],
+      "static_craft_verified": true,
+      "runtime_craft_verified": true
+    },
+    "runtime": {
+      "available": true,
+      "entry": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "viewports": [
+        {
+          "name": "desktop",
+          "route": "entry",
+          "width": 1280,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 9,
+          "text_samples": 149,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 2,
+            "first_fold_occupancy_pct": 39,
+            "folds_occupancy_pct": [
+              39,
+              42
+            ],
+            "folds_avg_occupancy_pct": 41,
+            "folds_pixels_pct": [
+              38,
+              39
+            ],
+            "ground": "#080808"
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "mobile",
+          "route": "entry",
+          "width": 360,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 1,
+          "text_samples": 144,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 3,
+            "first_fold_occupancy_pct": 54,
+            "folds_occupancy_pct": [
+              54,
+              84,
+              84
+            ],
+            "folds_avg_occupancy_pct": 74
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "desktop",
+          "route": "loading",
+          "state": "loading",
+          "width": 1280,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 7,
+          "text_samples": 27,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 2,
+            "first_fold_occupancy_pct": 14,
+            "folds_occupancy_pct": [
+              14,
+              0
+            ],
+            "folds_avg_occupancy_pct": 7
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "mobile",
+          "route": "loading",
+          "state": "loading",
+          "width": 360,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 1,
+          "text_samples": 22,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 3,
+            "first_fold_occupancy_pct": 27,
+            "folds_occupancy_pct": [
+              27,
+              0,
+              12
+            ],
+            "folds_avg_occupancy_pct": 13
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "desktop",
+          "route": "empty",
+          "state": "empty",
+          "width": 1280,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 4,
+          "text_samples": 19,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 1,
+            "first_fold_occupancy_pct": 15,
+            "folds_occupancy_pct": [
+              15
+            ],
+            "folds_avg_occupancy_pct": 15
+          },
+          "primary_markers": 0,
+          "primary_visible": 0,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "mobile",
+          "route": "empty",
+          "state": "empty",
+          "width": 360,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 0,
+          "text_samples": 14,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 2,
+            "first_fold_occupancy_pct": 46,
+            "folds_occupancy_pct": [
+              46,
+              0
+            ],
+            "folds_avg_occupancy_pct": 23
+          },
+          "primary_markers": 0,
+          "primary_visible": 0,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "desktop",
+          "route": "error",
+          "state": "error",
+          "width": 1280,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 9,
+          "text_samples": 150,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 2,
+            "first_fold_occupancy_pct": 35,
+            "folds_occupancy_pct": [
+              35,
+              42
+            ],
+            "folds_avg_occupancy_pct": 39
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "mobile",
+          "route": "error",
+          "state": "error",
+          "width": 360,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 1,
+          "text_samples": 145,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 3,
+            "first_fold_occupancy_pct": 55,
+            "folds_occupancy_pct": [
+              55,
+              84,
+              84
+            ],
+            "folds_avg_occupancy_pct": 74
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "desktop",
+          "route": "success",
+          "state": "success",
+          "width": 1280,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 10,
+          "text_samples": 151,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 2,
+            "first_fold_occupancy_pct": 36,
+            "folds_occupancy_pct": [
+              36,
+              42
+            ],
+            "folds_avg_occupancy_pct": 39
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        },
+        {
+          "name": "mobile",
+          "route": "success",
+          "state": "success",
+          "width": 360,
+          "horizontal_overflow_px": 0,
+          "clipped_elements": 0,
+          "offscreen_elements": 0,
+          "small_tap_targets": 1,
+          "text_samples": 146,
+          "contrast_failures": 0,
+          "density": {
+            "folds": 3,
+            "first_fold_occupancy_pct": 56,
+            "folds_occupancy_pct": [
+              56,
+              84,
+              84
+            ],
+            "folds_avg_occupancy_pct": 75
+          },
+          "primary_markers": 1,
+          "primary_visible": 1,
+          "primary_below_fold": 0
+        }
+      ],
+      "assurance": {
+        "craft_verified": true,
+        "probe_runs": 10,
+        "expected_runs": 10,
+        "routes_verified": [
+          "entry",
+          "loading",
+          "empty",
+          "error",
+          "success"
+        ],
+        "states_verified": [
+          "loading",
+          "disabled",
+          "empty",
+          "error",
+          "success"
+        ],
+        "font_failures": [],
+        "broken_media": [],
+        "material_techniques": [
+          "gradients",
+          "blur"
+        ],
+        "max_font_size_px": 37.07,
+        "craft_axes": {
+          "typeface": true,
+          "display_scale": false,
+          "material": true,
+          "motion": true,
+          "evidence": false
+        },
+        "density": {
+          "folds": 2,
+          "first_fold_occupancy_pct": 39,
+          "folds_occupancy_pct": [
+            39,
+            42
+          ],
+          "folds_avg_occupancy_pct": 41,
+          "folds_pixels_pct": [
+            38,
+            39
+          ],
+          "ground": "#080808",
+          "scope": "entry / desktop",
+          "floor": 35,
+          "enforced": false,
+          "register": "quiet"
+        }
+      },
+      "screenshots": [
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/entry-desktop.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/entry-mobile.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/loading-desktop.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/loading-mobile.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/empty-desktop.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/empty-mobile.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/error-desktop.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/error-mobile.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/success-desktop.png",
+        ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots/success-mobile.png"
+      ],
+      "screenshot_capture": {
+        "dir": ".aioson/context/features/relatorios-e-acompanhamento/visual-screenshots",
+        "mode": "viewport",
+        "count": 10,
+        "bytes": 850635
+      },
+      "findings": {
+        "issues": [],
+        "warnings": [
+          "entry / mobile: 1 tap target(s) under 44px (input 40x24)",
+          "loading / mobile: 1 tap target(s) under 44px (input 40x24)",
+          "error / mobile: 1 tap target(s) under 44px (input 40x24)",
+          "success / mobile: 1 tap target(s) under 44px (input 40x24)"
+        ]
+      },
+      "carried_from": "2026-10-24T23:40:45.696Z"
+    }
+  },
+  "input_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "b1c397d104302e370c5070e84fb2712bca9bd5ba1f564859f2bd7fea2904611f",
+    "files": [
+      {
+        "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+        "sha256": "fd0a1e854d4c618a0fead55259159119ee5ebbf4ce004756610bdebc8e12caba"
+      },
+      {
+        "path": ".aioson/briefings/relatorios-e-acompanhamento/identity.md",
+        "sha256": "5b6b96b7f8a5c35b1668cb603f9d7ebb2dc709a0e790cb76975449f26f7e31d1"
+      },
+      {
+        "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype-manifest.md",
+        "sha256": "9d8a66b64cf242299af76de19d5b7f90be93a97413ebe34bd9d56f733d2d15d1"
+      },
+      {
+        "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+        "sha256": "d7613726a192610c8b3f2cb6f9de1c79eaefbb9f8966c730eeeb9fd6e932e446"
+      }
+    ]
+  },
+  "exitCode": 0
+}

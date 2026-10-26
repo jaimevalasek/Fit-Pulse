@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "7a2291aa-f7e6-419d-866f-c5dc03c70a3a",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "unit": "phase-1-backend-evaluate",
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:50:00Z",
+  "finished_at": "2026-10-23T03:56:30Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "tooling",
+      "severity": "low",
+      "cap": "CAP-dm-engine",
+      "ac": "AC-dm-25",
+      "path": "package.json",
+      "summary": "The Done-when command `pnpm test -- tests/unit/evaluateDiagnosis.test.ts` exits 0, but the literal `--` makes vitest ignore the file filter and run all 8 files (439 tests). This unit's 44 tests are included, so the gate holds. Per-file runs need `pnpm exec vitest run <file>`. The script fix is in package.json, which is outside this unit's correction set, so it is reported and not changed."
+    },
+    {
+      "kind": "design-note",
+      "severity": "low",
+      "cap": "CAP-dm-engine",
+      "ac": "AC-dm-25",
+      "path": "shared/domain/actionPlan.ts",
+      "summary": "RULE-dm-09 adds the dep action when SIG-04 exists, but buildActionPlan reads SIG-04 from the risks list that detectRisks already cut to rules.risk.maxRisks = 5 (shared/domain/riskSignals.ts:76). Under rulesV1 this matches the PRD: SIG-04 (score 12) is always in the top five, since only SIG-01 (16) and SIG-02 (20) score higher and it wins the 12-point tie with SIG-05 by catalog order. Under a rules version with different weights, a fired SIG-04 could be dropped by the cap and lose its dep action. Not triggered by rulesV1 or rulesV2 today."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-engine",
+      "ac": "AC-dm-19, AC-dm-21, AC-dm-22, AC-dm-23, AC-dm-24, AC-dm-27, AC-dm-49",
+      "path": "tests/api/diagnosisRoutes.test.ts",
+      "summary": "Not run by this review, because they are capability-level checks outside this unit's Done-when and depend on sibling units: `pnpm exec vitest run tests/api/diagnosisRoutes.test.ts` (owned by another unit); the AC-dm-22 persistence test with a rules swap (needs the persistence layer and tests/fixtures/rulesV2.ts); the e2e checks for AC-dm-19, 21, 23, 24 and 49; and the AC-dm-27 timing measurement, which needs the Play runtime on Windows. The unit's Done-when passes without them, and the integration owner must run them (see messages[])."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run this unit's test file per file with `pnpm exec vitest run tests/unit/evaluateDiagnosis.test.ts`. The literal `pnpm test -- <file>` runs the whole suite, because the `--` makes vitest ignore the file filter."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Steps for the deferred checks: (1) `pnpm exec vitest run tests/api/diagnosisRoutes.test.ts` once the routes unit lands; (2) for AC-dm-22, run a persistence test that stores a completed diagnosis under rulesV1, then reads it back after swapping in tests/fixtures/rulesV2.ts, and checks that the result is unchanged; (3) run the e2e checks for AC-dm-19, 21, 23, 24 and 49 on the Play runtime; (4) measure AC-dm-27 timing on the Play on Windows."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/fixtures/rulesV2.ts is ready for the AC-dm-22 and AC-dm-31 comparison tests. A G3 variant with pc1, pc2 and pc3 all at 2 (Produto e canal 67) is stage 3 with lock co and plan [co, invest, pc] under rulesV1, and stage 2 with lock pc and plan [pc, co, mm] under rulesV2."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/unit/evaluateDiagnosis.test.ts",
+      "exit_code": 0,
+      "result": "8 files passed, 439 tests passed. The literal `--` ignores the file filter, so the whole suite ran, including this unit's file. Exit code also saved in test-literal.exit.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-qa/test-literal.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/evaluateDiagnosis.test.ts",
+      "exit_code": 0,
+      "result": "1 file passed, 44 tests passed. Covers G1 to G4 exact (scores, stage, lock, weakest dimension, risks, plan, confidence, unit economics), invest eligibility over the 192-input grid, same-stage plans differing by weak dimension, purity, JSON round trip, and rulesV2 changing the result. Exit code also saved in test-focused.exit.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-qa/test-focused.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "No type errors; the log is empty. Exit code also saved in tsc.exit.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-evaluate-qa/tsc.log"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "cd009ab4-9666-4abd-b36b-8873f5d1ed7d",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "unit": "phase-5-frontend-owner-home",
+  "started_at": "2026-10-26T00:54:09Z",
+  "finished_at": "2026-10-26T01:00:40Z",
+  "verdict": "PASS",
+  "files_changed": [
+    {"path": "src/features/home/OwnerHome.tsx", "action": "modify", "summary": "Prototype layout: header with stage meta, Relatórios and Novo diagnóstico; DraftCard with 'Continuar de onde parei' when a draft exists; focal ReevaluationCountdown + OwnerFollowUpWidgets grid; 'Suas 3 ações' reusing TrackedActionRows (editable status with undo, AC-ra-26); result/compare links. Removed StagePlate, Evolution and every trend use."},
+    {"path": "src/features/home/ReevaluationCountdown.tsx", "action": "create", "summary": "'Refazer o diagnóstico': 'N dias até {data}' / 'N dias de atraso desde {data}' via shared/domain/followUp reevaluationCountdown, interval 'a cada N dias', Último/Hoje/Próximo line via reevaluationTimeline with a progress bar, the lock (home-trava), and the in-app-only reminder sentence."},
+    {"path": "src/features/home/OwnerFollowUpWidgets.tsx", "action": "create", "summary": "'Ações do plano' (feitas, em andamento, a fazer, não se aplica, vencidas chip), 'Diário de números' (cost per customer via formatMoney + months noted / measured range), 'Relatórios' (last saved PDF or invitation); each row is a Link to /empresa/:id/acoes | diario | relatorios."},
+    {"path": "src/features/home/ScoreTrend.tsx", "action": "retire", "summary": "File deleted; nothing imports ScoreTrend or HomeTrendPoint."},
+    {"path": "src/features/home/OnboardingTour.tsx", "action": "modify", "summary": "5-step prototype tour (relatorios, marca, acoes, diario, modo) for both modes; each step opens its page (company tab of the focus company or first active company, /configuracoes, current page for modo); TOUR_VERSION=2; auto-opens once on #/inicio when tourSeenVersion < 2 and the home shows content; skip/finish/leave saves {tourSeenVersion: 2, tourSeen: {[mode]: true}}; '?' reopens via useTour().openTour."},
+    {"path": "src/features/actions/ActionProgressRow.tsx", "action": "reuse", "summary": "Unchanged; its TrackedActionRows export already provides the editable row used by 'Suas 3 ações'."}
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Phase-level checks were not run in this unit: pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts and the Play dev-link walkthrough. They are integration evidence after all producers finish (the e2e specs are owned by other units and still describe the v1 tour)."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "medium",
+      "summary": "src/App.tsx has no child route 'relatorios' under empresa/:companyId (only relatorios/carteira), so the home 'Relatórios' links, the 'Relatórios' widget and tour step 1 land on a non-routed path until the report center route is wired. App.tsx is being edited concurrently by phase-4-frontend-diary; not touched here.",
+      "paths": ["src/App.tsx"]
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "low",
+      "summary": "Tour anchors data-aioson-tour='relatorios' (report preview), 'marca' (brand section) and 'modo' (mode toggle) do not exist in the files that own those regions. The tour falls back to data-aioson-id report-preview / tab-relatorios, brand-section and mode-toggle / mode-chip / nav; mode-chip is hidden below sm, so on 390 px the last step falls back to nav or a centered card.",
+      "paths": ["src/features/reports/ReportPreview.tsx", "src/features/settings/SettingsPage.tsx", "src/components/layout/AppShell.tsx"]
+    }
+  ],
+  "evidence": [
+    {"command": "pnpm typecheck", "result": "exit 0 (tsc --noEmit, no errors)", "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-owner-home-dev/typecheck-2.log"},
+    {"command": "grep -rn ScoreTrend src tests shared server", "result": "no match (grep exit 1); ScoreTrend.tsx deleted"},
+    {"command": "grep -rn 'ScoreTrend|HomeTrendPoint' src tests shared server", "result": "no match after OwnerHome rewrite"}
+  ],
+  "acceptance_criteria": {
+    "AC-ra-33": "implemented in OwnerHome + ReevaluationCountdown + OwnerFollowUpWidgets; e2e evidence deferred to integration",
+    "AC-ra-26": "'Suas 3 ações' uses TrackedActionRows (status select + undo + Editar dialog); e2e evidence deferred",
+    "AC-ra-37": "5-step tour with tourSeenVersion 2, skippable, reopened by '?'; e2e evidence deferred"
+  },
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run: pnpm build; pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts; then in the Play dev-link mark an overdue action as Feita, change the interval and switch modes, checking both homes' numbers change. Owner home ids: home-reeval (data-state late|on-time), home-reeval-count, home-reeval-interval, home-reeval-timeline, home-reeval-reminder, home-trava, home-widgets, home-actions-widget(-value|-sub), home-actions-overdue, home-diary-widget(-value|-sub), home-reports-widget(-value|-sub), home-actions, home-actions-list, home-actions-open, home-draft, home-continue-draft, home-reports, home-new-diag, home-see-result, home-compare. Removed: escada/StagePlate, home-evolution, result-actions on the home."
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Tour v2 behavior differs from what tests/e2e/firstRun.spec.ts checks: the '?' no longer navigates to #/inicio; step 1 opens /empresa/:focusId/relatorios, step 2 /configuracoes, step 3 /empresa/:id/acoes, step 4 /empresa/:id/diario, step 5 stays (anchor modo). It is the same 5 steps in both modes (the 4-step consultant tour is gone, which also resolves the 'mais de 90 dias' copy note). Seen state is tourSeenVersion >= 2; closing still also sets tourSeen[mode]=true. Auto-open waits for home-owner or home-consultant plus a known company. walkTour's 'tour-highlight visible' needs each anchor rendered: wire the empresa/:companyId/relatorios route and ideally add data-aioson-tour='relatorios' | 'marca' | 'modo' on the report preview, the brand section and the mode switch.",
+      "paths": ["src/features/home/OnboardingTour.tsx", "tests/e2e/firstRun.spec.ts", "src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The owner widget counts come from GET /api/home and are read again on each opening (HomePage reloads on mount); changing a status in 'Suas 3 ações' updates the row at once but the 'Ações do plano' counts change on the next opening, as AC-ra-36 states."
+    }
+  ]
+}

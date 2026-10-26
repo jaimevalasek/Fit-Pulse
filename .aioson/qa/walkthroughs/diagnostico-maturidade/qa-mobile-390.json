@@ -1,0 +1,113 @@
+{
+ "name": "qa-mobile-390",
+ "feature": "diagnostico-maturidade",
+ "url": "http://127.0.0.1:5491",
+ "viewport": {
+  "width": 390,
+  "height": 844
+ },
+ "timeout": 10000,
+ "steps": [
+  {
+   "do": "goto",
+   "url": "/#/inicio",
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"home-consultant\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+   "equals": true,
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "goto",
+   "url": "/#/empresas",
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"companies-page\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+   "equals": true,
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "goto",
+   "url": "/#/configuracoes",
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"settings\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+   "equals": true,
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "goto",
+   "url": "/#/empresas"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"companies-table\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Oficina Ponto Certo\"] >>first"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"company-page\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+   "equals": true,
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Ver resultado\"] >>first"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"result\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+   "equals": true,
+   "ac": [
+    "AC-dm-46"
+   ]
+  },
+  {
+   "do": "screenshot",
+   "name": "result-390"
+  }
+ ]
+}

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "07a7dc95-9268-4624-9cf9-2fb6467ea731",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "started_at": "2026-10-25T00:00:00Z",
+  "finished_at": "2026-10-25T00:20:00Z",
+  "verdict": "PASS",
+  "files_changed": ["src/features/settings/BackupSection.tsx"],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "pnpm test:e2e (tests/e2e/backup.spec.ts) not run here: the e2e spec for v2 data belongs to integration/sibling units. The existing e2e strings ('com 2 empresas e 3 diagnósticos.', 'N empresas e N diagnósticos adicionados. Nada que já existia foi apagado.', 'N registros já existiam e não mudou.') were preserved verbatim.",
+      "paths": ["tests/e2e/backup.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-frontend-backup-dev/typecheck.log",
+      "ac": ["AC-ra-55"]
+    },
+    {
+      "kind": "implementation",
+      "summary": "BackupSection shows the v2 counts from src/api/backupApi.ts BackupCounts: after export, 'Também leva N ações com andamento, N meses do diário, N questionários enviados, a marca dos relatórios e o intervalo de reavaliação.' (zero counts omitted); after import, 'Também entraram ...', skipped total now sums companies+diagnoses+actions+diaryEntries+questionnaireSends, and when skipped.brand/reevaluationInterval is 1: 'Este app já tinha a marca ... e ficou como estava.'",
+      "paths": ["src/features/settings/BackupSection.tsx"],
+      "ac": ["AC-ra-55"]
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "BackupSection UI copy for v2 (AC-ra-55): export result appends ' Também leva {lista}.' and import result appends ' Também entraram {lista}.' where {lista} joins non-zero items: 'N ação/ações com andamento', 'N mês/meses do diário', 'N questionário(s) enviado(s)', 'a marca dos relatórios', 'o intervalo de reavaliação'. Skipped brand/interval render ' Este app já tinha a marca [e o intervalo de reavaliação] e ficou como estava / eles ficaram como estavam.' The 'registros já existiam' total now includes skipped actions, diary months and questionnaire sends. Run pnpm test:e2e (tests/e2e/backup.spec.ts, accessibility.spec.ts) after phase-7 backend/tests land; assertions can target these strings.",
+      "paths": ["src/features/settings/BackupSection.tsx", "tests/e2e/backup.spec.ts"]
+    }
+  ]
+}

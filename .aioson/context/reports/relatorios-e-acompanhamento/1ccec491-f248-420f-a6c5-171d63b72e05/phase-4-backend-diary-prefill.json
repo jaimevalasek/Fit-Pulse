@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "01b154bf-524d-4c63-b661-4d810f5c0572",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "prisma/**",
+    "server/**",
+    "shared/**",
+    "src/api/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/fixtures/**",
+    "manifest.json",
+    "system.json",
+    "package.json"
+  ],
+  "started_at": "2026-10-26T00:26:54.000Z",
+  "finished_at": "2026-10-26T00:42:10.064Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts tests/e2e/diary.spec.ts was not run. It exercises CalculatorBlock, NumbersSummary and the diary tab, which belong to the frontend lane (phase-4-frontend-diary) and do not exist in this unit's write paths. The backend half of AC-ra-44, AC-ra-45, AC-ra-46 and AC-ra-47 is covered here by API tests (tests/api/diagnosisRoutes.test.ts).",
+      "paths": [
+        "tests/e2e/calculator.spec.ts",
+        "tests/e2e/questionnaire.spec.ts",
+        "tests/e2e/diary.spec.ts"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "pnpm build (tsc --noEmit && vite build) was not run as a whole. tsc --noEmit was run: it reports errors only in src/features/home/OwnerHome.tsx and src/features/home/ScoreTrend.tsx, files of the concurrent phase-5-backend-home/frontend work (HomeTrendPoint / trend removed from the home API). No error is in this unit's files or in code that imports them. vite build was not attempted because the typecheck half fails on those files.",
+      "paths": [
+        "src/features/home/OwnerHome.tsx",
+        "src/features/home/ScoreTrend.tsx"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "The Play dev-link walkthrough (note 3 months in the diary, start a new diagnosis, conclude, see 'do diário, medido' on the result) was not run: it needs the Play desktop runtime and the frontend screens. The same path is covered at API level (diagnosisRoutes.test.ts: 3 months -> draft -> complete -> calculator.diarySource and unitEconomics.origin measured).",
+      "paths": []
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "server/validation/backupSchemas.ts restores a diagnosis' calculator through diagnosisPatchSchema.shape.calculator (strict). Keeping that schema strict would have made any backup containing a diagnosis with diary marks fail to restore (422 backup_invalid). So diagnosisPatchSchema now carries the stored calculator shape (spendTotalCents, diarySource, diarySuggestion) and refuses the two diary keys with a superRefine on the PATCH (400, field calculator.diarySource / calculator.diarySuggestion). Result: a client can never send marks, and a backup keeps and restores them (round trip covered by a test in diagnosisRoutes.test.ts). backupSchemas.ts and backupService.ts were not touched.",
+      "paths": [
+        "server/validation/diagnosisSchemas.ts",
+        "server/validation/backupSchemas.ts"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts",
+      "exit_code": 0,
+      "result": "4 test files passed, 236 tests passed (28 new in diagnosisRoutes.test.ts for AC-ra-44..47 and IF-007, 6 new in reportModel.test.ts, 8 new in evolutionDocument.test.ts for AC-ra-12 diary in the period)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-dev/final.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/historyRoutes.test.ts tests/api/reportRoutes.test.ts tests/api/diaryRoutes.test.ts tests/api/actionRoutes.test.ts tests/unit/forbiddenTerms.test.ts tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/unit/pdfRenderer.test.ts tests/unit/portfolioDocument.test.ts tests/unit/compareDiagnoses.test.ts",
+      "exit_code": 0,
+      "result": "12 test files passed, 555 tests passed (regression of the suites that read the stored calculator, the diary and the PDFs)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-dev/regress.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 2,
+      "result": "no error in this unit's files; the only errors are in src/features/home/OwnerHome.tsx (2) and src/features/home/ScoreTrend.tsx (1), owned by the concurrent home work",
+      "log": ""
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-4-frontend-diary",
+      "kind": "contract_change",
+      "text": "IF-007 as built. src/api/diagnosesApi.ts: applyDiarySuggestion(id) -> POST /api/diagnoses/:id/diary-suggestion, no body, answers the whole Diagnosis (replace local state with it). 409 no_diary_suggestion when the draft has no suggestion (3+ months or no month), 409 diagnosis_not_draft once completed, 404 diagnosis_not_found. Diagnosis.calculator now carries spendTotalCents (single total, spendParts {} then), diarySource {spend?, newCustomers?} ({origin measured|estimated, fromMonth, toMonth, monthCount}) and diarySuggestion (null/absent when none). The server decides the marks: updateDiagnosis() strips diarySource/diarySuggestion from patch.calculator before sending (the PATCH refuses them with 400), and a number sent again with the same value keeps its mark, so autosaving the whole block is safe; typing a different value removes only that field's mark. Use shared/domain/diaryPrefill.ts helpers for the screens: formatDiaryMark(source) -> 'do diário: ago/2026 a out/2026' | 'do diário: 2 meses, estimado'; isDiarySuggestionOffered(calculator) for 'Usar o diário'; getCostDiaryOrigin(calculator) + formatCostDiaryOrigin(origin) -> 'do diário, medido' | 'do diário, estimado' (null means typed, show nothing extra). A new CalculatorPatch type (calculator without the two diary keys) is exported next to DiagnosisPatch.",
+      "paths": [
+        "src/api/diagnosesApi.ts",
+        "shared/domain/diaryPrefill.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "diagnosisPatchSchema (server/validation/diagnosisSchemas.ts) now has the stored calculator shape (spendTotalCents, diarySource, diarySuggestion) and a superRefine that refuses the two diary keys in a request. This is on purpose: server/validation/backupSchemas.ts builds the restore schema from diagnosisPatchSchema.shape.calculator, so a backup of a diagnosis with diary marks restores. If someone later wants a request-only calculator schema, build it separately instead of tightening .shape.calculator, or backups with marks will stop restoring. readStoredCalculator now returns StoredCalculator (a superset of CalculatorPatch); historyService, homeService, reportService and backupService already read through it, so recalculation of an older diagnosis (RULE-ra-02) keeps the diary 'estimated' origin.",
+      "paths": [
+        "server/validation/diagnosisSchemas.ts",
+        "server/validation/backupSchemas.ts",
+        "server/services/historyService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Reports. (1) Diagnosis PDF: reportModel ReportInput/DiagnosisDocumentInput gain costDiaryOrigin ('measured'|'estimated'|null); reportService fills it from the stored calculator (getCostDiaryOrigin) even without includeAnswers, and only the origin travels, never a typed value (BR-ra-08 test added). 'Seus números' then reads 'R$ X (do diário, medido|estimado)'; the cost keeps its first-version wording when it was typed or could not be calculated. With includeAnswers, the answers appendix marks the spend and new-customers rows that still carry a diary mark and now prints a diary single total (it used to print R$ 0,00 for total-only spend). (2) Evolution PDF: server/report/evolutionDocument.ts exports buildPeriodDiary(entries, from, to); reportService passes period.diary from the company's diary: usable months from the month of the earlier diagnosis through the month of the later one, both included, oldest first, cost per customer per month ('não calculado' with 0 new customers). The page 'O que foi feito no período' now appears with only diary months too, and keeps showing the 6 most recent months of the period.",
+      "paths": [
+        "server/report/reportModel.ts",
+        "server/report/evolutionDocument.ts",
+        "server/services/reportService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks to run after all lanes finish (not run here, see findings): pnpm build; pnpm exec playwright test tests/e2e/diary.spec.ts tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts; node scripts/smoke-migrate.mjs (not touched by this unit); Play dev-link walkthrough. The e2e for AC-ra-14 ('Até' only offers later diagnoses) and the frontend half of AC-ra-44..46 stay with the frontend lanes. pnpm exec tsc --noEmit currently fails only on src/features/home/OwnerHome.tsx and ScoreTrend.tsx (HomeTrendPoint/trend), which belong to the concurrent home work.",
+      "paths": []
+    }
+  ]
+}

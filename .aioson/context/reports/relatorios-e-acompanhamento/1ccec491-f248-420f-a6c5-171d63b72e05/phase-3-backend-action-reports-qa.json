@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "fda7fe8f-bb6e-44de-bda3-b84c8d0f20ed",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "unit": "phase-3-backend-action-reports",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T21:22:00-03:00",
+  "finished_at": "2026-10-25T21:27:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "severity": "medium",
+      "kind": "scope_gap",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "server/services/reportService.ts",
+      "summary": "The diary half of AC-ra-12 (custo por cliente do diario no periodo) is absent from the evolution PDF: prepareEvolution does not pass period.diary, although server/services/diaryService.ts and diaryRepository.ts now exist. Phase-4 QA (phase-4-backend-diary-api-qa.json) reported the same gap and left the owner unassigned. reportService.ts is in this unit's write list, but wiring it needs the diary service injected into createReportService, which the local Done when does not cover. Local PASS does not close AC-ra-12 at capability level; the action half is delivered and tested here."
+    },
+    {
+      "severity": "low",
+      "kind": "duplication",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-15",
+      "path": "server/services/portfolioService.ts",
+      "summary": "The predicate 'the owner recorded anything on the action' is written twice: isRecorded in portfolioService.ts and isTracked in reportService.ts. A later change to one can make the portfolio overdue count and the PDF tracking page disagree. It cannot be moved into shared/domain/actionProgress.ts from this unit, because that file is outside the write list."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-diagnosis-report",
+      "ac": "AC-ra-05",
+      "path": "package.json",
+      "summary": "Not run by QA: pnpm build. The unit's Done when is the vitest run only; the build is an integration gate listed in the phase plan and was not run in this review."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-05",
+      "path": "scripts/smoke-migrate.mjs",
+      "summary": "Not run by QA: node scripts/smoke-migrate.mjs. It is an integration gate from the phase plan, outside the unit's Done when, and was not run in this review."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-12",
+      "path": "tests/e2e/actions.spec.ts",
+      "summary": "Not run by QA: pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts. It needs a browser and a running app, is an integration gate from the phase plan, and is outside the unit's Done when."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-05",
+      "path": "system.json",
+      "summary": "Not run by QA: the dev-link walkthrough in the AIOSON Play (change state and undo, second diagnosis inheritance, PDF export with tracking). It needs the Play desktop runtime and an operator, so it cannot run in this unattended review."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Assign the owner for the diary half of AC-ra-12. Wire reportService.prepareEvolution to pass period.diary (DiaryChartPoint[] for the months between the two diagnoses, built from the diary service/repository) next to period.actions. Phase-4 QA already reported this gap; this unit's Done when does not cover it. Until it is wired, the evolution PDF has no 'custo por cliente' section.",
+      "paths": ["server/services/reportService.ts", "server/services/diaryService.ts", "server/repositories/diaryRepository.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks to run before the capability closes: (1) pnpm build; (2) node scripts/smoke-migrate.mjs; (3) pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts; (4) dev-link walkthrough in the Play: change state and undo, complete a second diagnosis and see the inheritance, export the PDF with the tracking.",
+      "paths": ["package.json", "scripts/smoke-migrate.mjs", "tests/e2e/actions.spec.ts", "tests/e2e/result.spec.ts", "tests/e2e/history.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Behavior change confirmed as consistent: in the evolution PDF, actions of the earlier ('De') plan are no longer tagged 'vencida', because the later diagnosis closes that plan. This matches the 'Acoes' tab (actionService marks overdue only for the current plan). No action needed.",
+      "paths": ["server/services/reportService.ts", "server/report/evolutionDocument.ts", "server/services/actionService.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts tests/api/reportRoutes.test.ts tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "result": "5 files passed, 209 tests passed (run by QA in foreground)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-qa/vitest.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-qa/vitest.exitcode"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors (run by QA in foreground)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-qa/tsc.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-qa/tsc.exitcode"
+    }
+  ]
+}

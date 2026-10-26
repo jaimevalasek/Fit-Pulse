@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "f9d03ff0-81ad-4055-85a9-05ff81e666e9",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-result",
+  "started_at": "2026-10-23T04:25:00Z",
+  "finished_at": "2026-10-23T04:34:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/result/ResultPage.tsx",
+    "src/features/result/StageLadder.tsx",
+    "src/features/result/ActionPlanList.tsx",
+    "src/features/result/DimensionScores.tsx",
+    "src/features/result/RiskList.tsx",
+    "src/features/result/NumbersSummary.tsx",
+    "src/features/result/ConfidenceNote.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "The upstream_contract_repair defect (body-less POST without Content-Type -> 415 json_required) is already repaired in the current tree: request() sends Content-Type application/json and JSON.stringify(body ?? {}) for every POST/PUT/PATCH (httpClient.ts L11-13, L92-102). server/http/requestGuards.ts WRITE_METHODS is POST/PUT/PATCH only, so the body-less DELETE calls are unaffected. requireJsonWrites was not relaxed. No edit was made by this unit."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-wide checks `pnpm test -- tests/unit/forbiddenTerms.test.ts` and `pnpm test:e2e -- tests/e2e/result.spec.ts` (AC-dm-28 e2e, AC-dm-29 rendered-text scan, AC-dm-46 390px/axe, AC-dm-47 reduced motion) were not run: those test files are outside this unit's allowed files and belong to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-dev/build.log",
+      "summary": "tsc --noEmit && vite build succeeded (built in 1.41s; index js 435 kB, css 71.8 kB)."
+    },
+    {
+      "command": "grep -rnEi '\\bV[1-4]\\b|PPA|CREP|vacinas' src/features/result",
+      "summary": "No forbidden terms in result components (AC-dm-29 static check for this unit's files)."
+    },
+    {
+      "command": "grep resultado src/App.tsx",
+      "summary": "Route resultado/:diagnosisId renders ResultPage (PendingScreen removed)."
+    }
+  ],
+  "acceptance": {
+    "AC-dm-28": "implemented: StageLadder with dashed previous step, lock on next, aria description 'Estágio N de 4: Nome. Diagnóstico anterior no estágio P. Trava para subir: X.'; italic lock phrase, 3 actions, guidance notice at top; fits/fronts, numbers, risks, confidence below. e2e pending integration.",
+    "AC-dm-47": "implemented: DimensionScores IntersectionObserver reveal is skipped under prefers-reduced-motion (bars render filled); no section-entry animation runs. e2e pending integration."
+  },
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Result screen is wired at #/resultado/:diagnosisId via getDiagnosis(id). Draft diagnoses redirect to the questionnaire; missing result/not-found/error show StatusView states. StageLadder exports StageLadder, describeLadder and LockIcon for reuse by the home screen. Run `pnpm test -- tests/unit/forbiddenTerms.test.ts` and `pnpm test:e2e -- tests/e2e/result.spec.ts` once those specs exist to close AC-dm-28/29/46/47.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/features/result/StageLadder.tsx", "src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "httpClient body-less write defect reported by the previous attempt is already fixed in src/api/httpClient.ts (Content-Type + '{}' body for POST/PUT/PATCH). Please confirm with the real createApp: start/complete diagnosis and archive/restore company should no longer return 415.",
+      "paths": ["src/api/httpClient.ts"]
+    }
+  ]
+}

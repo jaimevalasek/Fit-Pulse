@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "2b20f019-e1fb-4be8-b208-367686563df7",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-primitives",
+  "started_at": "2026-10-23T04:21:19Z",
+  "finished_at": "2026-10-23T04:22:22Z",
+  "verdict": "PASS",
+  "files_changed": ["src/api/httpClient.ts"],
+  "summary": "Fixed the rework finding in src/api/httpClient.ts. Every POST/PUT/PATCH now sends Content-Type: application/json, and a write with no body sends `{}`, so start/complete diagnosis and archive/restore company no longer get 415 json_required. requireJsonWrites stays as it is. The same root cause also dropped the server's extra error keys (`fields`, `pendingBlocks`), so the client now fills ApiError.details with error.details when the server sends it, and with the remaining non-envelope keys otherwise. CompanyFormDialog (details.fields) and diagnosesApi (details.pendingBlocks) already read those keys.",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "The regression reproduction is a scratch script in the run-scoped temp dir (real httpClient through the real requireJsonWrites guard via a fetch stub), not a permanent test, because tests/** is outside the frontend write paths. The end-to-end check against the real createApp (tests/api or tests/e2e) belongs to integration.",
+      "paths": ["src/api/httpClient.ts", "server/http/requestGuards.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "reproduction",
+      "command": "node .aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-dev/repro.mjs .",
+      "result": "Before the fix: exit 1 with 7 FAIL (415 json_required on body-less POST start/complete/archive/restore and PUT, plus server fields/pendingBlocks missing from details). After the fix: exit 0 with 12/12 PASS (writes with a body unchanged, GET/DELETE send no body or content type, explicit error.details kept, requestId kept).",
+      "logs": ["repro-before.log", "repro-before.exit", "repro-after.log", "repro-after.exit"]
+    },
+    {
+      "kind": "build",
+      "command": "pnpm build",
+      "result": "exit 0 (tsc --noEmit && vite build)",
+      "logs": ["build.log", "build.exit"]
+    }
+  ],
+  "acceptance": {
+    "AC-dm-17": "unchanged from the previous attempt; primitives build",
+    "AC-dm-48": "unchanged from the previous attempt; ConfirmDialog built on Radix AlertDialog"
+  },
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "httpClient now sends Content-Type: application/json on every POST/PUT/PATCH, with body `{}` when the caller passes none (diagnosesApi start/complete, companiesApi archive/restore). DELETE and GET send no body and no content type. requireJsonWrites is unchanged. Please confirm with the real createApp: start diagnosis 201, complete, archive, restore no longer 415 (for example, add a tests/api case or run tests/e2e/companies.spec.ts and questionnaire.spec.ts).",
+      "paths": ["src/api/httpClient.ts", "src/api/diagnosesApi.ts", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "ApiError.details is now error.details when the server sends it, otherwise an object with the extra keys of the error body except code/message/requestId (for example { fields } for 400 validation_failed, { pendingBlocks } for 422 incomplete). CompanyFormDialog.readServerFieldErrors and diagnosesApi.blocksFromDetails now receive these directly; the diagnosesApi draft-recompute fallback still works but is no longer the main path.",
+      "paths": ["src/api/httpClient.ts", "src/features/companies/CompanyFormDialog.tsx", "src/api/diagnosesApi.ts"]
+    }
+  ]
+}

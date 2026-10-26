@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "e3e71ec9-83b0-4384-8432-c1d44b72ae63",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:44:00Z",
+  "finished_at": "2026-10-23T03:49:00Z",
+  "verdict": "PASS",
+  "files_changed": ["system.json", "scripts/smoke-boot.mjs", "scripts/smoke-store-package.mjs"],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "title": "AC-dm-44 manual network check from another computer",
+      "detail": "The AC-dm-44 evidence is a manual smoke from a second computer on the same network. scripts/smoke-boot.mjs covers the same property from this machine by connecting to every external IPv4 address of the host (3 found) on both ports and requiring ECONNREFUSED, but a probe from a different computer was not run here."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "title": "Dev-link in the AIOSON Play (Settings > Instalar App > Linkar pasta)",
+      "detail": "The Play desktop app is not available in this session, so the badge/webview check named in the CAP-dm-play-runtime verification was not run. The packaged-app boot and the injected-port behavior were exercised by scripts/smoke-boot.mjs and scripts/smoke-store-package.mjs instead."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "title": "Source-mode store package still ships test helper files",
+      "detail": "aioson system:package (no --build) only drops *.test.* / *.spec.* files and __tests__/__mocks__/__snapshots__ folders. tests/helpers/testDatabase.ts already appears in the --dry-run list, and tests/e2e/global-setup.ts, tests/e2e/support/fixtures.ts and tests/fixtures/rulesV2.ts will too once they exist. They are small and inert at runtime, so smoke-store-package.mjs asserts the absence of test files (as the packager defines them) rather than of the whole tests/ folder. Excluding the helpers would need a change outside this unit (the packager or a .aioson/build-options-style mechanism)."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "title": "Scratch directory left in the OS temp folder",
+      "detail": "A throwaway fake-app folder used to prove the smoke-boot mechanics (named fp-scratch-boot.XXXXXX under the OS temp directory; its exact path is in .aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-dev/scratch-boot-path.txt) could not be removed because the delete command was denied in this session. It is outside the project and holds only a few tiny files; it is safe to delete."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "C-package criterion: `node scripts/smoke-store-package.mjs` runs `aioson system:package .`, installs the package twice with `pnpm install --no-frozen-lockfile --prefer-offline` (registry or warm pnpm store required), boots the app twice and deletes the .aioson/system-packages descriptor it created. Give it a generous timeout. It requires server/main.ts, vite.config.ts, src/main.tsx, prisma.config.ts and the other files in REQUIRED_FILES to exist in the package, and it fails if system.json and package.json versions differ (the CLI would rewrite package.json; the script restores it and fails).",
+      "paths": ["scripts/smoke-store-package.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "RG-boot criterion: `node scripts/smoke-boot.mjs` needs dist/index.html (run `pnpm build` first, otherwise it fails with that message). It uses a throwaway DATABASE_URL, free ports that are not 5173/3301, and expects GET /api/health = 200 with a non-empty body on the backend and through the frontend proxy, and a FitPulse HTML root without 'V-Stage'. If the health route or the page title changes, update checkServing in the script.",
+      "paths": ["scripts/smoke-boot.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "scripts/smoke-boot.mjs exports runPnpm, findFreePorts, startApp, stopApp, httpGet, waitUntil, checkServing and assertPortsClosed; its steps only run when executed directly. smoke-store-package.mjs imports them. Keep those export names stable.",
+      "paths": ["scripts/smoke-boot.mjs", "scripts/smoke-store-package.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "system.json mirrors slug fitpulse, name FitPulse, version 0.1.0 and the manifest.json description, with no build_command (source-mode publish). When the release version is bumped, change manifest.json, system.json and package.json together.",
+      "paths": ["system.json"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node --check scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-dev/check-boot.log"
+    },
+    {
+      "command": "node --check scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-dev/check-store.log"
+    },
+    {
+      "command": "aioson system:package . --dry-run",
+      "exit_code": 0,
+      "result": "FitPulse 0.1.0, 70 files; the list has no data/, no *.db and no package-manager lockfile (the only 'lock' match is prisma/migrations/migration_lock.toml); no .env, aioson-models.json, node_modules, dist or server/generated; tests/ contributes only tests/helpers/testDatabase.ts.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-dev/dry-run-final.log"
+    },
+    {
+      "command": "node scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "result": "PASS against the real app (server/main.ts had landed from a sibling unit): backend /api/health, UI root and proxied /api/health answered on the injected ports; both ports refused connections on the 3 external IPv4 addresses of this host; ports released after stop. An earlier run before server/main.ts existed failed only on that missing file, as expected.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-dev/boot-real-2.log"
+    },
+    {
+      "command": "node scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "result": "PASS, 8/8 steps: package of 69 files without data/db/lockfile/tests/secrets, clean pnpm install (generate, migrate, vite build, Inter and JetBrains Mono woff2 in dist/), boot, owner data written, release with a synthetic ALTER TABLE migration laid over the install, second install and boot, companies/diagnoses/drafts/preferences identical afterwards. The .aioson/system-packages descriptor it created was removed.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-package-dev/store-real-1.log"
+    },
+    {
+      "command": "scratch fake-app run of scripts/smoke-boot.mjs (not part of the project)",
+      "result": "Mechanics proof: a fake app listening on 127.0.0.1 passed; the same app listening on 0.0.0.0 made the smoke fail with 'frontend port ... answered on <LAN ip> (connected)'; no fake-app processes were left after the tree kill."
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "ba227b70-9ced-419f-80d0-7bb6b02e300f",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "prisma/**",
+    "server/**",
+    "shared/**",
+    "src/api/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/fixtures/**",
+    "manifest.json",
+    "system.json",
+    "package.json"
+  ],
+  "unit": "phase-7-backend-release",
+  "started_at": "2026-10-26T00:26:33Z",
+  "finished_at": "2026-10-26T01:11:33Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "manifest.json",
+    "system.json",
+    "package.json",
+    "scripts/smoke-migrate.mjs",
+    "scripts/smoke-store-package.mjs"
+  ],
+  "findings": [
+    {
+      "kind": "integration_defect",
+      "severity": "high",
+      "scope": "CAP-ra-data-continuity / AC-ra-54",
+      "text": "`aioson system:package .` drops every folder named `reports` by name (DEV_ONLY_DIRS in @jaimevalasek/aioson src/commands/store-system.js, matched at any depth). The 8 files of src/features/reports/ (PortfolioReportPage, ReportCenterPage, ReportDelivery, ReportOptions, ReportPreview, ReportSheet, ReportSheetCharts, useReportPreview) are missing from the store package, so `vite build` in the postinstall of a store install/update fails with UNLOADABLE_DEPENDENCY (src/features/settings/BrandSection.tsx imports @/features/reports/ReportSheet). Not fixable from this unit: system.json build_output_dirs only works in --build mode and src/** belongs to the frontend lane. Fix: rename src/features/reports to a name the packager keeps (e.g. report-center) and update its imports. scripts/smoke-store-package.mjs now fails clearly on this (assertPackageContents lists the dropped files)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "scope": "scripts/smoke-store-package.mjs full run",
+      "text": "`node scripts/smoke-store-package.mjs` run as shipped FAILS today because of the packager defect above (exit 1, step 1/8-2/8, lists the 8 dropped files). The unit Done-when only requires `node --check` on it, which passes. The rest of the flow was validated on a scratch copy kept in execution-temp that restores the 8 files into the package in memory: all 8 steps PASS (exit 0)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "scope": "update real no Play",
+      "text": "Updating a real 0.1.0 installation with data in the Play (Settings -> Instalar App -> Linkar pasta, or local package) and the green badge were not run here (needs the Play desktop app)."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "scope": "working tree",
+      "text": "My inspection run of `aioson system:package .` left .aioson/system-packages/fitpulse/fitpulse-0.2.0.json (about 1.2 MB). Deleting it was denied in this session, so it was left in place; it is safe to delete. The store smoke treats an existing folder as the owner own and will not remove it."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "result": "PASS, exit 0 (v1 database with owner data -> prepare-app --migrate applies the 4 migrations -> companies/diagnoses/drafts/preferences identical, 4 new tables empty, repeated deploy No pending migrations, table-rebuild release keeps old and new rows, cascades company->diagnoses/diary/sends/files and diagnosis->actions)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/final-migrate.log",
+      "exit_file": ".../final-migrate.exit"
+    },
+    {
+      "command": "node --check scripts/smoke-store-package.mjs",
+      "result": "PASS, exit 0",
+      "exit_file": ".../final-check.exit"
+    },
+    {
+      "command": "node scripts/smoke-store-package.mjs (as shipped)",
+      "result": "FAIL exit 1 on the packager defect (package dropped 8 src/features/reports files)",
+      "log": ".../smoke-store-2.log"
+    },
+    {
+      "command": "scratch copy of smoke-store-package.mjs restoring the 8 dropped files",
+      "result": "PASS exit 0, 8/8 steps: 0.1.0 rebuilt package installed, owner data seeded, current package laid over, pnpm install, boot on injected ports, data identical, 4 new tables, questionnaireClient.js and questionnaireStyles.css delivered, manifest schema_version 2",
+      "log": ".../smoke-store-scratch.log"
+    },
+    {
+      "command": "manifest.json / system.json / package.json",
+      "result": "version 0.2.0 in all three; manifest compatibility.schema_version 2, requires_migration true; dependencies unchanged"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Release blocker for AC-ra-54: the store package omits src/features/reports/** because the aioson packager skips any folder named `reports`. Ask the frontend lane to rename the folder (e.g. src/features/report-center) and fix the imports (BrandSection.tsx, ReportPreview.tsx, ReportSheet.tsx and whatever else), then run `node scripts/smoke-store-package.mjs` (about 5 min, needs network/pnpm cache, aioson CLI on PATH) and expect PASS.",
+      "paths": [
+        "src/features/reports/",
+        "src/features/settings/BrandSection.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks of this phase for integration: pnpm build, pnpm test, pnpm test:e2e, node scripts/smoke-boot.mjs, node scripts/smoke-store-package.mjs (after the rename), aioson harness:check . --slug=relatorios-e-acompanhamento, and the real 0.1.0 -> 0.2.0 update in the Play. AC-ra-55 and AC-ra-56 belong to the phase-7-backend-backup unit."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "scripts/smoke-store-package.mjs rebuilds release 0.1.0 from the current package (no 0.1.0 archive is kept and the project is not under git): it removes the 4 migrations of 0.2.0 and the 2 questionnaire runtime files and stamps version 0.1.0 / schema_version 1 / requires_migration false. If a future release adds migrations, they are applied by the update step automatically; add the name to V2_MIGRATIONS only for a release-specific check."
+    }
+  ]
+}

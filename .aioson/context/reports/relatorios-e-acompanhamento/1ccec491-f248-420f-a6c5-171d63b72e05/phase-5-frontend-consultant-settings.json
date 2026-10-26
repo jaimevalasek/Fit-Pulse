@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "fbdbf59c-ef42-4447-9abc-23690675ebaa",
+  "unit": "phase-5-frontend-consultant-settings",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T00:38:15Z",
+  "finished_at": "2026-10-26T00:41:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/settings/ReevaluationSection.tsx",
+    "src/features/settings/SettingsPage.tsx",
+    "src/features/companies/CompaniesPage.tsx",
+    "src/features/home/ConsultantHome.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "verification_blocked_by_sibling",
+      "severity": "medium",
+      "summary": "`pnpm typecheck` exits 1 only on 3 errors in src/features/home/OwnerHome.tsx (HomeTrendPoint import, `trend`) and src/features/home/ScoreTrend.tsx, files owned by phase-5-frontend-owner-home (wave 10) after phase-5-backend-home removed `trend` from homeApi. The same 3 errors exist in the baseline before this unit; the four files of this unit add zero type errors.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability e2e (tests/e2e/home.spec.ts, settings.spec.ts, companies.spec.ts) and the Play dev-link walkthrough are integration evidence for CAP-ra-home-followup and were not run by this unit (tests belong to other units; owner home is still pending)."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "The prototype links the consultant indicators to #/empresas?filtro=X; the plan's implementation delta and the backend use `atencao`, so the list reads ?atencao= (atrasada|vencidas|risco|rascunhos|sem-diagnostico). 'Questionários aguardando resposta' is left for phase 6 (no `aguardando` value in CompanyAttention yet).",
+      "paths": ["src/features/companies/CompaniesPage.tsx", "src/features/home/ConsultantHome.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "phase": "baseline",
+      "exit_code": 1,
+      "result": "3 errors, all in OwnerHome.tsx/ScoreTrend.tsx (not this unit)"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "phase": "after changes",
+      "exit_code": 1,
+      "result": "same 3 errors in OwnerHome.tsx/ScoreTrend.tsx; 0 errors in ConsultantHome.tsx, CompaniesPage.tsx, ReevaluationSection.tsx, SettingsPage.tsx"
+    },
+    {
+      "kind": "implementation",
+      "ac": "AC-ra-34",
+      "summary": "ReevaluationSection: 'Refazer o diagnóstico a cada' select with 60, 90 (recomendado), 120, 180 dias bound to preferences.reevaluationIntervalDays; saves through PreferencesProvider.savePreferences (optimistic, persisted by PUT /api/preferences) with saved/error feedback; shown in SettingsPage under 'Lembrete de reavaliação' (data-aioson-id settings-reevaluation / settings-reevaluation-interval)."
+    },
+    {
+      "kind": "implementation",
+      "ac": "AC-ra-35",
+      "summary": "ConsultantHome keeps 'Sua carteira' ladder as focus and adds 'O que precisa de você' (data-aioson-id consult-attention) with Reavaliação atrasada, Ações vencidas (sum of overdueActions[].overdueCount, 'em N empresas'), Risco alto, Rascunhos parados; each card links to /empresas?atencao=<value> with data-attention/data-count. 'Sem diagnóstico recente' hint uses reevaluationDays instead of fixed 90; the summary's 'N sem diagnóstico concluído' links to ?atencao=sem-diagnostico. CompaniesPage parses/keeps ?atencao=, sends attention to listCompanies, shows 'Filtro ativo: …' with 'Limpar filtros' (data-aioson-id companies-active-filter), and an empty filtered list shows 'Nenhuma empresa encontrada' + 'Limpar filtros'."
+    },
+    {
+      "kind": "implementation",
+      "ac": "AC-ra-62",
+      "summary": "Existing UsageModeSection already switches mode through savePreferences (immediate, persisted); hints updated to the prototype wording."
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-5-frontend-owner-home",
+      "kind": "note",
+      "text": "OnboardingTour.tsx consultant step 'Hora de refazer' still says 'mais de 90 dias'; ConsultantHome now uses data.reevaluationDays for the same hint. New tour anchor available: data-aioson-id=\"consult-attention\" ('O que precisa de você'). Existing anchors escada, consult-stalled, consult-old, consult-risk, consult-summary are kept.",
+      "paths": ["src/features/home/OnboardingTour.tsx", "src/features/home/ConsultantHome.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "After phase-5-frontend-owner-home removes HomeTrendPoint/trend from OwnerHome.tsx and deletes ScoreTrend.tsx, rerun `pnpm typecheck` (expected clean), then `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts`. Selectors: settings select #settings-reevaluation (data-aioson-id settings-reevaluation-interval, option values 60/90/120/180, label '90 dias (recomendado)'); consultant cards [data-aioson-id=consult-attention] a[data-attention=atrasada|vencidas|risco|rascunhos] with data-count; companies list URL /empresas?atencao=<value>, active filter [data-aioson-id=companies-active-filter] with link 'Limpar filtros'.",
+      "paths": ["src/features/settings/ReevaluationSection.tsx", "src/features/home/ConsultantHome.tsx", "src/features/companies/CompaniesPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Prototype uses ?filtro= for the companies list, plan uses ?atencao= (implemented, with ?estagio= kept for stages). If e2e authors follow the prototype, they must use ?atencao=. Phase 6 should add 'aguardando' to CompanyAttention and a card in AttentionWidgets.",
+      "paths": ["src/features/companies/CompaniesPage.tsx"]
+    }
+  ]
+}

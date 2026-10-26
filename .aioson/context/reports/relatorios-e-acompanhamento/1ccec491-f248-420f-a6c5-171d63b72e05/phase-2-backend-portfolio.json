@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "31b5fac2-859d-4394-abf8-b4064e2e9ec9",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "prisma/**",
+    "server/**",
+    "shared/**",
+    "src/api/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/fixtures/**",
+    "manifest.json",
+    "system.json",
+    "package.json"
+  ],
+  "started_at": "2026-10-25T23:35:00Z",
+  "finished_at": "2026-10-26T00:10:00Z",
+  "verdict": "PASS",
+  "files": {
+    "created": [
+      "shared/domain/followUp.ts",
+      "tests/unit/followUp.test.ts",
+      "server/repositories/portfolioRepository.ts",
+      "server/services/portfolioService.ts",
+      "server/report/portfolioDocument.ts",
+      "tests/unit/portfolioDocument.test.ts"
+    ],
+    "modified": [
+      "server/services/homeService.ts",
+      "server/services/reportService.ts",
+      "tests/api/homeRoutes.test.ts",
+      "tests/unit/forbiddenTerms.test.ts"
+    ]
+  },
+  "findings": [
+    {
+      "kind": "behavior_change",
+      "severity": "medium",
+      "text": "RULE-ra-07 and the plan (technical decision: dates by the local calendar in shared/domain/followUp.ts) make the reevaluation a calendar-day rule: due date = local day of the latest diagnosis + 90 days, late once that day has passed. The consultant home used an instant rule (more than 90*24h). The portfolio service now uses followUp.reevaluationOf for both the home and the PDF, so `overdue[].daysSince` counts calendar days and the line moves from '90 days plus 1 second' to 'the day after day 90'. The IF-007 shape, the ordering and every other list are unchanged; 30 of the 32 original home tests passed untouched, and the 2 that pinned the sub-day line ('keeps the line at the ninetieth day, strictly' and 'moves with the clock') were rewritten to the day line (90 days on time, 91 late), plus a new local-midnight test. QA should confirm this reading of 'tela do consultor igual'.",
+      "paths": [
+        "shared/domain/followUp.ts",
+        "server/services/portfolioService.ts",
+        "tests/api/homeRoutes.test.ts"
+      ]
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "high",
+      "text": "server/validation/reportSchemas.ts is outside this unit's allowed files and its reportSelectionSchema has no `portfolio` kind, so POST /api/reports/export and GET /api/reports/preview still answer 400 validation_failed for {kind:'portfolio'} even though reportService now builds and saves it. The service accepts a local `ReportRequest = ReportSelection | PortfolioSelection`, so it type-checks before and after the schema change.",
+      "paths": [
+        "server/validation/reportSchemas.ts",
+        "server/services/reportService.ts"
+      ]
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "medium",
+      "text": "server/app.ts creates createReportService({ prisma, downloadsDir }) without `now` or `rules`, so the portfolio PDF counts days with the real clock while the consultant home uses deps.now. In production both are the same clock; in API or e2e tests with an injected clock the PDF would not match the home. The unit's own API test builds the service with now: db.now.",
+      "paths": [
+        "server/app.ts"
+      ]
+    },
+    {
+      "kind": "design_limit",
+      "severity": "low",
+      "text": "drawTable (server/report/pdfBlocks.ts, phase 1) gives the first column 60% of the width and splits the rest among the others, so a table with 4 or more columns cuts dates mid-digit. The active-company list therefore has three columns: Empresa | Estágio e último diagnóstico | Atenção. Late reevaluation, high risk and, once tracked, overdue actions are words inside 'Atenção', not columns of their own. Overdue actions are simply absent while no row carries a count (overdueActions === null, the state until phase 3), as AC-ra-15 asks. A column per attribute would need drawTable and ReportTableBlock to take column widths.",
+      "paths": [
+        "server/report/portfolioDocument.ts",
+        "server/report/pdfBlocks.ts"
+      ]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "The list is cut into A4 pages by an estimate of lines per cell (CHARS_PER_LINE [30, 15, 15], LIST_ROWS_BUDGET 560 pt). Probed against the real renderer: the worst cases (120 companies with 80-character names of capital M or W and nothing to flag) overflow only from a budget of about 640 pt, so the shipped 560 leaves roughly 75 pt (one to two rows) of margin. Five stress cases render without PageOverflowError in tests/unit/portfolioDocument.test.ts.",
+      "paths": [
+        "server/report/portfolioDocument.ts",
+        "tests/unit/portfolioDocument.test.ts"
+      ]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "The evolution case of tests/unit/forbiddenTerms.test.ts, left to this unit by the evolution unit, is added: 4 evolution documents (same rules and recalculated, with and without 'O que foi feito no período') and 6 portfolio documents (empty, tracked and untracked actions, branded or not), each checked for the RULE-dm-14 terms and for the guidance warning in the summary and in 'Como ler'.",
+      "paths": [
+        "tests/unit/forbiddenTerms.test.ts"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "`pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts` (AC-ra-16 mode 'minha empresa' and empty portfolio, the 'portfolio-report' prototype interaction) was not run: it needs PortfolioReportPage.tsx, ConsultantHome.tsx, App.tsx and portfolioReport.spec.ts, which belong to the frontend unit phase-2-frontend-evolution-portfolio, and the portfolio kind in reportSchemas.ts (see the finding above).",
+      "paths": [
+        "tests/e2e/portfolioReport.spec.ts",
+        "tests/e2e/home.spec.ts"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "`pnpm build` (tsc --noEmit && vite build) was not run in full: `pnpm exec tsc --noEmit` over src, server, shared and tests passes (exit 0), but the vite build half and the Play dev-link check (export the three PDFs and open them) belong to integration after the frontend units land.",
+      "paths": [
+        "package.json"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "result": "4 files passed, 88 tests passed (followUp 14, portfolioDocument 25, forbiddenTerms 11, homeRoutes 38)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-portfolio-dev/verification-final.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors in src, server, shared, tests",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-portfolio-dev/tsc5.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/unit/evolutionDocument.test.ts tests/unit/pdfRenderer.test.ts tests/api/historyRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/fileRoutes.test.ts",
+      "exit_code": 0,
+      "result": "6 files passed, 249 tests passed (neighbours of the changed services and report modules)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-portfolio-dev/neighbors.log"
+    },
+    {
+      "command": "TZ=Pacific/Auckland and TZ=America/Sao_Paulo: pnpm exec vitest run tests/api/homeRoutes.test.ts tests/unit/portfolioDocument.test.ts tests/unit/followUp.test.ts",
+      "exit_code": 0,
+      "result": "3 files passed, 77 tests passed in each time zone (the calendar-day cases are built from local date parts)",
+      "log": "console only"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Add the portfolio kind to server/validation/reportSchemas.ts: `const portfolioSelectionSchema = z.object({ kind: z.literal('portfolio') })` and put it in the `reportSelectionSchema` discriminated union. createReportService already handles {kind:'portfolio'} for preview and export (document kind 'portfolio'; file carteira-{YYYY-MM-DD}.pdf; a generated_files row of kind 'portfolio_pdf' with companyId null; 409 `portfolio_empty` when no company is active). Once the union has the member, PortfolioSelection and ReportRequest in reportService.ts can be replaced by ReportSelection.",
+      "paths": [
+        "server/validation/reportSchemas.ts",
+        "server/services/reportService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "In server/app.ts pass the app clock and the rules to the report service: createReportService({ prisma: deps.prisma, downloadsDir: deps.downloadsDir, now: deps.now, rules }), so the portfolio PDF and the consultant home count days from the same clock.",
+      "paths": [
+        "server/app.ts"
+      ]
+    },
+    {
+      "to": "unit:phase-2-frontend-evolution-portfolio",
+      "kind": "contract_change",
+      "text": "Portfolio report over IF-001, after the schema member is added: GET /api/reports/preview?kind=portfolio returns a ReportDocument with kind 'portfolio' and pages cover / by-stage / companies-1..N / how-to-read (the list is a table with columns Empresa, Estágio e último diagnóstico, Atenção). POST /api/reports/export {kind:'portfolio'} returns {fileId, fileName, directory}. An empty portfolio answers 409 `portfolio_empty` (the page should show the empty state with 'Cadastrar a primeira empresa' before asking). The backend does not check the usage mode: the 'minha empresa' explanation is the page's job.",
+      "paths": [
+        "src/features/reports/PortfolioReportPage.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "For the phases that extend the portfolio (phase 3 overdue actions, phase 5 interval and attention filters): portfolioService.read(at?) returns { reevaluationDays, view, rows }. `view` is IF-007 exactly; `rows` has one entry per active company (stage, lastDiagnosisAt, `reevaluation` from followUp.reevaluationOf, highRisk, overdueActions). overdueActions is null for every row now: phase 3 fills it in buildPortfolio (from portfolioRepository) and the PDF then shows the 'Ações vencidas' fact and 'N ações vencidas' in 'Atenção' by itself; phase 5 replaces OVERDUE_DIAGNOSIS_DAYS (= DEFAULT_REEVALUATION_DAYS) with the chosen interval. homeService still re-exports STALE_DRAFT_DAYS, OVERDUE_DIAGNOSIS_DAYS and the ConsultantHomeView, PortfolioCompany and StageGroup types, so existing imports keep working.",
+      "paths": [
+        "server/services/portfolioService.ts",
+        "server/repositories/portfolioRepository.ts",
+        "shared/domain/followUp.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/helpers/testDatabase.ts resetData does not clear the generated_files table, so a test that counts saved files must compare against a count taken before it acts (the unit's API test does).",
+      "paths": [
+        "tests/helpers/testDatabase.ts"
+      ]
+    }
+  ]
+}

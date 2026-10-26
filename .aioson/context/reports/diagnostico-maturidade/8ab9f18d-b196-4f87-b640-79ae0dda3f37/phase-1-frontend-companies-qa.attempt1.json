@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "16d257a8-0008-44de-99ee-8a96fc6dc48b",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "unit": "phase-1-frontend-companies",
+  "phase": "1-frontend-companies",
+  "wave": 4,
+  "caps": ["CAP-dm-company"],
+  "acs": ["AC-dm-04", "AC-dm-05", "AC-dm-06"],
+  "started_at": "2026-10-23T04:27:21Z",
+  "finished_at": "2026-10-23T04:27:25Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-04, AC-dm-05, AC-dm-06",
+      "path": "tests/e2e/companies.spec.ts",
+      "summary": "Capability-wide e2e check not run: pnpm test:e2e -- tests/e2e/companies.spec.ts cannot run because the spec file does not exist yet (owned by a sibling unit). Not a defect of this unit; deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-04, AC-dm-05, AC-dm-06",
+      "path": "src/features/companies/CompaniesPage.tsx",
+      "summary": "Not run by this review: the 390 px viewport and axe accessibility checks for the Empresas screens, and the Play dev-link walkthrough (create, edit, archive, restore, delete). These need a running app and are integration evidence."
+    },
+    {
+      "kind": "gap",
+      "severity": "low",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-04, AC-dm-05, AC-dm-06",
+      "path": "src/features/companies/CompanyPage.tsx",
+      "summary": "The 'ultimo resultado' link to /resultado/:id cannot be built: the IF-002 company payload carries latestStage, latestCompletedAt, draftId and completedCount but not the latest completed diagnosis id. Integration must add the id to the payload or resolve it through the history API. The link is absent rather than wrong, so the screen stays within IF-002 fields."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/build2.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/build2.exit",
+      "note": "Re-run in foreground on the current tree. The script is tsc --noEmit then vite build. An earlier build at 00:53 was stale because App.tsx changed at 01:16."
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check --paths=src/api/companiesApi.ts,src/features/companies/CompaniesPage.tsx,src/features/companies/CompanyFormDialog.tsx,src/features/companies/CompanyPage.tsx,src/App.tsx",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/rules-check3.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/rules-check3.exit",
+      "result": "7/224 rules enforced over 5 files, 0 violations"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check (no --paths argument)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/rules-check2.log",
+      "result": "Enforced nothing ('nothing to check'). Vacuous, superseded by the --paths run above."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/App.tsx",
+      "result": "Route companies renders CompaniesPage. empresa/:companyId renders CompanyPage with onStartDiagnosis={startDiagnosis}. startDiagnosis is exported from src/api/diagnosesApi.ts and returns Promise<Diagnosis>, which matches the CompanyPage prop type. The earlier 'start buttons hidden' finding is resolved."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/api/httpClient.ts and src/features/companies/CompanyFormDialog.tsx",
+      "result": "httpClient readErrorDetails keeps the extra error keys, including fields, when error.details is absent. CompanyFormDialog readServerFieldErrors reads details.fields for validation_failed. The earlier fields-loss finding is resolved upstream and is outside this unit."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/api/companiesApi.ts, src/features/companies/CompaniesPage.tsx, src/features/companies/CompanyFormDialog.tsx, src/features/companies/CompanyPage.tsx",
+      "result": "These four unit files have not changed since the prior QA pass at 00:54 (mtime check). The IF-002 route and field match from that pass is carried forward, not re-derived in this pass."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Previously reported gaps are resolved on the current tree: onStartDiagnosis is wired in App.tsx to startDiagnosis, and server validation field errors reach CompanyFormDialog through httpClient details.fields. Verify the start-diagnosis flow end to end: CompanyPage start button, then startDiagnosis, then navigate to diagnostico/:diagnosisId.",
+      "paths": ["src/App.tsx", "src/api/diagnosesApi.ts", "src/api/httpClient.ts", "src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the capability checks in this order: pnpm test -- tests/unit/cnpj.test.ts tests/api/companyRoutes.test.ts; then pnpm test:e2e -- tests/e2e/companies.spec.ts (spec absent at review time); then the Play dev-link walkthrough of Empresas (create, edit, archive, restore, delete) with the 390 px and axe checks.",
+      "paths": ["tests/e2e/companies.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Decide how the 'ultimo resultado' link gets the latest completed diagnosis id: add it to the IF-002 company payload, or resolve it through the history API. Until then the link stays hidden.",
+      "paths": ["src/features/companies/CompanyPage.tsx"]
+    }
+  ]
+}

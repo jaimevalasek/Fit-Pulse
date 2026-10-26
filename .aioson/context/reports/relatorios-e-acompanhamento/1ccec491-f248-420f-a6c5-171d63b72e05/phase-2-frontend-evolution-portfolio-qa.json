@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "6e974c06-aa90-411c-a902-a28001b8487c",
+  "unit": "phase-2-frontend-evolution-portfolio",
+  "wave": 7,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T00:15:22Z",
+  "finished_at": "2026-10-26T00:17:30Z",
+  "scope": {
+    "caps": ["CAP-ra-evolution-report", "CAP-ra-portfolio-report"],
+    "acs": ["AC-ra-12", "AC-ra-14", "AC-ra-16"],
+    "interfaces": ["IF-001", "IF-004"],
+    "done_when": "pnpm typecheck passa",
+    "files": [
+      "src/features/reports/ReportOptions.tsx",
+      "src/features/history/ComparePage.tsx",
+      "src/features/reports/PortfolioReportPage.tsx",
+      "src/features/home/ConsultantHome.tsx",
+      "src/App.tsx"
+    ]
+  },
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "integration_wiring_required",
+      "severity": "medium",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "src/features/reports/ReportCenterPage.tsx",
+      "summary": "ReportCenterPage is outside this unit, so the evolution option stays off in the live report center. ReportWorkspace must keep reportType and evolutionRange state (start from defaultEvolutionRange(diagnoses)), pass evolutionSupported, reportType, onReportTypeChange, evolutionRange and onEvolutionRangeChange to ReportOptions, and build {kind:'evolution', fromId, toId} when the type is evolution. Deferred to integration."
+    },
+    {
+      "kind": "integration_wiring_required",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-16",
+      "path": "src/api/reportApi.ts",
+      "summary": "ReportSelection in src/api/reportApi.ts (line 8) lists only the diagnosis member. PortfolioReportPage.tsx:17 uses `{ kind: 'portfolio' } as unknown as ReportSelection` to get past it, and the evolution selection needs the same union. Integration should add the evolution and portfolio members (IF-001) and then drop the cast. src/api is outside this unit's write paths, so it was not changed here."
+    },
+    {
+      "kind": "integration_wiring_required",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-16",
+      "path": "server/validation/reportSchemas.ts",
+      "summary": "reportSelectionSchema (lines 13-32) accepts only the diagnosis and evolution kinds. Until a portfolio member is added (phase-2-backend-portfolio, not yet in this file), GET /api/reports/preview?kind=portfolio and POST /api/reports/export {kind:'portfolio'} are rejected with 400 and the portfolio page cannot show its preview. This is a sibling artifact, so it is deferred to integration; it blocks CAP-ra-portfolio-report end to end but not this unit's Done when."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "Command `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts` was not run. It is not in this unit's Verification and depends on the ReportCenterPage wiring and the server portfolio schema above, so it is deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-16",
+      "path": "tests/e2e/portfolioReport.spec.ts",
+      "summary": "Playwright checks for AC-ra-16 (empty portfolio, owner mode, first-company CTA) were not run for the same reason; deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-14",
+      "path": "package.json",
+      "summary": "ESLint is not installed in this project: node_modules/.bin/eslint is absent, so no lint check was run for the unit. Verified by the absence of the binary only; no lint result exists."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "PASS - tsc --noEmit completed with no errors. Full output at .aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-evolution-portfolio-qa/typecheck.log; exit code at typecheck.exit (EXIT=0)."
+    },
+    {
+      "kind": "read",
+      "path": "src/features/reports/PortfolioReportPage.tsx",
+      "result": "Read in full (152 lines). Empty portfolio (companyCount === 0) shows 'Cadastrar a primeira empresa'; owner mode shows the explanation with a settings link; the export and preview use PORTFOLIO_SELECTION; no defect found."
+    },
+    {
+      "kind": "read",
+      "path": "src/features/reports/ReportOptions.tsx",
+      "result": "Read lines 1-264. defaultEvolutionRange (second latest to latest), diagnosesAfter (Até only newer than De), rangeWithFrom (keeps Até when still later) and the keyboard radio group are correct; exports match the implementer's contract."
+    },
+    {
+      "kind": "grep",
+      "path": "src/features/history/ComparePage.tsx",
+      "result": "Imports DELTA_WORDS, STAGE_MOVES, formatDelta, formatComparisonMonth and recalculationNotice from shared/content/comparisonCopy.ts (line 10); no local duplicates; those exports exist in shared/content/comparisonCopy.ts."
+    },
+    {
+      "kind": "grep",
+      "path": "src/App.tsx",
+      "result": "Route relatorios/carteira renders PortfolioReportPage (App.tsx:93)."
+    },
+    {
+      "kind": "grep",
+      "path": "server/validation/reportSchemas.ts",
+      "result": "reportSelectionSchema has diagnosis and evolution members only (lines 13-32)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Add a portfolio member { kind: 'portfolio' } to reportSelectionSchema in server/validation/reportSchemas.ts (phase-2-backend-portfolio) and to the ReportSelection union in src/api/reportApi.ts; then replace the cast at PortfolioReportPage.tsx:17 with a typed literal.",
+      "paths": ["server/validation/reportSchemas.ts", "src/api/reportApi.ts", "src/features/reports/PortfolioReportPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire ReportCenterPage.tsx ReportWorkspace: keep useState<ReportType>('diagnosis') and useState(defaultEvolutionRange(diagnoses)); pass evolutionSupported, reportType, onReportTypeChange, evolutionRange, onEvolutionRangeChange to ReportOptions; build {kind:'evolution', fromId, toId} when the type is evolution.",
+      "paths": ["src/features/reports/ReportCenterPage.tsx", "src/features/reports/ReportOptions.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred checks once the wiring and the server portfolio member exist: pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts. Expected test ids: portfolio-report, portfolio-owner-mode, portfolio-open-settings, portfolio-empty, portfolio-first-company, portfolio-options, home-portfolio-report, report-type-evolution, report-from, report-to. ESLint is not installed, so no lint step is available.",
+      "paths": ["tests/e2e/report.spec.ts", "tests/e2e/portfolioReport.spec.ts", "tests/e2e/home.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "PortfolioReportPage decides 'empty' from GET /api/home?mode=consultant companyCount === 0, not from the 409 portfolio_empty. Confirm that companyCount counts only active companies, as AC-ra-16 requires; the page does not check this itself."
+    }
+  ]
+}

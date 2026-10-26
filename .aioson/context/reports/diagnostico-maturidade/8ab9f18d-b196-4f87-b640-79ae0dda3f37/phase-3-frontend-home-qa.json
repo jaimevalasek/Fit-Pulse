@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "e75a3c20-da8c-4e9e-acbf-303efeba5d98",
+  "unit": "phase-3-frontend-home",
+  "phase": "3-frontend-home",
+  "wave": 9,
+  "agent": "qa",
+  "lane": "frontend",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T05:03:22Z",
+  "finished_at": "2026-10-23T05:04:08Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-home"],
+    "acceptance_criteria": ["AC-dm-32", "AC-dm-35"],
+    "interfaces": ["IF-007"],
+    "files": [
+      "src/api/homeApi.ts",
+      "src/features/home/HomePage.tsx",
+      "src/features/home/OwnerHome.tsx",
+      "src/features/home/ConsultantHome.tsx",
+      "src/features/home/ScoreTrend.tsx",
+      "src/App.tsx"
+    ],
+    "done_when": "pnpm build sai com 0"
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-home",
+      "ac": "AC-dm-32, AC-dm-33, AC-dm-34, AC-dm-35",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "Capability-level e2e check `pnpm test:e2e -- tests/e2e/home.spec.ts` (AC-dm-32..35, 390 px viewport, reduced motion) could not run here: the spec file does not exist yet and is outside this unit's write paths. Deferred to 4-integration-e2e-features. Runtime visual check also deferred."
+    },
+    {
+      "kind": "defect",
+      "severity": "low",
+      "cap": "CAP-dm-home",
+      "ac": "AC-dm-35",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "AC-dm-35 literally says a company without a completed diagnosis shows 'Começar o primeiro diagnóstico'. When an open draft exists, FirstDiagnosisState shows 'O primeiro diagnóstico está em andamento' with 'Continuar de onde parei' and no 'Começar' text. Deliberate by the implementer; judgment call, not fixed here. Integration should confirm the wording against the approved prototype."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-home-qa/build.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-home-qa/build.exitcode",
+      "summary": "Runs `tsc --noEmit && vite build` in the foreground. Completed with exit 0; vite reported 'built in 746ms'. Full log retained in the execution-temp directory."
+    },
+    {
+      "kind": "review",
+      "summary": "Read the six unit files against AC-dm-32 (owner home: ladder, last date, padlock with weakest dimension, 3 actions, draft with 'Continuar de onde parei', evolution with compare link) and AC-dm-35 (consultant empty state with 'Cadastrar a primeira empresa'; first-diagnosis state). Read-only check of homeApi.ts types against server/services/homeService.ts: keys match. httpClient buildUrl drops null query values, so getOwnerHome(null) sends no companyId."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred capability checks in 4-integration-e2e-features: create tests/e2e/home.spec.ts and run `pnpm test:e2e -- tests/e2e/home.spec.ts` with complete output captured. It should cover AC-dm-32..35 at 390 px and with reduced motion. data-aioson-id hooks present in the unit: home-owner, home-last-date, escada, home-trava, home-weakest, home-see-result, home-draft, home-continue-draft, home-evolution, score-trend, score-trend-summary, home-compare, home-new-diag, home-first-diagnosis, home-start-first, home-owner-empty, home-consult-empty, home-first-company, consult-summary, consult-stalled, consult-old, consult-risk, consult-new-company, consult-active-count, home-consultant, home-loading, home-error."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Owner padlock shows the weakest dimension name only. The server's latest (homeService.ts) carries weakestDimension but not its score, so the prototype's '· NN/100' is not shown. AC-dm-32 asks only for the dimension, so this is met; adding the score would need a backend change."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "CompaniesPage supports only ?estagio=, ?busca= and ?arquivadas=1. The prototype's 'Ver lista' links (?filtro=parados|antigos|risco) were not shipped. Attention-list rows link straight to the company, and the ladder steps link to /empresas?estagio=N, which satisfies AC-dm-34 as written."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Confirm the AC-dm-35 wording for a company that has an open draft but no completed diagnosis (see finding 2). The current code shows the continue action, not 'Começar o primeiro diagnóstico'."
+    }
+  ]
+}

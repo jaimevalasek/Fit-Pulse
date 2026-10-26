@@ -1,0 +1,85 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "execution-plan",
+  "slug": "diagnostico-maturidade",
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "blocking",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "execution-plan:present",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:plan-digest",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:roles",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:dev-profile",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:manifest",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:signatures",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:fallback-signatures",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:prompts",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:waves",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "execution-plan:edges",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "lanes": 2,
+    "units": 29,
+    "lane_units": 26,
+    "integration_units": 3,
+    "waves": 13,
+    "edges": 34,
+    "processes": 52,
+    "parallelism": {
+      "max_concurrent_units": 4,
+      "serial_chain": 10,
+      "critical_path_processes": 20,
+      "serial": false
+    },
+    "ceiling": {
+      "max_files": 10,
+      "max_acs": 6
+    },
+    "context_bytes_max": 181175
+  },
+  "exitCode": 0
+}

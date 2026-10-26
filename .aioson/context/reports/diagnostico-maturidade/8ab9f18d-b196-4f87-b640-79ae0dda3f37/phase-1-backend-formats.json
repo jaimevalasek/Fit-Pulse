@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "bac4df24-ac8d-40f8-b693-937e8a40b434",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "unit": "phase-1-backend-formats",
+  "started_at": "2026-10-23T03:31:14.272Z",
+  "finished_at": "2026-10-23T03:36:30.000Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "shared/format/cnpj.ts",
+    "shared/format/money.ts",
+    "shared/format/displayNumbers.ts",
+    "shared/content/companyOptions.ts",
+    "tests/unit/cnpj.test.ts",
+    "tests/unit/money.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "verification_note",
+      "severity": "low",
+      "summary": "`pnpm test -- <files>` (the exact Done-when form) does not filter: pnpm 11 forwards the literal `--` to `vitest run`, which then runs the whole suite. It exited 0 here (4 files, 146 tests, including sibling units' questionBank/forbiddenTerms tests at that moment). `pnpm test <files>` without `--` and `pnpm exec vitest run <files>` filter correctly. Every focused command in the plan uses the `--` form, so as sibling tests land this form will also fail on their defects.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "The e2e halves of AC-dm-08 (aria-invalid and inline message on blur, inputmode numeric, maxlength 18), AC-dm-15 and AC-dm-51 depend on frontend components and on shared/domain/unitEconomics.ts, which belong to other units. This unit covers only the pure formatting/validation layer (IF-004) and its unit tests."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/unit/cnpj.test.ts tests/unit/money.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 3 passed (3), Tests 141 passed (141) - the `--` form ran the whole suite (see finding); includes this unit's 2 files",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-dev/vitest.log"
+    },
+    {
+      "command": "pnpm test tests/unit/cnpj.test.ts tests/unit/money.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 2 passed (2), Tests 128 passed (128) - only this unit's files (39 in cnpj.test.ts, 89 in money.test.ts)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-dev/vitest-nodash.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/cnpj.test.ts tests/unit/money.test.ts --reporter=verbose",
+      "exit_code": 0,
+      "result": "Test Files 2 passed (2), Tests 128 passed (128)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-dev/vitest-direct.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "No type errors in the whole project at the time of the run (strict mode)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-formats-dev/tsc.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-1-frontend-primitives",
+      "kind": "contract_change",
+      "text": "CnpjField/MoneyField should wire the caret-preserving masks from shared/format: `maskCnpjInput(rawValue, caret, previousValue)` returns { value, caret }; `maskMoneyInput(rawValue, caret, previousValue)` returns { value, caret, cents } (cents is null when the field is empty). In onChange pass `e.target.value`, `e.target.selectionStart` and the value held before the keystroke, set the new value, then restore the caret with setSelectionRange in a layout effect. `previousValue` is what makes Backspace over a separator ('.', '/', '-', ',', 'R$ ') delete the digit before it instead of freezing the field, and it is what the 13-digit money limit falls back to. Constants: CNPJ_MASK_LENGTH = 18 (maxLength), use inputMode=\"numeric\" for CNPJ and \"decimal\" for money. On blur call `getCnpjError(value)`: it returns null for an empty field (CNPJ is optional) and CNPJ_INVALID_MESSAGE ('CNPJ inválido. Formato: 00.000.000/0000-00.') otherwise. Money fields emit whole cents; a backspace on 'R$ 0,00' empties the field so optional values can be cleared.",
+      "paths": ["shared/format/cnpj.ts", "shared/format/money.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-rules",
+      "kind": "contract_change",
+      "text": "Display helpers in shared/format/displayNumbers.ts expect the unit-economics output in these shapes: `formatRatio(ratio: number | null)` -> '4,6×' (one decimal, half up; null/NaN/Infinity/negative -> 'não calculado'); `getRatioBand(ratio)` -> { key: 'critical' | 'attention' | 'healthy' | 'invest_more', label, phrase } on the EXACT ratio (<1, 1..<3, 3..5 inclusive, >5; null when unknown); `formatRatioWithBand(ratio)` -> '0,0× Crítico' (AC-dm-51); `formatPayback(months: number | 'never' | null)` -> whole months rounded up ('4 meses', '1 mês'), 'não se paga' for 'never' or Infinity, 'não calculado' for null/NaN. Recommendation: have computeUnitEconomics return payback as a number, 'never' (margin R$ 0, BR-dm-15) or null (CAC not known) and never a raw Infinity, because Infinity becomes null when the frozen result is JSON-serialised. Also exported: NOT_CALCULATED_LABEL, NEVER_PAYS_BACK_LABEL, NO_NEW_CUSTOMERS_EXPLANATION (BR-dm-14 wording). The 1/3/5 band thresholds are duplicated here from BR-dm-03/RULE-dm-02; if rulesV1 exposes them, point getRatioBand at those constants. Rounding of reais to cents (half up, RULE-dm-03) is NOT done in these formatters: formatMoney only accepts whole cents and shows 'não calculado' for fractions.",
+      "paths": ["shared/format/displayNumbers.ts", "shared/format/money.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-companies",
+      "kind": "note",
+      "text": "shared/content/companyOptions.ts exports SEGMENT_KEYS, SALES_CHANNEL_KEYS and ANNUAL_REVENUE_RANGE_KEYS as `as const` tuples, ready for z.enum(...) in companySchemas, plus *_LABELS records, *_OPTIONS arrays ({ key, label }) and get*Label(key) helpers that return the key itself for unknown values. Keys are snake_case English (e.g. 'health_wellness', 'quote_or_visit', 'up_to_4_8m'); labels are the ones approved in the prototype. For the CNPJ, store 14 digits: validate with `isValidCnpj` and normalise with `extractCnpjDigits` from shared/format/cnpj.ts; an empty string must become absent.",
+      "paths": ["shared/content/companyOptions.ts", "shared/format/cnpj.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The plan's focused commands use `pnpm test -- <files>`. With pnpm 11 and vitest 5.0.5 the `--` is forwarded literally and the filter is ignored, so the whole suite runs. Use `pnpm test <files>` (no `--`) or `pnpm exec vitest run <files>` to scope a run; keep the `--` form only if a full-suite run is acceptable.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "The PRD fixes the CNPJ as 14 numeric digits with inputmode numeric. To my knowledge the Receita Federal starts issuing alphanumeric CNPJs from July 2026, so a company registered after that could be rejected by isValidCnpj. Not handled here because the PRD (AC-dm-08, IF-002 '14 dígitos') says numeric; worth a decision from Product before release.",
+      "paths": ["shared/format/cnpj.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks owned by other units/integration: tests/e2e/companies.spec.ts (AC-dm-08 blur message with aria-invalid, mask while typing, AC-dm-17), tests/e2e/calculator.spec.ts (AC-dm-15, AC-dm-51 on the real screen), tests/unit/unitEconomics.test.ts (formulas, rounding, BR-dm-14/15). The formatting layer they sit on is covered by tests/unit/cnpj.test.ts and tests/unit/money.test.ts."
+    }
+  ]
+}

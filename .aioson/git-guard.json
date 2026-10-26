@@ -38,6 +38,13 @@
         "generic_secret_assignment"
       ],
       "reason": "Architecture note names the legacy ?token= compat path; no credential value present (line 385)."
+    },
+    {
+      "path": ".aioson/context/done/diagnostico-maturidade/implementation-plan-diagnostico-maturidade.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "\"Tokens:\" refers to design tokens (tokens.css path); no credential value present (line 30)."
     }
   ],
   "blockPaths": [

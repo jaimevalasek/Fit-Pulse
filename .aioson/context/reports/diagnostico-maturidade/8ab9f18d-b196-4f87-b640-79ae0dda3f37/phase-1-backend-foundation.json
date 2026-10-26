@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "67ab46dd-fd5b-4aff-be51-95f18c40d82d",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "started_at": "2026-10-23T03:16:03Z",
+  "finished_at": "2026-10-23T03:27:22Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "manifest.json",
+    ".gitignore",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "prisma/schema.prisma",
+    "server/db/databaseUrl.ts"
+  ],
+  "findings": [
+    {
+      "kind": "contract_note",
+      "severity": "medium",
+      "text": "package.json `postinstall` calls scripts/prepare-app.mjs, which only exists after wave 2 (1-backend-db). To keep `pnpm install` exiting 0 in wave 1, postinstall is a short `node -e` guard: if scripts/prepare-app.mjs is missing it prints a warning and exits 0; otherwise it runs `node scripts/prepare-app.mjs --generate --migrate --build` and propagates its exit code. Once prepare-app.mjs exists the guard is a no-op. The integration owner may replace it with the plain command after wave 2.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "tooling_gotcha",
+      "severity": "medium",
+      "text": "pnpm 11.21.0 forwards `pnpm test -- <file>` literally as `vitest run -- <file>`, and vitest ignores everything after `--`: the filter is dropped and the whole suite runs (confirmed with two scratch test files). `pnpm test <file>` (no `--`) and `pnpm exec vitest run <file>` filter correctly. The focused commands in the plan (`pnpm test -- tests/api/playRoutes.test.ts`, etc.) therefore run every test that exists; a failing sibling test can fail an unrelated unit.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "security_note",
+      "severity": "medium",
+      "text": "The repo root already has a `.env` holding OPENROUTER_API_KEY, and the store packager's allowed extensions include `.env`. `.gitignore` did not ignore it before this unit. `.env`, `.env.*` (except `.env.example`), `*.db`, `*.db-wal`, `*.db-shm`, `*.db-journal`, `/data/`, `/dist/`, `node_modules/`, `server/generated/`, `test-results/` and `playwright-report/` are now ignored; semantics were checked with the same `ignore` package the packager uses. Values of .env were never read or printed.",
+      "paths": [".gitignore"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "pnpm itself added `minimumReleaseAgeExclude: ['@types/pdfkit@0.17.7']` to pnpm-workspace.yaml during the first install (0.17.7 was published 2026-10-22, under pnpm 11's one-day minimum release age). It is harmless, travels with the store package (yaml is shipped) and makes the version resolve on a lockfile-less install; left untouched. The entry becomes unnecessary after 2026-10-23.",
+      "paths": ["pnpm-workspace.yaml"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "Prisma 7.10.1 emits invalid SQLite (`DEFAULT {}`) for `Json @default(\"{}\")`. The schema uses `@default(dbgenerated(\"'{}'\"))` for diagnoses.answers and diagnoses.calculator, which `prisma migrate diff` renders as `DEFAULT '{}'`. Do not change it back to `@default(\"{}\")`.",
+      "paths": ["prisma/schema.prisma"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "Dependency choices that deviate from 'latest' or go beyond the plan list: react-router is pinned to 7.18.4 (8.5.0 requires node >=22.22 but engines allow ^22.12.0); better-sqlite3 is declared directly at 12.11.1 (the range the adapter allows, ^12.6.0; 13.x is outside it); @types/node is ^22.12.0 (lowest supported runtime); typescript is ^7.0.2 and `tsc --noEmit` passes on it. shadcn support libraries were added (class-variance-authority, clsx, tailwind-merge, @radix-ui/react-slot, @radix-ui/react-alert-dialog, @radix-ui/react-label). NOT declared: lucide-react, tw-animate-css, supertest, jsdom, @testing-library/*. Execution dependencies (everything `dev`/`start`/postinstall needs, including prisma, tsx, vite, concurrently) are exact pins in `dependencies`; test/type tooling is in `devDependencies` with caret ranges.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "`prisma validate` (and any Prisma CLI call) shows an update notice, which means the CLI contacted its update-check service. Only my verification commands did this; `prisma generate` and `migrate diff` ran with CHECKPOINT_DISABLE=1. prepare-app.mjs must set CHECKPOINT_DISABLE=1 for every Prisma CLI call (RULE-dm-19), as the plan already says.",
+      "paths": []
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm install (first run, clean tree: no node_modules, no lockfile)",
+      "result": "exit 0 in 48.4s; 378 packages added; builds ran for better-sqlite3 (prebuilt binary), esbuild, @prisma/engines and prisma (preinstall); no 'Ignored build scripts' message; root postinstall guard printed the 'prepare-app.mjs not found' warning and exited 0",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-dev/install.log"
+    },
+    {
+      "command": "pnpm install (final run, same tree) then pnpm exec prisma validate",
+      "result": "install exit 0 ('Already up to date', 0 'ignored' lines); prisma validate exit 0: 'The schema at prisma\\schema.prisma is valid'",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-dev/final-install.log, final-validate.log"
+    },
+    {
+      "command": "node -e check of manifest.json",
+      "result": "'requires_services' in manifest = false; 'auth' in manifest = false; slug fitpulse, name FitPulse, runtime node, has_api true, stack split, webview_target frontend, processes PORT/BACKEND_PORT, compatibility.schema_version 1, requires_migration false, min_play_version 0.1.92"
+    },
+    {
+      "command": "pnpm install in a scratch dir with only package.json + pnpm-workspace.yaml (store-like, no lockfile)",
+      "result": "exit 0 in 11.5s, no ignored builds, no ERR_PNPM_NO_MATURE_MATCHING_VERSION",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-dev/store-sim.log"
+    },
+    {
+      "command": "pnpm exec prisma generate; pnpm exec prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script; tsx round-trip script; pnpm exec tsc --noEmit",
+      "result": "generate ok (server/generated/prisma/client.ts, ESM with .ts import extensions); diff SQL valid; applying it to a temp SQLite file and using PrismaClient + PrismaBetterSqlite3 under tsx: Json defaults '{}', enum status default draft, Json update, ON DELETE CASCADE, preferences all worked; resolveDatabaseUrl() returned file:C:/dev/playapps/v-stage/data/fitpulse.db by default and the DATABASE_URL value when set; tsc 7.0.2 --noEmit exit 0 over the generated client, databaseUrl.ts, prisma.config.ts, vitest.config.ts",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-dev/roundtrip.log, tsc.log, generate.log, init.sql"
+    },
+    {
+      "command": "pnpm test -- tests/api/playRoutes.test.ts (with no test files yet)",
+      "result": "vitest 5.0.5 loads vitest.config.ts, applies include tests/unit/**/*.test.ts + tests/api/**/*.test.ts, exits 1 with 'No test files found' (expected until siblings add tests)"
+    },
+    {
+      "command": "cleanup",
+      "result": "removed the empty data/ dir created by resolveDatabaseUrl() and the gitignored server/generated/ I produced for the checks; node_modules/ left in place for later waves"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The postinstall guard in package.json (skip with a warning when scripts/prepare-app.mjs is missing) exists only because wave 1 runs before wave 2 creates that script. After wave 2 you may replace it with `node scripts/prepare-app.mjs --generate --migrate --build`. Also: focused test commands must be run as `pnpm test <file>` or `pnpm exec vitest run <file>`; with `pnpm test -- <file>` pnpm 11 passes a literal `--` and vitest runs the whole suite.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "unit:1-backend-db",
+      "kind": "contract_change",
+      "text": "Schema facts for the init migration, prismaClient.ts, prepare-app.mjs and testDatabase.ts: (1) generator `prisma-client`, output server/generated/prisma, moduleFormat esm, importFileExtension ts, so import `PrismaClient` from server/generated/prisma/client.ts; (2) datasource has no `url` in schema.prisma, the URL comes from prisma.config.ts via resolveDatabaseUrl(); (3) server/db/databaseUrl.ts exports resolveDatabaseUrl(env = process.env), resolveAppRoot() and resolveDataDir(); default URL is `file:<abs app root>/data/fitpulse.db` with forward slashes, DATABASE_URL wins when set, and the data/ folder is created for the default; import it with an explicit `.ts` extension; (4) `prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script` works and its output uses `DEFAULT '{}'` for answers/calculator (valid SQLite); (5) `new PrismaBetterSqlite3({ url: 'file:...' })` round-trip was verified under tsx; (6) set CHECKPOINT_DISABLE=1 on every Prisma CLI call; (7) the Prisma CLI re-reads prisma.config.ts on every command, so DATABASE_URL set in the child env is honored by `migrate deploy`.",
+      "paths": ["prisma/schema.prisma", "prisma.config.ts", "server/db/databaseUrl.ts"]
+    },
+    {
+      "to": "unit:1-backend-diagnoses",
+      "kind": "contract_change",
+      "text": "Diagnosis model: status is the Prisma enum DiagnosisStatus (draft | completed, default draft); rulesVersion is Int? (RULES_VERSION = 1); stage is Int?; answers, calculator and result are Json (answers/calculator default to {} at the database level, result is nullable); currentBlock defaults to 1; Company deletes cascade to diagnoses; index (company_id, status). Preference is { key (id), value String }.",
+      "paths": ["prisma/schema.prisma"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "package.json is owned by the backend lane and already declares react 19.3.1, react-dom, react-router 7.18.4 (HashRouter is exported from `react-router` in v7), tailwindcss + @tailwindcss/vite 4.3.3, vite 8.3.5, @vitejs/plugin-react 6.1.2, @fontsource/inter and /jetbrains-mono 5.3.0, @radix-ui/react-slot, -alert-dialog, -label, class-variance-authority, clsx and tailwind-merge. lucide-react and tw-animate-css are NOT declared; if a component needs them, report it to integration instead of editing package.json. tsconfig.json has `types: [node, vite/client]`, alias `@/*` -> `src/*`, allowImportingTsExtensions and verbatimModuleSyntax (use `import type` for types). vite.config.ts is yours: read PORT/BACKEND_PORT from the environment, bind 127.0.0.1 for `server` and `preview`, proxy `/api` to the backend.",
+      "paths": ["package.json", "tsconfig.json"]
+    },
+    {
+      "to": "unit:1-backend-package",
+      "kind": "note",
+      "text": ".gitignore now ignores /data/, /dist/, *.db*, .env and .env.* (keeping .env.example), server/generated/, test-results/ and playwright-report/. system.json is not part of this unit and does not exist yet. package.json has no build_command-related script for the store (source-mode publish): scripts are dev, start, postinstall, build, typecheck, test, test:e2e, smoke:migrate, smoke:boot, smoke:store-package. pnpm-workspace.yaml has allowBuilds for better-sqlite3, prisma, @prisma/engines and esbuild; the full install reported no other package with a build script.",
+      "paths": [".gitignore", "package.json", "pnpm-workspace.yaml"]
+    }
+  ]
+}

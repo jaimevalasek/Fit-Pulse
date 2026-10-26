@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "4046cf55-c45a-4712-9aa9-158f03d466a5",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "unit": "phase-4-backend-backup",
+  "started_at": "2026-10-23T05:06:33.725Z",
+  "finished_at": "2026-10-23T05:14:18.197Z",
+  "verdict": "PASS",
+  "summary": "CAP-dm-backup / AC-dm-37 / IF-009 implemented in the backend: POST /api/backup/export and POST /api/backup/import (10 MB only on import), strict versioned schema, newer-version and invalid-file refusals with nothing changed, transactional import that skips existing ids. Done-when passes.",
+  "files_changed": [
+    "server/validation/backupSchemas.ts (created)",
+    "server/services/backupService.ts (created)",
+    "server/routes/backupRoutes.ts (created)",
+    "server/app.ts (modified: mounts backupRoutes before the 1 MB json parser; `rules` const moved above it)",
+    "tests/api/backupRoutes.test.ts (created, 44 tests)"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "pnpm test:e2e -- tests/e2e/backup.spec.ts was not run: the spec and the BackupSection UI belong to the frontend lane / integration and are outside this unit's allowed files.",
+      "command": "pnpm test:e2e -- tests/e2e/backup.spec.ts"
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "Phase 4 integration checks were not run here (deferred to integration): node scripts/smoke-migrate.mjs, node scripts/smoke-boot.mjs, node scripts/smoke-store-package.mjs, aioson harness:check . --slug=diagnostico-maturidade, and the manual Windows store smoke (AC-dm-01/36/37/44/45).",
+      "command": "node scripts/smoke-migrate.mjs; node scripts/smoke-boot.mjs; node scripts/smoke-store-package.mjs; aioson harness:check . --slug=diagnostico-maturidade"
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "OBS-3370ac confirmed: `pnpm test -- tests/api/backupRoutes.test.ts` forwards a literal `--` and runs the whole suite (17 files, 757 tests, exit 0). The backup file alone was also run with `npx vitest run tests/api/backupRoutes.test.ts` (44 tests, exit 0). Not fixed here (outside allowed files)."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "When only formatVersion or schemaVersion is newer (not rulesVersion), the backup_newer_version message still prints the file's own rulesVersion (e.g. 'regras v1'), because the F-06 message is defined in terms of the rules version."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-dev/typecheck2.log",
+      "result": "tsc --noEmit clean, tests included"
+    },
+    {
+      "command": "npx vitest run tests/api/backupRoutes.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-dev/focused.log",
+      "result": "1 file, 44 tests passed"
+    },
+    {
+      "command": "pnpm test -- tests/api/backupRoutes.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-dev/done-when.log",
+      "result": "unit Done-when: 17 files, 757 tests passed (the runner ignores the file filter, OBS-3370ac)"
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "IF-009 as built, matching src/api/backupApi.ts: export -> 200 { fileName, directory, companies, diagnoses }; import -> 200 { imported: {companies, diagnoses}, skipped: {companies, diagnoses} } (your assumption for `skipped` is correct). Errors, all `{ error: { code, message } }`: 422 backup_invalid (generic message ending 'Nenhum dado foi alterado.'); 422 backup_newer_version with `rulesVersion` (message is the F-06 text 'O arquivo veio de uma versão mais nova do app (regras vN). Atualize o FitPulse pela loja do Play e tente de novo. Nenhum dado foi alterado.'); 413 payload_too_large above 10 MB; 400 invalid_json for text that is not JSON; 500 write_failed on export. `message` is ready to show in role=\"alert\".",
+      "paths": [
+        "server/routes/backupRoutes.ts",
+        "server/services/backupService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Behaviours the UI/e2e should know: (1) records whose id already exists here are skipped, never overwritten; diagnoses of an existing company are still added if their id is new. (2) A draft in the file is skipped (counted in skipped.diagnoses) when its company already has an open draft, keeping RULE-dm-13. (3) Export covers companies and diagnoses only (no preferences, per the plan). (4) Export normalises answers/calculator through readStoredAnswers/readStoredCalculator so the file always passes its own strict schema. (5) File name: fitpulse-copia-{local date}.json, ' (2)' suffix when it already exists.",
+      "paths": [
+        "server/services/backupService.ts",
+        "server/validation/backupSchemas.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Still to run after all producers finish: pnpm test:e2e -- tests/e2e/backup.spec.ts, pnpm test, pnpm test:e2e, node scripts/smoke-migrate.mjs, node scripts/smoke-boot.mjs, node scripts/smoke-store-package.mjs, aioson harness:check . --slug=diagnostico-maturidade, then the manual Windows smoke steps 1-5 of the phase plan."
+    }
+  ]
+}

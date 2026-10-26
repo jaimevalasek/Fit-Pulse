@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "d9f731ed-2fdb-41c1-ba80-1c3190d0d587",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "started_at": "2026-10-23T03:58:56Z",
+  "finished_at": "2026-10-23T04:06:38Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "'pnpm test -- tests/api/diagnosisRoutes.test.ts' runs the whole vitest suite (pnpm forwards a literal '--', vitest does not filter), so the command also depends on sibling unit tests; all 10 files / 564 tests passed. The unit's own file alone ('pnpm exec vitest run tests/api/diagnosisRoutes.test.ts') has 70 tests, green in 6 repeated runs.",
+      "paths": [
+        "tests/api/diagnosisRoutes.test.ts"
+      ]
+    },
+    {
+      "kind": "assumption",
+      "severity": "low",
+      "text": "POST /api/companies/:id/diagnoses has no guard for archived companies (the PRD lists none); the UI is expected not to offer 'Novo diagnóstico' on an archived company page. A 409 guard can be added in diagnosisRepository.startDraft if wanted.",
+      "paths": [
+        "server/repositories/diagnosisRepository.ts"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "Not run (outside this unit): pnpm test:e2e (tests/e2e/questionnaire.spec.ts, AC-dm-12/14/16/17/48 on screen), AC-dm-27 timing in the Play, and 'aioson harness:check'. They need the frontend units and the integration build.",
+      "paths": []
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/diagnosisRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 10 passed (10); Tests 564 passed (564)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-dev/diagnosisRoutes.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts (x6)",
+      "exit_code": 0,
+      "result": "70 tests passed each run",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-dev/repeat-1.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit clean",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-dev/typecheck2.log"
+    },
+    {
+      "command": "node scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "result": "PASS (server boots under tsx with the new routes)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-dev/smoke-boot.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-1-frontend-questionnaire",
+      "kind": "contract_change",
+      "text": "IF-003 as implemented. POST /api/companies/:id/diagnoses -> 201 new draft or 200 existing draft (same body shape). Diagnosis body: id, companyId, status, answers, calculator (always the full CalculatorInput, nulls and spendParts {} when empty), currentBlock, updatedAt, rulesVersion|null, result|null, previous|null, plus additive createdAt and completedAt (ISO or null). PATCH is partial and strict: answers merge per question id, calculator merges per top-level key (spendParts, when sent, replaces the whole parts object; null clears a field), currentBlock 1..8; any other key (status, result, stage...) is 400. 400 validation_failed carries fields keyed 'answers.<id>', 'calculator.<key>' or 'currentBlock'. Answer null is only accepted for mp1, mp3, cm1, mm1, co1. Money is integer cents 0..MONEY_MAX_CENTS, newCustomers 0..1000000, marginPercent 0..100 integers. PATCH/DELETE on a completed diagnosis -> 409 diagnosis_not_draft; unknown id -> 404 diagnosis_not_found; unknown company on start -> 404 company_not_found. POST /complete -> 422 incomplete with error.pendingBlocks (array of 1..8) while blocks are missing; 200 with the frozen result otherwise; a second call returns the stored one unchanged.",
+      "paths": [
+        "server/routes/diagnosisRoutes.ts",
+        "server/validation/diagnosisSchemas.ts",
+        "server/services/diagnosisService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "server/app.ts: AppDependencies gained optional 'rules?: Rules' (defaults to rulesV1) and mounts createDiagnosisRoutes. Tests use it to swap in tests/fixtures/rulesV2.ts for AC-dm-22 and AC-dm-31 (the history unit can do the same with createApp({..., rules: rulesV2})). previous on a completed diagnosis = the newest completed, non-archived diagnosis of the company completed before it; on a draft = the newest completed one.",
+      "paths": [
+        "server/app.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for integration: 'pnpm test:e2e -- tests/e2e/questionnaire.spec.ts' once the frontend units land, AC-dm-27 timing of 'Calculando o seu diagnóstico' in the Play (target 3 s), and the harness check.",
+      "paths": []
+    }
+  ]
+}

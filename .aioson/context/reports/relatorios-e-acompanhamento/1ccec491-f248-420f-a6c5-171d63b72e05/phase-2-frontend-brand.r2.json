@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "1e1a2ddd-dd64-40ab-bcf5-738204d06db0",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-2-frontend-brand",
+  "started_at": "2026-10-26T01:15:00Z",
+  "finished_at": "2026-10-26T01:27:30Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "src/features/report-center/",
+      "summary": "The blocker from rounds 1 and 2 is resolved on the current tree. src/features/reports/ no longer exists. src/features/report-center/ holds all 8 files. The importers now point to it: src/App.tsx:12-13, src/features/result/ResultPage.tsx:23 and src/features/settings/BrandSection.tsx:13. This unit made no source edit this round because the rename had already been applied outside it. I re-ran the store smoke on the real tree and it passed 8/8."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-20, AC-ra-21",
+      "path": "tests/e2e/brand.spec.ts",
+      "summary": "Not run here: `pnpm exec playwright test tests/e2e/brand.spec.ts` (a capability-wide check owned by integration, not part of this unit's Done when) and the Play dev-link walkthrough (save a PNG logo and a JPG logo, then export the three PDFs). The walkthrough needs the AIOSON Play desktop app, which this environment cannot run."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "package.json",
+      "summary": "Unchanged from r1: a plain `pnpm typecheck` can exit 1 before tsc runs. This happens when pnpm's verify-deps step triggers `pnpm install`, whose postinstall `prisma migrate deploy` hits 'database is locked' while a preview holds data/fitpulse.db. I used `pnpm --config.verify-deps-before-run=false typecheck`."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-dev/typecheck-r3.log",
+      "summary": "tsc --noEmit passes on the current tree, with the report-center imports in place (local Done when)."
+    },
+    {
+      "kind": "command",
+      "command": "node scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-dev/smoke-r3.log",
+      "summary": "8/8 PASS on the real tree: package 0.2.0 (216 files), install 0.1.0, write owner data, update with the current package, boot on PORT/BACKEND_PORT, data identical, 4 new tables, questionnaire files and schema version 2."
+    },
+    {
+      "kind": "inspection",
+      "summary": "BrandSection.tsx calls only @/api/brandApi (getBrand, saveBrand, saveBrandLogo, removeBrandLogo, resetBrand, brandLogoUrl), which is IF-003. It has no direct fetch. ReportSheet comes from @/features/report-center/ReportSheet."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The AC-ra-54 rename (src/features/reports -> src/features/report-center) is in place and verified. tsc passes, and `node scripts/smoke-store-package.mjs` passes 8/8 on the real tree. Still open for integration: `pnpm exec playwright test tests/e2e/brand.spec.ts`, and the Play dev-link walkthrough (Settings -> Instalar App -> Linkar pasta; save a PNG logo and a JPG logo in Configurações -> Seus relatórios; export the three PDFs; check the cover and footer). Stop the preview, or pass --config.verify-deps-before-run=false, so pnpm's install does not hit the locked SQLite database.",
+      "paths": ["src/features/report-center/", "src/features/settings/BrandSection.tsx", "tests/e2e/brand.spec.ts", "scripts/smoke-store-package.mjs"]
+    }
+  ]
+}

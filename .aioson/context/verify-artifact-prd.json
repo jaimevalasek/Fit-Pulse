@@ -1,0 +1,43 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "prd",
+  "slug": "relatorios-e-acompanhamento",
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "blocking",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "prd",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "caps_total": 20,
+    "caps_required": 14,
+    "fit_rows": 14,
+    "ac_rows": 63,
+    "proms_total": 10,
+    "proms_covered": 10,
+    "fit_rows_without_path": 0,
+    "cited_paths_missing": 0,
+    "weak_evidence_rows": 0,
+    "prototype_status": "current",
+    "material_states_missing": [],
+    "business_rules": {
+      "rows": 12,
+      "without_ac": 0
+    },
+    "decision_branches": {
+      "rows": 21,
+      "without_ac": 0
+    },
+    "file": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+    "briefing_read": true
+  },
+  "exitCode": 0
+}

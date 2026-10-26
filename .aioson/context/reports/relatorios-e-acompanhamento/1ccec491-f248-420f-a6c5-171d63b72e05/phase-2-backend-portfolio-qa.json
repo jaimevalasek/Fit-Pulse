@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "f5445d25-1a70-4b7b-a850-b1c883dfdf97",
+  "unit": "phase-2-backend-portfolio",
+  "wave": 6,
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "capabilities": ["CAP-ra-portfolio-report", "CAP-ra-evolution-report"],
+  "acceptance_criteria": ["AC-ra-11", "AC-ra-15"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T21:10:20-03:00",
+  "finished_at": "2026-10-25T21:12:30-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "behavior_change",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-15",
+      "path": "shared/domain/followUp.ts",
+      "summary": "Reevaluation moved from an instant rule (more than 90*24h) to a calendar-day rule (local day of last diagnosis + 90; late once that day has passed). Shared by home and PDF through followUp.reevaluationOf. Spec-backed by PRD RULE-ra-07 (.aioson/context/prd-relatorios-e-acompanhamento.md:240: 'data local do computador', 'a data ja passou'), so it is not a defect, but the done-when says 'tela do consultor igual': the consultant home now shows a company as overdue on day 91 rather than at 90 days plus one second. Owner should confirm this reading. Two home boundary tests in tests/api/homeRoutes.test.ts were rewritten to the day line (90 on time, 91 late), plus a local-midnight test."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-15",
+      "path": "server/validation/reportSchemas.ts",
+      "summary": "reportSelectionSchema has no 'portfolio' member, so GET /api/reports/preview?kind=portfolio and POST /api/reports/export {kind:'portfolio'} answer 400 validation_failed although reportService builds and saves the portfolio document. The file is not in any unit file list of this capability (it belongs to the evolution capability files), so the schema member is deferred to integration. The capability cannot pass end-to-end through the API until it lands. Not a defect of this unit's local verification."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "low",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-15",
+      "path": "server/app.ts",
+      "summary": "createReportService({ prisma, downloadsDir }) is built without now and rules (line 77), so the portfolio PDF counts days with the default clock while the consultant home uses deps.now. Identical in production; diverges only with an injected clock in API or e2e tests. Deferred to integration."
+    },
+    {
+      "kind": "design_limit",
+      "severity": "low",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-15",
+      "path": "server/report/portfolioDocument.ts",
+      "summary": "The active-company table has three columns (Empresa | Estagio e ultimo diagnostico | Atencao). Late reevaluation, high risk and, once tracked, overdue actions are text inside 'Atencao', not columns of their own, because drawTable (server/report/pdfBlocks.ts, phase 1) gives the first column 60% of the width. AC-ra-15 content is present; the per-attribute column layout would need drawTable and ReportTableBlock to accept column widths."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-15",
+      "path": "tests/e2e/portfolioReport.spec.ts",
+      "summary": "Not run: pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts (AC-ra-16 modes, empty portfolio, portfolio-report prototype interaction). Reason: needs PortfolioReportPage.tsx, ConsultantHome.tsx, App.tsx (phase-2-frontend-evolution-portfolio, not landed) and the portfolio kind in reportSchemas.ts (see integration finding). Integration must run it after those land."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-portfolio-report",
+      "ac": "AC-ra-15",
+      "path": "package.json",
+      "summary": "Not run: pnpm build (the vite build half; tsc --noEmit was run and passes). Reason: the build belongs to integration after the frontend units land. Integration must run pnpm build and then export the three PDFs in the Play dev-link to open them."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "result": "4 files passed, 88 tests passed (followUp 14, portfolioDocument 25, forbiddenTerms 11, homeRoutes 38). This is the unit's declared Done-when/Verification command.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-portfolio-qa/verify-1.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors reported",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-portfolio-qa/tsc-qa.log"
+    },
+    {
+      "command": "read review: shared/domain/followUp.ts, server/services/portfolioService.ts, server/repositories/portfolioRepository.ts, server/report/portfolioDocument.ts, server/services/homeService.ts (delegation), tests/api/homeRoutes.test.ts (rewritten boundary tests), reportService portfolio branch, app.ts wiring",
+      "exit_code": 0,
+      "result": "No simple local defect found in the unit files; no corrections made. Repository orders completed diagnoses newest first, so latest = first readable completed record. Portfolio report and home share one clock per request. Due day itself is on time; late from the following day, matching RULE-ra-07."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Add the portfolio kind to server/validation/reportSchemas.ts: const portfolioSelectionSchema = z.object({ kind: z.literal('portfolio') }), included in the reportSelectionSchema discriminated union. createReportService already handles {kind:'portfolio'} for preview and export (document kind 'portfolio'; file carteira-{YYYY-MM-DD}.pdf; generated_files row kind 'portfolio_pdf' with companyId null; 409 portfolio_empty when no company is active).",
+      "paths": ["server/validation/reportSchemas.ts", "server/services/reportService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "In server/app.ts pass the app clock and rules to the report service: createReportService({ prisma: deps.prisma, downloadsDir: deps.downloadsDir, now: deps.now, rules }), so the portfolio PDF and the consultant home count days from the same clock.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Verification still to run after the frontend units land: (1) pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts; (2) pnpm build (tsc + vite build); (3) in the Play dev-link, export the three PDFs and open them.",
+      "paths": ["tests/e2e/portfolioReport.spec.ts", "tests/e2e/home.spec.ts", "package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/helpers/testDatabase.ts resetData does not clear the generated_files table; a test that counts saved files must compare against a count taken before it acts (the unit's API test does).",
+      "paths": ["tests/helpers/testDatabase.ts"]
+    },
+    {
+      "to": "unit:phase-2-frontend-evolution-portfolio",
+      "kind": "note",
+      "text": "Portfolio report API once the schema member lands: GET /api/reports/preview?kind=portfolio returns a ReportDocument of kind 'portfolio' with pages cover, by-stage, companies-1..N and how-to-read (the list is a table with columns Empresa, Estagio e ultimo diagnostico, Atencao). POST /api/reports/export {kind:'portfolio'} returns {fileId, fileName, directory}. An empty portfolio answers 409 portfolio_empty; the page should show the empty state with 'Cadastrar a primeira empresa'.",
+      "paths": ["src/features/reports/PortfolioReportPage.tsx"]
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "0f05fc71-bdc1-4552-b403-3f88d10decf4",
+  "unit": "phase-3-frontend-actions",
+  "phase": "3-frontend-actions",
+  "wave": 6,
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T23:50:00Z",
+  "finished_at": "2026-10-25T23:53:30Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-action-tracking"],
+    "acceptance_criteria": ["AC-ra-26", "AC-ra-27", "AC-ra-28", "AC-ra-30", "AC-ra-63"],
+    "interfaces": ["IF-004", "IF-005"],
+    "done_when": "pnpm typecheck passa e as telas usam só o IF-005"
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "defect",
+      "severity": "low",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-27",
+      "path": "src/features/actions/ActionProgressRow.tsx",
+      "summary": "TrackedActionRows renders UndoNotice without the pending prop, and useActionStatus.undo() returns silently while the row's status save is in flight, so a click on 'Desfazer' during that save gives no feedback and no visible disabled state."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-26, AC-ra-27, AC-ra-28, AC-ra-30, AC-ra-63",
+      "path": "tests/e2e/actions.spec.ts",
+      "summary": "Browser e2e not run: `pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts` belongs to the capability-wide integration check (sibling units own those specs), not to this unit's Done-when. Browser evidence for the five ACs is deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-27, AC-ra-28, AC-ra-30, AC-ra-63",
+      "path": "src/App.tsx",
+      "summary": "Play dev-link walkthrough not run: no live Play preview in this unattended session. Steps still owed: change status and Desfazer then reload; Editar on one action; open #/resultado/<older diagnosis> and confirm closed actions show without controls; open #/empresa/<id>/acoes for a company without a completed diagnosis and confirm the empty state."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "low",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "",
+      "path": "src/App.tsx",
+      "summary": "No route for empresa/:companyId/relatorios in App.tsx, although CompanyTabs ('Relatórios') and ResultPage link to it, so the tab falls through to NotFoundScreen. ReportCenterPage (src/features/reports/ReportCenterPage.tsx) is still unrouted; phase-1-frontend-report-center already deferred the wiring to integration. Not a defect of this unit's Done-when."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred browser checks: `pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts` (bounded output to a log file, capture exit code). Then run the Play dev-link walkthrough: status change + Desfazer + reload; Editar on one action; #/resultado/<older diagnosis> shows closed actions without controls; #/empresa/<id>/acoes without a completed diagnosis shows the empty state. Stable hooks: data-aioson-id company-actions, actions-list, actions-empty, closed-actions, action-<diagnosisId>-<actionKey>, status-<diagnosisId>-<actionKey>, edit-<diagnosisId>-<actionKey>, action-status-notice, result-actions-closed.",
+      "paths": ["src/features/actions/CompanyActionsTab.tsx", "src/features/actions/ActionProgressRow.tsx", "src/features/actions/ActionEditDialog.tsx", "src/components/feedback/UndoNotice.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Wire the report center route: add <Route path=\"relatorios\" element={<ReportCenterPage />} /> under empresa/:companyId in App.tsx. CompanyTabs and ResultPage already link to it; without the route the tab shows NotFound. ReportCenterPage is not in this unit's Done-when, so it was left untouched.",
+      "paths": ["src/App.tsx", "src/features/reports/ReportCenterPage.tsx", "src/features/companies/CompanyTabs.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "ActionPlanList takes an optional progress prop (loading | error | ready{isCurrent, actions, closedBy}). Without it the static plan renders as before, so OwnerHome keeps compiling. Phase 5 'Suas 3 ações' (AC-ra-26 home part) can reuse TrackedActionRows from src/features/actions/ActionProgressRow.tsx for editable status and undo.",
+      "paths": ["src/features/result/ActionPlanList.tsx", "src/features/actions/ActionProgressRow.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The 'Ações' tab has no 'N vencidas' badge (prototype). Company exposes no overdue count; add it when the portfolio/home followup provides one.",
+      "paths": ["src/features/companies/CompanyTabs.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-frontend-actions-qa/typecheck.log",
+      "summary": "tsc --noEmit completed with no errors; the log ends with EXIT_CODE=0."
+    },
+    {
+      "kind": "inspection",
+      "summary": "Unit files read in full or in bounded parts: DateField, UndoNotice, useActionStatus, ActionEditDialog, ActionProgressRow, ActionPlanList, CompanyActionsTab, CompanyTabs, App.tsx routes, and the action-specific parts of ResultPage. Grep found no fetch or /api calls in the unit files. Every action call goes through src/api/actionsApi.ts (IF-005: getCompanyActions, getDiagnosisActions, updateAction)."
+    },
+    {
+      "kind": "inspection",
+      "summary": "AC-ra-26: ActionProgressRow shows status, deadline chip (Prazo / Sem prazo / Vencida em, overdue only on the current plan), owner role chip and note. AC-ra-27: useActionStatus saves at once, UndoNotice role=status shows '\"{title}\" agora está {estado}.' with Desfazer for UNDO_WINDOW_MS = 6000, and undo saves the previous status. AC-ra-28: ActionEditDialog with DateField (DD/MM/AAAA mask, getDateError on blur and submit), owner role select with no person name, note maxLength 500 with counter; PATCH keyed by diagnosisId/actionKey. AC-ra-30: ResultPage passes isCurrent=false to ClosedPlanRows, which renders no controls and shows 'Encerrada em {data} · {estado}'. AC-ra-63: CompanyActionsTab empty state 'Ainda não há ações' with 'Continuar o diagnóstico' (draft) or 'Começar o diagnóstico'."
+    },
+    {
+      "kind": "inspection",
+      "summary": "Stale-state checks: usePlanItems reseeds only when the source array reference changes (parents pass state-held arrays); row saves are ordered by a per-row request id, so only the latest response is written back; closingDate and findClosingDate both map a closed plan to the completedAt of the next newer plan."
+    }
+  ]
+}

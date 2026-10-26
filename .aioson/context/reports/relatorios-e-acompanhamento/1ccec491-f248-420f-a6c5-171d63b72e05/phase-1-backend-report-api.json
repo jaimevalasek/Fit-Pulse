@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "270dc635-356c-4d55-9d86-9c8b31ec71bc",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T22:58:00Z",
+  "finished_at": "2026-10-25T23:20:00Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Manual smoke in the Play webview on Windows (OQ-ra-1): 'Exportar PDF' on the report center, then 'Abrir PDF' opens the default reader and 'Mostrar na pasta' opens Explorer with the file selected. Not run: this unattended session has no Play webview and the report-center screen belongs to later frontend units. The API half (export registers the file, open-by-id reaches the opener with the saved path, unknown id is 404) is covered by tests/api/reportRoutes.test.ts with a fake SystemOpener.",
+      "paths": ["server/routes/reportRoutes.ts", "server/services/reportService.ts"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Playwright flow for AC-ra-17 / AC-ra-19 (button states 'Salvando…' / 'PDF salvo', 'Tentar de novo' on a simulated write failure) not run: the screens and tests/e2e files are outside this unit. The server side of AC-ra-19 (500 write_failed, no file, no record, retry saves) is covered by the API tests.",
+      "paths": ["tests/e2e/report.spec.ts"]
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "summary": "server/app.ts is outside this unit's allowed files, so createReportService is still built without the app clock. `now` is an optional dependency (default: real clock), so nothing breaks, but in tests the cover credit date ('Gerado com o FitPulse em …') and generated_files.created_at use the machine date instead of db.setNow(). The injected-clock behavior is proven by a direct createReportService test.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "The write_failed message changed from 'O resultado continua aberto e nada foi alterado.' to 'Nada foi alterado.' (the same wording as the prototype's export-failed state) because the same error now reaches the report center as well as the result screen. The v1 test regex was updated; no other test or source referenced the old sentence.",
+      "paths": ["server/services/reportService.ts", "tests/api/reportRoutes.test.ts"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "Only the diagnosis selection exists in reportSelectionSchema and in the service's exhaustive switch on `selection.kind`; evolution and portfolio (Phase 2 units 2-backend-evolution / 2-backend-portfolio) extend the union and the switch. The brand (Phase 2) and action progress (Phase 3) are not passed to buildDiagnosisDocument yet, so the document uses the FitPulse brand and has no 'Andamento das ações' page."
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "server/files/downloadsFolder.ts needed no change (reuse): saveFile, sanitizeFileStem and MAX_FILE_STEM_LENGTH already give the {company}-{date}.pdf / ' (2)' behavior of AC-ra-17."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts",
+      "result": "exit 0; 2 files passed, 113 tests passed (reportRoutes covers preview, export, naming and ' (2)', registration in generated_files, rollback when the record cannot be written, write_failed then retry, validation 400s, open-by-id through a fake opener, injected clock)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-dev/vitest-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-dev/vitest-final.exit"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "result": "exit 0, no errors",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-dev/tsc-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-dev/tsc-final.exit"
+    },
+    {
+      "kind": "rules",
+      "command": "aioson rules:check .",
+      "result": "RULES=OK; no finding on reportSchemas.ts, reportService.ts, reportRoutes.ts, reportApi.ts or reportRoutes.test.ts"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-001 as implemented. Selection key is `kind` (only \"diagnosis\" now): GET /api/reports/preview?kind=diagnosis&diagnosisId=<id>&includeAnswers=true|false answers the ReportDocument ({ kind, title, subject, footer, pages[{ id, title, blocks[] }] }) without drawing or saving; POST /api/reports/export with JSON body { kind: \"diagnosis\", diagnosisId, includeAnswers } answers { fileId, fileName, directory }. includeAnswers defaults to false; unknown keys (a path, a file name) are dropped. Errors: 400 validation_failed (fields keyed by path, e.g. `kind`, `diagnosisId`, `includeAnswers`), 404 diagnosis_not_found, 409 diagnosis_not_completed, 500 write_failed (no file and no generated_files row left). POST /api/diagnoses/:id/report now delegates to the same export with includeAnswers=false and also answers fileId. The diagnosis pages have stable ids: cover, executive-summary, dimensions, risks, numbers, how-to-read, then answers-numbers, answers-1, answers-2, answers-3 when includeAnswers is on.",
+      "paths": ["server/routes/reportRoutes.ts", "server/validation/reportSchemas.ts", "server/services/reportService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "src/api/reportApi.ts now exports getReportPreview(selection, signal?) -> ReportDocument (the signal cancels the previous request when the selection changes), exportReportFile(selection) -> ReportExport, exportReport(diagnosisId) (result screen, unchanged call) and the types ReportSelection ({ kind: \"diagnosis\"; diagnosisId; includeAnswers }) and ReportExport, which gained `fileId` (the id for openSavedFile / revealSavedFile in src/api/filesApi.ts).",
+      "paths": ["src/api/reportApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "server/app.ts: pass the app clock to the report service: createReportService({ prisma: deps.prisma, downloadsDir: deps.downloadsDir, now: deps.now }). `now` is optional today, so this is not required for the build, but without it the cover credit date and generated_files.created_at ignore db.setNow() in tests.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "to": "unit:phase-1-frontend-report-center",
+      "kind": "note",
+      "text": "The 500 write_failed message is now 'Não foi possível salvar o PDF na pasta Downloads. Nada foi alterado. Confira se há espaço no disco e tente de novo.' (neutral for the center and the result screen). A new export after a failure needs no cleanup: nothing was written or registered."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks to run after integration: pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/result.spec.ts tests/e2e/accessibility.spec.ts; node scripts/smoke-migrate.mjs; and in the Play dev-link on Windows: company -> Relatórios -> Exportar PDF -> 'Abrir PDF' and 'Mostrar na pasta' (OQ-ra-1). Any e2e server bootstrap that clicks those buttons must inject a fake SystemOpener or it launches the real reader and Explorer.",
+      "paths": []
+    }
+  ]
+}

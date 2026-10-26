@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "9d09e4ae-844c-4999-80c1-d7bce6bec4fb",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "prisma/**",
+    "server/**",
+    "shared/**",
+    "src/api/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/fixtures/**",
+    "manifest.json",
+    "system.json",
+    "package.json"
+  ],
+  "unit": "phase-4-backend-diary-domain",
+  "started_at": "2026-10-25T23:08:47Z",
+  "finished_at": "2026-10-25T23:18:29Z",
+  "verdict": "PASS",
+  "summary": "Pure diary domain delivered: MM/AAAA month helpers in dates.ts, optional spendTotalCents/diarySource/diarySuggestion in CalculatorInput, total-only spend and estimated-from-diary origin in unitEconomics/completeness, diary.ts (month cost, 0 customers = não calculado, 6-month chart, progress, IF-006 view) and diaryPrefill.ts (RULE-ra-09: 3+ months measured, 1-2 months projected x3 as estimated, none = first version). The unit's Done-when command passes with the first version's expectations unchanged.",
+  "files_changed": [
+    "shared/format/dates.ts",
+    "shared/domain/types.ts",
+    "shared/domain/unitEconomics.ts",
+    "shared/domain/completeness.ts",
+    "shared/domain/diary.ts",
+    "shared/domain/diaryPrefill.ts",
+    "tests/unit/dates.test.ts",
+    "tests/unit/unitEconomics.test.ts",
+    "tests/unit/diary.test.ts",
+    "tests/unit/diaryPrefill.test.ts"
+  ],
+  "acceptance_criteria": {
+    "AC-ra-41": "tests/unit/diary.test.ts: month cost with 0 new customers is null / 'não calculado'; chart keeps the 6 most recent months noted; progress 'N de 3 meses anotados' and 'Medido: de {mês} a {mês}'; no NaN/Infinity/undefined/empty text in any output. The e2e part (screen) belongs to the frontend lane.",
+    "AC-ra-44": "tests/unit/diaryPrefill.test.ts + unitEconomics.test.ts: 3+ months summed part by part (single total when any month has only the total), marked measured with the months, origin measured in the engine and confidence not capped. The e2e part belongs to the frontend/integration.",
+    "AC-ra-45": "tests/unit/diaryPrefill.test.ts + unitEconomics.test.ts: 1-2 months give a x3 suggestion kept aside; once accepted both numbers are estimated and confidence stays at medium; no month leaves the calculator untouched (same reference). The e2e part belongs to the frontend/integration."
+  },
+  "findings": [],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts",
+      "exit_code": 0,
+      "result": "6 files passed, 353 tests passed",
+      "log_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-dev/vitest-done-when.log"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors (tsconfig includes src, server, shared, tests)",
+      "log_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-dev/tsc-2.log"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit",
+      "exit_code": 0,
+      "result": "18 files passed, 750 tests passed (regression check over the whole unit suite, including files other units are writing)",
+      "log_path": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-domain-dev/vitest-unit-all.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-4-backend-diary-prefill",
+      "kind": "contract_change",
+      "text": "shared/domain/types.ts: CalculatorInput gains optional spendTotalCents (number|null), diarySource ({spend?, newCustomers?} of DiaryFieldSource {origin: measured|estimated, fromMonth, toMonth, monthCount}) and diarySuggestion (DiarySuggestion|null). Use shared/domain/diaryPrefill.ts instead of re-deriving the rule: applyDiaryToCalculator(calculator, entries) for diagnosisService.start (no month returns the same calculator; 3+ months fills the numbers + diarySource measured + diarySuggestion null; 1-2 months only sets diarySuggestion); applyDiarySuggestion(calculator, suggestion) for POST /api/diagnoses/:id/diary-suggestion (marks both numbers estimated; the stored diarySuggestion is left in place; 409 no_diary_suggestion when it is null/absent); carryDiaryMarks(before, after) for the PATCH merge (it takes the marks and the suggestion only from the stored `before`, drops the mark of any spend/customers field whose value changed, and strips marks sent by the client); isDiarySuggestionOffered(calculator) says whether 'Usar o diário' is shown. Diary entries come in as DiaryEntry {month YYYY-MM, newCustomers, spendParts|null, spendTotalCents|null} (shared/domain/diary.ts). Precedence rule in the engine: when spendParts has any filled part it wins over spendTotalCents. Size note: the sum of 3 months with the diary maxima (6 parts x R$ 99.999.999,99 x 3) is about 1.8e11 cents, below MONEY_MAX_CENTS (1e13-1); make the stored-calculator schema accept it. diagnosisSchemas must accept spendTotalCents (integer cents >= 0) in the patch and diarySource/diarySuggestion only in the stored calculator, never from the client.",
+      "paths": [
+        "shared/domain/types.ts",
+        "shared/domain/diaryPrefill.ts",
+        "shared/domain/unitEconomics.ts"
+      ]
+    },
+    {
+      "to": "unit:phase-4-backend-diary-api",
+      "kind": "contract_change",
+      "text": "Reuse shared/domain/diary.ts in diaryService/diarySchemas: buildDiaryView(entries) returns exactly the IF-006 body {entries[{month,newCustomers,spendParts|null,spendTotalCents|null,totalCents,cacCents|null}], progress{count,measuredFrom|null,measuredTo|null}, chart[{month,cacCents|null}]}; constants DIARY_MAX_SPEND_CENTS = 9_999_999_999 (R$ 99.999.999,99) and DIARY_MAX_NEW_CUSTOMERS = 99_999 for the limits of AC-43/RULE-ra-08; diaryMonthTakenMessage(month) for the 409 month_taken text; DIARY_SPEND_EMPTY_MESSAGE, DIARY_CUSTOMERS_EMPTY_MESSAGE, DIARY_TOTAL_EMPTY_MESSAGE for field errors. Month helpers in shared/format/dates.ts: isValidIsoMonth, monthInputToIso, isFutureMonth(month, currentMonth) with currentMonth = localIsoMonth(new Date()), getMonthError(value, currentMonth), MONTH_*_MESSAGE. The domain drops unreadable entries (bad month, customers outside 0..99999 or fractional, no spend) from every list/chart/progress; it does not enforce the per-value spend maximum, so the schema must. Parts win over a total when an entry carries both: store either parts or a total, not both.",
+      "paths": [
+        "shared/domain/diary.ts",
+        "shared/format/dates.ts"
+      ]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "Shared helpers ready for the diary screens: maskMonthInput(raw, caret, previous) / maskMonth for the MM/AAAA field (inputmode numeric); getMonthError(value, currentMonth) for the field error; formatMonthShort ('ago/2026') and formatMonthLong ('agosto de 2026'); buildDiaryView/formatDiaryProgress ('N de 3 meses anotados' | 'Medido: de ago/2026 a out/2026')/buildChartSummary (the chart sentence)/formatMonthCost ('não calculado' with 0 customers)/computeRecentCost (spend, customers and cost over the 3 most recent months for the status panel). For the calculator block: formatDiaryMark(source) gives 'do diário: ago/2026 a out/2026' or 'do diário: N mês(es), estimado'; getCostDiaryOrigin(calculator) + formatCostDiaryOrigin() give 'do diário, medido' / 'do diário, estimado' for the result (null means show what was typed). A total-only diary fill arrives as calculator.spendTotalCents with empty spendParts: CalculatorBlock.tsx currently only reads spendParts (sumSpendParts) and must show a single total there; use resolveSpendCents(calculator) from shared/domain/unitEconomics.ts for the shown amount.",
+      "paths": [
+        "shared/format/dates.ts",
+        "shared/domain/diary.ts",
+        "shared/domain/diaryPrefill.ts",
+        "src/features/diagnosis/CalculatorBlock.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Not covered by this unit and needed for a total-only diary draft to read correctly: server/report/reportModel.ts:465 and :486 read calculator.spendParts only, so a draft/diagnosis whose spend is calculator.spendTotalCents would print R$ 0,00 / no parts in 'Seus números' - use resolveSpendCents (shared/domain/unitEconomics.ts) there and show the origin with getCostDiaryOrigin/formatCostDiaryOrigin (AC-ra-46, report model unit). The same holds for server/report/evolutionDocument.ts (diary cost per period: use computeRecentCost/computeMonthCostCents from shared/domain/diary.ts). Line endings: shared/domain/unitEconomics.ts and shared/domain/completeness.ts are CRLF files (the rest of shared/ is LF); edit them preserving CRLF. Remaining phase checks that belong to other units/integration and were not run here: tests/api/diaryRoutes.test.ts, tests/api/diagnosisRoutes.test.ts, tests/api/backupRoutes.test.ts, tests/unit/reportModel.test.ts, tests/unit/evolutionDocument.test.ts, node scripts/smoke-migrate.mjs, pnpm build, playwright e2e (diary, calculator, questionnaire) and the Play dev-link walkthrough.",
+      "paths": [
+        "server/report/reportModel.ts",
+        "server/report/evolutionDocument.ts",
+        "shared/domain/unitEconomics.ts"
+      ]
+    }
+  ]
+}

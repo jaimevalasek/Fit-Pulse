@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "39319fba-c2a3-4560-a2d4-6bac8eb02922",
+  "unit": "phase-1-frontend-companies",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:45:00Z",
+  "finished_at": "2026-10-23T03:52:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/companiesApi.ts",
+    "src/features/companies/CompaniesPage.tsx",
+    "src/features/companies/CompanyFormDialog.tsx",
+    "src/features/companies/CompanyPage.tsx",
+    "src/App.tsx"
+  ],
+  "summary": "Companies list, create/edit form dialog and company page wired to the IF-002 routes through httpClient. The list filters by name, stage (Todos, 1 to 4) and active/archived, with the filters kept in ?busca=, ?estagio= and ?arquivadas=1. It shows the empty, no-result, loading and error states. Create and edit share one form: name 2 to 80 characters, segment and sales channel required, annual revenue and CNPJ optional, CNPJ through CnpjField. Archive, restore and delete go through ConfirmDialog; the delete text shows completedCount plus the open draft. App.tsx routes empresas and empresa/:companyId to the real pages.",
+  "findings": [
+    {
+      "kind": "contract_gap",
+      "severity": "medium",
+      "summary": "Server field errors are lost on the client: server/http/errorHandler.ts puts `fields` at error.fields (top level), but src/api/httpClient.ts (primitives unit) copies only error.details into ApiError. CompanyFormDialog reads details.fields; until this is fixed, a 400 validation_failed shows only the general message. Client validation already checks the same rules as the server.",
+      "paths": ["src/api/httpClient.ts", "server/http/errorHandler.ts", "src/features/companies/CompanyFormDialog.tsx"]
+    },
+    {
+      "kind": "integration_pending",
+      "severity": "medium",
+      "summary": "Starting a diagnosis (POST /api/companies/:id/diagnoses, IF-003) is outside this unit, which only uses IF-002. CompanyPage takes an optional `onStartDiagnosis(companyId) => Promise<{ id }>` prop. Until App.tsx passes it, the 'Começar o primeiro diagnóstico' and 'Novo diagnóstico' buttons stay hidden. 'Continuar diagnóstico' already works: it links to /diagnostico/{draftId}.",
+      "paths": ["src/features/companies/CompanyPage.tsx", "src/App.tsx"]
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "summary": "The plan wants CompanyPage to link to the latest result, but IF-002 Company has no latest completed diagnosis id. The page shows the latest stage and date as text only, with no link to /resultado/:id.",
+      "paths": ["src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "pnpm test:e2e -- tests/e2e/companies.spec.ts was not run. The spec belongs to a sibling unit, and the backend company routes (phase-1-backend-companies) are written concurrently, so the screens were not exercised against a live API in this session. AC-dm-04/05/06 runtime evidence is deferred to integration.",
+      "paths": ["tests/e2e/companies.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "result": "exit 0 (tsc --noEmit && vite build; built in 1.38s)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-dev/build.log"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=<5 unit files>",
+      "result": "0 violations (code-size-limits, coupling-limits, source-code-language-convention, status-change-confirmation OK)"
+    },
+    {
+      "kind": "inspection",
+      "result": "Only IF-002 paths are used: GET/POST /api/companies (q, stage, archived), GET/PATCH /api/companies/:id, POST :id/archive, POST :id/restore, DELETE :id. Write body is { name, segment, salesChannel, annualRevenueRange|null, cnpj (14 digits)|null }, the same for create and edit."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "src/api/httpClient.ts drops the server's top-level error.fields: errorHandler sends { error: { code, message, fields } }, but ApiError keeps only error.details. Either have httpClient keep `fields` (e.g. details = error.details ?? { fields: error.fields }) or have the server nest fields under details. CompanyFormDialog already reads (error.details as { fields }).fields.",
+      "paths": ["src/api/httpClient.ts", "server/http/errorHandler.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire CompanyPage's start buttons: in App.tsx render <CompanyPage onStartDiagnosis={(id) => diagnosesApi.startDiagnosis(id)} /> once src/api/diagnosesApi.ts exists (POST /api/companies/:id/diagnoses returns the existing or a new draft { id, ... }). Until then 'Começar o primeiro diagnóstico' and 'Novo diagnóstico' are hidden.",
+      "paths": ["src/App.tsx", "src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "IF-002 Company has latestStage and latestCompletedAt but no latest completed diagnosis id, so CompanyPage cannot link to /resultado/:id. Should the backend add `latestDiagnosisId`, or should the history timeline (phase 2) cover the link? Assumption: the page shows only the stage and date text for now.",
+      "paths": ["src/features/companies/CompanyPage.tsx", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks: run `pnpm test:e2e -- tests/e2e/companies.spec.ts` once phase-1-backend-companies is mounted in server/app.ts. Selectors available: data-aioson-id companies-new, companies-table, companies-empty, company-create-modal, company-edit-modal, company-create-submit, company-edit-submit, company-edit, company-archive, company-restore, company-delete, company-{archive|restore|delete}-confirm; rows have data-row-id={company.id}; the search input is #busca; filters live in ?busca=, ?estagio=1..4, ?arquivadas=1. After creating, the app goes to #/empresa/{id} (as in the prototype); after deleting from the company page, it goes to #/empresas?arquivadas=1. Restore also asks for confirmation (AC-dm-48).",
+      "paths": ["tests/e2e/companies.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "listCompanies accepts the list response either as a bare array or as { companies: [...] }. stage is sent as 1..4, and archived as 'true' only when the archived list is shown.",
+      "paths": ["src/api/companiesApi.ts"]
+    }
+  ]
+}

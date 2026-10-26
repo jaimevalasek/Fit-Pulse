@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "847e8b38-b602-4d61-a988-0df7799c8cd1",
+  "unit": "phase-1-frontend-companies",
+  "agent": "qa",
+  "host": "claude",
+  "lane": "frontend",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T00:53:00-03:00",
+  "finished_at": "2026-10-23T00:55:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "contract_gap",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-04",
+      "path": "src/api/httpClient.ts",
+      "summary": "toApiError keeps only error.details, but server/http/errorHandler.ts sends the 400 validation_failed `fields` at the top level of error, so CompanyFormDialog.readServerFieldErrors receives nothing and a server-side field error shows only the general message. Client-side validation covers the same rules, so the gap appears only when the server rejects input the client accepts. Outside this unit (primitives/backend): fix by keeping error.fields in ApiError or nesting fields under details."
+    },
+    {
+      "kind": "integration_pending",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-04",
+      "path": "src/App.tsx",
+      "summary": "App.tsx renders <CompanyPage /> without onStartDiagnosis, and src/api/diagnosesApi.ts does not exist yet, so StartDiagnosisButton returns null. A company with no diagnoses shows no start action ('Começar o primeiro diagnóstico' / 'Novo diagnóstico' are hidden). 'Continuar diagnóstico' works through draftId. Deferred to integration after the IF-003 diagnoses unit: pass onStartDiagnosis={(id) => diagnosesApi.startDiagnosis(id)}."
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-05",
+      "path": "src/features/companies/CompanyPage.tsx",
+      "summary": "The page shows the latest stage and completion date as text only, with no link to /resultado/:id, because IF-002 Company has no latest completed diagnosis id. Question for integration: add latestDiagnosisId to the backend contract or leave the link to the history phase."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-04",
+      "path": "tests/e2e/companies.spec.ts",
+      "summary": "pnpm test:e2e -- tests/e2e/companies.spec.ts was not run because the file does not exist yet (sibling unit). AC-dm-04, AC-dm-05 and AC-dm-06 runtime evidence (create, edit only the target row, archive/cancel, restore with history intact) is deferred to integration; the screens were not exercised against a live API in this review."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "result": "exit 0 (tsc --noEmit && vite build; built in 1.07s)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/build.log",
+      "exit_marker": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/build.exit"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=src/api/companiesApi.ts,src/features/companies/CompaniesPage.tsx,src/features/companies/CompanyFormDialog.tsx,src/features/companies/CompanyPage.tsx,src/App.tsx",
+      "result": "exit 0; 0 violations (code-size-limits, coupling-limits, source-code-language-convention, status-change-confirmation OK)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/rules-check.log",
+      "exit_marker": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-qa/rules-check.exit"
+    },
+    {
+      "kind": "inspection",
+      "result": "Done-when check: the five unit files call only the IF-002 routes through companiesApi.ts (GET/POST /api/companies, GET/PATCH /api/companies/:id, POST :id/archive, POST :id/restore, DELETE :id). Body fields are name, segment, salesChannel, annualRevenueRange, cnpj, matching IF-002. Company fields used by the screens (latestStage, latestCompletedAt, draftId, completedCount, archivedAt, cnpj, annualRevenueRange) match the IF-002 Company shape. Archive confirmation reads 'Arquivar {nome}?' with the consequence text; restore and delete are offered only on archived rows. No hardcoded ports or external hosts found in the unit files."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Keep the server's validation `fields` reachable on the client: either httpClient keeps error.fields (e.g. details = error.details ?? { fields: error.fields }) or errorHandler nests fields under details. CompanyFormDialog already reads details.fields.",
+      "paths": ["src/api/httpClient.ts", "server/http/errorHandler.ts", "src/features/companies/CompanyFormDialog.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "After src/api/diagnosesApi.ts exists (IF-003), render <CompanyPage onStartDiagnosis={(id) => diagnosesApi.startDiagnosis(id)} /> in src/App.tsx so the start buttons appear.",
+      "paths": ["src/App.tsx", "src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "IF-002 Company has no latest completed diagnosis id, so CompanyPage cannot link to /resultado/:id. Add latestDiagnosisId to the backend contract, or leave the link to the history phase?",
+      "paths": ["src/features/companies/CompanyPage.tsx", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred runtime checks, once phase-1-backend-companies is mounted in server/app.ts and tests/e2e/companies.spec.ts exists: run `pnpm test:e2e -- tests/e2e/companies.spec.ts` (AC-dm-04, AC-dm-05, AC-dm-06). Selectors: data-aioson-id companies-new, companies-table, company-create-modal, company-create-submit, company-edit, company-edit-submit, company-archive, company-restore, company-delete; rows carry data-row-id; filters use ?busca=, ?estagio=1..4 and ?arquivadas=1.",
+      "paths": ["tests/e2e/companies.spec.ts", "src/features/companies/CompaniesPage.tsx", "src/features/companies/CompanyPage.tsx"]
+    }
+  ]
+}

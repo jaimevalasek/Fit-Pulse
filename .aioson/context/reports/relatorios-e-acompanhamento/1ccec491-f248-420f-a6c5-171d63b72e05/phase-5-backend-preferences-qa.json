@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "50e34080-4598-440b-b708-28f141a2672b",
+  "unit": "phase-5-backend-preferences",
+  "wave": 7,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "scope": {
+    "capabilities": ["CAP-ra-home-followup"],
+    "acceptance_criteria": ["AC-ra-34"],
+    "interfaces": ["IF-004", "IF-009"]
+  },
+  "unit_files": [
+    "server/validation/preferenceSchemas.ts",
+    "server/services/preferenceService.ts",
+    "src/api/preferencesApi.ts",
+    "tests/api/preferenceRoutes.test.ts",
+    "shared/domain/followUp.ts",
+    "tests/unit/followUp.test.ts"
+  ],
+  "started_at": "2026-10-25T21:16:00-03:00",
+  "finished_at": "2026-10-25T21:18:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/api/preferenceRoutes.test.ts tests/unit/followUp.test.ts",
+      "result": "exit 0 (EXIT_CODE=0 recorded at end of log); Test Files 2 passed (2); Tests 79 passed (79)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-preferences-qa/vitest-unit.log",
+      "covers": ["AC-ra-34", "IF-004", "IF-009"]
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "result": "exit 0 (tsc --noEmit, EXIT_CODE=0 recorded in log); run after the unit's files as they stand now and with the other units' files as they were at review time",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-preferences-qa/typecheck.log",
+      "covers": ["AC-ra-34", "IF-009"]
+    },
+    {
+      "kind": "review",
+      "result": "Read server/validation/preferenceSchemas.ts, server/services/preferenceService.ts (readReevaluationInterval, readTourSeenVersion, buildChanges), src/api/preferencesApi.ts (Preferences, PreferencesUpdate), shared/domain/followUp.ts (formatDays, reevaluationCountdown, reevaluationTimeline) and the AC-ra-34 test describes in both test files. Invalid stored values read as defaults; interval outside 60/90/120/180 is refused with 400 validation_failed naming the field; PUT saves only sent keys and validates before writing. No defect found."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred capability-wide checks (not part of this unit's Done when): (1) home and consultant surfaces must read the interval from GET /api/preferences or preferenceService.get().reevaluationIntervalDays instead of a fixed 90. (2) server/services/portfolioService.ts still uses OVERDUE_DIAGNOSIS_DAYS = DEFAULT_REEVALUATION_DAYS (90) and is owned by phase-3-backend-action-reports; confirm it is reconciled there. (3) src/features/home/OnboardingTour.tsx should compare tourSeenVersion with 2 and PUT { tourSeenVersion: 2 } when the 5-step tour is closed. Steps to verify: run the home/portfolio/report suites after those changes and exercise PUT /api/preferences with reevaluationIntervalDays 75 (expect 400) and 120 (expect 200, read back on GET)."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Not re-run by QA (outside this unit's Done when, reported by the implementer): pnpm exec vitest run tests/api/brandRoutes.test.ts tests/api/homeRoutes.test.ts (implementer reported 75 passed). Re-run during integration."
+    },
+    {
+      "to": "lane:backend",
+      "kind": "note",
+      "text": "Nit only, no impact: server/services/preferenceService.ts imports TOUR_SEEN_VERSION_MAX from ../validation/preferenceSchemas.ts in a second import statement next to the existing one. Could be merged in a later pass."
+    }
+  ]
+}

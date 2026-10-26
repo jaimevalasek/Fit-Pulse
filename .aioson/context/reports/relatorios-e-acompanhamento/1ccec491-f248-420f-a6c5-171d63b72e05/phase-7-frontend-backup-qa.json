@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "5e0da6be-46b2-4d34-b9ad-bb41fb3218eb",
+  "unit": "phase-7-frontend-backup",
+  "wave": 11,
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-26T01:05:50Z",
+  "finished_at": "2026-10-26T01:07:07Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-data-continuity"],
+    "acceptance_criteria": ["AC-ra-55"],
+    "interfaces": ["IF-012"],
+    "files_reviewed": ["src/features/settings/BackupSection.tsx"],
+    "done_when": "pnpm typecheck passa"
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-55",
+      "path": "package.json",
+      "summary": "`pnpm typecheck` (the Done-when command) could not run through pnpm in this environment. pnpm's dependency-status check ran `pnpm install`, whose postinstall (`scripts/prepare-app.mjs`) failed at `prisma migrate deploy` with 'database is locked' on data/fitpulse.db. This failed twice (typecheck.log, typecheck-retry.log). The script body `tsc --noEmit` was run directly instead and exited 0. The wrapper check is still to be rerun by integration; `pnpm install` was not forced here."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-55",
+      "path": "tests/e2e/backup.spec.ts",
+      "summary": "`pnpm test:e2e` (backup.spec.ts, v2 copy and import strings) was not run. It is a sibling/integration check outside this unit's Done-when; the e2e strings were checked only by reading BackupSection.tsx."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-frontend-backup-qa/typecheck.log",
+      "result": "blocked before tsc: pnpm deps check -> pnpm install -> postinstall prisma migrate deploy 'database is locked'",
+      "ac": ["AC-ra-55"]
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (retry)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-frontend-backup-qa/typecheck-retry.log",
+      "result": "same failure as first run",
+      "ac": ["AC-ra-55"]
+    },
+    {
+      "kind": "command",
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-frontend-backup-qa/tsc-direct.log",
+      "result": "exit 0, empty output; this is the body of the typecheck script in package.json",
+      "ac": ["AC-ra-55"]
+    },
+    {
+      "kind": "review",
+      "path": "src/features/settings/BackupSection.tsx",
+      "result": "Read all 229 lines. Export and import v2 copy (extraParts, exportExtras, importSummary, keptSettings) matches BackupCounts in src/api/backupApi.ts; zero counts are omitted; the skipped total sums companies, diagnoses, actions, diaryEntries and questionnaireSends; joinParts handles one item; the existing e2e phrases remain as substrings. No defect found; no edits made."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Rerun `pnpm typecheck` once the SQLite lock on data/fitpulse.db is released and no concurrent unit is changing package.json or the lockfile. The pnpm wrapper failed in postinstall prisma migrate deploy, so the check was run as the direct tsc body (exit 0). Steps: close any running app or dev server holding data/fitpulse.db, then run `pnpm typecheck` from the workspace root and keep the exit code."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm test:e2e` (tests/e2e/backup.spec.ts) with the app running. It checks the v2 export/import copy: 'com 2 empresas e 3 diagnósticos.', 'N empresas e N diagnósticos adicionados. Nada que já existia foi apagado.', 'N registros já existiam e não mudou.'. These were not run here.",
+      "paths": ["tests/e2e/backup.spec.ts", "src/features/settings/BackupSection.tsx"]
+    }
+  ]
+}

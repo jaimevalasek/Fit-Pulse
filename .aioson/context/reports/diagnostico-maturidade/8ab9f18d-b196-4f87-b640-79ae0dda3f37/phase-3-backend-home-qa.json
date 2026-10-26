@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "a23c03c0-3a82-4c9f-8ffe-8c673605454a",
+  "unit": "phase-3-backend-home",
+  "phase": "3-backend-home",
+  "wave": 9,
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "started_at": "2026-10-23T02:03:00-03:00",
+  "finished_at": "2026-10-23T02:07:00-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-home"],
+    "acceptance_criteria": ["AC-dm-33", "AC-dm-34"],
+    "interface": "IF-007",
+    "unit_files_reviewed": [
+      "server/routes/homeRoutes.ts",
+      "server/services/homeService.ts",
+      "server/app.ts",
+      "tests/api/homeRoutes.test.ts"
+    ],
+    "done_when": "pnpm test -- tests/api/homeRoutes.test.ts passa"
+  },
+  "corrections": [],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Browser-side checks for AC-dm-33 and AC-dm-34 are not run by this unit and need the frontend lane plus Playwright. Steps: (1) add the Playwright config and tests/e2e/home.spec.ts; (2) run `pnpm test:e2e` from the workspace root; (3) for AC-dm-33 change a diagnosis (conclude, archive, restore) and confirm the home indicators change on the next open; (4) for AC-dm-34 in consultoria mode tap each stage step and confirm the filtered list opens, and confirm the stale-draft (>7 days), overdue (>90 days) and high-risk lists link to the right companies. Save the exit code and log under the run's execution-temp directory.",
+      "paths": ["server/services/homeService.ts", "server/routes/homeRoutes.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Confirm the reading of 'sem diagnóstico há mais de 90 dias' (AC-dm-34). The service lists a company with no completed, non-archived diagnosis only in withoutDiagnosis, not in overdue. A company with a diagnosis older than 90 days is listed in overdue. If the owner wants never-diagnosed companies counted by creation date in overdue, that is a change to buildConsultantView in homeService.ts.",
+      "paths": ["server/services/homeService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Local Done-when passes. Verified by reading: the test file runs the real app (createApp with createTestDatabase) rather than a parallel fixture; the 7-day and 90-day lines are strict and move with the injected clock; risks are sorted by score descending in shared/domain/riskSignals.ts, so the first high risk is the highest; a single open draft per company is enforced by the repository transaction in server/repositories/diagnosisRepository.ts, so the consultant and owner draft lookups agree."
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-home",
+      "ac": "AC-dm-33",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "The browser check for AC-dm-33 (concluding or archiving a diagnosis changes the home indicators on the next open) could not run: no Playwright config and no tests/e2e folder exist in this worktree yet. Command that would run it: `pnpm test:e2e`. Not part of this unit's Done-when; the API half is covered by the 32 tests in tests/api/homeRoutes.test.ts, including 'follows the diagnoses'."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-home",
+      "ac": "AC-dm-34",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "The browser check for AC-dm-34 (consultoria stage steps open filtered lists; stale-draft, overdue and high-risk lists link to the right companies) could not run: it needs the frontend lane and the Playwright setup, neither present in this worktree. The API half is covered by the consultoria tests in tests/api/homeRoutes.test.ts."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-dm-home",
+      "ac": "AC-dm-34",
+      "path": "server/services/homeService.ts",
+      "summary": "Interpretation to confirm: a company with no completed, non-archived diagnosis is listed only in withoutDiagnosis (buildConsultantView, around lines 319-320), not in overdue. AC-dm-34's wording 'sem diagnóstico há mais de 90 dias' could be read to include such companies. The implementer documented this choice; it is not a defect against the local Done-when.",
+      "failure_scenario": "A consultant with a company that has never completed a diagnosis, created 200 days ago, sees it in 'sem diagnóstico' but not in the 90-day overdue list if the owner expected the 90-day line to count from creation."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "summary": "Test Files 16 passed (16); Tests 713 passed (713). The literal '--' passed to vitest runs the whole suite, so the Done-when command passes but does not filter to the one file.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-qa/done-when.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-qa/done-when.exit"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "summary": "Test Files 1 passed (1); Tests 32 passed (32).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-qa/focused.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-qa/focused.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "summary": "No diagnostics. Vitest does not type-check, so this is the type check of the server files in the unit.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-qa/tsc.exit"
+    },
+    {
+      "command": "ls -la (project root) for stray '=' file and test-results/",
+      "exit_code": 0,
+      "summary": "No stray '=' file and no test-results/ directory in the project root. The implementer's accidental e2e run had left these; they were removed before this review."
+    }
+  ]
+}

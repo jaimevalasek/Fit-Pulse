@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "383ebe8a-37ef-473a-84e1-233df39063c5",
+  "unit": "phase-1-frontend-result",
+  "wave": 6,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:18:08Z",
+  "finished_at": "2026-10-23T04:21:30Z",
+  "verdict": "PASS",
+  "capabilities": ["CAP-dm-result"],
+  "acceptance_criteria": ["AC-dm-28", "AC-dm-47"],
+  "done_when": "pnpm build sai com 0",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-28, AC-dm-47",
+      "path": "tests/e2e/result.spec.ts",
+      "summary": "Command 'pnpm test:e2e -- tests/e2e/result.spec.ts' could not run: the spec file does not exist yet. It is a capability-level check owned by integration/tester, not by this unit. It also needs the diagnosis backend (phase-1-backend-diagnoses) running. AC-dm-28 (ladder aria-label, layers order, italic lock phrase, 3 actions, guidance notice) and AC-dm-47 (reduced-motion path, bars filled at once, no horizontal scroll at 390px, axe) are verified by static reading only.",
+      "failure_scenario": "A later integration pass could find that the rendered result page diverges from the AC-dm-28 layer order or the AC-dm-47 reduced-motion behaviour, because no end-to-end run has observed the page."
+    },
+    {
+      "kind": "finding",
+      "severity": "medium",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-47",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "Prototype motion is not implemented: the section entrance animation and the legend trace from the PRD AC-dm-47 list are absent. The implementer disclosed this; global.css is outside this unit. No approved deviation was found in the artifacts reviewed. Only the dimension bar fill animates.",
+      "failure_scenario": "Without reduced motion, the owner sees a static result page where the approved prototype would animate section entrance. Reduced-motion users are unaffected, so AC-dm-47 holds, but the prototype fidelity is reduced."
+    },
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-28",
+      "path": "src/features/result/StageLadder.tsx",
+      "summary": "The dashed previous step is dropped when previousStage equals the current stage (trail is null at line 90). The caption still reads 'Antes: estágio N' from ResultPage.tsx:167, so the page shows a caption about a previous step that is not drawn. AC-dm-28 asks for the dashed previous step.",
+      "failure_scenario": "A company whose previous and current diagnoses are both stage 2 sees 'Antes: estágio 2' in the caption and no dashed step on the ladder. The AC wording does not say what should happen in this case, so this is a judgement call to confirm."
+    },
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-28",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "Two sections titled 'Seus números' appear on the same page: the NumbersAside at lines 120-135 (CAC and ratio) and NumbersSummary (CAC, LTV, ratio, payback). The same CAC and ratio values are shown twice under identical headings.",
+      "failure_scenario": "Screen-reader users hear two 'Seus números' headings and the owner sees the same CAC and ratio twice, which may read as a duplicated or inconsistent block."
+    }
+  ],
+  "corrections": [],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Before the e2e run: (1) confirm phase-1-backend-diagnoses has passed; (2) the tester/integration creates tests/e2e/result.spec.ts (it does not exist yet); (3) run 'pnpm test:e2e -- tests/e2e/result.spec.ts' against the running app. Cover the ladder aria-label, the risk list and no-risk state, confidence and provisional note, a scan of the rendered text, emulateMedia reducedMotion with bars filled at once, 390px with no horizontal scroll, axe, and time to result.",
+      "paths": ["tests/e2e/result.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Implementer question resolved: diagnosisService.ts findPrevious returns the older completed diagnosis of the company and excludes the record itself. So previous.stage is the stage before this one, as ResultPage.tsx assumes. The 'Antes: estágio N' caption is therefore correct.",
+      "paths": ["server/services/diagnosisService.ts", "src/features/result/ResultPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred to other capabilities, not part of this unit: the 'Exportar PDF' action belongs to CAP-dm-report and 'Comparar com ...' belongs to CAP-dm-compare. Neither is rendered on the result page yet.",
+      "paths": ["src/features/result/ResultPage.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/build.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/build.exit",
+      "summary": "Build completed with exit 0 ('built in 639ms'). The full output is in the log."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit/forbiddenTerms.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/forbidden-terms.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/forbidden-terms.exit",
+      "summary": "Test Files 1 passed, Tests 5 passed. This is a capability-level check run as extra evidence; it is not part of this unit's Done when."
+    },
+    {
+      "kind": "static_check",
+      "summary": "AC-dm-28 read against src/features/result/StageLadder.tsx, ResultPage.tsx and global.css: the aria-label follows 'Estágio N de 4: Nome. Diagnóstico anterior no estágio M. Trava para subir: ...'. Layers come in order (ladder, 3 actions, guidance notice, fits, fronts, numbers, risks, confidence). The lock phrase uses voice-human, which is italic (global.css:158)."
+    },
+    {
+      "kind": "static_check",
+      "summary": "AC-dm-47 read against DimensionScores.tsx: bars start filled when prefers-reduced-motion is reduce or IntersectionObserver is missing. global.css disables transitions under reduce. The no-risk state is present in RiskList.tsx."
+    },
+    {
+      "kind": "static_check",
+      "summary": "rulesVersion is a number (shared/domain/types.ts:196), so the header reads 'regras da versão N' and does not hit the forbidden V1-V4 pattern."
+    }
+  ]
+}

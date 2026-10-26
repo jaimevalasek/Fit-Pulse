@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "fc617d6b-2947-48c0-9b3f-d9c847808473",
+  "unit": "phase-4-backend-diary-api",
+  "phase": "4-backend-diary-api",
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T23:52:00Z",
+  "finished_at": "2026-10-25T23:58:00Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-diary", "CAP-ra-diary-prefill"],
+    "acceptance_criteria": ["AC-ra-39", "AC-ra-43"],
+    "interfaces": ["IF-006"]
+  },
+  "done_when": "pnpm exec vitest run tests/api/diaryRoutes.test.ts tests/api/companyRoutes.test.ts + node scripts/smoke-migrate.mjs pass",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "contract_gap",
+      "severity": "medium",
+      "cap": "CAP-ra-diary",
+      "ac": "AC-ra-12",
+      "path": "server/services/reportService.ts",
+      "summary": "The request from phase-2-backend-evolution to pass period.diary (DiaryChartPoint[], oldest first) into prepareEvolution is not implemented: server/services/reportService.ts has no reference to the diary. The file is outside this unit's write list and is concurrently owned by phase-2-backend-portfolio, so it was not changed. The diary half of AC-ra-12 stays absent until integration assigns it."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diary",
+      "ac": "AC-ra-39",
+      "path": "tests/e2e/diary.spec.ts",
+      "summary": "Not run by this lane: the e2e spec tests/e2e/diary.spec.ts and the dev-link walkthrough in the AIOSON Play desktop app. Both need the UI and the Play runtime, which this environment does not provide. Not a defect of the unit; integration must run them (see messages[])."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/diaryRoutes.test.ts tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "2 test files passed, 106 tests passed (run by QA, foreground, log captured)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-api-qa/vitest.log"
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "result": "PASS, 5/5 steps (first install, owner data written, update with table rebuild, data identical after update, repeated deploy is a no-op)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-api-qa/smoke-migrate.log"
+    },
+    {
+      "command": "static review of unit files (server/services/diaryService.ts, server/routes/diaryRoutes.ts, server/validation/diarySchemas.ts, server/repositories/diaryRepository.ts, server/app.ts, src/api/diaryApi.ts, prisma/schema.prisma DiaryEntry, prisma/migrations/20261026000200_diary_entries/migration.sql, tests/api/diaryRoutes.test.ts)",
+      "exit_code": 0,
+      "result": "AC-ra-39: validation before service so refusals write nothing; 409 month_taken on fields.month via unique (companyId, month) with P2002 mapping; parallel POST race covered by test. AC-ra-43: whole-cent int schema with max DIARY_MAX_SPEND_CENTS for parts and total, newCustomers 0..DIARY_MAX_NEW_CUSTOMERS; total stored as BigInt. IF-006 shape matches the 4 client calls. findMostRecent(companyId, 3) returns newest first as the prefill unit expects. Tests use createApp with the real test database."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the checks outside this unit: pnpm build, the e2e spec tests/e2e/diary.spec.ts, and the dev-link walkthrough in the Play. Run node scripts/prepare-app.mjs --generate after pulling the schema change so server/generated knows DiaryEntry."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Backup export/import (server/services/backupService.ts, server/validation/backupSchemas.ts) does not carry diary_entries, as the implementer noted. Decide whether the diary travels in the backup."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire period.diary into prepareEvolution (server/services/reportService.ts) for the diary half of AC-ra-12. The source for it is the diary repository findByCompany / buildDiaryView from this unit. The owning unit must be assigned, because reportService.ts is outside this unit's write list and is being edited by phase-2-backend-portfolio."
+    },
+    {
+      "to": "unit:phase-4-backend-diary-prefill",
+      "kind": "contract_change",
+      "text": "Confirmed in the code: createDiaryRepository(prisma).findMostRecent(companyId, 3) returns DiaryEntry[] newest first (orderBy month desc, take count). findByCompany returns all months. Money fields are whole cents as plain numbers.",
+      "paths": ["server/repositories/diaryRepository.ts", "shared/domain/diary.ts"]
+    }
+  ]
+}

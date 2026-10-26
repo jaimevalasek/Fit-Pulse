@@ -1,0 +1,117 @@
+{
+ "schema_version": "review-report/v1",
+ "packet_id": "sha256:79e4ef502308da4b5961bb9ef99e2550d300162279b74ed3dbd47051d5bdddfd",
+ "feature_slug": "relatorios-e-acompanhamento",
+ "agent": "refiner",
+ "profile": "framing",
+ "review_mode": "independent_review",
+ "artifact": {
+  "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+  "sha256": "fd6133fa0e1131b283992492522e04fc16beed1ff4d44d65ced1ff2f88ba65b1"
+ },
+ "passes_completed": 2,
+ "review_status": "decision_required",
+ "summary": "Revisão independente do briefing. O problema e o valor estão bem apoiados em evidência. Três escolhas do dono travam o PRD: forma do questionário à distância (F1), dados de pessoas (F2) e destino das ações quando sai um diagnóstico novo (F3, achado só na passagem 2). Q-3 e Q-5 foram resolvidas por evidência do projeto (F6). Todas estão na página de revisão.",
+ "findings": [
+  {
+   "id": "REVIEW-R1",
+   "lens": "future-state",
+   "status": "decision_required",
+   "severity": "blocking",
+   "description": "O questionário à distância tem três formas com custo e alcance diferentes; a forma B não funciona de forma confiável no celular.",
+   "evidence": [
+    {
+     "type": "artifact",
+     "path": ".aioson/briefings/relatorios-e-acompanhamento/refinement-findings.json",
+     "detail": "refinement-findings F1; R-4; Q-9; Q-10"
+    }
+   ],
+   "impact": "O PRD não consegue especificar a parte 3 sem a escolha.",
+   "recommendation": "Arquivo que abre no navegador do computador, com teste em navegadores antes de construir.",
+   "alternatives": [
+    "Cliente instala o Play",
+    "Roteiro impresso"
+   ],
+   "confidence": "high",
+   "owner": "user",
+   "residual_risk": "Abertura falhar em algum navegador; mitigado pelo teste de Q-10."
+  },
+  {
+   "id": "REVIEW-R2",
+   "lens": "assumptions",
+   "status": "decision_required",
+   "severity": "blocking",
+   "description": "Contato de quem entrega e responsável pela ação contrariam a regra de coleta mínima do PRD anterior.",
+   "evidence": [
+    {
+     "type": "artifact",
+     "path": ".aioson/briefings/relatorios-e-acompanhamento/refinement-findings.json",
+     "detail": "refinement-findings F2"
+    },
+    {
+     "type": "artifact",
+     "path": ".aioson/context/prd-diagnostico-maturidade.md",
+     "detail": "Out of scope: Dados pessoais de contato"
+    }
+   ],
+   "impact": "Modelo de dados e textos de privacidade dependem da escolha.",
+   "recommendation": "Contato próprio sim; responsável por papel.",
+   "alternatives": [
+    "Texto livre e opcional",
+    "Só dados da empresa"
+   ],
+   "confidence": "high",
+   "owner": "user",
+   "residual_risk": "Baixo com a opção recomendada."
+  },
+  {
+   "id": "REVIEW-R3",
+   "lens": "future-state",
+   "status": "decision_required",
+   "severity": "blocking",
+   "description": "Não está definido o destino das ações quando a empresa conclui um novo diagnóstico; o catálogo de ações permite repetição.",
+   "evidence": [
+    {
+     "type": "code",
+     "path": "shared/domain/actionPlan.ts",
+     "detail": "buildActionPlan gera ActionKey de catálogo fixo"
+    },
+    {
+     "type": "artifact",
+     "path": ".aioson/briefings/relatorios-e-acompanhamento/refinement-findings.json",
+     "detail": "refinement-findings F3"
+    }
+   ],
+   "impact": "Ações duplicadas ou andamento perdido.",
+   "recommendation": "Plano novo herdando as ações que se repetem.",
+   "alternatives": [
+    "Cada diagnóstico começa do zero",
+    "Lista contínua por empresa"
+   ],
+   "confidence": "high",
+   "owner": "user",
+   "residual_risk": "Regra de herança precisa de teste dedicado."
+  },
+  {
+   "id": "REVIEW-R4",
+   "lens": "ownership",
+   "status": "open",
+   "severity": "warning",
+   "description": "A feature anterior terminou a execução sem QA final registrado e o workflow ainda aponta next: dev.",
+   "evidence": [
+    {
+     "type": "artifact",
+     "path": ".aioson/context/execution-state-diagnostico-maturidade.json",
+     "detail": "status completed"
+    }
+   ],
+   "impact": "A nova feature constrói sobre uma base não verificada.",
+   "recommendation": "Rodar @qa e feature:close em diagnostico-maturidade antes do @product.",
+   "alternatives": [],
+   "confidence": "high",
+   "owner": "user",
+   "residual_risk": "Defeitos da versão 1 aparecerem durante a versão 2."
+  }
+ ],
+ "completed_at": "2026-10-24T22:40:00.000Z"
+}

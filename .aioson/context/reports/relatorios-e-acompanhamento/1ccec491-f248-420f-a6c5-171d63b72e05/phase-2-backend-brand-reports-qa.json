@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "4a1fd109-d405-4e5d-8957-ef202637ccb9",
+  "unit": "phase-2-backend-brand-reports",
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T23:31:00Z",
+  "finished_at": "2026-10-25T23:36:00Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "risk",
+      "severity": "low",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-22",
+      "path": "server/report/pdfRenderer.ts",
+      "summary": "canDrawLogo calls zlib inflateSync on the concatenated IDAT data with no output limit, so a logo of up to 2 MB whose IHDR is within 600 px can inflate to a very large buffer synchronously during export (single-owner upload, so impact is limited to the operator's own machine).",
+      "failure_scenario": "Owner uploads a crafted PNG with a 600x600 IHDR and a DEFLATE stream that expands to gigabytes; the next GET /api/reports/preview or export allocates that buffer inside canDrawLogo before any drawing starts. Not reproduced here; based on the documented zlib maximum ratio and the code read at lines 177-199."
+    },
+    {
+      "kind": "risk",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "server/services/brandService.ts",
+      "summary": "Outside this unit (reported by the implementer as OBS-c92fa5, not re-verified here): setLogo accepts a PNG with a valid signature/IHDR and corrupt IDAT data, so the file is stored. The export path is protected by canDrawLogo, so no crash was observed in the Done-when suite; the stored logo still fails the export silently and the preview returns it.",
+      "failure_scenario": "Owner saves a corrupt-IDAT RGBA PNG; PUT /api/brand/logo answers 200; exports fall back to the name-only cover with no message telling the owner why."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-22",
+      "path": "tests/e2e/brand.spec.ts",
+      "summary": "Playwright specs tests/e2e/brand.spec.ts and tests/e2e/report.spec.ts were not run: they need the frontend lane (BrandSection, ReportSheet) and a running app; they are capability-level checks, not this unit's Done when.",
+      "failure_scenario": "Brand upload UI or ReportSheet cover <img> regressions would go unnoticed by this unit's verification."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "package.json",
+      "summary": "pnpm build was not run by this review (the implementer reported tests/unit/imageSignature.test.ts, contactFormat.test.ts and tests/api/preferenceRoutes.test.ts passed in the full tests/unit + tests/api run; this review did not re-run that wider suite).",
+      "failure_scenario": "A build-only break in files outside the Done when would not be caught at unit level."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "C:/dev/playapps/v-stage",
+      "summary": "Play dev-link check (save a PNG and a JPG logo through the running app and export both PDFs) was not run: it needs the Play runtime and a running preview, which this session cannot provide.",
+      "failure_scenario": "Logo upload through the real runtime and PDF export with a real logo are only covered by the unit/API tests."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred checks: pnpm build; pnpm exec playwright test tests/e2e/brand.spec.ts tests/e2e/report.spec.ts (needs the frontend lane's BrandSection and ReportSheet); Play dev-link check saving a PNG and a JPG logo and exporting both PDFs.",
+      "paths": ["tests/e2e/brand.spec.ts", "tests/e2e/report.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Preview and export now carry the saved brand (IF-003). The cover block exposes brand.logoDataUrl ('data:image/png|jpeg;base64,...', up to about 2.7 MB) and contactLine; ReportSheet should draw the logo with <img src={brand.logoDataUrl}>. Footer contact line is drawn only by the PDF renderer; the on-screen footer does not show it yet (shared/report/reportDocument.ts and tests/unit/reportModel.test.ts are outside this unit).",
+      "paths": ["server/services/reportService.ts", "src/features/reports/ReportSheet.tsx", "shared/report/reportDocument.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "src/api/brandApi.ts exports getBrand, saveBrand (PUT /api/brand; 400 validation_failed with fields), saveBrandLogo (PUT /api/brand/logo with { mimeType, dataBase64 }; 422 logo_invalid or 413 payload_too_large), removeBrandLogo (DELETE /api/brand/logo), resetBrand (DELETE /api/brand). Verified by tsc --noEmit and the Done-when suite.",
+      "paths": ["src/api/brandApi.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "3 test files passed, 143 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-qa/vitest-unit.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-qa/vitest-unit.exit",
+      "criteria": ["AC-ra-21", "AC-ra-22"]
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors (log empty)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-qa/tsc.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-qa/tsc.exit",
+      "criteria": ["AC-ra-21", "AC-ra-22"]
+    },
+    {
+      "kind": "code_read",
+      "command": "read server/report/pdfRenderer.ts:120-240, server/routes/brandRoutes.ts (full), server/services/brandService.ts:96-127, server/app.ts:64-65",
+      "result": "Logo validation (size, base64 shape, signature, 600 px side) and the dry-run guard in renderReportPdf are present; brand routes mount before the app-level 1 MB JSON parser; footer contact is drawn on every page.",
+      "criteria": ["AC-ra-21", "AC-ra-22"]
+    }
+  ]
+}

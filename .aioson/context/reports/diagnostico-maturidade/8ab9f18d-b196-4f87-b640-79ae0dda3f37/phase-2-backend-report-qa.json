@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "a432a6a0-a7ba-4e2f-9ddd-6fdac6849cfb",
+  "unit": "phase-2-backend-report",
+  "phase": "2-backend-report",
+  "wave": 7,
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "started_at": "2026-10-23T01:44:00-03:00",
+  "finished_at": "2026-10-23T01:48:01-03:00",
+  "scope": {
+    "capabilities": ["CAP-dm-report"],
+    "acceptance_criteria": ["AC-dm-36"],
+    "interfaces": ["IF-006"]
+  },
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "`pnpm test:e2e -- tests/e2e/report.spec.ts` was not run: the spec does not exist yet (deferred integration evidence). The browser check of AC-dm-36 (export from the Play webview, open the file in Downloads) also depends on src/features/result/ExportReportDialog.tsx, which does not exist yet, and on src/api/reportApi.ts (exists). Local Done-when does not depend on them; the capability is not approved until integration runs them."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "server/report/pdfRenderer.ts",
+      "summary": "The rendered layout of the exported PDF was not looked at (no pdftoppm/poppler in this environment; @napi-rs/canvas not a dependency). The implementer dumped text positions with unpdf and checked glyph coverage; QA did not reproduce this. Needs a human glance at a PDF exported in the Play dev-link (layout, spacing, bars, colors, footer)."
+    },
+    {
+      "kind": "limitation",
+      "severity": "low",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "server/report/pdfRenderer.ts",
+      "summary": "Only the @fontsource latin subset is embedded. A company name with characters outside Latin-1 and general punctuation (e.g. Greek, Cyrillic, CJK, emoji, 'ł') prints as missing-glyph boxes in the PDF. Accepted by the implementer for a pt-BR owner; the file name keeps those characters. Not a defect of the Done-when check."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm test -- tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "14 test files, 649 tests passed. pnpm forwards the literal `--` to vitest, which then drops the file filter, so the whole suite ran.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-qa/done-when.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-qa/done-when.exit"
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "2 test files, 49 tests passed (the file filter applied).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-qa/unit-files.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-qa/unit-files.exit"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit clean. The TS2322 at server/report/pdfRenderer.ts (reported by phase-2-frontend-history as line 300) is gone: the info option now holds strings only (line 299). The vite build half of `pnpm build` was not run here.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-qa/typecheck.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-qa/typecheck.exit"
+    },
+    {
+      "kind": "review",
+      "command": "static read of server/routes/reportRoutes.ts, server/services/reportService.ts, server/files/downloadsFolder.ts, server/report/reportModel.ts (formatFileDate), tests/api/reportRoutes.test.ts (test names)",
+      "result": "Route answers the service result for POST /api/diagnoses/:id/report. Service maps 404 diagnosis_not_found, 409 diagnosis_not_completed, 500 write_failed (FileWriteError only) and returns { fileName, directory }. saveFile writes a temporary file, reserves the final name with an exclusive create (' (2)' suffix), renames, and removes temporary and reserved files on failure. Express 5.3.0 forwards async rejections to the error handler. The API test list covers AC-dm-36 fields, hostile names, 409/404/500 paths and no leftover temporary file. No defect found."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred browser checks once the frontend exists: (1) `pnpm test:e2e -- tests/e2e/report.spec.ts` after tests/e2e/report.spec.ts and src/features/result/ExportReportDialog.tsx exist, with the e2e Downloads folder passed as downloadsDir (a temporary folder); (2) in the Play dev-link, conclude a diagnosis, click 'Exportar PDF', open the saved file in Downloads and check the layout (about 3 pages for a stage 1 result). Neither was run by this QA.",
+      "paths": ["tests/e2e/report.spec.ts", "src/features/result/ExportReportDialog.tsx", "src/api/reportApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The file-scoped test command `pnpm test -- <files>` runs the whole suite: package.json `test` is `vitest run` and pnpm passes the literal `--`, which drops the filter. For a file-scoped run use `pnpm exec vitest run <files>`. The Done-when command still passes, but it runs 649 tests.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "IF-006 contract as verified by read and by the API tests: POST /api/diagnoses/:id/report (no body, send Content-Type: application/json) answers 200 { fileName, directory }. fileName can differ from {company}-{date}.pdf when a name is taken (' (2)'). Errors use { error: { code, message } }."
+    },
+    {
+      "to": "unit:phase-4-backend-backup",
+      "kind": "note",
+      "text": "server/files/downloadsFolder.ts saveFile({ directory, stem, extension, content }) is reusable for the backup export. It throws FileWriteError on any write failure and leaves no temporary or reserved file behind.",
+      "paths": ["server/files/downloadsFolder.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "defaultDownloadsDir() in server/files/downloadsFolder.ts has no caller. server/main.ts (outside this unit) builds the same path inline with path.join(os.homedir(), \"Downloads\"). Same folder either way; switching main.ts to the helper is optional.",
+      "paths": ["server/files/downloadsFolder.ts", "server/main.ts"]
+    }
+  ]
+}

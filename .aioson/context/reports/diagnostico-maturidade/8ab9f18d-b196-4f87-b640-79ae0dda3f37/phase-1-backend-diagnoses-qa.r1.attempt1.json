@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "4ed49447-65d4-4943-8a33-ba87d2367af1",
+  "unit": "phase-1-backend-diagnoses",
+  "phase": "1-backend-diagnoses",
+  "wave": 5,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "started_at": "2026-10-23T01:25:00-03:00",
+  "finished_at": "2026-10-23T01:31:00-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-questionnaire", "CAP-dm-engine"],
+    "acceptance_criteria": ["AC-dm-13", "AC-dm-16", "AC-dm-22"],
+    "interfaces": ["IF-003"],
+    "done_when": "pnpm test -- tests/api/diagnosisRoutes.test.ts passa, inclusive o resumo do assistente depois de uma conclusão real"
+  },
+  "local_done_when": "pass",
+  "corrections": [],
+  "prior_findings": [
+    {
+      "round": 1,
+      "id": "F1",
+      "severity": "critical",
+      "status": "resolved",
+      "observed": "Re-run of the real httpClient against the real createApp (r2-client-probe.log, exit 0): start diagnosis OK, archive company OK, restore company OK, complete diagnosis with an unknown id returns 404 diagnosis_not_found (no longer 415). All five POSTs now send content-type application/json. src/api/httpClient.ts:92-93 sets Content-Type for every POST/PUT/PATCH (isJsonWrite) and sends '{}' when there is no body (:102). server/http/requestGuards.ts:34 requireJsonWrites is unchanged and still mounted in server/app.ts:40, so the CSRF guard was not relaxed. The fix lives outside this unit (src/api), so it is verified by observation here, not by a unit-owned test."
+    },
+    {
+      "round": 1,
+      "id": "F2",
+      "severity": "low",
+      "status": "resolved",
+      "observed": "server/validation/diagnosisSchemas.ts readAnswer (:31), readStoredAnswers (:141) and readStoredCalculator (:155) keep every valid stored key and drop only the invalid one. tests/api/diagnosisRoutes.test.ts:600 (stored row with mp1 null, mp2 2, pc1 9, mp3 'x', zz9, bogus spendMode, retired key, newCustomers -3) asserts the readable answers and marginPercent survive a read and the next PATCH; :623 (non-object stored JSON) reads as empty and is rebuilt by the next save. Both pass in r2-test.log."
+    },
+    {
+      "round": 1,
+      "id": "F3",
+      "severity": "low",
+      "status": "not_resolved_owner_decision",
+      "observed": "server/repositories/diagnosisRepository.ts startDraft (:45, :77) and server/services/diagnosisService.ts (:164) have no company archivedAt check; POST /api/companies/:id/diagnoses still creates a draft for an archived company, and no company_archived code exists in server/ or src/. The PRD (.aioson/context/prd-diagnostico-maturidade.md, AC-dm-13 :275, RULE-dm-13) does not forbid it, so this remains a product decision and is not counted as a failure of this unit."
+    },
+    {
+      "round": 1,
+      "id": "VNR1-3",
+      "severity": "medium",
+      "status": "not_run",
+      "observed": "Still not run in this attempt: e2e questionnaire spec, AC-dm-27 timing, and aioson harness:check. See verification_not_run findings."
+    }
+  ],
+  "findings": [
+    {
+      "kind": "assumption",
+      "severity": "low",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-13",
+      "path": "server/repositories/diagnosisRepository.ts",
+      "summary": "startDraft still creates a new draft for an archived company (prior F3). The PRD is silent, so this is an owner decision and does not block PASS.",
+      "failure_scenario": "A company is archived, then POST /api/companies/:id/diagnoses returns a new draft (201). If the owner wants this closed: refuse only a new draft with 409 company_archived, keep returning an existing draft, add one test; the frontend then needs a message for that code."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "Not run: pnpm test:e2e -- tests/e2e/questionnaire.spec.ts (AC-dm-12/14/16/17/48 on screen). It needs the frontend units and the integration build, and it is outside this backend unit's write paths and its Done-when. This environment did not provision a browser or the built app."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-27",
+      "path": "src/features/diagnosis",
+      "summary": "Not run: AC-dm-27 timing of 'Calculando o seu diagnóstico' (target 3 s) in the Play. It needs the running Play and the integration build."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-engine",
+      "ac": "",
+      "path": "",
+      "summary": "Not run: aioson harness:check . --slug=diagnostico-maturidade. It is not part of this unit's Done-when and needs the integration build."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "F1 (critical, client Content-Type on body-less POST) is resolved in the current src/api/httpClient.ts. Keep requireJsonWrites as is. Remaining checks for integration after the build: (1) pnpm test:e2e -- tests/e2e/questionnaire.spec.ts; (2) AC-dm-27: conclude a diagnosis in the Play and time 'Calculando o seu diagnóstico' until the result (target 3 s); (3) aioson harness:check . --slug=diagnostico-maturidade.",
+      "paths": ["src/api/httpClient.ts", "src/api/diagnosesApi.ts", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Owner decision (F3, low): should POST /api/companies/:id/diagnoses refuse a NEW draft for an archived company (409 company_archived), still returning an existing draft? If yes, it is a few lines in server/repositories/diagnosisRepository.ts startDraft plus a test, and the frontend needs a message for that code.",
+      "paths": ["server/repositories/diagnosisRepository.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/diagnosisRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 12 passed (12); Tests 600 passed (600). pnpm forwards the literal '--', so vitest runs the whole suite; this is the Done-when command as written. Includes the GET /api/assistant/summary after a real conclusion block (tests/api/diagnosisRoutes.test.ts:891).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-test.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-test.exit"
+    },
+    {
+      "command": "pnpm exec tsx .aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r1-client-probe.mts",
+      "exit_code": 0,
+      "result": "F1 resolved: start diagnosis OK; archive company OK; restore company OK; complete diagnosis (unknown id) 404 diagnosis_not_found; direct fetch with content-type application/json HTTP 200. Every POST in the trace carries content-type=\"application/json\".",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-client-probe.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-client-probe.exit"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit clean",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-typecheck.exit"
+    },
+    {
+      "command": "node scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "result": "[smoke-boot] PASS (pnpm start with injected PORT and BACKEND_PORT; backend and UI answer; ports released)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-smoke-boot.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/r2-smoke-boot.exit"
+    }
+  ]
+}

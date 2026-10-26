@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "4cf0bd9f-e40f-4cd2-9387-4a50fe9f7058",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T22:49:36Z",
+  "finished_at": "2026-10-25T23:02:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "shared/report/reportDocument.ts (new)",
+    "shared/report/paperPalette.ts (new)",
+    "shared/format/confidenceText.ts (new)",
+    "server/report/reportCopy.ts (new)",
+    "server/report/documentParts.ts (new)",
+    "server/report/reportModel.ts (modified: buildDiagnosisDocument added; v1 buildReportModel kept)",
+    "tests/unit/reportModel.test.ts (modified)",
+    "tests/unit/confidenceText.test.ts (new)",
+    "tests/unit/forbiddenTerms.test.ts (modified)"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "PDF-level checks of AC-ra-05/06/07/08/09/10/11 were not run: they need the renderer that draws a ReportDocument (server/report/pdfRenderer.ts, pdfBlocks.ts, pdfCharts.ts, tests/unit/pdfRenderer.test.ts), which is not part of this unit. This unit proves the document (pages, order, titles, texts, answers on/off, forbidden terms) at the data level only.",
+      "command": "pnpm exec vitest run tests/unit/pdfRenderer.test.ts (text per page via unpdf; summary on one page; dimensions start on the next page; every page fits one A4; grayscale print of the dimensions page)",
+      "paths": ["server/report/pdfRenderer.ts", "tests/unit/pdfRenderer.test.ts"]
+    },
+    {
+      "kind": "integration_dependency",
+      "severity": "low",
+      "summary": "The v1 server/report/pdfRenderer.ts still prints the phrase that limits the stage to the weakest dimension (line 248) and still draws the v1 ReportModel. buildReportModel, ReportModel, GUIDANCE_NOTICE and NO_RISKS_TEXT were kept on purpose so the current renderer, reportService and tests/api/reportRoutes.test.ts (37 tests, still passing) keep working. AC-ra-10 (no PDF says the stage is the weakest dimension) only holds for exported PDFs after the renderer moves to ReportDocument.",
+      "paths": ["server/report/pdfRenderer.ts", "server/services/reportService.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/confidenceText.test.ts tests/unit/forbiddenTerms.test.ts",
+      "result": "PASS, exit 0, 3 files, 50 tests",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-dev/vitest-run2.log"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "result": "PASS, exit 0, no errors in the whole project",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-dev/tsc.log"
+    },
+    {
+      "kind": "regression",
+      "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts",
+      "result": "PASS, exit 0, 37 tests (v1 PDF path unchanged in behavior)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-document-dev/vitest-legacy.log"
+    },
+    {
+      "kind": "check",
+      "command": "aioson rules:check .",
+      "result": "RULES=OK; no violation in this unit's files (advisory findings are in other files)"
+    },
+    {
+      "kind": "check",
+      "command": "contrast calculation over shared/report/paperPalette.ts",
+      "result": "every text color >= 4.5:1 on paper #fffdf7 (muted 5.91, accent 6.00, copper 7.38, danger 7.16, gold 5.23); tags >= 5.29 on their wash"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "New entry point: buildDiagnosisDocument(input: DiagnosisDocumentInput): ReportDocument in server/report/reportModel.ts. Input = ReportInput (companyName, completedAt, result, timeZone?) + generatedAt: Date (required, only feeds the cover credit line) + brand?: ReportBrandInput (name/phone/email/site/logoDataUrl, all optional; blank means FitPulse) + actionProgress?: ReportActionProgress[] (actionKey, status todo|doing|done|notApplicable, dueDate DD/MM/AAAA or null, owner label or null, note or null, overdue boolean decided by the caller per RULE-ra-06; no entries means no 'Andamento das ações' page) + includeAnswers?: boolean (default false) + diagnosisInput?: DiagnosisInput ({answers, calculator} of the stored diagnosis). reportService must load and pass diagnosisInput ONLY when includeAnswers is on; with it off the builder never reads it, and with it on but missing it throws. Stable page ids: cover, executive-summary, dimensions, risks, numbers, action-progress (optional), how-to-read, answers-numbers, answers-1, answers-2, answers-3 (the last four only with answers).",
+      "paths": ["server/report/reportModel.ts", "shared/report/reportDocument.ts", "server/report/documentParts.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "For the PDF renderer unit: draw ReportDocument from shared/report/reportDocument.ts (blocks: cover, heading, paragraph, facts, keyNumbers, stage, actions, dimensionBars, riskMatrix, riskList, explainedNumbers, list, table, notice). One ReportPage is one A4 (throw if it does not fit); page.title is printed at the top of every page except the cover, which prints cover.title; footer.text goes on the left and 'Página N de M' on the right. Use PAPER_PALETTE and PAPER_TONE_COLORS from shared/report/paperPalette.ts. Constraints I could not verify without the renderer: (1) the risks page needs the 5x5 matrix beside the list, because 5 risks stacked under the matrix will not fit an A4; (2) bars carry scoreText and alertText plus the dashed line at threshold (50), so grayscale loses nothing; (3) the Inter latin subset does not carry U+2192, and none is used in the copy; (4) the cover brand logo is a data URL (PNG or JPEG), which pdfkit accepts. Remove the v1 phrase at pdfRenderer.ts:248 when moving to ReportDocument, then drop buildReportModel, ReportModel, GUIDANCE_NOTICE and NO_RISKS_TEXT (and their tests) from reportModel.ts.",
+      "paths": ["server/report/pdfRenderer.ts", "shared/report/paperPalette.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "ConfidenceNote.tsx must use shared/format/confidenceText.ts instead of its own describeConfidence (AC-ra-23): formatConfidenceStatement(confidence) gives 'Confiança nos dados: alta (1 de 26 itens sem o número)', always 'itens'; formatConfidence gives 'Alta (...)'; CONFIDENCE_LEVEL_EXPLANATIONS holds the sentence that follows. The preview should render the same ReportDocument the PDF draws: a page changed when its JSON differs for the same page.id; page.title is the title the PDF prints (the e2e comparison of preview titles with the PDF text relies on it); the riskMatrix block has 'description' (accessible name) and 'axesLabel'.",
+      "paths": ["shared/format/confidenceText.ts", "shared/report/reportDocument.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Assumptions made: (a) the executive summary shows stage, lock, 3 key numbers (cost per customer, profit ÷ cost ratio and payback; the third comes from the approved prototype), the 3 actions with 'Como fazer', the highest risk and the guidance warning; (b) the 'Seus números' page carries the 4 calculated numbers with their explanations plus the confidence paragraph (and the provisional note when low), so the v1 confidence section is not lost; (c) the answers appendix is the 6 calculator numbers (with the cost parts when the spend was typed in exact mode) on one page, then the 24 questions in 3 fixed pages of 8; (d) matrix legend ranges come from rulesV1 (Alto 16 a 25, Médio 6 a 15, Baixo 1 a 5), which differ from the prototype's hard-coded 8-15 and 1-7; (e) rulesV1 is used for the line of 50 and the risk thresholds because it is the only rules version. Evolution and portfolio documents are not built here; their units can reuse buildCoverPage, buildFooter, buildHowToReadPage and resolveBrand from documentParts.ts.",
+      "paths": ["server/report/reportModel.ts", "server/report/documentParts.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred integration checks for this phase's capabilities, not run here: pdfRenderer.test.ts (page count equals document pages, text per page, summary on one page, bars with written score), tests/api/reportRoutes.test.ts for the new /api/reports/preview and /export, the Playwright report/result/accessibility specs, pnpm build, node scripts/smoke-migrate.mjs, aioson harness:check . --slug=relatorios-e-acompanhamento, and the dev-link walkthrough in the Play. pnpm exec tsc --noEmit already passes for the whole project with this unit's files."
+    }
+  ]
+}

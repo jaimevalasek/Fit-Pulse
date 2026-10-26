@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "eab155f1-73bc-46fc-8015-a961be830fef",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "integration",
+  "unit": "diagnostico-maturidade / integration-supervisor",
+  "phase": "final-integration-supervisor — wave 14",
+  "started_at": "2026-10-23T06:41:02Z",
+  "finished_at": "2026-10-23T06:48:16Z",
+  "verdict": "PASS",
+  "write_paths": ["package.json","pnpm-workspace.yaml","pnpm-lock.yaml","tsconfig.json","vitest.config.ts",".gitignore","manifest.json","prisma.config.ts","prisma/schema.prisma","server/db/databaseUrl.ts","prisma/migrations/migration_lock.toml","prisma/migrations/20261023000000_init/migration.sql","scripts/prepare-app.mjs","scripts/smoke-migrate.mjs","server/db/prismaClient.ts","tests/helpers/testDatabase.ts","shared/rules/rulesV1.ts","shared/content/stageContent.ts","shared/content/riskCatalog.ts","shared/content/actionCatalog.ts","shared/content/questionBank.ts","shared/content/calculatorOptions.ts","shared/domain/types.ts","tests/unit/questionBank.test.ts","tests/unit/forbiddenTerms.test.ts","shared/format/cnpj.ts","shared/format/money.ts","shared/format/displayNumbers.ts","shared/content/companyOptions.ts","tests/unit/cnpj.test.ts","tests/unit/money.test.ts","vite.config.ts","index.html","src/main.tsx","src/App.tsx","src/styles/tokens.css","src/styles/global.css","src/components/layout/AppShell.tsx","components.json","src/lib/utils.ts","src/components/ui/button.tsx","shared/domain/unitEconomics.ts","shared/domain/dimensionScores.ts","shared/domain/stageGate.ts","shared/domain/confidence.ts","shared/domain/riskSignals.ts","shared/domain/completeness.ts","tests/unit/unitEconomics.test.ts","tests/unit/diagnosisRules.test.ts","server/main.ts","server/app.ts","server/http/requestGuards.ts","server/http/errorHandler.ts","server/services/domainError.ts","server/routes/playRoutes.ts","server/services/assistantSummaryService.ts","tests/api/playRoutes.test.ts","system.json","scripts/smoke-boot.mjs","scripts/smoke-store-package.mjs","src/components/ui/alert-dialog.tsx","src/components/ui/input.tsx","src/components/ui/label.tsx","src/components/feedback/ConfirmDialog.tsx","src/components/feedback/StatusView.tsx","src/components/form/TextField.tsx","src/components/form/CnpjField.tsx","src/components/form/MoneyField.tsx","src/api/httpClient.ts","shared/domain/actionPlan.ts","shared/domain/evaluateDiagnosis.ts","tests/fixtures/rulesV2.ts","tests/unit/evaluateDiagnosis.test.ts","server/routes/companyRoutes.ts","server/services/companyService.ts","server/repositories/companyRepository.ts","server/validation/companySchemas.ts","tests/api/companyRoutes.test.ts","src/api/companiesApi.ts","src/features/companies/CompaniesPage.tsx","src/features/companies/CompanyFormDialog.tsx","src/features/companies/CompanyPage.tsx","server/routes/diagnosisRoutes.ts","server/services/diagnosisService.ts","server/repositories/diagnosisRepository.ts","server/validation/diagnosisSchemas.ts","tests/api/diagnosisRoutes.test.ts","src/api/diagnosesApi.ts","src/features/diagnosis/QuestionnairePage.tsx","src/features/diagnosis/BlockRail.tsx","src/features/diagnosis/AnchoredQuestion.tsx","src/features/diagnosis/useDraftAutosave.ts","src/features/diagnosis/CompletionGate.tsx","src/features/diagnosis/CalculatorBlock.tsx","src/features/diagnosis/UnitEconomicsPanel.tsx","src/features/result/ResultPage.tsx","src/features/result/StageLadder.tsx","src/features/result/ActionPlanList.tsx","src/features/result/DimensionScores.tsx","src/features/result/RiskList.tsx","src/features/result/NumbersSummary.tsx","src/features/result/ConfidenceNote.tsx","shared/domain/compareDiagnoses.ts","server/routes/historyRoutes.ts","server/services/historyService.ts","tests/unit/compareDiagnoses.test.ts","tests/api/historyRoutes.test.ts","server/files/downloadsFolder.ts","server/report/reportModel.ts","server/report/pdfRenderer.ts","server/services/reportService.ts","server/routes/reportRoutes.ts","tests/unit/reportModel.test.ts","tests/api/reportRoutes.test.ts","src/api/historyApi.ts","src/features/history/CompanyTimeline.tsx","src/features/history/ComparePage.tsx","src/api/reportApi.ts","src/features/result/ExportReportDialog.tsx","server/routes/preferenceRoutes.ts","server/services/preferenceService.ts","server/repositories/preferenceRepository.ts","server/validation/preferenceSchemas.ts","tests/api/preferenceRoutes.test.ts","src/api/preferencesApi.ts","src/features/preferences/PreferencesProvider.tsx","src/features/settings/SettingsPage.tsx","server/routes/homeRoutes.ts","server/services/homeService.ts","tests/api/homeRoutes.test.ts","src/api/homeApi.ts","src/features/home/HomePage.tsx","src/features/home/OwnerHome.tsx","src/features/home/ConsultantHome.tsx","src/features/home/ScoreTrend.tsx","src/api/backupApi.ts","src/features/settings/BackupSection.tsx","src/features/firstRun/WelcomeModePage.tsx","src/features/firstRun/WelcomeCompanyPage.tsx","src/features/home/OnboardingTour.tsx","server/validation/backupSchemas.ts","server/services/backupService.ts","server/routes/backupRoutes.ts","tests/api/backupRoutes.test.ts","playwright.config.ts","tests/e2e/global-setup.ts","tests/e2e/support/fixtures.ts","tests/e2e/shell.spec.ts","tests/e2e/companies.spec.ts","tests/e2e/questionnaire.spec.ts","tests/e2e/calculator.spec.ts","tests/e2e/result.spec.ts","tests/e2e/history.spec.ts","tests/e2e/report.spec.ts","tests/e2e/home.spec.ts","tests/e2e/settings.spec.ts","tests/e2e/accessibility.spec.ts","tests/e2e/firstRun.spec.ts","tests/e2e/backup.spec.ts",".aioson/plans/diagnostico-maturidade/harness-contract.json"],
+  "corrections": [],
+  "findings": [
+    {
+      "severity": "low",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "",
+      "path": "package.json",
+      "summary": "Dev trade-off from INT-01: `pnpm dev` runs `tsx server/main.ts` without watch, so server-file edits no longer restart the API in dev (Vite HMR for the UI is unchanged). Not a verification failure; developer-experience regression to know about."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-dm-history",
+      "ac": "AC-dm-31",
+      "path": "tests/e2e/history.spec.ts",
+      "summary": "The recalculation notice for differing rules versions cannot appear on screen in this v1-only build; it is covered only by tests/unit/compareDiagnoses.test.ts and tests/api/historyRoutes.test.ts. The e2e asserts only that the notice is absent when versions match."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred manual verification (does not block this stage): Play dev-link with badge green; open with no data through Play dev-link (AC-dm-01); export from Play webview (AC-dm-36); AC-dm-27 timing on an ordinary Windows computer; AC-dm-44 from another machine on the network; AC-dm-45 update through the real store; private publication and steps 1 to 5 of Phase 4 on Windows."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Per-file forms `pnpm test -- <files>` and `pnpm test:e2e -- <spec>` run the full suites under pnpm 11 (literal `--` forwarded). QA ran the full suites, which are a superset of every listed per-file command. To run one e2e file, use `pnpm exec playwright test <file>`."
+    }
+  ],
+  "evidence": [
+    {"command": "pnpm build", "exit_code": 0, "result": "tsc --noEmit + vite build; CSS 70.82 kB; chunk-size advisory only", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v1-build.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v1-build.exit"},
+    {"command": "node scripts/smoke-migrate.mjs", "exit_code": 0, "result": "PASS, 5/5 steps", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v2-smoke-migrate.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v2-smoke-migrate.exit"},
+    {"command": "node scripts/smoke-boot.mjs", "exit_code": 0, "result": "PASS, 4/4 steps", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v3-smoke-boot.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v3-smoke-boot.exit"},
+    {"command": "node scripts/smoke-store-package.mjs", "exit_code": 0, "result": "PASS, 8/8 steps", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v4-smoke-store-package.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v4-smoke-store-package.exit"},
+    {"command": "pnpm test (covers every listed unit and api file, incl. tests/api/playRoutes.test.ts)", "exit_code": 0, "result": "17 files, 757 tests passed", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v5-unit-api.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v5-unit-api.exit"},
+    {"command": "pnpm test:e2e (covers every listed e2e spec)", "exit_code": 0, "result": "52 passed (4.0m), projects fresh-db + main", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v6-e2e.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v6-e2e.exit"},
+    {"command": "pnpm typecheck", "exit_code": 0, "result": "tsc --noEmit clean", "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v7-typecheck.log", "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/integration-supervisor-qa/v7-typecheck.exit"},
+    {"command": "static review (Grep, no exit code): src/styles/global.css @source, tokens.css contrast, touch-target and questionnaire grid classes; grep of shared/ and index.html for Tailwind utility classes", "result": "INT-02..INT-05 changes present; no utility classes outside src/ that the narrowed @source would drop"}
+  ]
+}

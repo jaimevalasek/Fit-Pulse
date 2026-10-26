@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "bf4494e1-5967-4ac4-8391-34af6bf1fbf9",
+  "unit": "phase-6-frontend-questionnaire",
+  "wave": 11,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T01:04:51Z",
+  "finished_at": "2026-10-26T01:07:14Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-remote-questionnaire"],
+    "acceptance_criteria": ["AC-ra-48", "AC-ra-51", "AC-ra-52", "AC-ra-53"],
+    "interfaces": ["IF-011"],
+    "done_when": "pnpm typecheck passa e os diálogos usam só o IF-011"
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "package.json",
+      "summary": "The literal `pnpm typecheck` exits 1 in this session before tsc runs: pnpm's dependency check runs `pnpm install`, whose postinstall `prisma migrate deploy` fails with 'database is locked' on data/fitpulse.db (reproduced twice). Not a type error. Probable cause is a concurrent process holding the SQLite file or the package.json and scripts edits of phase-7-backend-release; not confirmed. With `pnpm --config.verify-deps-before-run=false typecheck` the script runs and exits 0, and `node node_modules/typescript/bin/tsc --noEmit` exits 0 with empty output.",
+      "failure_scenario": "A run where the data/fitpulse.db file is held by another process makes `pnpm typecheck` report failure even though tsc has no errors."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "tests/e2e/remoteQuestionnaire.spec.ts",
+      "summary": "Capability-wide checks were not run in this unit and belong to integration: `pnpm build`, `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts`, and the Play dev-link walkthrough (send, answer in another browser, import, review and conclude, replace-draft confirm and cancel paths for AC-ra-53 and AC-ra-59). Not run because they are integration checks and need the app running under Play with the database free."
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-35",
+      "path": "src/api/homeApi.ts",
+      "summary": "ConsultantHomeData has no awaitingQuestionnaires field and CompanyAttention has no 'aguardando' value. ConsultantHome.tsx (HomeAwaitingQuestionnaire, awaitingQuestionnaires()), CompaniesPage.tsx (ListAttention, cast at listCompanies) and CompanyPage.tsx (AwaitingHomeData) widen the types locally. Behaviour is correct; the shared types should name the server contract (integration)."
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "src/features/companies/CompanyPage.tsx",
+      "summary": "The 'Questionário enviado em' line is read from GET /api/home?mode=consultant (usePendingQuestionnaire) because GET /api/companies/:id carries no pending send. Each company page visit therefore loads the whole consultant home for one line. A company field would avoid the extra call."
+    },
+    {
+      "kind": "deviation",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+      "summary": "The three steps are shown before 'Gerar arquivo' and the message with 'Copiar mensagem' appears only after the file is saved. The message is built by the server (buildClientMessage) and arrives in the POST answer, so the prototype order cannot be kept without a server call. Acceptable: the message text is the approved server text."
+    },
+    {
+      "kind": "contract_wording",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+      "summary": "The Done-when reads 'os diálogos usam só o IF-011', but 'Mostrar na pasta' calls filesApi.revealSavedFile (IF-002) with the fileId that IF-011 returns. The plan (implementation-plan-relatorios-e-acompanhamento.md lines 56 and 314) describes this reveal by file id through the files route, so it reads as deliberate. Integration should confirm that the reading holds."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck.exit",
+      "summary": "Failed in the dependency check and postinstall (prisma migrate deploy: database is locked). tsc did not run."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (retry 1)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-retry1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-retry1.exit",
+      "summary": "Same database-lock failure in the postinstall step; tsc did not run."
+    },
+    {
+      "kind": "command",
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/tsc-direct.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/tsc-direct.exit",
+      "summary": "Same command as the typecheck script; no diagnostics."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-noverify.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-noverify.exit",
+      "summary": "Runs `tsc --noEmit` through pnpm with the dependency check off; passes."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm --ignore-scripts typecheck",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-ignore-scripts.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-ignore-scripts.exit",
+      "summary": "Rejected: 'Unknown option: ignore-scripts' in pnpm 11. Not a check of the unit."
+    },
+    {
+      "kind": "static_check",
+      "summary": "Import grep of the dialogs: SendQuestionnaireDialog.tsx imports questionnaireApi.sendQuestionnaire, filesApi.revealSavedFile, httpClient.isApiError, and the alert-dialog and button UI components; ImportAnswersDialog.tsx imports questionnaireApi.importAnswers and types, httpClient.isApiError and ConfirmDialog. No other API module is imported."
+    },
+    {
+      "kind": "code_review",
+      "summary": "Read the six unit files in bounded windows. Checked the save and import state machines, the replace-draft confirmation (ConfirmDialog awaits onConfirm before closing, so there is no stageRef race), the review route /diagnostico/:diagnosisId (src/App.tsx:92), the 1 MB pre-read limit with the server wording, 'Nada foi alterado.' on each refusal, consultant-only and archived-hidden controls, and the timeline draft marker (clientAnswersSavedAt). No defect at high or critical severity found; no correction made."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Re-run `pnpm typecheck` once data/fitpulse.db is free. This QA attempt saw 'database is locked' in the postinstall prisma migrate step. Confirm that no concurrent process holds the file (candidate: phase-7-backend-release, which edits package.json and scripts/smoke-migrate.mjs). Until then `pnpm --config.verify-deps-before-run=false typecheck` and `node node_modules/typescript/bin/tsc --noEmit` both exit 0.",
+      "paths": ["package.json", "scripts/smoke-migrate.mjs", "data/fitpulse.db"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Add awaitingQuestionnaires?: Array<{ companyId; name; sentAt; waitingDays }> to ConsultantHomeData in src/api/homeApi.ts, and 'aguardando' to CompanyAttention in src/api/companiesApi.ts. Then drop the local widenings in ConsultantHome.tsx, CompaniesPage.tsx (cast at listCompanies) and CompanyPage.tsx (AwaitingHomeData).",
+      "paths": ["src/api/homeApi.ts", "src/api/companiesApi.ts", "src/features/home/ConsultantHome.tsx", "src/features/companies/CompaniesPage.tsx", "src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Capability checks to run after all producers: `pnpm build`; `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts`; Play dev-link walkthrough: Enviar questionário, open the file in another browser, Salvar minhas respostas, Importar respostas, Revisar e concluir, including the replace-draft confirm and cancel paths (AC-ra-53, AC-ra-59). Selectors used by the dialogs: [data-aioson-id=send-questionnaire], [data-aioson-id=import-answers], [data-aioson-id=send-questionnaire-modal], [data-aioson-id=send-generate], [data-aioson-id=send-file-name], [data-aioson-id=send-message], [data-aioson-id=send-copy-message], [data-aioson-id=send-show-folder], [data-aioson-id=questionnaire-sent], [data-aioson-id=import-answers-modal], [data-aioson-id=import-file-input], [data-aioson-id=import-done], [data-aioson-id=import-error], [data-aioson-id=import-review-draft], [data-aioson-id=import-choose-file], [data-aioson-id=import-replace-confirm] and, in the timeline, [data-aioson-id=imported-draft] with data-source=client-answers.",
+      "paths": ["tests/e2e/remoteQuestionnaire.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Confirm that 'Mostrar na pasta' via filesApi.revealSavedFile (IF-002, fileId from IF-011) satisfies 'os diálogos usam só o IF-011' as the plan intends. QA reads it as deliberate, per implementation-plan lines 56 and 314.",
+      "paths": ["src/features/questionnaire/SendQuestionnaireDialog.tsx", "src/api/filesApi.ts"]
+    }
+  ]
+}

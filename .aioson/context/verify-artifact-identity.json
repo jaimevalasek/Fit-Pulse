@@ -1,0 +1,28 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "identity",
+  "slug": null,
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "identity",
+      "kind": "static",
+      "ok": true,
+      "files": [
+        "C:\\dev\\playapps\\v-stage\\.aioson\\briefings\\relatorios-e-acompanhamento\\identity.md"
+      ],
+      "missing_files": [],
+      "must_match_misses": [],
+      "must_not_match_hits": [],
+      "parse_failures": [],
+      "detail": null
+    }
+  ],
+  "exitCode": 0
+}

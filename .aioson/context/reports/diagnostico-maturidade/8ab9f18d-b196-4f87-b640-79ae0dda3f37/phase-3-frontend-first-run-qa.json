@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "26dd324b-dc7e-45cc-afc2-34d7320dcf0c",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "started_at": "2026-10-23T05:05:00Z",
+  "finished_at": "2026-10-23T05:13:00Z",
+  "lane": "frontend",
+  "phase": "3-frontend-first-run",
+  "unit": "phase-3-frontend-first-run",
+  "wave": 10,
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "capabilities": ["CAP-dm-first-run"],
+  "acceptance_criteria": ["AC-dm-01", "AC-dm-02", "AC-dm-03"],
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-first-run",
+      "ac": "AC-dm-01, AC-dm-02, AC-dm-03",
+      "path": "tests/e2e/firstRun.spec.ts",
+      "summary": "Capability e2e check `pnpm test:e2e -- tests/e2e/firstRun.spec.ts` (fresh-db Playwright project) was not run: the spec is outside this unit's write paths and the e2e evidence for the first-run capability is due to integration. Deferred to integration; not a defect of this unit."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-first-run",
+      "ac": "AC-dm-01",
+      "path": "data/",
+      "summary": "Play dev-link check with the data/ directory deleted (fresh install opens on #/boas-vindas without a DB, port or login screen) was not run: it needs the AIOSON Play desktop runtime, which is unavailable in this environment. Deferred to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm build",
+      "command": "pnpm build",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-first-run-qa/build.log",
+      "summary": "Run in the foreground; log ends with EXIT_CODE=0. tsc --noEmit and vite build completed (built in 1.36s). Only the existing >500 kB chunk-size warning."
+    },
+    {
+      "check": "code review AC-dm-01 (first-run gate)",
+      "result": "PASS",
+      "summary": "src/App.tsx RootRedirect calls hasAnyCompany(): listCompanies active, then archived=true (server/validation/companySchemas.ts archived filter supported). No company redirects to #/boas-vindas, otherwise #/inicio. src/features/firstRun/WelcomeModePage.tsx shows the welcome copy with no DB, port, login or config screen. AppShell hides nav, mode chip and '?' on /boas-vindas*."
+    },
+    {
+      "check": "code review AC-dm-02 (company wizard)",
+      "result": "PASS",
+      "summary": "src/features/firstRun/WelcomeCompanyPage.tsx: mode cards navigate to /boas-vindas/empresa?modo=owner|consultant. useWizardForm validates name, segment, sales channel (optional revenue and CNPJ), then createCompany (reused via createdRef on retry), savePreferences({usageMode, focusCompanyId}), startDiagnosis, navigate to /diagnostico/:id. Server field errors map to fields. Retry after a later failure does not re-register the company."
+    },
+    {
+      "check": "code review AC-dm-03 (first-visit tour)",
+      "result": "PASS",
+      "summary": "src/features/home/OnboardingTour.tsx TOURS: 5 owner steps, 4 consultant steps, 'N de M' counter, Pular, Voltar, Próximo/Entendi, Esc closes. TourProvider auto-opens once per mode on #/inicio when tourSeen[mode] is false and the first anchor exists. closeTour saves tourSeen for that mode only: client mergeUpdate (src/features/preferences/PreferencesProvider.tsx:31) and server per-key upsert (server/services/preferenceService.ts:96-100) keep the other mode's flag. '?' (tour-reopen) in AppShell calls openTour, navigating to #/inicio first."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred first-run e2e check: write or run tests/e2e/firstRun.spec.ts in the fresh-db Playwright project with `pnpm test:e2e -- tests/e2e/firstRun.spec.ts`. Selectors: wizard-mode, wizard-mode-empresa, wizard-mode-consultoria, wizard-company, wizard-form, wizard-submit, wizard-back, wizard-error, root-loading, root-error, tour-card, tour-count ('1 de 5' owner / '1 de 4' consultant), tour-skip, tour-prev, tour-next, tour-reopen, tour-highlight.",
+      "paths": ["tests/e2e/firstRun.spec.ts", "src/App.tsx", "src/features/firstRun/WelcomeModePage.tsx", "src/features/firstRun/WelcomeCompanyPage.tsx", "src/features/home/OnboardingTour.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Play dev-link check, outside this environment: in the Play desktop runtime, link the app folder, delete data/, start the preview and confirm a fresh install opens on #/boas-vindas with no DB, port or login screen, then completes the company wizard and lands on the first diagnosis block.",
+      "paths": ["manifest.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Optional polish outside this unit, unchanged by this review: add data-aioson-tour attributes on the home regions (escada, trava, acoes, rascunho in OwnerHome; carteira, parados, antigos in ConsultantHome). The tour already finds them through their data-aioson-id fallbacks, so this is not required for AC-dm-03.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ConsultantHome.tsx"]
+    }
+  ]
+}

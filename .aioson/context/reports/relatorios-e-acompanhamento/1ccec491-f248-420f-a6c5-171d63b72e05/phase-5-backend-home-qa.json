@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "418462b5-fd57-43c2-bc7d-d65617dc2761",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "unit": "phase-5-backend-home",
+  "phase": "5-backend-home",
+  "wave": 8,
+  "capabilities": ["CAP-ra-home-followup"],
+  "acceptance_criteria": ["AC-ra-33", "AC-ra-35", "AC-ra-36"],
+  "interfaces": ["IF-008", "IF-010"],
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T00:38:15Z",
+  "finished_at": "2026-10-26T00:39:30Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "cross_lane_typecheck",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-33",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "`pnpm typecheck` exits 1 with 3 errors, all outside this unit: OwnerHome.tsx:5 and ScoreTrend.tsx:1 import HomeTrendPoint, and OwnerHome.tsx:198 reads `trend`, both removed from src/api/homeApi.ts by this unit as the plan requires. Deferred to integration: owned by 5-frontend-owner-home (wave 10), which must drop the trend usage and retire ScoreTrend.tsx. Not a defect of this unit."
+    },
+    {
+      "kind": "plan_divergence",
+      "severity": "low",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-35",
+      "path": "server/validation/companySchemas.ts",
+      "summary": "The plan (implementation-plan line 312) lists the `aguardando` attention filter as a phase-5 edit to companySchemas.ts, but ATTENTION_FILTERS has only the five version-1 keys and homeService/portfolioService have no awaitingQuestionnaires list. The implementer deferred it because the data comes from phase 6. The plan itself (line 555) defers AC-ra-35's aguardando part to phase 6, so the deferral is consistent with it. Integration should confirm phase 6 adds the key to ATTENTION_FILTERS, ConsultantHomeView and ATTENTION_LISTS together."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "unit verification (Done when / Verification)",
+      "command": "pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/preferenceRoutes.test.ts",
+      "result": "PASS: 3 files, 182 tests passed, exit code 0 (agent-reported, observed in this session)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-qa/unit-verify.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-qa/unit-verify.exit"
+    },
+    {
+      "check": "typecheck (cross-lane context, not a unit gate)",
+      "command": "pnpm typecheck",
+      "result": "exit code 1; exactly 3 errors, all in src/features/home/OwnerHome.tsx and ScoreTrend.tsx (HomeTrendPoint/trend); none in unit files or server/shared/tests (agent-reported)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-qa/typecheck.exit"
+    },
+    {
+      "check": "code review of unit files against AC-ra-33/35/36, IF-008, IF-010",
+      "result": "Attention filter: one ATTENTION_LISTS table shared by the home indicator (PortfolioService.needingAttention) and the list filter (CompanyService.list); archived=true with a filter returns empty; invalid attention value gives validation_failed (400). Routes exercise the real createApp with the database, not a parallel fixture. app.ts passes deps.now to createReportService; the signature accepts it. No defect found (agent-reported)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm typecheck` after 5-frontend-owner-home (wave 10) removes the HomeTrendPoint/trend usage in OwnerHome.tsx and retires ScoreTrend.tsx; it is expected to exit 1 until then. Unit verification for this unit is not affected.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx", "src/api/homeApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Confirm that phase 6 adds the `aguardando` attention filter to ATTENTION_FILTERS (companySchemas.ts), awaitingQuestionnaires to ConsultantHomeView, and its ATTENTION_LISTS entry (portfolioService.ts). Until then GET /api/companies?attention=aguardando returns 400, which is the expected behavior for this phase.",
+      "paths": ["server/validation/companySchemas.ts", "server/services/portfolioService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Frontend contract additions the wave-9/10 units must use: owner GET /api/home carries reevaluation.today (YYYY-MM-DD) in addition to the planned fields; consultant view carries reevaluationDays and overdueActions; GET /api/companies accepts attention=atrasada|vencidas|risco|rascunhos|sem-diagnostico and src/api/companiesApi.ts exports the CompanyAttention type."
+    }
+  ]
+}

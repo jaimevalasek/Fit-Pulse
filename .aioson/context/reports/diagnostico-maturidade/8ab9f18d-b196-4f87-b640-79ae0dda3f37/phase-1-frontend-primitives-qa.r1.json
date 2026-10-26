@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "78b3e9be-ffb9-4939-8f49-051f9c31b950",
+  "unit": "phase-1-frontend-primitives",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:23:08Z",
+  "finished_at": "2026-10-23T04:25:00Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-company", "CAP-dm-unit-economics"],
+    "acceptance_criteria": ["AC-dm-17", "AC-dm-48"],
+    "interfaces": ["IF-004", "IF-010"],
+    "done_when": "pnpm build sai com 0"
+  },
+  "previous_findings": [
+    {
+      "round": 1,
+      "path": "src/api/httpClient.ts",
+      "summary": "request() sets Content-Type only when a body is passed, so body-less POST start/complete/archive/restore answered 415 json_required; ApiError.details dropped server extra keys (fields, pendingBlocks).",
+      "resolution": "resolved",
+      "observed": "httpClient.ts:93 sets Content-Type on every POST/PUT/PATCH and :102 sends `{}` when no body is passed. Re-run of the repro against current code: 12/12 PASS (start, complete, archive, restore, PUT without body; body writes unchanged; GET/DELETE send no content type; fields and pendingBlocks reach error.details; explicit error.details and requestId kept). Logs in the QA temp dir."
+    }
+  ],
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-17",
+      "path": "tests/e2e/companies.spec.ts",
+      "summary": "End-to-end check of body-less writes (start diagnosis 201, complete, archive, restore) against the real createApp was not run: the repro uses a fetch stub around the real httpClient and real requireJsonWrites guard, and tests/e2e does not exist yet in this worktree. Command that could not run: the Playwright/Vitest API suite for companies and questionnaire. Reason: tests/** is outside the frontend write paths and the real app needs the backend database."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-unit-economics",
+      "ac": "AC-dm-48",
+      "path": "tests/e2e",
+      "summary": "Calculator and questionnaire e2e (AC-dm-48 scope) were not run in this unit: no browser or e2e harness is available to this lane and tests/e2e is not created yet."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-17",
+      "path": "src/components/feedback/ConfirmDialog.tsx",
+      "summary": "ConfirmDialog Escape-to-close and focus trap were not exercised in a browser; only the build (tsc + vite) and static reading were run."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "build",
+      "command": "pnpm build",
+      "result": "exit 0 (tsc --noEmit && vite build; vite built in 712ms)",
+      "logs": [".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/build.log", ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/build.exit"]
+    },
+    {
+      "kind": "reproduction",
+      "command": "node .aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-dev/repro.mjs .",
+      "result": "exit 0, ALL PASS 12/12 against current code (start/complete/archive/restore POST without body now send `{}` with application/json; PUT without body; POST/PATCH with body unchanged; GET and DELETE without content type; validation fields and pendingBlocks in error.details; explicit error.details and requestId kept). The dev run before the fix exited 1 with 7 FAIL (415 json_required on the body-less writes).",
+      "logs": [".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/repro-after-rerun.log", ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/repro-after-rerun.exit"]
+    },
+    {
+      "kind": "static",
+      "command": "read server/http/requestGuards.ts:34-37 and server/app.ts:38; grep src/api and src/features for details consumers",
+      "result": "requireJsonWrites answers 415 only when a write method lacks a JSON content type; it is mounted globally. Call sites diagnosesApi.ts:43 (start), :63 (complete), companiesApi.ts:68,72 (archive, restore) post without a body and now go through the fixed path. CompanyFormDialog.tsx:97-101 reads details.fields and diagnosesApi.ts:73-98 reads details.pendingBlocks, which matches httpClient readErrorDetails."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "To run the real-app check for the round-1 fix: start the backend through the real createApp and POST /api/companies/:id/diagnoses (expect 201), POST /api/diagnoses/:id/complete, POST /api/companies/:id/archive and POST /api/companies/:id/restore with Content-Type application/json and body {} (expect no 415). Run tests/e2e/companies.spec.ts and questionnaire.spec.ts once they exist, or add a tests/api case. Also confirm that a 422 incomplete response from the server carries pendingBlocks next to code/message so ApiError.details exposes them.",
+      "paths": ["src/api/httpClient.ts", "src/api/diagnosesApi.ts", "src/api/companiesApi.ts", "server/app.ts"]
+    }
+  ]
+}

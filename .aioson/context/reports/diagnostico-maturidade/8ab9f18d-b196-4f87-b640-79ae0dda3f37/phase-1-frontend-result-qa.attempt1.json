@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "a35e2f10-969e-4605-85f0-92832e1044ed",
+  "unit": "phase-1-frontend-result",
+  "phase": "1-frontend-result",
+  "wave": 6,
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:33:00Z",
+  "finished_at": "2026-10-23T04:36:00Z",
+  "capabilities": ["CAP-dm-result"],
+  "acceptance_criteria": ["AC-dm-28", "AC-dm-47"],
+  "interfaces": ["IF-003"],
+  "done_when": "`pnpm build` sai com 0",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "finding",
+      "severity": "medium",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-47",
+      "path": "src/features/result/StageLadder.tsx",
+      "summary": "Prototype motion is only partly implemented: the StageLadder trace/dash animation is absent (no strokeDash* in src/features/result), and the entrance motion is not built. DimensionScores.tsx:61 has a scale reveal with motion-reduce:transition-none and a reduced-motion check at :14, so the reduced-motion path is satisfied. Deferred to integration to accept or schedule the prototype motion."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-28",
+      "path": "tests/e2e/result.spec.ts",
+      "summary": "Command `pnpm test:e2e -- tests/e2e/result.spec.ts` was not run: the spec file does not exist in the tree. It is outside this unit's write paths and belongs to integration. It covers AC-dm-28 e2e, AC-dm-29 rendered-text scan, AC-dm-46 390px/axe, and AC-dm-47 reduced motion."
+    },
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-28",
+      "path": "src/features/result/StageLadder.tsx",
+      "summary": "StageLadder.tsx:90 drops the previous-stage trail when previous equals the current stage, so no dashed previous step is drawn. The caption at ResultPage.tsx:167 still reads 'Antes: estágio N', while AC-dm-28 asks for a dashed previous step."
+    },
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-28",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "Two 'Seus números' sections render the same CAC/ratio numbers: NumbersAside (ResultPage.tsx:120) and NumbersSummary. This duplicates a heading and content, which is a maintainability and accessibility issue, not a failure."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/build.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/build.exit",
+      "summary": "tsc --noEmit and vite build completed. Output: 'built in 1.02s', index js 435.06 kB, css 71.76 kB."
+    },
+    {
+      "command": "pnpm test -- tests/unit/forbiddenTerms.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/forbidden-terms.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-qa/forbidden-terms.exit",
+      "summary": "Vitest ran the whole suite, not only the filtered file (the `--` separator is passed literally): 12 test files, 600 tests passed. Forbidden-terms coverage is part of that run."
+    },
+    {
+      "command": "grep -rnE 'keyframes|prefers-reduced-motion|strokeDasharray|strokeDashoffset|animate-|transition-' src",
+      "exit_code": 0,
+      "summary": "Motion check: DimensionScores.tsx:14 and :61 handle reduced motion. No trace/dash animation exists in src/features/result."
+    },
+    {
+      "command": "test -f tests/e2e/result.spec.ts",
+      "exit_code": 1,
+      "summary": "e2e spec is absent, so the e2e verification could not run."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm test:e2e -- tests/e2e/result.spec.ts` once that spec exists to close AC-dm-28 (e2e), AC-dm-29 (rendered-text scan), AC-dm-46 (390px/axe) and AC-dm-47 (reduced motion). Steps: create the spec, then run the command in the project root and check the exit code.",
+      "paths": ["tests/e2e/result.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Decide whether the StageLadder trace animation and the entrance motion are required for AC-dm-47 or may be deferred. If required, they belong to a follow-up frontend unit; global.css is outside this unit."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The implementer reported that the httpClient body-less POST fix (Content-Type application/json and '{}' body) is already in src/api/httpClient.ts. This unit did not verify it because the file is outside its write paths. Confirm with the real createApp that start/complete diagnosis and archive/restore company no longer return 415.",
+      "paths": ["src/api/httpClient.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "ResultPage.tsx:143 maps previous to diagnosis.previous?.stage. The backend findPrevious (server/services/diagnosisService.ts) returns the older completed diagnosis, excluding self, which matches the expected semantics."
+    }
+  ],
+  "notes": "Local Done when and verification pass. No critical or high finding remains. This PASS does not approve the whole capability: the e2e checks and the motion gap are deferred to integration as listed in findings."
+}

@@ -1,0 +1,59 @@
+{
+  "schema_version": "review-report/v1",
+  "packet_id": "sha256:db55e9b3b6094862f23e189717df721445365ef3db334ea79e5d741d21361e6d",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "agent": "sheldon",
+  "profile": "specification",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+    "sha256": "989df7e30fb4795bb75e3d1c964f4d0c48902e0f615027f1524e659175cb786c"
+  },
+  "passes_completed": 2,
+  "review_status": "pass",
+  "summary": "Nova rodada curta, aberta depois que o @planner achou o Gate C bloqueado por um item do PRD (feature:trace: feature_cap_decision_invalid). Sem agentes extras, por economia de tokens.\n\nPassada 1, cobertura e coerência:\n- CAP-ra-benchmark usava a decisão 'rejected', fora do vocabulário do contrato. A Source Coverage já dava PROM-010 como not_applicable. Corrigido para not_applicable.\n- O escopo da parte 1 listava 'Novo tour de apresentação', mas a AC-ra-37 prende o tour de 5 passos à parte 2, e dois dos passos (ações e diário) só existem na parte 2. O tour novo foi para a parte 2; a parte 1 mantém o tour da versão 1.\n\nPassada 2, o resto do contrato:\n- verify:artifact sources OK (2/2 fontes, 10/10 PROM).\n- kind=prd OK (14 CAPs obrigatórias, 14 linhas de encaixe, 63 ACs, 12 regras e 21 ramos com AC).\n- prototype:check strict OK, com 31/31 interações e identidade current.\n- feature:trace sem lacunas de produto; classificação MEDIUM mantida.\n- Nenhuma outra mudança de escopo, AC ou desvio do protótipo. As conclusões SH-001 a SH-009 da rodada anterior continuam valendo.\n\nNenhuma questão bloqueante. Q-10 continua bloqueando só a parte 3. O plano já existente precisa ser religado ao novo hash pelo @planner.",
+  "findings": [
+    {
+      "id": "SH-010",
+      "lens": "verifiability",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "CAP-ra-benchmark tinha a decisão 'rejected' no Feature Capability Map. O contrato só aceita required, not_applicable ou deferred, e o Gate C do plano ficava bloqueado.",
+      "evidence": [
+        {
+          "type": "command",
+          "command": "aioson feature:trace . --feature=relatorios-e-acompanhamento --json",
+          "status": "passed",
+          "detail": "antes: feature_cap_decision_invalid em CAP-ra-benchmark; depois da correção: nenhuma lacuna de produto. A Source Coverage já registrava PROM-010 como not_applicable"
+        }
+      ],
+      "impact": "O plano aprovado não passava no Gate C",
+      "recommendation": "Usar not_applicable, como na Source Coverage (o benchmark exige nuvem)",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum: a intenção do produto não muda"
+    },
+    {
+      "id": "SH-011",
+      "lens": "ambiguity",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "O MVP scope punha 'Novo tour de apresentação' na parte 1, enquanto a AC-ra-37 diz que o tour de 5 passos vem com a parte 2. Os passos 'ações' e 'diário' apontam para abas que só existem na parte 2.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "MVP scope: o tour novo passou para a parte 2; a parte 1 mantém o tour da versão 1; AC-ra-37 sem mudança"
+        }
+      ],
+      "impact": "Um tour novo na parte 1 apontaria para abas inexistentes, ou apareceria duas vezes para quem já usava a versão 1",
+      "recommendation": "Entregar o tour novo uma vez, com a parte 2, como o plano já faz na Fase 5",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    }
+  ],
+  "completed_at": "2026-10-25T19:45:00.000Z"
+}

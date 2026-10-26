@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "b874c2fa-dfc5-45e2-b175-f9ce8a29eee3",
+  "unit": "phase-1-frontend-shell",
+  "wave": 2,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "scope": {
+    "capabilities": ["CAP-dm-play-runtime", "CAP-dm-company"],
+    "acceptance_criteria": ["AC-dm-43", "AC-dm-50"],
+    "interfaces": ["IF-001"]
+  },
+  "started_at": "2026-10-23T03:34:33Z",
+  "finished_at": "2026-10-23T03:34:55Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-43",
+      "path": "tests/e2e/shell.spec.ts",
+      "summary": "Command 'pnpm test:e2e -- tests/e2e/shell.spec.ts' could not run: tests/e2e/ does not exist yet and playwright.config.ts, fixtures and the backend belong to other units/integration. Runtime checks for FitPulse header, no V-Stage text, no password input, document.fonts.check for Inter and JetBrains Mono, and blocked external requests remain unverified here."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-43",
+      "path": "vite.config.ts",
+      "summary": "Play dev-link (Settings -> Instalar App -> Linkar pasta) showing the shell with a green badge needs the Play desktop and the backend lane; not runnable in this unit."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-43",
+      "path": "server/http/requestGuards.ts",
+      "summary": "The /api proxy in vite.config.ts forwards the browser Host header (changeOrigin false), so the backend host guard must accept 127.0.0.1 and localhost on the Vite PORT as well as BACKEND_PORT. server/http/requestGuards.ts does not exist yet, so this cross-lane check is deferred to integration and was not verified."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "summary": "QA re-run: tsc --noEmit && vite build succeeded. Full output in build.log; exit code in build.exit.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-shell-qa/build.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-shell-qa/build.exit"
+    },
+    {
+      "kind": "dist_inspection",
+      "ac": ["AC-dm-50"],
+      "summary": "dist/index.html has no external href or src. dist/assets CSS has 40 @font-face rules (Inter 28 references, JetBrains Mono 12), 74 bundled Inter and JetBrains Mono woff/woff2 files, and no external url(), @import or http(s) reference."
+    },
+    {
+      "kind": "source_inspection",
+      "ac": ["AC-dm-50"],
+      "summary": "--font-structure resolves to Inter and --font-machine to JetBrains Mono (src/styles/tokens.css). src/main.tsx bundles @fontsource inter 400/500/600/700 and jetbrains-mono 400/500. No http(s) URL in src/ or index.html outside localhost."
+    },
+    {
+      "kind": "source_inspection",
+      "ac": ["AC-dm-43"],
+      "summary": "Read App.tsx, AppShell.tsx, main.tsx and button.tsx: no defect found. The shell renders the FitPulse brand, a 'Principal' nav, a main landmark with id conteudo and a skip link. No 'V-Stage' string in src/ or index.html. Tailwind utilities used by the shell and button are emitted in the built CSS."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run 'pnpm test:e2e -- tests/e2e/shell.spec.ts' once playwright.config.ts, fixtures and the backend exist. Expect 'FitPulse' in the header, no 'V-Stage', no password input, document.fonts.check('16px Inter') and document.fonts.check('16px \"JetBrains Mono\"'), and no external requests.",
+      "paths": ["tests/e2e/shell.spec.ts", "src/components/layout/AppShell.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Backend host guard must accept Host 127.0.0.1:PORT and localhost:PORT (Vite PORT) as well as BACKEND_PORT, because vite.config.ts proxies /api with changeOrigin false. Otherwise every proxied request gets 403.",
+      "paths": ["vite.config.ts", "server/http/requestGuards.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Routes #/empresas, #/empresa/:companyId, #/diagnostico/:diagnosisId and #/resultado/:diagnosisId render PendingScreen until the companies, questionnaire and result units replace their route elements in src/App.tsx. The theme toggle and tour of the prototype top bar are not in AppShell and belong to Phase 3.",
+      "paths": ["src/App.tsx", "src/components/layout/AppShell.tsx"]
+    }
+  ]
+}

@@ -1,0 +1,502 @@
+{
+ "name": "qa-journey-history-settings",
+ "feature": "diagnostico-maturidade",
+ "url": "http://127.0.0.1:5491",
+ "timeout": 10000,
+ "boundary_wait": 4000,
+ "steps": [
+  {
+   "do": "goto",
+   "url": "/#/inicio"
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Minha empresa\"]"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"company-page\"]"
+  },
+  {
+   "do": "expect",
+   "target": "role=list[name=\"Linha do tempo dos diagnósticos\"]",
+   "contains": "Concluído",
+   "ac": [
+    "AC-dm-30"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "role=list[name=\"Linha do tempo dos diagnósticos\"]",
+   "contains": "Cálculo 1",
+   "ac": [
+    "AC-dm-30"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "!!document.querySelector('[data-aioson-id=\"result-compare\"],[data-aioson-id=\"home-compare\"]') || /Comparar/.test(document.querySelector('[data-aioson-id=\"company-timeline\"]').innerText)",
+   "equals": false,
+   "ac": [
+    "AC-dm-30"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Novo diagnóstico\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/api\\/companies\\/[^/]+\\/diagnoses/"
+   },
+   "ac": [
+    "AC-dm-13"
+   ]
+  },
+  {
+   "do": "wait",
+   "url": "/#\\/diagnostico\\//"
+  },
+  {
+   "do": "click",
+   "target": "css=nav[aria-label=\"Blocos do diagnóstico\"] a >>nth=1"
+  },
+  {
+   "do": "expect",
+   "checked": "css=[data-aioson-id=\"item-mp1\"] input[value=\"3\"]",
+   "ac": [
+    "AC-dm-13"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Sair e continuar depois\"]"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"company-page\"]"
+  },
+  {
+   "do": "expect",
+   "visible": "role=link[name=\"Continuar diagnóstico\"]",
+   "ac": [
+    "AC-dm-13"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "[...document.querySelectorAll('button')].filter(b=>b.innerText.trim()==='Novo diagnóstico').length",
+   "equals": 0,
+   "ac": [
+    "AC-dm-13"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Continuar diagnóstico\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Descartar rascunho\"]",
+   "ac": [
+    "AC-dm-16"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=alertdialog[name=/Descartar o rascunho de \\d{2}\\/\\d{2}\\/\\d{4}\\?/]",
+   "ac": [
+    "AC-dm-16",
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Cancelar\"]",
+   "ac": [
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "expect",
+   "hidden": "role=alertdialog",
+   "ac": [
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Descartar rascunho\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "!!document.activeElement.closest('[role=alertdialog]')",
+   "equals": true,
+   "ac": [
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Descartar rascunho\"] >>last",
+   "boundary": {
+    "method": "DELETE",
+    "url": "/\\/api\\/diagnoses\\//"
+   },
+   "ac": [
+    "AC-dm-16"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"company-page\"]"
+  },
+  {
+   "do": "expect",
+   "target": "role=list[name=\"Linha do tempo dos diagnósticos\"]",
+   "contains": "Concluído",
+   "ac": [
+    "AC-dm-16"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=button[name=\"Novo diagnóstico\"]",
+   "ac": [
+    "AC-dm-16"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Novo diagnóstico\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/api\\/companies\\/[^/]+\\/diagnoses/"
+   }
+  },
+  {
+   "do": "wait",
+   "url": "/#\\/diagnostico\\//"
+  },
+  {
+   "do": "click",
+   "target": "css=nav[aria-label=\"Blocos do diagnóstico\"] a >>nth=7"
+  },
+  {
+   "do": "check",
+   "target": "css=[data-aioson-id=\"item-re1\"] input[type=radio][value=\"3\"]",
+   "boundary": {
+    "method": "PATCH",
+    "url": "/\\/api\\/diagnoses\\//"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"draft-saved\"][data-state=\"saved\"]"
+  },
+  {
+   "do": "check",
+   "target": "css=[data-aioson-id=\"item-re2\"] input[type=radio][value=\"3\"]",
+   "boundary": {
+    "method": "PATCH",
+    "url": "/\\/api\\/diagnoses\\//"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"draft-saved\"][data-state=\"saved\"]"
+  },
+  {
+   "do": "check",
+   "target": "css=[data-aioson-id=\"item-re3\"] input[type=radio][value=\"3\"]",
+   "boundary": {
+    "method": "PATCH",
+    "url": "/\\/api\\/diagnoses\\//"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"draft-saved\"][data-state=\"saved\"]"
+  },
+  {
+   "do": "click",
+   "target": "css=[data-aioson-id=\"quiz-finish\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Concluir e ver resultado\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/api\\/diagnoses\\/[^/]+\\/complete/"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"result\"]"
+  },
+  {
+   "do": "expect",
+   "visible": "css=[data-aioson-id=\"result-compare\"]",
+   "ac": [
+    "AC-dm-31"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "css=[data-aioson-id=\"result-compare\"]",
+   "boundary": {
+    "method": "GET",
+    "url": "/\\/api\\/diagnoses\\/[^/]+\\/comparison/"
+   },
+   "ac": [
+    "AC-dm-31"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"compare\"]"
+  },
+  {
+   "do": "expect",
+   "visible": "css=[data-aioson-id=\"compare-stage\"]",
+   "ac": [
+    "AC-dm-31"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"compare-table\"]",
+   "contains": "Retenção",
+   "ac": [
+    "AC-dm-31"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "/[↑↓▲▼]|subiu|caiu|\\+\\d+|−\\d+|-\\d+/.test(document.querySelector('[data-aioson-id=\"compare-table\"]').innerText)",
+   "equals": true,
+   "ac": [
+    "AC-dm-31"
+   ]
+  },
+  {
+   "do": "snapshot",
+   "target": "css=[data-aioson-id=\"compare\"]",
+   "max_lines": 80
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Minha empresa\"]"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"company-page\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=/^Arquivar diagnóstico de/] >>last",
+   "ac": [
+    "AC-dm-30"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=alertdialog",
+   "ac": [
+    "AC-dm-30",
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "press",
+   "key": "Escape"
+  },
+  {
+   "do": "expect",
+   "hidden": "role=alertdialog",
+   "ac": [
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=/^Arquivar diagnóstico de/] >>last"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar diagnóstico\"][exact]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/archive$/"
+   },
+   "ac": [
+    "AC-dm-30"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "css=[data-aioson-id=\"company-archived-diagnoses\"]",
+   "ac": [
+    "AC-dm-30"
+   ]
+  },
+  {
+   "do": "snapshot",
+   "target": "css=[data-aioson-id=\"company-page\"]",
+   "max_lines": 80
+  },
+  {
+   "do": "goto",
+   "url": "/#/configuracoes"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"settings\"]"
+  },
+  {
+   "do": "check",
+   "target": "role=radio[name=/^Claro/]",
+   "boundary": {
+    "method": "PUT",
+    "url": "/\\/api\\/preferences/"
+   },
+   "ac": [
+    "AC-dm-38"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "document.documentElement.dataset.theme || document.documentElement.className",
+   "contains": "light",
+   "ac": [
+    "AC-dm-38"
+   ]
+  },
+  {
+   "do": "reload",
+   "ac": [
+    "AC-dm-38"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"settings\"]"
+  },
+  {
+   "do": "expect",
+   "checked": "role=radio[name=/^Claro/]",
+   "ac": [
+    "AC-dm-38"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"settings-assistant-fields\"]",
+   "contains": "o nome, o estágio, a dimensão que mais trava e a data",
+   "ac": [
+    "AC-dm-39"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"settings\"]",
+   "contains": "versão do cálculo",
+   "ac": [
+    "AC-dm-39"
+   ]
+  },
+  {
+   "do": "check",
+   "target": "role=radio[name=/^Consultoria/]",
+   "boundary": {
+    "method": "PUT",
+    "url": "/\\/api\\/preferences/"
+   },
+   "ac": [
+    "AC-dm-38"
+   ]
+  },
+  {
+   "do": "goto",
+   "url": "/#/inicio"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"home-consultant\"]",
+   "ac": [
+    "AC-dm-34"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "css=[data-aioson-id=\"tour-skip\"]"
+  },
+  {
+   "do": "snapshot",
+   "target": "css=[data-aioson-id=\"home-consultant\"]",
+   "max_lines": 80
+  },
+  {
+   "do": "eval",
+   "expression": "fetch('/api/aioson-play').then(r=>r.json()).then(j=>JSON.stringify(j))",
+   "contains": "/api/assistant/summary",
+   "ac": [
+    "AC-dm-41"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "fetch('/api/assistant/summary').then(r=>r.text()).then(t=>/cents|R\\$|answers|\"calculator\"/i.test(t))",
+   "equals": false,
+   "ac": [
+    "AC-dm-42"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "fetch('/api/assistant/summary').then(r=>r.text())",
+   "contains": "Oficina Ponto Certo",
+   "ac": [
+    "AC-dm-42"
+   ]
+  },
+  {
+   "do": "goto",
+   "url": "/#/configuracoes"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"settings\"]"
+  },
+  {
+   "do": "click",
+   "target": "css=[data-aioson-id=\"backup-export\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/api\\/backup\\/export/"
+   },
+   "ac": [
+    "AC-dm-37"
+   ]
+  },
+  {
+   "do": "wait",
+   "text": "/Cópia salva|salva em|salvo em/i",
+   "ac": [
+    "AC-dm-37"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "fetch('/api/backup/import',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({format:'other'})}).then(async r=>(r.status>=400&&r.status<500)+' '+(await fetch('/api/companies').then(x=>x.json())).length)",
+   "equals": "true 1",
+   "ac": [
+    "AC-dm-37"
+   ]
+  },
+  {
+   "do": "snapshot",
+   "target": "css=[data-aioson-id=\"settings-backup-actions\"]",
+   "max_lines": 30
+  }
+ ]
+}

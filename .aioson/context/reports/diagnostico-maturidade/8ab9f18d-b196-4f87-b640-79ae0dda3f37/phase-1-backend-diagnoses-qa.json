@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "92f20ee9-4296-4c29-9640-7eb9774ed987",
+  "unit": "phase-1-backend-diagnoses",
+  "phase": "1-backend-diagnoses",
+  "wave": 5,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "started_at": "2026-10-23T01:05:30-03:00",
+  "finished_at": "2026-10-23T01:10:00-03:00",
+  "verdict": "FAIL",
+  "scope": {
+    "capabilities": ["CAP-dm-questionnaire", "CAP-dm-engine"],
+    "acceptance_criteria": ["AC-dm-13", "AC-dm-16", "AC-dm-22"],
+    "interfaces": ["IF-003"],
+    "done_when": "pnpm test -- tests/api/diagnosisRoutes.test.ts passa, inclusive o resumo do assistente depois de uma conclusão real"
+  },
+  "local_done_when": "pass",
+  "corrections": [],
+  "findings": [
+    {
+      "severity": "critical",
+      "kind": "defect",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-13",
+      "path": "server/http/requestGuards.ts",
+      "summary": "The real client cannot start or complete a diagnosis: body-less POSTs are rejected with 415 json_required because the frontend client omits Content-Type when there is no body.",
+      "failure_scenario": "The questionnaire calls POST /api/companies/:id/diagnoses (src/api/diagnosesApi.ts:40) and POST /api/diagnoses/:id/complete (src/api/diagnosesApi.ts:59) through httpClient.post(path) with no body. src/api/httpClient.ts:81 sets Content-Type only when body !== undefined, so no header is sent. requireJsonWrites (server/http/requestGuards.ts) answers 415 json_required to any POST/PUT/PATCH without application/json. Probe against the real createApp stack: POST /api/diagnoses/d1/complete with no Content-Type -> 415 json_required; POST /api/companies/c1/diagnoses with no Content-Type -> 415 json_required; the same POST with Content-Type: application/json passes the guard. Result: 'Novo diagnóstico' and 'Concluir' fail in the running app while the backend suite stays green, because tests/api/diagnosisRoutes.test.ts callApi (around line 64) always sends the header, which does not match the production client. The unit's own files are not the cause, and the guard and client are outside this unit's correction boundary, so no edit was made.",
+      "evidence_refs": [
+        ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/guard-probe.log"
+      ],
+      "suggested_fix_owner": "integration",
+      "suggested_fix": "Make httpClient send Content-Type: application/json on every POST/PUT/PATCH (src/api/httpClient.ts request()), which keeps the guard's CSRF rationale intact. Alternatively, let a body-less write through the guard only if the design allows it. Then make the test helper mirror the production client, so the suite fails on this path before release."
+    },
+    {
+      "severity": "low",
+      "kind": "defect",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-13",
+      "path": "server/validation/diagnosisSchemas.ts",
+      "summary": "A damaged or no-longer-valid stored answers/calculator row reads as {} and the next autosave writes that empty base back, silently dropping saved answers.",
+      "failure_scenario": "readStoredAnswers (diagnosisSchemas.ts, end of file) returns {} if any stored key fails answersSchema, for example a question id removed from the bank after the answer was saved. diagnosisService.update then merges the patch onto {} (diagnosisService.ts update) and persists it, so the other answers are lost on the next PATCH. Not reachable with current content and writes, which only go through the schemas; no test covers it."
+    },
+    {
+      "severity": "low",
+      "kind": "gap",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-13",
+      "path": "server/repositories/diagnosisRepository.ts",
+      "summary": "startDraft creates a draft for an archived company (no archivedAt check); the implementer flagged it as an assumption.",
+      "failure_scenario": "POST /api/companies/:id/diagnoses on an archived company returns 201 with a new draft. Only the UI hides the action; the API does not enforce it. The PRD lists no rule for this, so it is a decision for the owner, not a local fix."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "Not run: pnpm test:e2e -- tests/e2e/questionnaire.spec.ts (AC-dm-12/14/16/17/48 on screen). It needs the frontend units and the integration build; outside this unit."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-engine",
+      "ac": "AC-dm-27",
+      "path": "src/features/diagnosis",
+      "summary": "Not run: AC-dm-27 timing of 'Calculando o seu diagnóstico' (target 3 s) in the Play. Needs the running Play and integration build."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-16",
+      "path": "harness",
+      "summary": "Not run: aioson harness:check. Not part of this unit's Done-when; it needs the integration build."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/diagnosisRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 10 passed (10); Tests 564 passed (564). pnpm forwards '--' so vitest runs the full suite, not only this file.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/verify-test.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/verify-test.exitcode"
+    },
+    {
+      "command": "pnpm typecheck (tsc --noEmit)",
+      "exit_code": 0,
+      "result": "clean",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/typecheck.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/typecheck.exitcode"
+    },
+    {
+      "command": "pnpm exec tsx <temp probe> (real createApp, body-less writes vs application/json writes)",
+      "exit_code": 0,
+      "result": "POST complete without Content-Type -> 415 json_required; POST start without Content-Type -> 415 json_required; POST complete with application/json passes the guard (500 only because the probe passes a stub prisma client).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa/guard-probe.log"
+    },
+    {
+      "command": "Code review of server/routes/diagnosisRoutes.ts, server/services/diagnosisService.ts, server/repositories/diagnosisRepository.ts, server/validation/diagnosisSchemas.ts, server/app.ts, tests/api/diagnosisRoutes.test.ts",
+      "exit_code": 0,
+      "result": "AC-dm-13 (draft reuse and prefill), AC-dm-16 (discard keeps completed), AC-dm-22 (frozen result, rulesV2 swap, no recalculation on second complete) and the assistant summary after a real completion are covered by real HTTP tests against createApp with a real test database. The summary route itself is mounted in server/routes/playRoutes.ts (IF-001, a sibling unit)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Before release, fix the body-less write contract (finding 1, critical). Browser client src/api/httpClient.ts request() must send Content-Type: application/json on every POST/PUT/PATCH, including when body is undefined. Otherwise POST /api/companies/:id/diagnoses and POST /api/diagnoses/:id/complete return 415 json_required in the running app. Then run the probe or an equivalent real-client check. The backend test helper tests/api/diagnosisRoutes.test.ts callApi should send the same headers as the client.",
+      "paths": ["src/api/httpClient.ts", "src/api/diagnosesApi.ts", "server/http/requestGuards.ts", "tests/api/diagnosisRoutes.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for integration: (1) pnpm test:e2e -- tests/e2e/questionnaire.spec.ts once the frontend units and build are in; (2) AC-dm-27 timing of 'Calculando o seu diagnóstico' in the Play (target 3 s); (3) aioson harness:check. Run (1) after finding 1 is fixed, since the e2e start and complete steps hit the 415 path."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Decide whether POST /api/companies/:id/diagnoses should refuse archived companies (finding 3). Not in the PRD; the backend does not enforce it today."
+    }
+  ],
+  "notes": "Local Done-when passes (10 files / 564 tests, exit 0). The overall verdict is FAIL because of finding 1 (critical, cross-unit, outside this unit's correction boundary). No unit file was edited, so corrections[] is empty. Progress notes: .aioson/context/execution-checkpoints/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-diagnoses-qa-notes.md"
+}

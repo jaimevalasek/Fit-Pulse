@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "bbe3e3ca-8a93-437e-b5d2-d21271d19d01",
+  "unit_id": "phase-1-frontend-result",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T23:10:00Z",
+  "finished_at": "2026-10-25T23:32:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/result/ResultPage.tsx",
+    "src/features/result/ConfidenceNote.tsx",
+    "src/features/result/RiskList.tsx",
+    "src/features/home/OwnerHome.tsx"
+  ],
+  "files_deleted": ["src/features/result/ExportReportDialog.tsx"],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-level checks for CAP-ra-polish / CAP-ra-report-center were not run here (integration evidence): pnpm exec vitest run tests/unit/confidenceText.test.ts, pnpm exec playwright test tests/e2e/result.spec.ts tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts, and the Play dev-link walkthrough. They depend on sibling tests and the integrated build."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "ESLint is not installed in the project (pnpm exec eslint: command not found), so no lint ran on the changed files; tsc is the only static check."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm typecheck",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-result-dev/typecheck.log"
+    },
+    {
+      "check": "grep -rln ExportReportDialog src shared server tests",
+      "result": "PASS",
+      "detail": "no matches (grep exit 1); the file is deleted and nothing imports it"
+    },
+    {
+      "check": "AC-ra-23 wiring",
+      "detail": "ConfidenceNote and ResultHeader meta line use formatConfidenceStatement from shared/format/confidenceText.ts ('itens' always); the local describeConfidence was removed"
+    },
+    {
+      "check": "AC-ra-24 wiring",
+      "detail": "RiskList labels 'Probabilidade P de 5', 'Impacto I de 5', 'Nota P × I = N' use whitespace-nowrap; the label column at sm+ grew from 140px to 160px so the longest label fits; at 390 px the labels wrap between each other (flex-wrap)"
+    },
+    {
+      "check": "AC-ra-25 / AC-ra-01 wiring",
+      "detail": "Result header: 'Relatórios' link (data-aioson-id result-reports) to #/empresa/{companyId}/relatorios?diagnostico={diagnosisId}; 'Exportar PDF' metal button via ReportDelivery onExport=exportReport(diagnosisId) (default options); after saving, a 'Fechar' button (result-export-close) remounts ReportDelivery so the saved message stays until closed. OwnerHome header has a 'Relatórios' link (home-reports) to #/empresa/{companyId}/relatorios"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Result screen selectors for tests/e2e/result.spec.ts: the 'Relatórios' link is data-aioson-id=result-reports; 'Exportar PDF' is ReportDelivery's button data-aioson-id=report-export (not the prototype's result-pdf); the saved panel is report-pdf-saved; the close button is result-export-close and appears only after a successful save. OwnerHome link is home-reports.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/features/home/OwnerHome.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Still to run after integration: pnpm exec vitest run tests/unit/confidenceText.test.ts; pnpm exec playwright test tests/e2e/result.spec.ts tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts (390 px and 1280 px for AC-ra-24 and AC-ra-61); then the Play dev-link walkthrough: result -> Exportar PDF -> PDF salvo -> Fechar, and result/home -> Relatórios opens the center on the right diagnosis.",
+      "paths": ["tests/unit/confidenceText.test.ts", "tests/e2e/result.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "ConfidenceNote no longer exports describeConfidence; use formatConfidenceStatement from shared/format/confidenceText.ts. ExportReportDialog.tsx is retired.",
+      "paths": ["src/features/result/ConfidenceNote.tsx", "src/features/result/ExportReportDialog.tsx"]
+    }
+  ]
+}

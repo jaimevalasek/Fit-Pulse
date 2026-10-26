@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "283d3a30-6c35-4b0b-af67-2b4283793401",
+  "unit": "phase-2-frontend-history",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "started_at": "2026-10-23T04:35:52Z",
+  "finished_at": "2026-10-23T04:42:07Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/historyApi.ts",
+    "src/features/history/CompanyTimeline.tsx",
+    "src/features/history/ComparePage.tsx",
+    "src/features/companies/CompanyPage.tsx",
+    "src/features/result/ResultPage.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "external_blocker",
+      "severity": "medium",
+      "path": "server/report/pdfRenderer.ts",
+      "owner": "phase-2-backend-report",
+      "summary": "pnpm build (tsc --noEmit && vite build) exits 1 on a single error outside this unit: server/report/pdfRenderer.ts(300,9) TS2322 Type 'Buffer<ArrayBufferLike>' is not assignable to type 'string' (PDFDocument info option). Re-ran 4 times (build, build2, tsc3, build4): same single error each time, zero errors in src/**. vite build alone exits 0. Not changed by this unit per the concurrent-work rule."
+    },
+    {
+      "kind": "upstream_repair_already_applied",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "Previous-attempt finding (POST without body sent no Content-Type -> 415 json_required) is already fixed on disk: request() sets Content-Type application/json for every POST/PUT/PATCH and sends JSON.stringify(options.body ?? {}). historyApi archive/restore use httpClient.post without body and inherit the fix. httpClient.ts was not edited by this unit."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability checks pnpm test:e2e -- tests/e2e/history.spec.ts and the Play dev-link walkthrough were not run: tests/e2e/history.spec.ts does not exist yet (owned by integration/test units) and no preview is running (.aioson/preview.json absent). They are deferred integration evidence, not this unit's Done when."
+    },
+    {
+      "kind": "advisory",
+      "severity": "low",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "aioson rules:check: RULES=OK; one MED advisory remains: ResultPage imports 16 internal modules (limit 15; it was at 15 before this unit). Compare helpers were moved into ComparePage (CompareWithLink, loadCompareTarget) to keep it at +1."
+    }
+  ],
+  "evidence": [
+    {"check": "pnpm build", "exit_code": 1, "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-history-dev/build4.log", "result": "only error: server/report/pdfRenderer.ts(300,9) TS2322 (concurrent unit phase-2-backend-report); no error in this unit's files"},
+    {"check": "pnpm exec tsc --noEmit", "exit_code": 1, "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-history-dev/tsc3.log", "result": "same single pdfRenderer.ts error; tsconfig include covers src, server, shared, tests"},
+    {"check": "pnpm exec vite build", "exit_code": 0, "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-history-dev/vite.log", "result": "bundle built"},
+    {"check": "aioson rules:check --paths=<6 unit files>", "result": "RULES=OK; status-change-confirmation OK (no native alert/confirm/prompt); source-code-language OK; 1 MED coupling advisory"}
+  ],
+  "messages": [
+    {"to": "unit:phase-2-backend-report", "kind": "note", "text": "pnpm build fails only on server/report/pdfRenderer.ts(300,9) TS2322: a Buffer is passed where PDFKit's info option expects a string. Fix it there; the frontend history unit builds clean otherwise.", "paths": ["server/report/pdfRenderer.ts"]},
+    {"to": "integration", "kind": "note", "text": "Run pnpm build after phase-2-backend-report fixes pdfRenderer.ts; then write/run tests/e2e/history.spec.ts. Selectors: company page ul[data-aioson-id=company-timeline] with li[data-row-id][data-status=draft|completed|archived]; buttons data-action=diag-archive|diag-restore|diag-discard (aria-label 'Arquivar diagnóstico de dd/mm/aaaa' / 'Restaurar diagnóstico de ...'); archived list in details[data-aioson-id=company-archived-diagnoses]; dialogs data-aioson-id=diagnosis-archive-confirm|diagnosis-restore-confirm|diagnosis-discard-confirm (ConfirmDialog, verbs 'Arquivar diagnóstico' / 'Restaurar diagnóstico' / 'Descartar rascunho' + 'Cancelar'); notices in role=status. 'Comparar' link only when TimelineEntry.canCompare. Result page link a[data-aioson-id=result-compare] 'Comparar com {mês}'. Compare page #/comparar/:id: article[data-aioson-id=compare], table[data-aioson-id=compare-table] rows tr[data-dimension] with span[data-direction=up|down|same] text '+N subiu' / '−N caiu' / '0 igual'; recalc notice p[role=note][data-aioson-id=compare-rules]; risks sections compare-risks-resolved / compare-risks-new; 409 no_previous_diagnosis renders StatusView data-aioson-id=compare-empty.", "paths": ["src/features/history/CompanyTimeline.tsx", "src/features/history/ComparePage.tsx", "src/features/result/ResultPage.tsx"]},
+    {"to": "integration", "kind": "contract_change", "text": "CompanyPage no longer renders the CompanyDiagnosesSummary card (data-aioson-id=company-diagnoses); it renders the 'novo diagnóstico começa com as respostas de...' note plus CompanyTimeline, and the empty state data-aioson-id=company-empty is shown when there is no draft and no active completed diagnosis (archived ones still appear folded). Any older e2e selecting company-diagnoses must move to company-timeline.", "paths": ["src/features/companies/CompanyPage.tsx"]},
+    {"to": "unit:phase-2-frontend-report", "kind": "note", "text": "ResultPage header now has a right-side actions div (inside ResultHeader) holding CompareWithLink; put the 'Exportar PDF' button next to it there.", "paths": ["src/features/result/ResultPage.tsx"]}
+  ]
+}

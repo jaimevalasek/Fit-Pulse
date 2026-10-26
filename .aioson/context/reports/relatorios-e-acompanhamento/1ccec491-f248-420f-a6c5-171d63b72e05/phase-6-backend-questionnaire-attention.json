@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "740f1053-a9c2-44d1-aa72-ab0c20f3e006",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-6-backend-questionnaire-attention",
+  "started_at": "2026-10-26T00:42:00Z",
+  "finished_at": "2026-10-26T01:00:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/validation/companySchemas.ts",
+    "server/repositories/portfolioRepository.ts",
+    "server/services/portfolioService.ts",
+    "server/services/historyService.ts",
+    "src/api/historyApi.ts",
+    "tests/api/questionnaireRoutes.test.ts"
+  ],
+  "acceptance": {
+    "AC-ra-35": "'aguardando' is a valid GET /api/companies?attention= filter (ATTENTION_FILTERS, companySchemas.ts) and a list in ATTENTION_LISTS (portfolioService.ts), so the filter and the home indicator come from the same view and cannot disagree. ConsultantHomeView.awaitingQuestionnaires lists each active company once by its newest unanswered send ({ companyId, name, sentAt, waitingDays }), longest wait first. Archived companies appear nowhere; a refused import leaves the company in the list. Covered in tests/api/questionnaireRoutes.test.ts (describe 'Questionários aguardando resposta').",
+    "AC-ra-48": "After POST /api/companies/:id/questionnaire the company is listed in awaitingQuestionnaires and opens under ?attention=aguardando with its send date. Covered in tests/api/questionnaireRoutes.test.ts.",
+    "AC-ra-51": "After the answers import the company leaves awaitingQuestionnaires and the aguardando filter; GET /api/companies/:id/timeline carries draft.clientAnswersSavedAt (ISO) for the imported draft, with the date of the file that replaced a previous draft, kept while the draft is worked on, and absent for a draft the owner started. Covered in tests/api/questionnaireRoutes.test.ts (describe 'the imported draft in the company timeline')."
+  },
+  "findings": [
+    {
+      "kind": "contract_deviation",
+      "severity": "medium",
+      "summary": "awaitingQuestionnaires (IF-008) and draft.clientAnswersSavedAt (IF-011) are left OUT of the response while empty, instead of being always present ([] / null).",
+      "detail": "Two pre-existing tests outside this unit's allowed files assert the exact objects with toEqual: tests/api/homeRoutes.test.ts:653-668 (the empty consultant view, no awaitingQuestionnaires) and tests/api/historyRoutes.test.ts:231-244 (the open draft, no clientAnswersSavedAt). Both tests are in this unit's Done-when, so an always-present [] / null would fail them and I may not edit them. The fields are therefore optional in the TypeScript types (ConsultantHomeView.awaitingQuestionnaires?, TimelineDraft.clientAnswersSavedAt?). Consumers must read awaitingQuestionnaires ?? [] and clientAnswersSavedAt ?? null.",
+      "paths": [
+        "server/services/portfolioService.ts",
+        "server/services/historyService.ts",
+        "src/api/historyApi.ts",
+        "tests/api/homeRoutes.test.ts",
+        "tests/api/historyRoutes.test.ts"
+      ]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "pnpm exec tsc --noEmit (pnpm build) exits 1 with 3 errors, none in this unit's files; the e2e and Play dev-link checks of the phase were not run.",
+      "detail": "tsc errors: src/features/home/OwnerHome.tsx(5,36) and (198,35), src/features/home/ScoreTrend.tsx(1,15) - '@/api/homeApi' has no exported member 'HomeTrendPoint' and OwnerHomeData has no 'trend' (IF-008 owner home dropped trend). They come from another unit's frontend files; no error mentions a file touched here. The phase's Playwright specs (remoteQuestionnaire, home, questionnaire) and the dev-link walkthrough need the frontend units and were outside this unit's Done-when.",
+      "paths": [
+        "src/features/home/OwnerHome.tsx",
+        "src/features/home/ScoreTrend.tsx",
+        "src/api/homeApi.ts"
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "To make the two fields always present as IF-008/IF-011 say: (1) in tests/api/homeRoutes.test.ts add `awaitingQuestionnaires: []` to the exact consultant view at ~line 663; (2) in tests/api/historyRoutes.test.ts add `clientAnswersSavedAt: null` to the exact draft at ~line 233; (3) then drop the `?` from ConsultantHomeView.awaitingQuestionnaires in server/services/portfolioService.ts and make buildPortfolio always assign it, and make toDraft in server/services/historyService.ts always emit `clientAnswersSavedAt: clientSavedAt?.toISOString() ?? null`. Until then both fields are omitted while empty.",
+      "paths": [
+        "tests/api/homeRoutes.test.ts",
+        "tests/api/historyRoutes.test.ts",
+        "server/services/portfolioService.ts",
+        "server/services/historyService.ts"
+      ]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "GET /api/home?mode=consultant now may carry awaitingQuestionnaires: Array<{ companyId, name, sentAt (ISO), waitingDays }> - the newest unanswered send of each active company, longest wait first. The key is ABSENT when nobody waits: read `home.awaitingQuestionnaires ?? []` (ConsultantHome.tsx, homeApi.ts). GET /api/companies?attention=aguardando is valid and returns exactly those companies (CompaniesPage.tsx filter). GET /api/companies/:id/timeline: draft.clientAnswersSavedAt (ISO string) exists only for a draft born from imported client answers; absent otherwise, so type it `clientAnswersSavedAt?: string | null` (already done in src/api/historyApi.ts TimelineDraft) and show 'Respostas do cliente, salvas em {data}' only when it is a string.",
+      "paths": [
+        "src/api/historyApi.ts",
+        "server/services/portfolioService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "buildPortfolio(records, at, intervalDays?, awaitingSends = []) keeps its old call shape (tests/unit/portfolioDocument.test.ts and forbiddenTerms.test.ts call it with 2-3 args). PortfolioService.read loads the sends through PortfolioRepository.listAwaitingSends, which delegates to createQuestionnaireRepository(prisma).listAwaiting(); a send of an archived company is dropped in awaitingOf because the portfolio lists only active companies. The portfolio PDF is unchanged (PortfolioRow has no awaiting field)."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "pnpm exec tsc --noEmit currently fails on src/features/home/OwnerHome.tsx and src/features/home/ScoreTrend.tsx (HomeTrendPoint / trend removed from homeApi.ts by another unit). Not caused by this unit; run `pnpm build` after the frontend units land. Still to run at integration: `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts` and the Play dev-link walkthrough."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/historyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 4 passed (4); Tests 185 passed (185)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-attention-dev/vitest.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 1,
+      "result": "3 errors, all in src/features/home/OwnerHome.tsx and src/features/home/ScoreTrend.tsx (other unit); none in the files of this unit",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-attention-dev/tsc.log"
+    }
+  ]
+}

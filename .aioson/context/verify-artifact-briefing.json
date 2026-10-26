@@ -1,0 +1,44 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "briefing",
+  "slug": "relatorios-e-acompanhamento",
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "briefing",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "sections_present": 8,
+    "sections_missing": [],
+    "open_questions_total": 14,
+    "open_questions_by_class": {
+      "research-able": 2,
+      "testable": 1,
+      "decision-required": 10,
+      "out-of-scope": 1
+    },
+    "open_questions_unclassified": 0,
+    "tbd_total": 0,
+    "tbd_noncanonical": 0,
+    "has_source_inventory": true,
+    "has_promise_map": true,
+    "registry_status": "draft",
+    "file": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+    "lineage": {
+      "sources_total": 2,
+      "promises_total": 10,
+      "lifecycle_stage": "pre_product"
+    },
+    "prototype_state": "prototype"
+  },
+  "exitCode": 0
+}

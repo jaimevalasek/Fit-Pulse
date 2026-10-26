@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "88bdc423-cdea-4d81-990a-8c7222c55956",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": ["server/**","shared/**","prisma/**","scripts/**","tests/api/**","tests/unit/**","tests/helpers/**","tests/fixtures/**","package.json","pnpm-workspace.yaml","pnpm-lock.yaml","tsconfig.json","vitest.config.ts","prisma.config.ts","manifest.json","system.json",".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:16:03Z",
+  "finished_at": "2026-10-23T03:57:00Z",
+  "verdict": "PASS",
+  "summary": "IF-002 company API implemented: GET/POST /api/companies, GET/PATCH/DELETE /api/companies/:id, POST :id/archive and :id/restore. Validation, repository, service and routes are separate files; server/app.ts mounts the routes. 55 API tests cover create/edit/list filters (AC-dm-09), archive/restore, and delete only for archived companies with cascade persisted (AC-dm-07).",
+  "files_changed": [
+    "server/validation/companySchemas.ts",
+    "server/repositories/companyRepository.ts",
+    "server/services/companyService.ts",
+    "server/routes/companyRoutes.ts",
+    "server/app.ts",
+    "tests/api/companyRoutes.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "`pnpm test -- tests/api/companyRoutes.test.ts` (the contract command) forwards a literal `--` to vitest, so it ran the whole suite (9 files, 494 tests, exit 0) instead of only this file. The file alone (`pnpm exec vitest run tests/api/companyRoutes.test.ts`) ran 55 tests, exit 0. Both pass; the package.json script is not mine to change.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "`pnpm test:e2e -- tests/e2e/companies.spec.ts` was not run: the e2e spec and the company screens belong to other units (phase-1-frontend-companies and the e2e unit) and were still being written. Not part of this unit's Done when."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 9 passed (9); Tests 494 passed (494)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-companies-dev/test-run1.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 1 passed (1); Tests 55 passed (55)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-companies-dev/test-run2.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit, no errors",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-companies-dev/typecheck.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "`completedCount` in the Company response counts every completed diagnosis the company owns, archived ones included (`latestStage` and `latestCompletedAt` use only the latest completed, non-archived one). With `draftId` it is the exact number a delete removes, so `countCompanyDiagnoses` in src/api/companiesApi.ts (`completedCount + (draftId ? 1 : 0)`) gives the right number for the AC-dm-07 confirmation. Screens that use `completedCount > 0` to mean 'has an active result' should keep this in mind.",
+      "paths": ["server/services/companyService.ts", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire-level behavior the frontend can rely on: list returns a plain array sorted by name (pt-BR, case/accent-insensitive search on `q`); filters are `q`, `stage` (1..4) and `archived` (true/false/1/0, default active); optional fields come back as `null`, never missing; PATCH is a full replace with the POST schema (blank/null clears annualRevenueRange and cnpj); POST answers 201, DELETE answers 204; archive/restore are idempotent and keep the original archivedAt; validation errors are 400 validation_failed with `fields` keyed by name, segment, salesChannel, annualRevenueRange, cnpj (or `_root`) using the same pt-BR messages as CompanyFormDialog; delete of an active company is 409 company_not_archived, unknown id is 404 company_not_found.",
+      "paths": ["server/routes/companyRoutes.ts", "server/validation/companySchemas.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "server/app.ts now builds `createCompanyService({ prisma, now })` and mounts `createCompanyRoutes({ companies })` right after the play routes. Later units (diagnosisRoutes, historyRoutes, ...) should mount their routers next to it. To run the e2e check: `pnpm test:e2e -- tests/e2e/companies.spec.ts` once the frontend-companies and e2e units are in."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "The diagnosis delete/archive units (IF-003/IF-005) should keep one draft per company (RULE-dm-13); `draftId` takes the newest draft if more than one ever exists."
+    }
+  ]
+}

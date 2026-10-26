@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "ea8da5d8-70fd-4568-905f-32ccb3a4f123",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:28:35Z",
+  "finished_at": "2026-10-23T03:31:00Z",
+  "lane": "backend",
+  "phase": "1-backend-foundation",
+  "unit": "phase-1-backend-foundation",
+  "wave": 1,
+  "capabilities": ["CAP-dm-play-runtime"],
+  "acceptance_criteria": ["AC-dm-40"],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-40",
+      "path": "package.json",
+      "summary": "The real postinstall path (node scripts/prepare-app.mjs --generate --migrate --build) could not run: scripts/prepare-app.mjs is created by wave 2 (phase-1-backend-db), so in this wave the postinstall guard only prints a skip warning and exits 0. Command that could not run: pnpm install with scripts/prepare-app.mjs present. Integration must run it after wave 2."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "After wave 2 creates scripts/prepare-app.mjs, run a clean `pnpm install` and confirm the postinstall guard in package.json executes prepare-app.mjs with --generate --migrate --build and that the install exits 0. The guard currently skips with a warning when the script is missing, so a missing script is silent after wave 2; the guard can be replaced with the plain command once wave 2 lands.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Implementer-reported, not re-run by QA: under pnpm 11.21.0, `pnpm test -- <file>` forwards a literal `--` to vitest, which then runs the whole suite and ignores the file filter. Focused verification commands should use `pnpm test <file>` or `pnpm exec vitest run <file>`.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "server/db/databaseUrl.ts resolveDatabaseUrl() creates the data/ directory as a side effect, and prisma.config.ts calls it on every Prisma CLI run. This is harmless with the current .gitignore but is worth knowing when reviewing wave 2 code.",
+      "paths": ["server/db/databaseUrl.ts", "prisma.config.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm install (project tree, foreground)",
+      "exit_code": 0,
+      "result": "Exit 0. Output: 'Already up to date', 'Done in 738ms'. No 'Ignored build scripts' line.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-qa/v1-install.log"
+    },
+    {
+      "command": "pnpm install --frozen-lockfile (clean scratch copy holding only package.json, pnpm-workspace.yaml, pnpm-lock.yaml)",
+      "exit_code": 0,
+      "result": "Exit 0. 378 packages resolved and added from lockfile. No 'ignored' or ERR_ lines. Root postinstall guard printed 'postinstall: scripts/prepare-app.mjs not found, skipping app preparation' and exited 0. Done in 9.2s.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-qa/v1b-clean-frozen-install.log"
+    },
+    {
+      "command": "pnpm exec prisma validate",
+      "exit_code": 0,
+      "result": "Exit 0. 'The schema at prisma\\schema.prisma is valid'. Prisma loaded prisma.config.ts.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-qa/v2-prisma-validate.log"
+    },
+    {
+      "command": "node -e manifest check (requires_services / auth in manifest.json) plus grep -i 'requires_services|\"auth\"|auth' manifest.json",
+      "exit_code": 0,
+      "result": "Top-level: requires_services=false, auth=false. Raw-text grep matched nothing (grep exit 1). Keys: slug, name, version, description, runtime, has_api, stack, processes, webview_target, compatibility, packages, systems. slug=fitpulse, runtime=node, has_api=true, stack=split.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-foundation-qa/v3-manifest-check.log"
+    },
+    {
+      "command": "Code read of server/db/databaseUrl.ts, prisma.config.ts, pnpm-workspace.yaml, .gitignore ignore lines 61-73, prisma/schema.prisma generator/datasource lines",
+      "exit_code": 0,
+      "result": "Read-only. .gitignore ignores node_modules/, /data/, /dist/, server/generated/, test-results/, playwright-report/, *.db, *.db-journal, *.db-wal, *.db-shm, .env, .env.* with !.env.example. schema generator is prisma-client to ../server/generated/prisma with importFileExtension ts; datasource is sqlite with no url in schema (URL from prisma.config.ts). Consistent with the implementer report. No source edits made by QA."
+    }
+  ]
+}

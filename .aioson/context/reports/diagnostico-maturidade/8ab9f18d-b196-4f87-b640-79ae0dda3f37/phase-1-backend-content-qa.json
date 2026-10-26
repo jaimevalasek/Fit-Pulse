@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "31bd9ff6-0091-4b73-ab90-bfd72bf1117e",
+  "unit": "phase-1-backend-content",
+  "agent": "qa",
+  "lane": "backend",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:38:14Z",
+  "finished_at": "2026-10-23T03:40:07Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "observation",
+      "severity": "low",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-10",
+      "path": "package.json",
+      "summary": "The `test` script forwards a literal `--` to vitest, so `pnpm test -- <files>` ignores the file filters and runs all unit tests (4 files / 146 tests). The Done-when command still exits 0; per-file runs work with `pnpm test <files>` or `npx vitest run <files>`. The script is owned by phase-1-backend-foundation and was not changed by this review."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-10",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "`pnpm test:e2e` for AC-dm-10 (8 blocks, 24 questions, rail numbers and answered marks) was not run: it needs the rendered questionnaire UI from the frontend units, which do not exist yet in this unit's scope. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-11",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "`pnpm test:e2e` for AC-dm-11 ('?' button with aria-expanded; 'não sei' / 'não acompanho' only on mp1, mp3, cm1, mm1, co1) was not run: it needs the rendered questionnaire UI from the frontend units. Deferred to integration. The content-level rule is covered by tests/unit/questionBank.test.ts and passed."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-result",
+      "ac": "AC-dm-29",
+      "path": "tests/e2e/result.spec.ts",
+      "summary": "`pnpm test:e2e` for AC-dm-29 (rendered-text scan of result screens and the PDF for forbidden terms) was not run: it needs the result screens and PDF export from later units. Deferred to integration. The content-level scan of shared/content is covered by tests/unit/forbiddenTerms.test.ts and passed."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/unit/questionBank.test.ts tests/unit/forbiddenTerms.test.ts",
+      "exit_code": 0,
+      "summary": "Done-when command. Test Files 4 passed (4), Tests 146 passed (146). The literal `--` makes vitest run every unit test, not only the two named files.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-qa/test-done-when.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-qa/test-done-when.exit"
+    },
+    {
+      "command": "npx vitest run tests/unit/questionBank.test.ts tests/unit/forbiddenTerms.test.ts",
+      "exit_code": 0,
+      "summary": "Filtered run of the two unit files. Test Files 2 passed (2), Tests 18 passed (18).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-qa/test-filtered.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-qa/test-filtered.exit"
+    },
+    {
+      "command": "npx tsx compare-questions.mts (scratch script in the run temp dir; compares .aioson/context/prd-diagnostico-maturidade.md question table with QUESTION_BANK)",
+      "exit_code": 0,
+      "summary": "PRD rows parsed 24, code questions 24, mismatches 0 across question text, the four anchors and the unknown label. Independent of the implementer's scratch comparison.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-qa/compare-questions.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-qa/compare-questions.exit"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred e2e checks for this capability: (1) run `pnpm test:e2e -- tests/e2e/questionnaire.spec.ts` once the questionnaire frontend lands, for AC-dm-10 (8 blocks, 24 questions, rail numbers, answered marks) and AC-dm-11 ('?' with aria-expanded, unknown option only on mp1, mp3, cm1, mm1, co1); (2) run `pnpm test:e2e -- tests/e2e/result.spec.ts` once the result screens and PDF export exist, scanning rendered text and the PDF for /\\bV[1-4]\\b/i, /m[ée]todo\\s+V4/i, /V4\\s+Company/i, /\\bPPA\\b/i, /\\bCREP\\b/i, /vacina/i (AC-dm-29). Also run the content-driven rule ACs (AC-dm-18 to AC-dm-26, AC-dm-49) after the rules and evaluate units land.",
+      "paths": [
+        "tests/e2e/questionnaire.spec.ts",
+        "tests/e2e/result.spec.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "`pnpm test -- <files>` runs every unit test because of the literal `--` in the package.json test script (owned by phase-1-backend-foundation). For per-file QA runs use `pnpm test <files>` or `npx vitest run <files>`. Fixing the script is a foundation-unit change, not this unit's.",
+      "paths": [
+        "package.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "6003f3db-4ac9-42fd-b13c-f17c714876df",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "started_at": "2026-10-23T03:55:00Z",
+  "finished_at": "2026-10-23T04:09:30Z",
+  "verdict": "PASS",
+  "files_changed": ["src/api/diagnosesApi.ts", "src/features/diagnosis/QuestionnairePage.tsx"],
+  "findings": [
+    {
+      "severity": "medium",
+      "kind": "contract_mismatch",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-14",
+      "path": "src/api/httpClient.ts",
+      "summary": "Root cause of round-1 high finding is in the transport, outside this unit: server/http/errorHandler.ts:77 spreads DomainError.details into the error object ({ error: { code, message, pendingBlocks } }) while src/api/httpClient.ts toApiError keeps only error.details. Fixed for the user path inside this unit: completeDiagnosis (src/api/diagnosesApi.ts) now catches a 422 'incomplete' without a block list, reads the stored draft (GET /api/diagnoses/:id) and runs the same shared pendingBlocks() the server uses (server/services/diagnosisService.ts:204), then rethrows an ApiError with details.pendingBlocks. If the transport is later aligned, the server list is used directly with no extra GET. Reproduced before the fix with a vitest probe (expected null not to be null), passing after."
+    },
+    {
+      "severity": "low",
+      "kind": "note",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-16",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "Discard confirmation now uses the additive Diagnosis.createdAt sent by the backend (server/services/diagnosisService.ts:141) for 'Descartar o rascunho de {data}?', falling back to the last save time only if createdAt is absent. Diagnosis type gained optional createdAt and completedAt."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "Runtime walkthrough not run (answer, reload #/diagnostico/:id, 'Salvo automaticamente às HH:MM', 'Ver meu resultado' with gaps, gate confirm/cancel, discard confirm/cancel). Needs the running backend plus a browser; a detached server is not allowed in this single session. tests/e2e/questionnaire.spec.ts and tests/e2e/calculator.spec.ts belong to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "regression_probe",
+      "command": "npx vitest run --config .aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/vitest.probe.config.ts",
+      "result": "before fix: exit 1, 1 failed | 2 passed (AC-dm-14 422 with error.pendingBlocks -> readPendingBlocks null); after fix: exit 0, 3 passed (server shape yields blocks; details.pendingBlocks read with a single fetch; 409 not read as pending)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/probe-after.log"
+    },
+    {
+      "kind": "build",
+      "command": "pnpm build",
+      "result": "exit 0 (tsc --noEmit && vite build)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-dev/build-r1.log"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm typecheck",
+      "result": "exit 0"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "422 incomplete transport mismatch: server/http/errorHandler.ts:77 sends pendingBlocks beside code/message, src/api/httpClient.ts toApiError only keeps error.details. The questionnaire now recovers by recomputing pendingBlocks from the stored draft (one extra GET), so AC-dm-14 works either way. Recommended alignment (owner phase-1-backend-diagnoses or phase-1-frontend-primitives): nest extra keys under error.details on the server, or have toApiError keep unknown error keys in details. Once aligned, diagnosesApi uses the server list with no extra GET.",
+      "paths": ["server/http/errorHandler.ts", "src/api/httpClient.ts", "src/api/diagnosesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Please move the regression probe into tests/unit (outside the frontend lane): mock fetch so POST /api/diagnoses/:id/complete returns 422 { error: { code: 'incomplete', message, pendingBlocks: [..] } } and GET returns a draft; assert readPendingBlocks(await completeDiagnosis(id).catch(e=>e)) is non-null (AC-dm-14). Then run e2e: tests/e2e/questionnaire.spec.ts and tests/e2e/calculator.spec.ts against the running app (answer, reload, 'Salvo automaticamente às HH:MM', pending alert links, gold gate confirm/cancel, discard confirm/cancel with the creation date).",
+      "paths": ["src/api/diagnosesApi.ts", "tests/e2e/questionnaire.spec.ts", "tests/e2e/calculator.spec.ts"]
+    }
+  ]
+}

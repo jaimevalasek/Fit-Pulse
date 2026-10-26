@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "74a609f9-dd21-49de-8dd4-dd3e4e3a6e0e",
+  "unit": "phase-3-backend-action-domain",
+  "wave": 2,
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T23:05:41Z",
+  "finished_at": "2026-10-25T23:07:59Z",
+  "scope": {
+    "capabilities": ["CAP-ra-action-tracking", "CAP-ra-action-inheritance"],
+    "acceptance_criteria": ["AC-ra-31"],
+    "interfaces": ["IF-004"],
+    "done_when": "pnpm exec prisma validate + pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts + node scripts/smoke-migrate.mjs pass"
+  },
+  "verdict": "PASS",
+  "corrections": [
+    {
+      "path": "shared/domain/actionProgress.ts",
+      "summary": "isActionOverdue accepted only a string `today`, but localIsoDate() returns string | null and the lane contract tells integration to pass it directly; under strict mode that does not compile. Widened the parameter to `string | null` and added an explicit `today === null` guard so the narrowing holds. Behaviour is unchanged: a null or invalid today returns false."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "kind": "defect_outside_unit",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "",
+      "path": "server/services/reportService.ts",
+      "summary": "`pnpm exec tsc --noEmit` exits 1 at server/services/reportService.ts(70,9) with TS2739: 'ReportModel' is missing kind, subject, footer, pages from 'ReportDocument'. reportService imports server/report/pdfRenderer.ts, which belongs to phase-1-backend-pdf (still implementing). Re-run gave the same error. Not this unit's file, so not changed here. No type errors were reported in this unit's files. Attributed to phase-1-backend-pdf and left for integration."
+    },
+    {
+      "severity": "low",
+      "kind": "test_coverage",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-31",
+      "path": "server/repositories/actionProgressRepository.ts",
+      "summary": "Repository behaviour (first-edit upsert, partial patch, null clears, P2002 race retry, duplicate rejection, cascade on diagnosis delete, SetNull on inheritedFrom delete) was verified only by an implementer throwaway script that is not committed. No repeatable test covers the repository layer; the API half of AC-ra-31 remains open until the actions API tests exist."
+    },
+    {
+      "severity": "low",
+      "kind": "coverage_gap",
+      "cap": "CAP-ra-action-inheritance",
+      "ac": "AC-ra-31",
+      "path": "scripts/smoke-migrate.mjs",
+      "summary": "smoke-migrate proves the action_progress migration applies and survives an update, but DATA_TABLES does not seed or compare action_progress rows. The script is outside this unit's files, so it was not extended."
+    },
+    {
+      "severity": "low",
+      "kind": "contract_note",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "",
+      "path": "server/repositories/actionProgressRepository.ts",
+      "summary": "save(diagnosisId, actionKey, patch) writes patch values without validating them; invalid status, owner role or date text is stored as given and only normalized to defaults on read. The API validation layer (actionSchemas) must reject bad input before calling save."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "AC-ra-31",
+      "path": "tests/api/actionRoutes.test.ts",
+      "summary": "Not run by QA: tests/api/actionRoutes.test.ts (suite does not exist yet, sibling unit phase-3-backend-actions-api), and the inheritance cases in tests/api/diagnosisRoutes.test.ts (depend on diagnosisService.complete wiring outside this unit). Deferred to integration; the API half of AC-ra-31 and AC-ra-32 is not verified here."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "",
+      "path": "tests/unit/reportModel.test.ts",
+      "summary": "Not run by QA: tests/unit/reportModel.test.ts, tests/unit/evolutionDocument.test.ts and tests/unit/portfolioDocument.test.ts (sibling units; evolution and portfolio suites do not exist yet). Deferred to integration as capability-wide checks."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-action-tracking",
+      "ac": "",
+      "path": "package.json",
+      "summary": "Not run by QA: `pnpm build`, the playwright e2e suites tests/e2e/actions.spec.ts, tests/e2e/result.spec.ts and tests/e2e/history.spec.ts, and the Play dev-link walkthrough. These are capability-wide and need integration wiring."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred checks once the sibling units and diagnosisService wiring land: pnpm exec vitest run tests/api/actionRoutes.test.ts tests/api/diagnosisRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts; pnpm build; pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts; then the Play dev-link walkthrough. Run pnpm exec prisma generate first if the generated client is stale."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "pnpm exec tsc --noEmit currently fails only at server/services/reportService.ts(70,9): ReportModel vs ReportDocument (kind, subject, footer, pages). The cause is in phase-1-backend-pdf / report model, not in this unit. Confirm that owner fixes it before the final integration type-check."
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "isActionOverdue(progress, today) now takes today: string | null. Passing localIsoDate(now()) directly is valid; a null or malformed today returns false (never overdue).",
+      "paths": ["shared/domain/actionProgress.ts", "shared/format/dates.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "actionProgressRepository.save() does not validate its patch. The API layer (server/validation/actionSchemas.ts) must check status against ACTION_STATUSES, owner against ACTION_OWNER_ROLES, dueDate with isValidIsoDate, and note against ACTION_NOTE_MAX_LENGTH before calling it.",
+      "paths": ["server/repositories/actionProgressRepository.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec prisma validate",
+      "exit_code": 0,
+      "result": "The schema at prisma\\schema.prisma is valid (initial run and final run after the correction)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-domain-qa/final-prisma-validate.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts",
+      "exit_code": 0,
+      "result": "2 files, 32 tests passed (initial and final run after the correction)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-domain-qa/final-vitest-unit.log"
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "result": "[smoke-migrate] PASS, 5/5 steps (initial and final run after the correction)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-domain-qa/final-smoke-migrate.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 1,
+      "result": "Only error: server/services/reportService.ts(70,9) TS2739 (outside this unit; see finding). No errors in the unit's files after the correction. Initial run showed the additional error shared/domain/actionProgress.ts(99,67) 'today' possibly null, which the correction fixed.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-domain-qa/final-tsc.log"
+    }
+  ]
+}

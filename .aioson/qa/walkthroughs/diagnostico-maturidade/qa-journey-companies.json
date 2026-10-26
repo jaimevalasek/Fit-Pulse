@@ -1,0 +1,492 @@
+{
+ "name": "qa-journey-companies",
+ "feature": "diagnostico-maturidade",
+ "url": "http://127.0.0.1:5491",
+ "timeout": 10000,
+ "boundary_wait": 4000,
+ "steps": [
+  {
+   "do": "goto",
+   "url": "/#/empresas"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"companies-page\"]"
+  },
+  {
+   "do": "click",
+   "target": "css=[data-aioson-id=\"companies-new\"]",
+   "ac": [
+    "AC-dm-04"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=alertdialog[name=\"Nova empresa\"]",
+   "ac": [
+    "AC-dm-04"
+   ]
+  },
+  {
+   "do": "fill",
+   "target": "label=Nome da empresa",
+   "value": "Studio Bela"
+  },
+  {
+   "do": "select",
+   "target": "label=Segmento",
+   "value": "beauty"
+  },
+  {
+   "do": "check",
+   "target": "role=radio[name=\"Venda com orçamento ou visita\"]"
+  },
+  {
+   "do": "eval",
+   "expression": "(()=>{const i=[...document.querySelectorAll('input')].find(x=>x.labels&&[...x.labels].some(l=>l.innerText.trim().startsWith('CNPJ')));return i.inputMode+' '+i.maxLength})()",
+   "equals": "numeric 18",
+   "ac": [
+    "AC-dm-08"
+   ]
+  },
+  {
+   "do": "type",
+   "target": "label=CNPJ",
+   "value": "11222333000180",
+   "ac": [
+    "AC-dm-08"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "label=CNPJ",
+   "value": "11.222.333/0001-80",
+   "ac": [
+    "AC-dm-08"
+   ]
+  },
+  {
+   "do": "press",
+   "key": "Tab"
+  },
+  {
+   "do": "expect",
+   "text": "CNPJ inválido. Formato: 00.000.000/0000-00.",
+   "ac": [
+    "AC-dm-08"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "[...document.querySelectorAll('input')].find(x=>x.value==='11.222.333/0001-80').getAttribute('aria-invalid')",
+   "equals": "true",
+   "ac": [
+    "AC-dm-08"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "label=CNPJ"
+  },
+  {
+   "do": "press",
+   "key": "End"
+  },
+  {
+   "do": "press",
+   "key": "Backspace"
+  },
+  {
+   "do": "press",
+   "key": "1"
+  },
+  {
+   "do": "expect",
+   "target": "label=CNPJ",
+   "value": "11.222.333/0001-81",
+   "ac": [
+    "AC-dm-17"
+   ]
+  },
+  {
+   "do": "expect",
+   "hidden": "text=CNPJ inválido. Formato: 00.000.000/0000-00.",
+   "ac": [
+    "AC-dm-17"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Cadastrar empresa\"]",
+   "boundary": "POST /api/companies -> 201",
+   "ac": [
+    "AC-dm-04",
+    "AC-dm-17"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "role=heading[level=1]",
+   "text": "Studio Bela",
+   "ac": [
+    "AC-dm-04"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"company-page\"]",
+   "contains": "CNPJ 11.222.333/0001-81",
+   "ac": [
+    "AC-dm-04"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=button[name=\"Começar o primeiro diagnóstico\"]",
+   "ac": [
+    "AC-dm-35"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Editar dados\"]",
+   "ac": [
+    "AC-dm-05"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "label=Nome da empresa",
+   "value": "Studio Bela",
+   "ac": [
+    "AC-dm-05"
+   ]
+  },
+  {
+   "do": "fill",
+   "target": "label=Nome da empresa",
+   "value": "Studio Bela Vista"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Salvar alterações\"]",
+   "boundary": {
+    "method": "PATCH",
+    "url": "/\\/api\\/companies\\//"
+   },
+   "ac": [
+    "AC-dm-05"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "role=heading[level=1]",
+   "text": "Studio Bela Vista",
+   "ac": [
+    "AC-dm-05"
+   ]
+  },
+  {
+   "do": "goto",
+   "url": "/#/empresas"
+  },
+  {
+   "do": "wait",
+   "target": "css=[data-aioson-id=\"companies-table\"]"
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"companies-table\"]",
+   "contains": "Studio Bela Vista",
+   "ac": [
+    "AC-dm-05"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"companies-table\"]",
+   "contains": "Oficina Ponto Certo",
+   "ac": [
+    "AC-dm-05"
+   ]
+  },
+  {
+   "do": "fill",
+   "target": "placeholder=Buscar pelo nome",
+   "value": "zzz",
+   "ac": [
+    "AC-dm-09"
+   ]
+  },
+  {
+   "do": "expect",
+   "text": "Nenhuma empresa encontrada",
+   "ac": [
+    "AC-dm-09"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Limpar filtros\"]",
+   "ac": [
+    "AC-dm-09"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"companies-table\"]",
+   "contains": "Studio Bela Vista",
+   "ac": [
+    "AC-dm-09"
+   ]
+  },
+  {
+   "do": "snapshot",
+   "target": "role=navigation[name=\"Filtrar por estágio\"]",
+   "max_lines": 20
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar Studio Bela Vista\"]",
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=alertdialog[name=\"Arquivar Studio Bela Vista?\"]",
+   "ac": [
+    "AC-dm-06",
+    "AC-dm-48"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar empresa\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/archive$/"
+   },
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"companies-table\"]",
+   "contains": "Oficina Ponto Certo",
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "document.querySelector('[data-aioson-id=\"companies-table\"]').innerText.includes('Studio Bela Vista')",
+   "equals": false,
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Ver arquivadas\"]",
+   "ac": [
+    "AC-dm-06",
+    "AC-dm-09"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=button[name=\"Restaurar Studio Bela Vista\"]",
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "expect",
+   "visible": "role=button[name=\"Excluir Studio Bela Vista\"]",
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Restaurar Studio Bela Vista\"]",
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Restaurar empresa\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/restore$/"
+   },
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Ver ativas\"]"
+  },
+  {
+   "do": "expect",
+   "target": "css=[data-aioson-id=\"companies-table\"]",
+   "contains": "Studio Bela Vista",
+   "ac": [
+    "AC-dm-06"
+   ]
+  },
+  {
+   "do": "eval",
+   "expression": "!!document.querySelector('[aria-label=\"Excluir Oficina Ponto Certo\"]')",
+   "equals": false,
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar Oficina Ponto Certo\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar empresa\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/archive$/"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Ver arquivadas\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Excluir Oficina Ponto Certo\"]",
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "expect",
+   "target": "role=alertdialog",
+   "contains": "2 diagnósticos",
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "snapshot",
+   "target": "role=alertdialog",
+   "max_lines": 20
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Cancelar\"]",
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "eval",
+   "expression": "fetch('/api/companies?archived=true').then(r=>r.json()).then(j=>JSON.stringify(j).includes('Oficina Ponto Certo'))",
+   "equals": true,
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Restaurar Oficina Ponto Certo\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Restaurar empresa\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/restore$/"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Ver ativas\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar Studio Bela Vista\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Arquivar empresa\"]",
+   "boundary": {
+    "method": "POST",
+    "url": "/\\/archive$/"
+   }
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "click",
+   "target": "role=link[name=\"Ver arquivadas\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Excluir Studio Bela Vista\"]"
+  },
+  {
+   "do": "click",
+   "target": "role=button[name=\"Excluir definitivamente\"]",
+   "boundary": {
+    "method": "DELETE",
+    "url": "/\\/api\\/companies\\//"
+   },
+   "ac": [
+    "AC-dm-07"
+   ]
+  },
+  {
+   "do": "wait",
+   "target": "role=alertdialog",
+   "state": "hidden"
+  },
+  {
+   "do": "eval",
+   "expression": "fetch('/api/companies?archived=true').then(r=>r.json()).then(j=>JSON.stringify(j).includes('Studio Bela Vista'))",
+   "equals": false,
+   "ac": [
+    "AC-dm-07"
+   ]
+  }
+ ]
+}

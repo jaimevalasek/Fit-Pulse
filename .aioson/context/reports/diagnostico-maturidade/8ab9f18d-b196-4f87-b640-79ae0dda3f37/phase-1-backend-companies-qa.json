@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "16022048-45b8-43ec-b05c-1d85d92cff36",
+  "unit": "phase-1-backend-companies",
+  "phase": "1-backend-companies",
+  "wave": 4,
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "scope": {
+    "capabilities": ["CAP-dm-company"],
+    "acceptance_criteria": ["AC-dm-07", "AC-dm-09"],
+    "interfaces": ["IF-002"],
+    "unit_files": [
+      "server/routes/companyRoutes.ts",
+      "server/services/companyService.ts",
+      "server/repositories/companyRepository.ts",
+      "server/validation/companySchemas.ts",
+      "server/app.ts",
+      "tests/api/companyRoutes.test.ts"
+    ],
+    "done_when": "pnpm test -- tests/api/companyRoutes.test.ts passa"
+  },
+  "started_at": "2026-10-23T00:56:48-03:00",
+  "finished_at": "2026-10-23T00:59:30-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-07",
+      "path": "tests/e2e/companies.spec.ts",
+      "summary": "`pnpm test:e2e -- tests/e2e/companies.spec.ts` was not run. The spec and the company screens belong to other units (phase-1-frontend-companies and the e2e unit) and are outside this unit's Done when. Integration must run it once those units are in (see messages[])."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Contract command `pnpm test -- tests/api/companyRoutes.test.ts` is forwarded by the package.json script as `vitest run \"--\" \"tests/api/companyRoutes.test.ts\"`. Vitest does not match the `--` as a file filter, so it ran all 9 test files (494 tests), exit 0. The Done when passes, and it is a stronger run than the single file (55 tests, also exit 0). The script itself was not changed.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire contract (verified in code and tests): completedCount counts every completed diagnosis, archived ones included; with draftId, completedCount + 1 equals the rows a delete removes (the Diagnosis status enum is only draft|completed). latestStage and latestCompletedAt use only the latest completed, non-archived diagnosis. Screens that test completedCount > 0 to mean an active result must not rely on it for that.",
+      "paths": ["server/services/companyService.ts", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "There is no unique index on diagnoses for drafts (prisma/schema.prisma). RULE-dm-13 (one draft per company) is enforced only by the diagnoses unit's code path. draftId picks the newest draft if several exist, so the delete confirmation count (completedCount + draftId?1:0) would undercount if a second draft ever existed. Owner: phase-1-backend-diagnoses.",
+      "paths": ["prisma/schema.prisma", "server/services/companyService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "To run the deferred e2e check: `pnpm test:e2e -- tests/e2e/companies.spec.ts` after phase-1-frontend-companies and the e2e unit are complete. Expect it to exercise AC-dm-07 (delete confirmation count, cascade) and AC-dm-09 (search, stage filter, archived toggle) end to end. Capability-wide checks for CAP-dm-company are not approved by this local PASS.",
+      "paths": ["tests/e2e/companies.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "vitest run: Test Files 9 passed (9); Tests 494 passed (494)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-companies-qa/test-contract.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 1 passed (1); Tests 55 passed (55)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-companies-qa/test-file.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit: no errors",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-companies-qa/typecheck.log"
+    },
+    {
+      "command": "read-only code review of unit files (server/services/companyService.ts, server/repositories/companyRepository.ts, server/validation/companySchemas.ts, server/routes/companyRoutes.ts, server/app.ts, tests/api/companyRoutes.test.ts lines 602-680)",
+      "exit_code": 0,
+      "result": "No defect in unit scope. AC-dm-07 backend behavior (409 for active company, cascade delete of all owned diagnoses in one transaction guarded by archivedAt, count before delete, 404 on repeat) and AC-dm-09 list behavior (search without accents, stage filter by latest completed, archived toggle) are implemented and covered by tests. app.ts reads the port from BACKEND_PORT with a fallback; no hardcoded port in use."
+    }
+  ]
+}

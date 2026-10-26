@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "f430c605-da76-4aa9-803a-c97eab3fca4f",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-1-backend-pdf",
+  "started_at": "2026-10-25T23:02:00Z",
+  "finished_at": "2026-10-25T23:12:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/report/pdfRenderer.ts",
+    "server/report/pdfBlocks.ts",
+    "server/report/pdfCharts.ts",
+    "tests/unit/pdfRenderer.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Grayscale print inspection of the dimensions page (AC-ra-07) and any visual look at the pages were not run: this environment has no PDF rasterizer (pdftoppm, mutool, gs and magick are all absent, and the Read tool's PDF rendering needs pdftoppm).",
+      "command": "print/inspect an exported PDF in grayscale",
+      "evidence_instead": "Layout was checked numerically: unpdf text per sheet in tests/unit/pdfRenderer.test.ts, plus a scratch pdfjs text-box overlap check (no real overlaps; summary ends ~555 pt from the top of the sheet, the risks page with the five longest catalog risks has ~150 pt of slack). Grayscale legibility is designed in (written score on every bar, labelled dashed line of 50, hatched fill plus the words 'abaixo de 50' under the line, every risk numbered in the matrix, P x I printed in the cells, legend with ranges) but not observed."
+    },
+    {
+      "kind": "integration_dependency",
+      "severity": "medium",
+      "summary": "renderReportPdf now takes a ReportDocument (the plan's contract). server/services/reportService.ts:69-75 still passes buildReportModel(...), so `tsc --noEmit` reports TS2739 at server/services/reportService.ts(70,9) and tests/api/reportRoutes.test.ts fails 23 tests with a 500 ('document.pages is not iterable') until the service is rewired. That file is outside this unit's allowed files.",
+      "paths": ["server/services/reportService.ts", "tests/api/reportRoutes.test.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/pdfRenderer.test.ts tests/unit/reportModel.test.ts",
+      "exit_code": 0,
+      "result": "2 files passed, 58 tests passed (18 in pdfRenderer.test.ts, 40 in reportModel.test.ts)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-dev/vitest-final.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 1,
+      "result": "single error, outside this unit: server/services/reportService.ts(70,9) TS2739 (caller of the old renderReportPdf(ReportModel)); the three server/report/pdf*.ts files and the test typecheck",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-dev/tsc.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/forbiddenTerms.test.ts tests/api/reportRoutes.test.ts (informational, not this unit's gate)",
+      "exit_code": 1,
+      "result": "forbiddenTerms.test.ts has no failures; reportRoutes.test.ts fails 23 tests only because reportService.ts still calls the old signature",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-dev/vitest-extra.log"
+    }
+  ],
+  "acceptance": {
+    "AC-ra-06": "pdfRenderer.test.ts 'the executive summary takes one sheet': stage, lock, the 3 actions, key numbers and the warning are on the sheet of the 'executive-summary' page; the next sheet's text starts with 'Notas das 8 dimensões'; the PDF has exactly as many sheets as the document has pages; the worst case (3 longest catalog actions, all tracked, longest risk title) still fits.",
+    "AC-ra-07": "pdfRenderer.test.ts 'the dimension bars': both group labels, every bar with its name, 'N de 100' and 'Sustentaria o estágio N', at least eight labelled '50', and 'abaixo de 50' printed once per bar under the line (also with all eight under 50). The grayscale print itself was not inspected (see findings).",
+    "AC-ra-08": "pdfRenderer.test.ts 'the risks page': matrix axes label and legend ranges, each risk with title, 'Probabilidade … Nota P × I = N' line, level label and 'Como reduzir:'; no-risk document prints 'Nenhum risco encontrado nas respostas'; the five longest catalog risks (rulesV1.risk.maxRisks) fit one sheet with the matrix on the left and the list beside it."
+  },
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "server/report/pdfRenderer.ts: renderReportPdf(document: ReportDocument): Promise<Buffer> replaces renderReportPdf(model: ReportModel). It draws one A4 sheet per document page and rejects with PageOverflowError (also exported from pdfRenderer.ts) when a page is too tall, or with a plain Error if the sheet count differs from document.pages.length. server/services/reportService.ts must now call renderReportPdf(buildDiagnosisDocument({ companyName, completedAt, generatedAt: new Date(), result, brand, actionProgress, includeAnswers, diagnosisInput })); until then tsc --noEmit fails at reportService.ts(70,9) and tests/api/reportRoutes.test.ts fails with 500. That test file also still asserts the v1 texts (for example 'Nenhum risco encontrado nas suas respostas', the 'dimensão mais fraca' sentence), which the new document no longer prints.",
+      "paths": ["server/report/pdfRenderer.ts", "server/services/reportService.ts", "tests/api/reportRoutes.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for the phase, not run here: grayscale print of the dimensions page of an exported PDF (AC-ra-07, steps: export a diagnosis with a score under 50, print or convert the page to grayscale, confirm each bar shows 'N de 100', the dashed '50' line and, under the line, a hatched fill with 'abaixo de 50'; each matrix mark shows its number); e2e export and open (AC-ra-05 e2e, AC-ra-17..19) once reportService and the routes are rewired; pnpm build after reportService is updated.",
+      "paths": []
+    },
+    {
+      "to": "unit:phase-1-backend-document",
+      "kind": "note",
+      "text": "The renderer relies on these ReportDocument conventions from buildDiagnosisDocument: the matrix and risk list are adjacent blocks ('riskMatrix' then 'riskList') on the risks page and are drawn side by side; page.title is printed as the sheet heading on every page except the one holding the 'cover' block; the footer text comes from document.footer.text. Nothing in your files had to change.",
+      "paths": ["server/report/reportModel.ts"]
+    }
+  ]
+}

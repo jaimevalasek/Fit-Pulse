@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "0ac5d9f8-5272-4b9b-8d0e-65e9239a3456",
+  "unit": "phase-1-backend-files",
+  "phase": "1-backend-files",
+  "wave": 1,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T22:55:51Z",
+  "finished_at": "2026-10-25T23:02:00Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-pdf-delivery"],
+    "acceptance_criteria": ["AC-ra-18"],
+    "interfaces": ["IF-002"]
+  },
+  "done_when": "pnpm exec prisma validate + pnpm exec vitest run tests/api/fileRoutes.test.ts + node scripts/smoke-migrate.mjs all pass",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-18",
+      "path": "server/files/systemOpener.ts",
+      "summary": "Manual smoke on the Play webview (Windows, OQ-ra-1) not run: 'Abrir PDF' must open the default reader and 'Mostrar na pasta' must open Explorer with the file selected. This unattended session has no Play webview; the real explorer.exe launch is covered only by command-line tests with a fake spawn. Steps for integration are in messages[]."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-18",
+      "path": "server/files/systemOpener.ts",
+      "summary": "Real launch of macOS 'open' / 'open -R' and Linux 'xdg-open' not run: no macOS machine and no real desktop session here. Their command lines are verified only through the fake spawn in tests/api/fileRoutes.test.ts (createSystemOpener describe blocks)."
+    },
+    {
+      "kind": "deferred_to_integration",
+      "severity": "low",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-18",
+      "path": "server/services/reportService.ts",
+      "summary": "reportService (outside this unit) does not yet register each saved PDF in generated_files. Until the report-api unit wires it, no record exists in the running app for the open/reveal routes to find, so the end-to-end AC-ra-18 flow cannot pass yet. Unit-local checks pass; this is a capability-wide check for integration."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec prisma validate",
+      "exit_code": 0,
+      "result": "The schema at prisma\\schema.prisma is valid.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-files-qa/prisma-validate.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/fileRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 1 passed (1); Tests 44 passed (44).",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-files-qa/vitest-fileRoutes.log"
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "result": "[smoke-migrate] PASS (steps 1/5 to 5/5).",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-files-qa/smoke-migrate.log"
+    },
+    {
+      "command": "code review (read-only): systemOpener.ts, fileService.ts, fileRoutes.ts, generatedFileRepository.ts, migration.sql, schema.prisma, app.ts, main.ts, filesApi.ts, httpClient.ts, errorHandler.ts, fileRoutes.test.ts vs PRD AC-ra-18 and BR-ra-06",
+      "exit_code": 0,
+      "result": "No correctness or security defect found. Express 5 async handlers propagate DomainError to the shared handler; error.directory reaches ApiError.details; 204 handled by readJson; path comes only from the DB record and is checked (plain name, direct child of Downloads, regular file via lstat); openers use argv arrays without a shell."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Manual checks to run after integration (verification_not_run above, OQ-ra-1): in the Play dev-link on Windows, open a company -> Relatórios -> Exportar PDF, then 'Abrir PDF' (default reader opens the file) and 'Mostrar na pasta' (Explorer opens Downloads with the file selected). Repeat on macOS when a machine exists ('open' and 'open -R').",
+      "paths": ["server/files/systemOpener.ts", "server/services/fileService.ts", "src/api/filesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` once reportService registers the saved file. Its contract: after saveFile(), insert via createGeneratedFileRepository(prisma).insert({ companyId, kind, fileName, directory, createdAt: now() }) and answer { fileId, fileName, directory }; if the insert fails, delete the saved file and throw write_failed. kind values: diagnosis_pdf, evolution_pdf, portfolio_pdf, questionnaire_html.",
+      "paths": ["server/services/reportService.ts", "server/repositories/generatedFileRepository.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-002 is live: POST /api/files/:fileId/open and /reveal answer 204 (body never read). Errors: 404 file_not_found (no record, id longer than 64 chars, file gone or not a regular file, record outside the app's Downloads folder, or non-plain file name); 500 open_failed with message 'Não foi possível abrir. O arquivo está em {pasta}.' and error.directory. Client: src/api/filesApi.ts exports openSavedFile(fileId) and revealSavedFile(fileId).",
+      "paths": ["server/routes/fileRoutes.ts", "server/services/fileService.ts", "src/api/filesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "createApp accepts an optional systemOpener (default createSystemOpener(), the real one); server/main.ts passes it explicitly. Any e2e/Playwright bootstrap that clicks 'Abrir PDF' or 'Mostrar na pasta' must inject a fake SystemOpener (interface in server/files/systemOpener.ts), or it will launch the real reader or Explorer.",
+      "paths": ["server/app.ts", "server/main.ts", "server/files/systemOpener.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/helpers/testDatabase.ts resetData() does not delete generated_files (verified: no reference to generatedFile). Rows with companyId null survive the company deleteMany. tests/api/fileRoutes.test.ts clears them itself (beforeEach, line 140). Consider adding prisma.generatedFile.deleteMany() to resetData so reportRoutes and portfolio tests do not see leftovers.",
+      "paths": ["tests/helpers/testDatabase.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "scripts/smoke-migrate.mjs (outside this unit) passes with the new migration but does not seed generated_files (verified: no reference). Optional: seed one generated_files row so the update path proves the table survives the synthetic companies rebuild.",
+      "paths": ["scripts/smoke-migrate.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "generated_files.company_id is nullable (still ON DELETE CASCADE), as the plan's 'company_id com cascata' allows: the portfolio PDF (Phase 2) belongs to no single company. Not a defect; recorded so the portfolio unit does not assume a required company.",
+      "paths": ["prisma/schema.prisma", "prisma/migrations/20261026000000_generated_files/migration.sql"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The Prisma client was regenerated in the dev worktree (server/generated/prisma). Other worktrees need `pnpm exec prisma generate` before running tests that touch generated_files.",
+      "paths": ["server/generated/prisma"]
+    }
+  ]
+}

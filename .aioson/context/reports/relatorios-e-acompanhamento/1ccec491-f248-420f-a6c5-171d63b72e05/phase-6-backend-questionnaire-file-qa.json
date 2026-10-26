@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "3b2f85a9-57d8-4a36-bc9e-dddaee74d829",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T20:11:00-03:00",
+  "finished_at": "2026-10-25T20:16:30-03:00",
+  "verdict": "PASS",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-6-backend-questionnaire-file",
+  "wave": 1,
+  "capabilities": ["CAP-ra-remote-questionnaire"],
+  "acceptance_criteria": ["AC-ra-49", "AC-ra-50"],
+  "interfaces": ["IF-004"],
+  "done_when": "pnpm exec vitest run tests/unit/questionnaireFile.test.ts passes and writes test-results/questionario-exemplo.html; owner smoke Q-10 (Gmail, Outlook, WhatsApp; Chrome, Edge, Firefox, Safari) is manual",
+  "corrections": [],
+  "findings": [
+    {
+      "id": "QA-1",
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-49",
+      "path": "test-results/questionario-exemplo.html",
+      "summary": "Owner Q-10 manual smoke not run: Gmail, Outlook and WhatsApp delivery, opened in Chrome, Edge, Firefox and Safari on another computer, with antivirus or e-mail blocking noted.",
+      "detail": "Manual, owner-only step; cannot run in this unattended session. No owner result exists to record. Integration must run it and record the matrix with aioson dossier:add-finding (see messages[]). If any required channel or browser fails, Phase 6 goes back to @product (forms A or C); Phase 7 continues without questionnaire sends."
+    },
+    {
+      "id": "QA-2",
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-49",
+      "path": "tests/unit/questionnaireFile.test.ts",
+      "summary": "Firefox and WebKit were not run automatically; the only browser smoke (here and by the implementer) used Chromium.",
+      "detail": "Installed Playwright browsers (firefox-1466, webkit-2104) are older than the Playwright 1.64.1 expectation (firefox-1555, webkit-2370). The implementer's Firefox launch failed with a protocol error on Browser.setDefaultViewport. Installing browsers would change a shared environment and was not done here. Residual risk for the owner run: the answers download is a Blob plus a[download] click under CSP default-src 'none' (works in Chromium with zero CSP violations); Safari's handling of the .fitpulse name and download is unverified."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit/questionnaireFile.test.ts",
+      "result": "EXIT=0; 1 file, 22 of 22 tests passed (start 20:15:02). test-results/questionario-exemplo.html written at 20:15, 50,422 bytes.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-qa/vitest-qa1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-qa/vitest-qa1.exit"
+    },
+    {
+      "kind": "code_review",
+      "command": "Read tests/unit/questionnaireFile.test.ts L328-412 and server/questionnaire/questionnaireFile.ts L160-207",
+      "result": "AC-ra-50 test validates the produced answers and calculator with the real diagnosisPatchSchema; AC-ra-49 tests cover no-network HTML, CSP, textContent-only rendering, escaping of </script>, <!-- and line separators, and file-name charset. Client assets are read with fs via import.meta.url (L169-170) and guarded against closing tags."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec tsc --noEmit",
+      "result": "EXIT=0; no output.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-qa/tsc-qa1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-qa/tsc-qa1.exit"
+    },
+    {
+      "kind": "command",
+      "command": "node smoke-qa.mjs (reviewer's scratch script in the run temp dir; @playwright/test chromium on file:// of test-results/questionario-exemplo.html; light and dark)",
+      "result": "EXIT=0; SMOKE PASS. #app rendered (text length 1214, 7 buttons) in both schemes; requests=2, both the file itself, external=0; no console errors or warnings, no pageerror. Chromium only.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-qa/smoke-qa1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-qa/smoke-qa1.exit"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Q-10 owner step is still open. Run 'pnpm exec vitest run tests/unit/questionnaireFile.test.ts' again before handing over the example: Playwright empties test-results/ at the start of each run. The owner sends the file by Gmail, Outlook and WhatsApp to another computer, opens it in Chrome, Edge, Firefox and Safari, answers, saves, and notes any antivirus or e-mail block. Then record the matrix with aioson dossier:add-finding . --slug=relatorios-e-acompanhamento --agent=dev --section=\"Q-10\".",
+      "paths": ["test-results/questionario-exemplo.html"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Packaging: questionnaireFile.ts reads questionnaireClient.js and questionnaireStyles.css next to itself at run time (import.meta.url, L169-170). Both files must ship with server/ in the packaged app. Confirm with node scripts/smoke-store-package.mjs. Not verified here.",
+      "paths": ["server/questionnaire/questionnaireFile.ts", "scripts/smoke-store-package.mjs"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Process incident reported by the implementer (phase-6-backend-questionnaire-file): a cleanup command stopped about 19 processes matched by name pattern (browser-smoke.mts, ms-playwright). Some may have belonged to another unit between about 20:00 and 20:05 local on 2026-10-25. If another unit reported an unexplained hang or lost shell in that window, re-run its check. No project file was affected. Not reproduced by this review."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Implementer decision for the owner to confirm: the prototype intro line 'suas respostas ficam guardadas neste computador' was not used. The approved PRD copy says answers are lost if the page closes before saving, so the file stores nothing (no storage APIs; beforeunload warns while unsaved). Small additions beyond the approved copy: 'Baixar de novo', 'Voltar as respostas', a noscript line, and base-uri 'none' in the CSP."
+    },
+    {
+      "to": "unit:phase-6-backend-questionnaire-api",
+      "kind": "contract_change",
+      "text": "IF-004: the .fitpulse answers file is JSON with format 'fitpulse-answers' (ANSWERS_FILE_FORMAT), formatVersion 1, questionnaireVersion 1, company {id, name}, savedAt (ISO-8601), answers and calculator. The PATCH step must take answers and calculator from the file and validate them with diagnosisPatchSchema; the verified test passes only those two keys. Check company.id against the target company before applying (AC-ra-52).",
+      "paths": ["server/questionnaire/questionnaireFile.ts", "server/questionnaire/questionnaireClient.js"]
+    },
+    {
+      "to": "unit:phase-6-frontend-questionnaire",
+      "kind": "note",
+      "text": "The dialog cannot import server code. The approved client message is buildClientMessage(companyName, brandName) in server/questionnaire/questionnaireFile.ts. questionnaireService should return it (for example as a message field of POST /api/companies/:id/questionnaire) so SendQuestionnaireDialog shows exactly that text.",
+      "paths": ["server/questionnaire/questionnaireFile.ts"]
+    }
+  ]
+}

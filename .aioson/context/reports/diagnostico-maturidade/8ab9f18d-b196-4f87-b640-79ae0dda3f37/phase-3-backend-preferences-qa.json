@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "13e4b8f1-92a3-4592-8c92-038d0e211053",
+  "phase": "3-backend-preferences",
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "scope": {
+    "capabilities": ["CAP-dm-settings"],
+    "acceptance_criteria": ["AC-dm-38"],
+    "interfaces": ["IF-008"]
+  },
+  "unit_files": [
+    "server/routes/preferenceRoutes.ts",
+    "server/services/preferenceService.ts",
+    "server/repositories/preferenceRepository.ts",
+    "server/validation/preferenceSchemas.ts",
+    "server/app.ts",
+    "tests/api/preferenceRoutes.test.ts"
+  ],
+  "started_at": "2026-10-23T01:53:00-03:00",
+  "finished_at": "2026-10-23T01:56:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm test -- tests/api/preferenceRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Vitest ran the whole suite because the literal '--' is forwarded (OBS-3370ac): Test Files 15 passed (15), Tests 681 passed (681).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-preferences-qa/preferences-test.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-preferences-qa/preferences-test.exit"
+    },
+    {
+      "kind": "command",
+      "command": "npx vitest run tests/api/preferenceRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 1 passed (1), Tests 32 passed (32).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-preferences-qa/focused-vitest.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-preferences-qa/focused-vitest.exit"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit completed with exit 0.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-preferences-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-preferences-qa/typecheck.exit"
+    },
+    {
+      "kind": "review",
+      "result": "Read server/services/preferenceService.ts, server/routes/preferenceRoutes.ts, server/validation/preferenceSchemas.ts, server/repositories/preferenceRepository.ts; grep of server/app.ts shows createPreferenceRoutes mounted (line 55); test names of tests/api/preferenceRoutes.test.ts checked against AC-dm-38 (persistence across fresh app/connection, save and read back) and IF-008 (defaults, 400 validation_failed, 404 company_not_found for missing or archived focus with nothing saved, 415/invalid_json). No defect observed."
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-38",
+      "path": "tests/e2e/settings.spec.ts",
+      "summary": "Not run: `pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts`. The real reload check for AC-dm-38 needs SettingsPage, PreferencesProvider and AppShell from the phase-3-frontend-settings unit, which is outside this unit's Done-when and was not reviewed here. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-39",
+      "path": "tests/e2e/settings.spec.ts",
+      "summary": "Not run: the e2e check for AC-dm-39 in the same settings spec, which depends on the frontend settings unit. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-46",
+      "path": "tests/e2e/accessibility.spec.ts",
+      "summary": "Not run: the e2e accessibility check for AC-dm-46 in tests/e2e/accessibility.spec.ts, which depends on the frontend settings unit. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-38",
+      "path": "manifest.json",
+      "summary": "Not run: Play dev-link check with the data/ directory erased. This needs the AIOSON Play runtime, which this session cannot start. Deferred to integration."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred e2e checks after phase-3-frontend-settings is finished: `pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts` (AC-dm-38 real reload, AC-dm-39, AC-dm-46), then the Play dev-link check with data/ erased."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "`pnpm test -- <file>` forwards a literal '--' to vitest, so it runs the whole suite (15 files, 681 tests), not only the named file. The Done-when still passes, but a sibling unit's failing test would fail this unit's command. The focused check is `npx vitest run tests/api/preferenceRoutes.test.ts`. package.json is outside this unit's files, so the fix belongs to the owner of package.json.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "unit:phase-3-backend-home",
+      "kind": "note",
+      "text": "Verified in server/services/preferenceService.ts: createPreferenceService({ prisma }).get() returns focusCompanyId null when the stored focus is archived or deleted, and does not rewrite the preference row. Home can use that value and apply its own fallback for owner mode.",
+      "paths": ["server/services/preferenceService.ts"]
+    }
+  ]
+}

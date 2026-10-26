@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "45f8c397-8ea7-4b2e-bccc-d1134697137b",
+  "unit_id": "phase-1-backend-rules",
+  "phase": "1-backend-rules",
+  "lane": "backend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": ["server/**","shared/**","prisma/**","scripts/**","tests/api/**","tests/unit/**","tests/helpers/**","tests/fixtures/**","package.json","pnpm-workspace.yaml","pnpm-lock.yaml","tsconfig.json","vitest.config.ts","prisma.config.ts","manifest.json","system.json",".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:48:00Z",
+  "finished_at": "2026-10-23T03:50:39Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-engine",
+      "ac": "AC-dm-19, AC-dm-21, AC-dm-23, AC-dm-24, AC-dm-49, AC-dm-51",
+      "path": "tests/unit/diagnosisRules.test.ts",
+      "summary": "Not run here: the e2e halves of these ACs (PRD marks them 'teste unitário + teste e2e'). They need the composed evaluateDiagnosis flow and the UI/server, which are other units, and this unit's Done-when is the unit tests only. Command for integration: the e2e suite once the UI and server units land."
+    },
+    {
+      "kind": "product_gap",
+      "severity": "low",
+      "cap": "CAP-dm-unit-economics",
+      "ac": "AC-dm-15, AC-dm-51",
+      "path": "shared/domain/unitEconomics.ts",
+      "summary": "Spend R$ 0,00 with new customers above 0 gives CAC 0, ratio null, payback 0, and the stage 3 lock stops at 'ratio' with text 'cada cliente deixa menos de 3 vezes o que custou', which reads wrong for a free customer. The PRD does not define this case; current behaviour is documented by tests in tests/unit/unitEconomics.test.ts. Needs a product decision before the rules are frozen."
+    },
+    {
+      "kind": "decision",
+      "severity": "low",
+      "cap": "CAP-dm-engine",
+      "ac": "AC-dm-23, AC-dm-51",
+      "path": "shared/domain/riskSignals.ts",
+      "summary": "For a zero margin (never pays back) SIG-06 fires together with SIG-02. BR-dm-15 names only SIG-02. SIG-06 is consistent with 'não se paga' (> 12 months), so this is an owner decision, not a defect. Removing the neverPaysBack clause in the SIG-06 check gives SIG-02 alone."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm test -- tests/unit/unitEconomics.test.ts tests/unit/diagnosisRules.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-qa/official.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-qa/official.exit",
+      "result": "Whole suite ran (vitest ignores the file filter after pnpm's --): 7 test files, 395 tests passed."
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diagnosisRules.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-qa/focused.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-qa/focused.exit",
+      "result": "2 test files, 201 tests passed."
+    },
+    {
+      "kind": "typecheck",
+      "command": "npx tsc --noEmit",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-qa/tsc.exit",
+      "result": "No diagnostics for the whole project."
+    },
+    {
+      "kind": "review",
+      "result": "Read the six domain modules and the two test files. Checked rulesV1 constants against PRD RULE-dm-02, 03, 04, 06, 07, 08, the SIG-02/SIG-06 weights, es1 >= 3 (Áreas separadas, cada uma com responsável), and the DIMENSION_KEYS tie order against RULE-dm-09 (cm is excluded there). All consistent. Agent-reported review; not engine verification."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Product decision needed before the rules are frozen: spend R$ 0,00 with new customers above 0 gives CAC 0 and no ratio; the stage 3 lock then reads 'ratio'. The PRD does not cover this case.",
+      "paths": ["shared/domain/unitEconomics.ts", "shared/domain/stageGate.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Confirm whether SIG-06 (payback > 12 meses) should fire with SIG-02 for a R$ 0 margin (BR-dm-15 names only SIG-02). Current behaviour: both fire.",
+      "paths": ["shared/domain/riskSignals.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred e2e checks for AC-dm-19, AC-dm-21, AC-dm-23, AC-dm-24, AC-dm-49, AC-dm-51 (module-level halves are covered here). To run: after the UI and server units land, run the e2e suite that exercises the composed diagnosis flow and the result screen, then check the wording of the risk block and the 'estimado por faixa' and 'não calculado' labels.",
+      "paths": ["tests/unit/unitEconomics.test.ts", "tests/unit/diagnosisRules.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/unit/diagnosisRules.test.ts is about 700 lines (unitEconomics.test.ts about 460). The unit contract allowed only these files, so the split is deferred. Not a blocker."
+    }
+  ]
+}

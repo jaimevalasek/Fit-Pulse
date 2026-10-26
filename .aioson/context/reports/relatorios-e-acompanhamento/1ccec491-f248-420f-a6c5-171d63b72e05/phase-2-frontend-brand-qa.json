@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "0accefad-298e-4017-b344-b4ca0c07ec62",
+  "unit": "phase-2-frontend-brand",
+  "lane": "frontend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T23:39:58Z",
+  "finished_at": "2026-10-25T23:50:00Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-20, AC-ra-21",
+      "path": "tests/e2e/brand.spec.ts",
+      "summary": "Capability-wide check not run here: `pnpm exec playwright test tests/e2e/brand.spec.ts` — the spec does not exist yet and depends on the sibling backend brand units and integration. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "src/features/settings/brandLogoImage.ts",
+      "summary": "Play dev-link walkthrough not run here (save a PNG and a JPG logo, confirm the thumbnail and cover preview, export the three PDFs with the brand). Requires the running Play app and merged backend; deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-20, AC-ra-21",
+      "path": "package.json",
+      "summary": "Lint not run: `pnpm exec eslint` is unavailable because eslint is not installed in the project (reported by the implementer and not contradicted here). Repository-level lint coverage is outside this unit's Done-when."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit completed with no errors",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/typecheck.exit"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=<6 unit files>",
+      "exit_code": 0,
+      "result": "0 violation(s), RULES=OK",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/rules-check.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/rules-check.exit"
+    },
+    {
+      "kind": "static",
+      "summary": "Done-when IF-003 check: src/features/settings/BrandSection.tsx imports brand data only from @/api/brandApi (getBrand, saveBrand, saveBrandLogo, removeBrandLogo, resetBrand, brandLogoUrl, Brand type). It also imports isApiError from @/api/httpClient, a shared error guard rather than a second contract. brandLogoImage.ts imports only the BrandLogoUpload type from brandApi. No fetch() calls in the unit files."
+    },
+    {
+      "kind": "static",
+      "summary": "Read review of AC-ra-20/AC-ra-21 behavior in the unit: brandLogoImage.ts checks size <= 2 MB and PNG/JPEG magic bytes before decoding, shrinks to 600 px on the longer side in the same format, and refuses with 'Use uma imagem PNG ou JPG de até 2 MB.' leaving the saved and picked state unchanged. BrandSection.tsx saves fields before the logo, keeps fields on a refused logo and shows the server message in the logo field, and routes 'Remover logo' and 'Voltar para a marca FitPulse' through ConfirmDialog (its onConfirm rejections are shown in the dialog). Cover preview mirrors server resolveBrand (blank name -> FitPulse)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Once the backend brand units are merged: run `pnpm exec playwright test tests/e2e/brand.spec.ts` (bounded output, save the exit code). Selectors: section data-aioson-id=brand-section (SettingsPage.tsx), form brand-form, inputs #brand-name, #brand-phone, #brand-email, #brand-website, file input #brand-logo-file, buttons brand-save, brand-logo-remove, brand-reset, dialogs brand-logo-remove-confirm and brand-reset-confirm, status brand-status. Confirm GET /api/brand/logo is readable by a plain <img> without a Bearer header (thumbnail and cover preview depend on it).",
+      "paths": ["src/features/settings/BrandSection.tsx", "src/api/brandApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Play dev-link walkthrough still open: save a PNG logo and a JPG logo, confirm the cover preview updates from the server answer, then export the three PDFs and confirm the brand name, contact line, credit and logo appear. Also check a >2 MB or non-PNG/JPG file is refused with 'Use uma imagem PNG ou JPG de até 2 MB.' without changing the saved brand.",
+      "paths": ["src/features/settings/brandLogoImage.ts", "src/features/settings/BrandSection.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The cover preview (previewCoverPage in BrandSection.tsx) copies the server cover copy from server/report/documentParts.ts (resolveBrand, contact line 'phone · email · site', credit wording). If that server copy changes, update previewCoverPage or move the shared copy to shared/.",
+      "paths": ["src/features/settings/BrandSection.tsx", "server/report/documentParts.ts"]
+    }
+  ]
+}

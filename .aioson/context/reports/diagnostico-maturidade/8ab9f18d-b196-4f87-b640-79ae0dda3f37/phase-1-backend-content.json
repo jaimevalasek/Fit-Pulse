@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "a924bdf6-9b4c-4c9d-bf53-958efcb601b9",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "unit": "phase-1-backend-content",
+  "started_at": "2026-10-23T00:28:00-03:00",
+  "finished_at": "2026-10-23T00:37:30-03:00",
+  "verdict": "PASS",
+  "files_changed": [
+    "shared/domain/types.ts",
+    "shared/rules/rulesV1.ts",
+    "shared/content/stageContent.ts",
+    "shared/content/riskCatalog.ts",
+    "shared/content/actionCatalog.ts",
+    "shared/content/questionBank.ts",
+    "shared/content/calculatorOptions.ts",
+    "tests/unit/questionBank.test.ts",
+    "tests/unit/forbiddenTerms.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "`pnpm test -- <files>` forwards a literal `--` to `vitest run`, so vitest ignores the file filters and runs every unit test (4 files / 146 tests when this unit ran, all passing). The named Done-when command still exits 0; the filter only works without the `--` (`pnpm test <files>` or `npx vitest run <files>`). The `test` script lives in package.json, owned by phase-1-backend-foundation, and was not changed.",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "deferred_integration_check",
+      "severity": "low",
+      "text": "e2e evidence for AC-dm-10, AC-dm-11 and AC-dm-29 (rail numbers, '?' aria-expanded, rendered-text scan of screens and PDF) belongs to the frontend units and was not run here. This unit delivers the content and the unit tests for the content (24 questions, 8 blocks, 5 'não sei' questions, help text, forbidden terms in shared/content)."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/unit/questionBank.test.ts tests/unit/forbiddenTerms.test.ts",
+      "exit_code": 0,
+      "summary": "Test Files 4 passed (4), Tests 146 passed (146); the `--` made vitest run all unit tests, including cnpj and money from another unit",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-dev/test-final.log"
+    },
+    {
+      "command": "npx vitest run tests/unit/questionBank.test.ts tests/unit/forbiddenTerms.test.ts",
+      "exit_code": 0,
+      "summary": "Test Files 2 passed (2), Tests 18 passed (18)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-dev/test-final-filtered.log"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exit_code": 0,
+      "summary": "Whole project typechecks with no output",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-content-dev/tsc-final.log"
+    },
+    {
+      "command": "npx tsx compare.mts (scratch script in the run temp dir)",
+      "exit_code": 0,
+      "summary": "Compared the PRD tables with the code: 24 questions (text, 4 anchors, 'não sei' label), 8 risk signals (title, P × I, how to reduce) and 14 actions (title, reason, how to): 0 mismatches"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-1-backend-rules",
+      "kind": "contract_change",
+      "text": "shared/domain/types.ts is the contract for the engine modules. It exports: DIMENSION_KEYS/DimensionKey, QUESTION_IDS/QuestionId, QuestionDimension ('structure' is es1, not scored), Answers (missing key = unanswered, null = 'não sei', counts 0), CalculatorInput (money in cents; spendMode/spendParts/spendRange, newCustomersMode/newCustomers/newCustomersRange, averagePurchaseCents, purchasesPerYear and relationshipLength as string keys, marginPercent integer 0..100) plus EMPTY_CALCULATOR, DiagnosisInput, UnitEconomics (spend/new customers with origin measured|estimated|unknown, cacCents, ltvCents, exact ratio, exact paybackMonths, neverPaysBack for BR-dm-15), LockKey, ActionKey, SignalId, RiskResult, ConfidenceResult, DimensionResult { score, supportsStage, belowWarning }, DiagnosisResult (rulesVersion, stage, lock, dimensions, weakestDimension, unitEconomics, risks, confidence, plan) and the Rules type. Midpoints are in rulesV1.midpoints (spend 500/3.000/10.000/32.500/60.000 reais as cents, customers 5/20/65/200/400, purchases 1/2.5/5/9.5/15, years 0.4/0.75/1.5/3/5), checked by hand against the LTV of G2 (273,60), G3 (1.856,25) and G4 (1.500,00). If a field is missing for your modules, report it; this file was not edited by you.",
+      "paths": ["shared/domain/types.ts", "shared/rules/rulesV1.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-rules",
+      "kind": "note",
+      "text": "Rules thresholds are named, not criteria lists: stageGates.stage2/stage3/stage4 hold the numbers, and the order of the criteria (RULE-dm-04: cac, mp / measure, ratio, payback, pc, re / mm, co, es) stays in stageGate.ts. Stage 4 'es' means the es1 answer >= rules.stageGates.stage4.minStructureAnswer (3). The answer-based risk triggers stay in riskSignals.ts: SIG-04 pc1 = 3, SIG-07 mm1 = 0, SIG-08 co2 = 0. rules.confidence.totalItems is 26 (24 questions + 2 calculator origins). Dimension 'cm' scores cm1 + cm2 + the ratio item (3 items, RULE-dm-02); 'mm' scores mm1 + mm2 only (es1 is excluded). Helpers in shared/content/questionBank.ts: ANCHOR_MAX, getQuestion, questionsOfBlock, questionsOfDimension, allowsUnknown, isQuestionId. Imports in shared use explicit `.ts` extensions (tsconfig allowImportingTsExtensions).",
+      "paths": ["shared/content/questionBank.ts", "shared/rules/rulesV1.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-evaluate",
+      "kind": "note",
+      "text": "tests/fixtures/rulesV2.ts can spread rulesV1 and change one nested threshold, for example { ...rulesV1, version: 2, stageGates: { ...rulesV1.stageGates, stage3: { ...rulesV1.stageGates.stage3, minProductChannel: 70 } } }. The plan keys are ActionKey values; texts come from ACTION_CATALOG[key] (title, reason, howTo). Risk texts come from RISK_CATALOG / getRiskInfo(signalId) (title, cause, howToReduce) and riskCatalogIndex(id) gives the catalog order for the tie-break. Stage texts, LOCK_PHRASES, LAST_STEP_PHRASE and DIMENSIONS are in shared/content/stageContent.ts.",
+      "paths": ["shared/content/actionCatalog.ts", "shared/content/riskCatalog.ts", "shared/content/stageContent.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-diagnoses",
+      "kind": "note",
+      "text": "For diagnosisSchemas.ts: answer keys must be QUESTION_IDS (isQuestionId in questionBank.ts); a value is 0..3, or null only where allowsUnknown(id) is true (mp1, mp3, cm1, mm1, co1). currentBlock is 1..8 (block 1 = calculator 'Seus números', blocks 2..8 hold the questions, BLOCKS lists them). The calculator range and mode fields use the key lists exported from shared/domain/types.ts (SPEND_PART_KEYS, SPEND_RANGE_KEYS, NEW_CUSTOMERS_RANGE_KEYS, PURCHASES_PER_YEAR_KEYS, RELATIONSHIP_LENGTH_KEYS); marginPercent is an integer 0..100; newCustomers 0..1.000.000; money in integer cents with a ceiling.",
+      "paths": ["shared/domain/types.ts", "shared/content/questionBank.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "Block numbers are 1..8: block 1 is the calculator (CALCULATOR_FIELDS and the option lists in shared/content/calculatorOptions.ts hold its labels and '?' help), blocks 2..8 come from BLOCKS and questionsOfBlock(). Each Question has text, help (for the '?' button, aria-expanded), four options with value 0..3 and unknownLabel (null = no 'não sei' option; only mp1, mp3, cm1, mm1, co1 have one; answering it stores null). For the e2e text scan of AC-dm-29 the forbidden patterns are /\\bV[1-4]\\b/i, /m[ée]todo\\s+V4/i, /V4\\s+Company/i, /\\bPPA\\b/i, /\\bCREP\\b/i and /vacina/i, the same as tests/unit/forbiddenTerms.test.ts.",
+      "paths": ["shared/content/questionBank.ts", "shared/content/calculatorOptions.ts", "tests/unit/forbiddenTerms.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks: pnpm test:e2e for AC-dm-10 and AC-dm-11 (tests/e2e/questionnaire.spec.ts), AC-dm-29 (tests/e2e/result.spec.ts, scan of screens and PDF), and the content-driven rules ACs (AC-dm-18 to AC-dm-26, AC-dm-49) once the rules and evaluate units land. Also: `pnpm test -- <files>` ignores the file filters because of the literal `--`; if per-file runs matter for QA, use `pnpm test <files>` or fix the script in package.json (owned by foundation).",
+      "paths": ["package.json"]
+    }
+  ]
+}

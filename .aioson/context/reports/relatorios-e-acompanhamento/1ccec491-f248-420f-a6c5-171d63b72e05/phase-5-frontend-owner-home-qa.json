@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "43a14063-0338-4f3a-bbd3-bef3c5647d98",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "unit": "phase-5-frontend-owner-home",
+  "wave": 10,
+  "capabilities": ["CAP-ra-home-followup"],
+  "acceptance_criteria": ["AC-ra-26", "AC-ra-33", "AC-ra-37"],
+  "interfaces": ["IF-008", "IF-009"],
+  "started_at": "2026-10-26T00:58:00Z",
+  "finished_at": "2026-10-26T01:02:05Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-26",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "Phase-level e2e checks were not run in this unit: pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts. They are integration evidence after all producers finish; the firstRun spec still describes the v1 tour, so it is expected to need an update by its owner."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-37",
+      "path": "src/features/home/OnboardingTour.tsx",
+      "summary": "Play dev-link walkthrough not run (mark an overdue action as Feita, change the reevaluation interval, switch modes and confirm both homes update). Requires the running Play app; not available in this session."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-26",
+      "path": "src/App.tsx",
+      "summary": "Deferred to integration: src/App.tsx has no child route 'relatorios' under empresa/:companyId (only relatorios/carteira). The OwnerHome 'Relatórios' link (OwnerHome.tsx, data-aioson-id home-reports) and tour step 1 land on an unrouted path until the report center route is wired by its owning unit. Not a defect of this unit's files."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "low",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-33",
+      "path": "src/features/home/OnboardingTour.tsx",
+      "summary": "Deferred to integration: tour anchors data-aioson-tour 'relatorios', 'marca' and 'modo' do not exist in the regions' owning files. The tour falls back to data-aioson-id report-preview / tab-relatorios, brand-section and mode-toggle / mode-chip / nav; mode-chip is hidden below sm, so on 390 px the last step may fall back to nav or a centered card. Owning units (ReportPreview.tsx, SettingsPage.tsx, AppShell.tsx) would need to add the data-aioson-tour anchors for the intended placement."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm typecheck",
+      "result": "exit 0 (tsc --noEmit, no errors)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-owner-home-qa/typecheck.log"
+    },
+    {
+      "command": "grep -rn 'ScoreTrend|HomeTrendPoint' src tests shared server (Grep tool, per directory)",
+      "result": "no matches in src, tests, shared or server; src/features/home/ScoreTrend.tsx is absent from the unit listing",
+      "exit_code": 1
+    },
+    {
+      "command": "grep -n '90 dias|consult-attention|reevaluationDays|trend' on the unit files (OnboardingTour, OwnerHome, ReevaluationCountdown, OwnerFollowUpWidgets, ActionProgressRow)",
+      "result": "no stale 'mais de 90 dias' copy in OnboardingTour.tsx; no trend/HomeTrendPoint use in the unit files",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n 'relatorios' src/App.tsx",
+      "result": "only relatorios/carteira child route present (App.tsx:95); confirms the deferred integration gap",
+      "exit_code": 0
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Done-when for this unit passes locally (pnpm typecheck exit 0; ScoreTrend.tsx gone; no importer in src/tests/shared/server). Integration must run: pnpm build; pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts. Then in the Play dev-link: mark an overdue action as Feita, change the reevaluation interval, switch modes; both homes' numbers must change. Owner home ids: home-reeval, home-reeval-count, home-reeval-interval, home-reeval-timeline, home-reeval-reminder, home-trava, home-widgets, home-actions-widget."
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Tour v2 differs from tests/e2e/firstRun.spec.ts: the '?' no longer navigates to #/inicio. Step 1 opens /empresa/:focusId/relatorios, step 2 /configuracoes, step 3 /empresa/:id/acoes, step 4 /empresa/:id/diario, step 5 stays (anchor modo). Same 5 steps in both modes. Seen state is tourSeenVersion >= 2; closing also sets tourSeen[mode]=true. Auto-open waits for home-owner.",
+      "paths": ["src/features/home/OnboardingTour.tsx", "tests/e2e/firstRun.spec.ts", "src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Owner widget counts come from GET /api/home and are re-read on each opening (HomePage reloads on mount). Changing a status in 'Suas 3 ações' updates that row at once, but 'Ações do plano' counts change on the next opening, as AC-ra-36 states."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Route wiring: who adds the empresa/:companyId 'relatorios' child route in src/App.tsx? The owner home and tour depend on it. src/App.tsx is shared with phase-4-frontend-diary, so it was not touched by this unit."
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "1f4d69fe-22a2-4ae4-ad54-ae1039de8b86",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-2-backend-brand-reports",
+  "started_at": "2026-10-25T23:22:25Z",
+  "finished_at": "2026-10-25T23:32:34Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/app.ts",
+    "server/services/reportService.ts",
+    "server/report/pdfRenderer.ts",
+    "src/api/brandApi.ts",
+    "tests/api/brandRoutes.test.ts",
+    "tests/unit/pdfRenderer.test.ts"
+  ],
+  "files_unchanged_on_purpose": [
+    "server/report/documentParts.ts"
+  ],
+  "findings": [
+    {
+      "kind": "risk",
+      "severity": "medium",
+      "summary": "brandService.setLogo only checks the PNG/JPEG signature and the size. A PNG with a valid IHDR and corrupt IDAT (RGBA) is stored, and pdfkit then throws inside a zlib callback that no try/catch can reach: an uncaught exception that would take the backend down on every export until the logo is removed. Reproduced with a scratch pdfkit script. Mitigated in this unit by pdfRenderer.canDrawLogo (inflates the IDAT data and does a dry-run embed; on failure the cover prints the name alone). The upload itself still accepts such a file.",
+      "paths": ["server/services/brandService.ts", "server/report/pdfRenderer.ts"],
+      "recorded_as": "OBS-c92fa5"
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "The contact in the footer is drawn by the PDF renderer only (second footer line, taken from the cover block's contactLine). ReportDocument.footer.text stays 'name · label' because tests/unit/reportModel.test.ts:330 and :342 pin it and that file and shared/report/reportDocument.ts are outside this unit. The on-screen preview footer therefore shows the name but not the contact.",
+      "paths": ["server/report/pdfRenderer.ts", "shared/report/reportDocument.ts", "src/features/reports/ReportSheet.tsx"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "server/report/documentParts.ts already carried resolveBrand/buildCoverPage/buildFooter from an earlier unit and needed no change; the logo drawing on the cover already lived in pdfBlocks.drawCover (outside this unit). This unit wired the saved brand into the documents (reportService), mounted the routes (app.ts) and hardened the renderer."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "GET /api/reports/preview and the export now read the saved brand (IF-003) after the selection is validated. The cover block of the preview carries brand.logoDataUrl as 'data:image/png|jpeg;base64,...' (up to ~2.7 MB of JSON for a 2 MB logo) and contactLine. The frontend ReportSheet cover should draw it with <img src={brand.logoDataUrl}>. createReportService keeps its signature ({ prisma, downloadsDir, now? }) and builds its own brand service. createReportService is still created in app.ts without deps.now (pre-existing, unchanged).",
+      "paths": ["server/services/reportService.ts", "src/features/reports/ReportSheet.tsx"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "src/api/brandApi.ts exports getBrand, saveBrand (PUT /api/brand, 400 validation_failed with fields phone/email/website/name), saveBrandLogo (PUT /api/brand/logo with { mimeType: 'image/png'|'image/jpeg', dataBase64 }; 422 logo_invalid or 413 payload_too_large, both with the message 'Use uma imagem PNG ou JPG de até 2 MB.', or 422 'A logo deve ter no máximo 600 px no lado maior.' past 600 px), removeBrandLogo (DELETE /api/brand/logo), resetBrand (DELETE /api/brand, forgets name, contacts and logo) and brandLogoUrl(logoUpdatedAt) for <img src>. An empty dataBase64 answers 400 validation_failed, not 422.",
+      "paths": ["src/api/brandApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "If the preview footer should also show the contact line (as the PDF does), add an optional field to ReportFooter in shared/report/reportDocument.ts, fill it in documentParts.buildFooter, and update tests/unit/reportModel.test.ts:330,342 and ReportSheet. Not done here: those files are outside this unit.",
+      "paths": ["shared/report/reportDocument.ts", "server/report/documentParts.ts", "tests/unit/reportModel.test.ts", "src/features/reports/ReportSheet.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred (not part of this unit's Done when): pnpm build, tests/unit/imageSignature.test.ts, tests/unit/contactFormat.test.ts, tests/api/preferenceRoutes.test.ts (all passed inside the full tests/unit + tests/api run), and the Playwright specs tests/e2e/brand.spec.ts and report.spec.ts, which need the frontend lane (BrandSection, ReportSheet) and were not run. The Play dev-link check (save a PNG and a JPG logo, export the PDFs) is also left to integration. Suggested: pnpm exec playwright test tests/e2e/brand.spec.ts tests/e2e/report.spec.ts after the frontend units land.",
+      "paths": ["tests/e2e/brand.spec.ts", "tests/e2e/report.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "3 test files passed, 143 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-dev/run2.log",
+      "criteria": ["AC-ra-21", "AC-ra-22"],
+      "note": "The first run (run1) failed 7 tests, all in the new test code (an empty logo is a 400 from the schema, a PNG with transparency makes two image objects, pdfkit sets colors with scn/SCN); fixed in the tests and rerun."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors, src/api/brandApi.ts included",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-dev/tsc.log"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit tests/api",
+      "exit_code": 0,
+      "result": "28 test files passed, 1222 tests passed (regression check of the neighbouring suites, reportModel and preferenceRoutes included)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-reports-dev/run3.log"
+    },
+    {
+      "kind": "coverage",
+      "criterion": "AC-ra-21",
+      "detail": "tests/api/brandRoutes.test.ts: PNG and JPEG kept (type taken from the bytes), SVG, text renamed to .png, GIF renamed to .jpg, PNG cut short, 2 MB + 1 byte, 3 MB (413 with the same sentence), non-base64, over 600 px (422) are refused and the stored brand and logo stay as they were; exactly 2 MB and 600 px accepted; 1.5 MB logo passes while another route still stops at 1 MB."
+    },
+    {
+      "kind": "coverage",
+      "criterion": "AC-ra-22",
+      "detail": "tests/unit/pdfRenderer.test.ts (diagnosis, evolution and portfolio built from the shared documentParts): name, logo (PNG and JPEG) and contact on the cover, name and contact in the footer of every sheet; FitPulse with no logo or contact when blank; same color set with and without brand; long name and contact cut with an ellipsis; logos that cannot be drawn (cut PNG, no image, corrupt RGBA PNG, wrong data URL) never stop the report. tests/api/brandRoutes.test.ts: the same through the preview and the exported PDF of a real diagnosis, and back to FitPulse after DELETE /api/brand."
+    }
+  ]
+}

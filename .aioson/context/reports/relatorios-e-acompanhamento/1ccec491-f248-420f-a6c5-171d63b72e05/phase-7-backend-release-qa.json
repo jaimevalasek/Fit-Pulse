@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "295ca03f-ae2e-497b-8d11-779ba2fdec9e",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "unit": "phase-7-backend-release",
+  "wave": 11,
+  "scope": {
+    "capabilities": ["CAP-ra-data-continuity"],
+    "acceptance_criteria": ["AC-ra-54"]
+  },
+  "started_at": "2026-10-26T01:08:00Z",
+  "finished_at": "2026-10-26T01:20:00Z",
+  "verdict": "BLOCKED",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "integration_defect",
+      "severity": "high",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "src/features/reports/",
+      "summary": "The aioson packager drops every folder named 'reports' (DEV_ONLY_DIRS in the installed @jaimevalasek/aioson src/commands/store-system.js, matched at any depth), so the 8 files of src/features/reports/ are missing from the store package. src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx import them, so vite build in the postinstall of a store install or update fails. Outside this unit's write paths and correction budget: the fix is a frontend-lane rename of the folder (e.g. src/features/report-center) with its imports, then an integration rerun of smoke-store-package.mjs. scripts/smoke-store-package.mjs line 156 detects it (assertPackageContents lists the dropped files)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "Full run `node scripts/smoke-store-package.mjs` was not executed by this review. It is not part of this unit's Done-when, takes about 5 minutes, and rebuilds release state in the working tree. The implementer's run exited 1 on the packager defect above, and the root cause was confirmed by reading the packager source and the src/features/reports file set. Integration must rerun it after the frontend rename and expect PASS."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "manifest.json",
+      "summary": "A real 0.1.0 -> 0.2.0 update of an installation with data through the AIOSON Play (Settings -> Instalar App -> Linkar pasta, or local package) and the green badge were not run: the check needs the Play desktop app, which this environment cannot run."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": ".aioson/system-packages/fitpulse/fitpulse-0.2.0.json",
+      "summary": "Stray 1.2 MB packager output left by the implementer's inspection run of `aioson system:package .`. It is outside this unit's write paths and was not deleted by this review. It is safe to delete."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node --check scripts/smoke-store-package.mjs",
+      "result": "PASS, exit 0",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/check-store.log",
+      "exit": 0
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "result": "PASS, exit 0, 6/6 steps: release 0.1.0 with owner data, update applies the migrations, companies/diagnoses/drafts/preferences identical, four new tables empty, repeated deploy is a no-op, table-rebuild release keeps old and new rows, cascades still hold. Foreground run, completed.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/smoke-migrate.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-qa/smoke-migrate.exit",
+      "exit": 0
+    },
+    {
+      "command": "manifest.json / system.json / package.json inspection",
+      "result": "version 0.2.0 in all three; manifest compatibility.schema_version 2 and requires_migration true; scripts smoke:migrate and smoke:store-package present; dependencies unchanged"
+    },
+    {
+      "command": "src/features/reports file-set and importer check (read-only)",
+      "result": "8 files present; imported by src/App.tsx, src/features/result/ResultPage.tsx, src/features/settings/BrandSection.tsx; packager DEV_ONLY_DIRS includes 'reports' (installed @jaimevalasek/aioson store-system.js line 263)"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Release blocker for AC-ra-54: the store package omits src/features/reports/** (packager DEV_ONLY_DIRS includes 'reports'). Steps: (1) frontend lane renames src/features/reports to a kept name (e.g. src/features/report-center) and updates the imports in src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx; (2) rerun `node scripts/smoke-store-package.mjs` (about 5 min, needs network, pnpm cache and aioson CLI on PATH) and expect PASS; (3) rerun the remaining phase checks: pnpm build, pnpm test, pnpm test:e2e, node scripts/smoke-boot.mjs, aioson harness:check . --slug=relatorios-e-acompanhamento; (4) real 0.1.0 -> 0.2.0 update in the Play with data and the green badge. AC-ra-55 and AC-ra-56 belong to the phase-7-backend-backup unit.",
+      "paths": ["src/features/reports/", "src/App.tsx", "src/features/result/ResultPage.tsx", "src/features/settings/BrandSection.tsx", "scripts/smoke-store-package.mjs"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "question",
+      "text": "Can the frontend lane rename src/features/reports (8 files) to a folder name the aioson packager keeps (e.g. report-center) and update its importers? The packager drops any folder named 'reports', which breaks the store package build for AC-ra-54. This is a frontend-owned path; this review did not touch it.",
+      "paths": ["src/features/reports/", "src/App.tsx", "src/features/result/ResultPage.tsx", "src/features/settings/BrandSection.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "scripts/smoke-store-package.mjs rebuilds release 0.1.0 from the current package (it removes the 4 migrations of 0.2.0 and the 2 questionnaire runtime files and stamps version 0.1.0 / schema_version 1 / requires_migration false). If a future release adds migrations, they are applied by the update step automatically; add the name to V2_MIGRATIONS only for a release-specific check.",
+      "paths": ["scripts/smoke-store-package.mjs"]
+    }
+  ]
+}

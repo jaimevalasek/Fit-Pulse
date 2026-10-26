@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "b79a84c9-5d49-4059-95f2-d4712b8a04b7",
+  "unit": "phase-1-frontend-questionnaire",
+  "phase": "1-frontend-questionnaire",
+  "wave": 5,
+  "agent": "qa",
+  "lane": "frontend",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T01:28:30-03:00",
+  "finished_at": "2026-10-23T01:33:00-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-questionnaire", "CAP-dm-unit-economics"],
+    "acceptance_criteria": ["AC-dm-12", "AC-dm-14"],
+    "interfaces": ["IF-003", "IF-004"],
+    "done_when": "`pnpm build` sai com 0 e as telas usam só as rotas e campos do IF-003",
+    "local_pass_only": true
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "Browser walkthrough not run: answer a question, reload #/diagnostico/:id and see the same answers with 'Salvo automaticamente às HH:MM'; 'Ver meu resultado' with gaps shows the pending alert; the gold gate confirm/cancel keeps the draft; 'Descartar rascunho' confirm/cancel. Needs the running backend and a browser; the single-session rule forbids a detached server here. Prior finding R2 stays open for this part.",
+      "command_not_run": "manual browser walkthrough against the running app (no command in this session)"
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "Not run: pnpm test:e2e -- tests/e2e/questionnaire.spec.ts tests/e2e/calculator.spec.ts needs the backend and a browser. Owned by integration (see messages)."
+    },
+    {
+      "kind": "scope",
+      "severity": "medium",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "The questionnaire header reads the company name through companiesApi.getCompany (GET /api/companies/:id, an IF-002 companies route, QuestionnairePage.tsx:7). The Done-when line says the screens use only the IF-003 routes and fields. Every diagnosis call goes through diagnosesApi (IF-003) and no direct fetch or /api literal exists in the unit screens, so the build and the IF-003 check pass. Integration should accept the companies read as a declared dependency or have the screen take the name from the IF-003 response."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build-attempt1.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build-attempt1.exit",
+      "result": "vite build completed (built in 542ms), exit 0"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (tsc --noEmit)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/typecheck-attempt1.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/typecheck-attempt1.exit"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run --config <qa temp>/vitest.probe.config.ts <qa temp>/questionnaire-r1.probe.test.ts (previous QA probe, unchanged)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1-attempt1-prev-probe.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1-attempt1-prev-probe.exit",
+      "result": "5 passed, 1 failed. The only failure is 'R1 server shape', which expects an extra GET /api/diagnoses/d1 that no longer happens. The blocks assertion in that case passes (readPendingBlocks returns the 8 blocks). The expectation is obsolete; the behavior is correct. Not an app defect."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run --config <qa temp>/vitest.probe.config.ts <qa temp>/questionnaire-r1-attempt1.probe.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1-attempt1.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/probe-r1-attempt1.exit",
+      "result": "11 passed (0 failed). Real src/api/diagnosesApi.ts and httpClient.ts run against a stubbed fetch. Covers: server-shaped 422 (error.pendingBlocks beside code) -> list read with exactly one request; error.details.pendingBlocks shape; invalid entries filtered to integers 1..8; all-invalid list -> draft fallback recomputes 8 blocks; draft GET failure -> null; 409 diagnosis_not_draft -> null; network failure -> null; body-less POST complete sends Content-Type application/json and body {}; startDiagnosis POST /api/companies/:id/diagnoses; updateDiagnosis PATCH /api/diagnoses/:id with JSON; discardDiagnosis DELETE /api/diagnoses/:id."
+    },
+    {
+      "kind": "static_check",
+      "check": "IF-003 surface of the unit screens",
+      "result": "src/features/diagnosis/* contain no direct fetch() or /api/ literal. Diagnosis calls go through diagnosesApi (IF-003 routes: POST /api/companies/:id/diagnoses, GET/PATCH/DELETE /api/diagnoses/:id, POST /api/diagnoses/:id/complete). Exception: QuestionnairePage.tsx imports getCompany from companiesApi for the header name (finding, scope, medium)."
+    },
+    {
+      "kind": "static_check",
+      "check": "server 422 contract",
+      "result": "server/services/diagnosisService.ts incomplete() -> DomainError(422, 'incomplete', ..., { pendingBlocks }); server/http/errorHandler.ts spreads error.details beside code and message into the error body, so the client receives error.pendingBlocks. httpClient.readErrorDetails folds those extra keys into ApiError.details, and readPendingBlocks reads them."
+    },
+    {
+      "kind": "prior_finding",
+      "ref": "R1 (high): a server-detected incomplete diagnosis never shows the pending-blocks alert; httpClient dropped error.pendingBlocks",
+      "status": "resolved",
+      "observed": "httpClient.ts readErrorDetails (lines 66-70) now keeps the extra error keys, so the 422 list reaches ApiError.details. The probe 'R1 server shape' reads [1..8] with exactly one request. diagnosesApi.withPendingBlocks (lines 80-91) remains as a defensive fallback for a missing list and is covered by the all-invalid case. Gate path: CompletionGate.tsx runCompletion (lines 101-120) -> readPendingBlocks -> PendingAlert."
+    },
+    {
+      "kind": "prior_finding",
+      "ref": "R2 (medium): runtime walkthrough not run (answer, reload, 'Salvo automaticamente', pending alert, gate confirm/cancel, discard confirm/cancel)",
+      "status": "partially_resolved",
+      "observed": "Covered at the API boundary by the probe (completion error paths, method and route checks, JSON writes). Still not run in a browser: see the verification_not_run finding. Autosave logic read in useDraftAutosave.ts: drain keeps the pending patch on failure, sets savedAt only on success, and reports error state."
+    },
+    {
+      "kind": "prior_finding",
+      "ref": "R3 (low): discard dialog date uses savedAt because IF-003 Diagnosis had no createdAt",
+      "status": "resolved",
+      "observed": "QuestionnairePage.tsx:172 passes diagnosis.createdAt when present and falls back to draft.savedAt. The Diagnosis type declares createdAt optional (diagnosesApi.ts:23) and the probe fixtures include it."
+    },
+    {
+      "kind": "prior_finding",
+      "ref": "LOW: CompletionGate silent when readPendingBlocks returns null for [] (no feedback)",
+      "status": "resolved",
+      "observed": "CompletionGate.tsx runCompletion sets COMPLETE_ERROR when readPendingBlocks returns null (lines 109-115), so an error is shown. The probe covers the null cases (empty and no list, 409, network)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "httpClient.ts is outside this unit's file list (it is in the lane write path src/**). The implementer changed it: readErrorDetails folds extra error keys into ApiError.details, and request() sends Content-Type application/json on POST/PUT/PATCH. QA made no change to it. The probe confirms the pendingBlocks and start/complete behavior. Other callers (companies, history archive/restore) rely on the folded details shape, so confirm them in their QA.",
+      "paths": ["src/api/httpClient.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred checks with the backend up and a browser available: pnpm test:e2e -- tests/e2e/questionnaire.spec.ts tests/e2e/calculator.spec.ts. Expected: answer, reload and see the same answers plus 'Salvo automaticamente às HH:MM'; 'Ver meu resultado' with gaps shows role=alert with links ?bloco=N; with everything answered, 'Concluir o diagnóstico?' opens and Cancelar keeps the draft; 'Descartar rascunho' confirm/cancel shows the createdAt date.",
+      "paths": ["tests/e2e/questionnaire.spec.ts", "tests/e2e/calculator.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Decide whether QuestionnairePage's company-name header may read GET /api/companies/:id through companiesApi (IF-002). The Done-when line names IF-003 only. If not, the screen should take the name from the IF-003 response or fall back to the generic label.",
+      "paths": ["src/features/diagnosis/QuestionnairePage.tsx", "src/api/companiesApi.ts"]
+    }
+  ]
+}

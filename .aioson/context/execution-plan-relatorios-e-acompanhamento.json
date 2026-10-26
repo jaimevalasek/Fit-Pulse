@@ -1,0 +1,4655 @@
+{
+  "version": 2,
+  "policy": {
+    "version": 1,
+    "context": {
+      "models": []
+    },
+    "qa": {
+      "require_pass": true,
+      "max_rework_rounds": 1
+    }
+  },
+  "generator": "aioson execution:compile@2",
+  "feature": "relatorios-e-acompanhamento",
+  "generated_at": "2026-10-25T22:48:47.131Z",
+  "source": {
+    "plan": ".aioson/context/implementation-plan-relatorios-e-acompanhamento.md",
+    "plan_digest": "50885636202d8f3ffc44fcbef6bffd13b4e5a6593ca2ca1c7fa760e873f3d293",
+    "prd": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+    "prd_digest": "989df7e30fb4795bb75e3d1c964f4d0c48902e0f615027f1524e659175cb786c",
+    "roles": ".aioson/config/execution-roles.json",
+    "roles_digest": "2430f1a2ad2982d0067885488a4c89e21ad1d7c83b115ba8f1b20acc88dfaea8",
+    "roles_runtime": true,
+    "rules": ".aioson/rules",
+    "rules_digest": "f3396d2c0a1828dbd29b5befd17da478d89be380f3468df7395cc13d0b8b255a",
+    "rules_files": 21,
+    "dev_profile": {
+      "source": ".aioson/agents/dev.md",
+      "sections": [
+        "implementation-strategy",
+        "execution-invariants"
+      ],
+      "digest": "24f8815fb13024834e332ceac2a21c3f95dcba84efb19ffb465c1edb4b8b67ca"
+    },
+    "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719"
+  },
+  "lanes": {
+    "backend": {
+      "write_paths": [
+        "prisma/**",
+        "server/**",
+        "shared/**",
+        "src/api/**",
+        "scripts/**",
+        "tests/api/**",
+        "tests/unit/**",
+        "tests/fixtures/**",
+        "manifest.json",
+        "system.json",
+        "package.json"
+      ],
+      "integration_owner": "dev",
+      "dev": {
+        "role": "backend_dev",
+        "host": "claude",
+        "model": "claude-sonnet-5-5",
+        "reasoning_effort": "xhigh",
+        "signature": {
+          "state": "valid",
+          "checked_at": "2026-10-25T22:44:42.377Z",
+          "expires_at": "2026-10-26T22:44:42.377Z"
+        }
+      },
+      "qa": {
+        "role": "qa",
+        "host": "claude",
+        "model": "claude-haiku-5-5",
+        "reasoning_effort": "high",
+        "inherited": true,
+        "signature": {
+          "state": "valid",
+          "checked_at": "2026-10-25T22:47:58.306Z",
+          "expires_at": "2026-10-26T22:47:58.306Z"
+        },
+        "max_fix_files": 3,
+        "max_rework_rounds": 1
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/backend.md",
+      "prompt_digest": "7f020ed4fdbe50eb178586406e1238555b5e6c0bcd42e414072c640c91622910",
+      "plan_host": null,
+      "plan_model": null,
+      "units": [
+        "phase-1-backend-document",
+        "phase-1-backend-files",
+        "phase-2-backend-brand",
+        "phase-6-backend-questionnaire-file",
+        "phase-1-backend-pdf",
+        "phase-3-backend-action-domain",
+        "phase-1-backend-report-api",
+        "phase-4-backend-diary-domain",
+        "phase-2-backend-brand-reports",
+        "phase-2-backend-evolution",
+        "phase-3-backend-actions-api",
+        "phase-2-backend-portfolio",
+        "phase-4-backend-diary-api",
+        "phase-3-backend-action-reports",
+        "phase-5-backend-preferences",
+        "phase-4-backend-diary-prefill",
+        "phase-5-backend-home",
+        "phase-6-backend-questionnaire-api",
+        "phase-6-backend-questionnaire-attention",
+        "phase-7-backend-backup",
+        "phase-7-backend-release"
+      ]
+    },
+    "frontend": {
+      "write_paths": [
+        "src/App.tsx",
+        "src/components/**",
+        "src/features/**",
+        "src/styles/**"
+      ],
+      "integration_owner": "dev",
+      "dev": {
+        "role": "frontend_dev",
+        "host": "claude",
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "high",
+        "signature": {
+          "state": "valid",
+          "checked_at": "2026-10-25T22:46:41.216Z",
+          "expires_at": "2026-10-26T22:46:41.216Z"
+        }
+      },
+      "qa": {
+        "role": "qa",
+        "host": "claude",
+        "model": "claude-haiku-5-5",
+        "reasoning_effort": "high",
+        "inherited": true,
+        "signature": {
+          "state": "valid",
+          "checked_at": "2026-10-25T22:47:58.306Z",
+          "expires_at": "2026-10-26T22:47:58.306Z"
+        },
+        "max_fix_files": 3,
+        "max_rework_rounds": 1
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/frontend.md",
+      "prompt_digest": "4d3c5c30258a922028eee8b8b95158fee131f470d56ecbac790e12bc61f54b95",
+      "plan_host": null,
+      "plan_model": null,
+      "units": [
+        "phase-1-frontend-company-tabs",
+        "phase-1-frontend-report-center",
+        "phase-1-frontend-result",
+        "phase-2-frontend-brand",
+        "phase-3-frontend-actions",
+        "phase-2-frontend-evolution-portfolio",
+        "phase-4-frontend-diary",
+        "phase-5-frontend-owner-home",
+        "phase-5-frontend-consultant-settings",
+        "phase-6-frontend-questionnaire",
+        "phase-7-frontend-backup"
+      ]
+    }
+  },
+  "parallel": {
+    "max_concurrent_lanes": 10
+  },
+  "on_unavailable": "ask",
+  "scheduling": "dependencies",
+  "waves": [
+    {
+      "wave": 1,
+      "units": [
+        "phase-1-backend-document",
+        "phase-1-backend-files",
+        "phase-2-backend-brand",
+        "phase-6-backend-questionnaire-file",
+        "phase-1-frontend-company-tabs"
+      ],
+      "lane_units": 5,
+      "integration_units": 0
+    },
+    {
+      "wave": 2,
+      "units": [
+        "phase-1-backend-pdf",
+        "phase-3-backend-action-domain"
+      ],
+      "lane_units": 2,
+      "integration_units": 0
+    },
+    {
+      "wave": 3,
+      "units": [
+        "phase-1-backend-report-api",
+        "phase-4-backend-diary-domain"
+      ],
+      "lane_units": 2,
+      "integration_units": 0
+    },
+    {
+      "wave": 4,
+      "units": [
+        "phase-1-frontend-report-center",
+        "phase-2-backend-brand-reports"
+      ],
+      "lane_units": 2,
+      "integration_units": 0
+    },
+    {
+      "wave": 5,
+      "units": [
+        "phase-1-frontend-result",
+        "phase-2-backend-evolution",
+        "phase-2-frontend-brand",
+        "phase-3-backend-actions-api"
+      ],
+      "lane_units": 4,
+      "integration_units": 0
+    },
+    {
+      "wave": 6,
+      "units": [
+        "phase-2-backend-portfolio",
+        "phase-3-frontend-actions",
+        "phase-4-backend-diary-api"
+      ],
+      "lane_units": 3,
+      "integration_units": 0
+    },
+    {
+      "wave": 7,
+      "units": [
+        "phase-2-frontend-evolution-portfolio",
+        "phase-3-backend-action-reports",
+        "phase-5-backend-preferences"
+      ],
+      "lane_units": 3,
+      "integration_units": 0
+    },
+    {
+      "wave": 8,
+      "units": [
+        "phase-4-backend-diary-prefill",
+        "phase-5-backend-home"
+      ],
+      "lane_units": 2,
+      "integration_units": 0
+    },
+    {
+      "wave": 9,
+      "units": [
+        "phase-4-frontend-diary",
+        "phase-5-frontend-consultant-settings",
+        "phase-6-backend-questionnaire-api"
+      ],
+      "lane_units": 3,
+      "integration_units": 0
+    },
+    {
+      "wave": 10,
+      "units": [
+        "phase-5-frontend-owner-home",
+        "phase-6-backend-questionnaire-attention",
+        "phase-7-backend-backup"
+      ],
+      "lane_units": 3,
+      "integration_units": 0
+    },
+    {
+      "wave": 11,
+      "units": [
+        "phase-7-backend-release",
+        "phase-6-frontend-questionnaire",
+        "phase-7-frontend-backup"
+      ],
+      "lane_units": 3,
+      "integration_units": 0
+    },
+    {
+      "wave": 12,
+      "units": [
+        "phase-2-integration-e2e"
+      ],
+      "lane_units": 0,
+      "integration_units": 1
+    },
+    {
+      "wave": 13,
+      "units": [
+        "phase-6-integration-e2e"
+      ],
+      "lane_units": 0,
+      "integration_units": 1
+    },
+    {
+      "wave": 14,
+      "units": [
+        "phase-7-integration-release"
+      ],
+      "lane_units": 0,
+      "integration_units": 1
+    }
+  ],
+  "edges": [
+    {
+      "from": "phase-1-backend-document",
+      "to": "phase-1-backend-pdf",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-files",
+      "to": "phase-3-backend-action-domain",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-pdf",
+      "to": "phase-1-backend-report-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-files",
+      "to": "phase-1-backend-report-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-action-domain",
+      "to": "phase-4-backend-diary-domain",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-company-tabs",
+      "to": "phase-1-frontend-report-center",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-document",
+      "to": "phase-1-frontend-report-center",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-report-api",
+      "to": "phase-1-frontend-report-center",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-files",
+      "to": "phase-1-frontend-report-center",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand",
+      "to": "phase-2-backend-brand-reports",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-report-api",
+      "to": "phase-2-backend-brand-reports",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-pdf",
+      "to": "phase-2-backend-brand-reports",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-files",
+      "to": "phase-2-backend-brand-reports",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-report-center",
+      "to": "phase-1-frontend-result",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-backend-document",
+      "to": "phase-1-frontend-result",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand-reports",
+      "to": "phase-2-backend-evolution",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand",
+      "to": "phase-2-frontend-brand",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand-reports",
+      "to": "phase-2-frontend-brand",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-report-center",
+      "to": "phase-2-frontend-brand",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-action-domain",
+      "to": "phase-3-backend-actions-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand-reports",
+      "to": "phase-3-backend-actions-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-evolution",
+      "to": "phase-2-backend-portfolio",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-actions-api",
+      "to": "phase-3-frontend-actions",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-action-domain",
+      "to": "phase-3-frontend-actions",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-result",
+      "to": "phase-3-frontend-actions",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-company-tabs",
+      "to": "phase-3-frontend-actions",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-domain",
+      "to": "phase-4-backend-diary-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-actions-api",
+      "to": "phase-4-backend-diary-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-action-domain",
+      "to": "phase-4-backend-diary-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-evolution",
+      "to": "phase-2-frontend-evolution-portfolio",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-portfolio",
+      "to": "phase-2-frontend-evolution-portfolio",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-report-center",
+      "to": "phase-2-frontend-evolution-portfolio",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-frontend-actions",
+      "to": "phase-2-frontend-evolution-portfolio",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-actions-api",
+      "to": "phase-3-backend-action-reports",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-portfolio",
+      "to": "phase-3-backend-action-reports",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand",
+      "to": "phase-5-backend-preferences",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-portfolio",
+      "to": "phase-5-backend-preferences",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-api",
+      "to": "phase-4-backend-diary-prefill",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-action-reports",
+      "to": "phase-4-backend-diary-prefill",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-actions-api",
+      "to": "phase-4-backend-diary-prefill",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-preferences",
+      "to": "phase-5-backend-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-action-reports",
+      "to": "phase-5-backend-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-api",
+      "to": "phase-5-backend-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-api",
+      "to": "phase-4-frontend-diary",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-domain",
+      "to": "phase-4-frontend-diary",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-prefill",
+      "to": "phase-4-frontend-diary",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-frontend-actions",
+      "to": "phase-4-frontend-diary",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-frontend-evolution-portfolio",
+      "to": "phase-4-frontend-diary",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-home",
+      "to": "phase-5-frontend-owner-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-preferences",
+      "to": "phase-5-frontend-owner-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-frontend-actions",
+      "to": "phase-5-frontend-owner-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-result",
+      "to": "phase-5-frontend-owner-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-frontend-diary",
+      "to": "phase-5-frontend-owner-home",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-home",
+      "to": "phase-5-frontend-consultant-settings",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-preferences",
+      "to": "phase-5-frontend-consultant-settings",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-frontend-evolution-portfolio",
+      "to": "phase-5-frontend-consultant-settings",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-frontend-brand",
+      "to": "phase-5-frontend-consultant-settings",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-file",
+      "to": "phase-6-backend-questionnaire-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-home",
+      "to": "phase-6-backend-questionnaire-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-api",
+      "to": "phase-6-backend-questionnaire-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-actions-api",
+      "to": "phase-6-backend-questionnaire-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand",
+      "to": "phase-6-backend-questionnaire-api",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-api",
+      "to": "phase-6-backend-questionnaire-attention",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-home",
+      "to": "phase-6-backend-questionnaire-attention",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-evolution",
+      "to": "phase-6-backend-questionnaire-attention",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-api",
+      "to": "phase-7-backend-backup",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-4-backend-diary-api",
+      "to": "phase-7-backend-backup",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-3-backend-actions-api",
+      "to": "phase-7-backend-backup",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-backend-preferences",
+      "to": "phase-7-backend-backup",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-backend-brand",
+      "to": "phase-7-backend-backup",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-api",
+      "to": "phase-7-backend-release",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-attention",
+      "to": "phase-7-backend-release",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-7-backend-backup",
+      "to": "phase-7-backend-release",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-api",
+      "to": "phase-6-frontend-questionnaire",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-6-backend-questionnaire-attention",
+      "to": "phase-6-frontend-questionnaire",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-5-frontend-consultant-settings",
+      "to": "phase-6-frontend-questionnaire",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-1-frontend-company-tabs",
+      "to": "phase-6-frontend-questionnaire",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-7-backend-backup",
+      "to": "phase-7-frontend-backup",
+      "gate": "after_dev"
+    },
+    {
+      "from": "phase-2-integration-e2e",
+      "to": "phase-6-integration-e2e",
+      "gate": "after_qa"
+    },
+    {
+      "from": "phase-6-integration-e2e",
+      "to": "phase-7-integration-release",
+      "gate": "after_qa"
+    }
+  ],
+  "units": [
+    {
+      "id": "phase-1-backend-document",
+      "phase": "1-backend-document",
+      "phase_number": "1",
+      "wave": 1,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "shared/report/reportDocument.ts",
+        "shared/report/paperPalette.ts",
+        "shared/format/confidenceText.ts",
+        "server/report/reportCopy.ts",
+        "server/report/documentParts.ts",
+        "server/report/reportModel.ts",
+        "tests/unit/reportModel.test.ts",
+        "tests/unit/confidenceText.test.ts",
+        "tests/unit/forbiddenTerms.test.ts"
+      ],
+      "scope": "CAP-ra-report-center, CAP-ra-diagnosis-report, CAP-ra-polish; AC-ra-05, AC-ra-09, AC-ra-10, AC-ra-11, AC-ra-23; IF-004",
+      "done": "`pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/confidenceText.test.ts tests/unit/forbiddenTerms.test.ts` passa",
+      "caps": [
+        "CAP-ra-report-center",
+        "CAP-ra-diagnosis-report",
+        "CAP-ra-polish"
+      ],
+      "acs": [
+        "AC-ra-05",
+        "AC-ra-09",
+        "AC-ra-10",
+        "AC-ra-11",
+        "AC-ra-23"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/confidenceText.test.ts tests/unit/forbiddenTerms.test.ts` passa"
+        }
+      ],
+      "depends_on": [],
+      "capability_acs": [
+        "AC-ra-01",
+        "AC-ra-02",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-06",
+        "AC-ra-07",
+        "AC-ra-08",
+        "AC-ra-24",
+        "AC-ra-25",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-60",
+        "AC-ra-61"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        },
+        {
+          "cap": "CAP-ra-diagnosis-report",
+          "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/pdfRenderer.test.ts tests/unit/forbiddenTerms.test.ts` + impressão em escala de cinza de um PDF exportado"
+        },
+        {
+          "cap": "CAP-ra-polish",
+          "command": "pnpm exec vitest run tests/unit/confidenceText.test.ts` + `pnpm exec playwright test tests/e2e/result.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 27747,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "shared/report/reportDocument.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/report/paperPalette.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/format/confidenceText.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/reportCopy.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/documentParts.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/reportModel.ts",
+            "bytes": 7271
+          },
+          {
+            "path": "tests/unit/reportModel.test.ts",
+            "bytes": 8578
+          },
+          {
+            "path": "tests/unit/confidenceText.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/forbiddenTerms.test.ts",
+            "bytes": 3711
+          }
+        ],
+        "estimated_initial_tokens": 23654,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-backend-document.md",
+      "prompt_digest": "a9dc71c1e55dcd72a55eb9fa35ad9b6545d743c4bff331cf64bd5001d87ad45d",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-document.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-document-qa.json"
+    },
+    {
+      "id": "phase-1-backend-files",
+      "phase": "1-backend-files",
+      "phase_number": "1",
+      "wave": 1,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/20261026000000_generated_files/migration.sql",
+        "server/repositories/generatedFileRepository.ts",
+        "server/files/systemOpener.ts",
+        "server/services/fileService.ts",
+        "server/routes/fileRoutes.ts",
+        "server/app.ts",
+        "server/main.ts",
+        "src/api/filesApi.ts",
+        "tests/api/fileRoutes.test.ts"
+      ],
+      "scope": "CAP-ra-pdf-delivery; AC-ra-18; IF-002",
+      "done": "`pnpm exec prisma validate` + `pnpm exec vitest run tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` passam",
+      "caps": [
+        "CAP-ra-pdf-delivery"
+      ],
+      "acs": [
+        "AC-ra-18"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec prisma validate` + `pnpm exec vitest run tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` passam"
+        }
+      ],
+      "depends_on": [],
+      "capability_acs": [
+        "AC-ra-17",
+        "AC-ra-19",
+        "AC-ra-60"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-pdf-delivery",
+          "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + \"Abrir PDF\" e \"Mostrar na pasta\" no webview do Play no Windows (OQ-ra-1)"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 17873,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "prisma/schema.prisma",
+            "bytes": 1687
+          },
+          {
+            "path": "prisma/migrations/20261026000000_generated_files/migration.sql",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/generatedFileRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/files/systemOpener.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/fileService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/routes/fileRoutes.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/app.ts",
+            "bytes": 3648
+          },
+          {
+            "path": "server/main.ts",
+            "bytes": 1503
+          },
+          {
+            "path": "src/api/filesApi.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/api/fileRoutes.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 12356,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-backend-files.md",
+      "prompt_digest": "fa2aebac6dc776f80288657d542e6f286aeab3cf78f2c30d42f87ed1ef22821a",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-files.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-files-qa.json"
+    },
+    {
+      "id": "phase-2-backend-brand",
+      "phase": "2-backend-brand",
+      "phase_number": "2",
+      "wave": 1,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "shared/format/phone.ts",
+        "shared/format/contact.ts",
+        "tests/unit/contactFormat.test.ts",
+        "server/validation/brandSchemas.ts",
+        "server/files/imageSignature.ts",
+        "tests/unit/imageSignature.test.ts",
+        "server/services/brandService.ts",
+        "server/routes/brandRoutes.ts",
+        "server/repositories/preferenceRepository.ts",
+        "server/services/preferenceService.ts"
+      ],
+      "scope": "CAP-ra-brand; AC-ra-21; IF-003, IF-004",
+      "done": "`pnpm exec vitest run tests/unit/contactFormat.test.ts tests/unit/imageSignature.test.ts tests/api/preferenceRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-brand"
+      ],
+      "acs": [
+        "AC-ra-21"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/contactFormat.test.ts tests/unit/imageSignature.test.ts tests/api/preferenceRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [],
+      "capability_acs": [
+        "AC-ra-20",
+        "AC-ra-22",
+        "AC-ra-57",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-brand",
+          "command": "pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` + `pnpm exec playwright test tests/e2e/brand.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 18094,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "shared/format/phone.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/format/contact.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/contactFormat.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/validation/brandSchemas.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/files/imageSignature.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/imageSignature.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/brandService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/routes/brandRoutes.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/preferenceRepository.ts",
+            "bytes": 1609
+          },
+          {
+            "path": "server/services/preferenceService.ts",
+            "bytes": 4333
+          }
+        ],
+        "estimated_initial_tokens": 12018,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-2-backend-brand.md",
+      "prompt_digest": "13418fa4fece8dfcc0ffd93fe75f590633d1920f76a36de4bc5fb4768e2801d3",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-brand.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-brand-qa.json"
+    },
+    {
+      "id": "phase-6-backend-questionnaire-file",
+      "phase": "6-backend-questionnaire-file",
+      "phase_number": "6",
+      "wave": 1,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/questionnaire/questionnaireFile.ts",
+        "server/questionnaire/questionnaireClient.js",
+        "server/questionnaire/questionnaireStyles.css",
+        "tests/unit/questionnaireFile.test.ts",
+        "shared/content/questionBank.ts"
+      ],
+      "scope": "CAP-ra-remote-questionnaire; AC-ra-49, AC-ra-50; IF-004",
+      "done": "`pnpm exec vitest run tests/unit/questionnaireFile.test.ts` passa e grava `test-results/questionario-exemplo.html` + smoke: teste Q-10 do dono (Gmail, Outlook e WhatsApp; Chrome, Edge, Firefox e Safari)",
+      "caps": [
+        "CAP-ra-remote-questionnaire"
+      ],
+      "acs": [
+        "AC-ra-49",
+        "AC-ra-50"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/questionnaireFile.test.ts` passa e grava `test-results/questionario-exemplo.html` + smoke: teste Q-10 do dono (Gmail, Outlook e WhatsApp; Chrome, Edge, Firefox e Safari)"
+        }
+      ],
+      "depends_on": [],
+      "capability_acs": [
+        "AC-ra-48",
+        "AC-ra-51",
+        "AC-ra-52",
+        "AC-ra-53",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-remote-questionnaire",
+          "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 20851,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/questionnaire/questionnaireFile.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/questionnaire/questionnaireClient.js",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/questionnaire/questionnaireStyles.css",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/questionnaireFile.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/content/questionBank.ts",
+            "bytes": 13127
+          }
+        ],
+        "estimated_initial_tokens": 90866,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-6-backend-questionnaire-file.md",
+      "prompt_digest": "44a7441557e5e41ac48a8136acf1a289a79a193b0b88cf098802e54c6ce68709",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-backend-questionnaire-file.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-backend-questionnaire-file-qa.json"
+    },
+    {
+      "id": "phase-1-frontend-company-tabs",
+      "phase": "1-frontend-company-tabs",
+      "phase_number": "1",
+      "wave": 1,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/App.tsx",
+        "src/features/companies/CompanyPage.tsx",
+        "src/features/companies/CompanyTabs.tsx",
+        "src/features/companies/CompanyDiagnosesTab.tsx"
+      ],
+      "scope": "CAP-ra-report-center; AC-ra-61",
+      "done": "`pnpm typecheck` passa e a aba índice mantém a linha do tempo da versão 1",
+      "caps": [
+        "CAP-ra-report-center"
+      ],
+      "acs": [
+        "AC-ra-61"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e a aba índice mantém a linha do tempo da versão 1"
+        }
+      ],
+      "depends_on": [],
+      "capability_acs": [
+        "AC-ra-01",
+        "AC-ra-02",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-60"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 20527,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/App.tsx",
+            "bytes": 4139
+          },
+          {
+            "path": "src/features/companies/CompanyPage.tsx",
+            "bytes": 12938
+          },
+          {
+            "path": "src/features/companies/CompanyTabs.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/companies/CompanyDiagnosesTab.tsx",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 92679,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-frontend-company-tabs.md",
+      "prompt_digest": "453e92a86ac826805a75fbf4a8c226d82fbaf985ae3f0d97db8423b1b667cf37",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-frontend-company-tabs.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-frontend-company-tabs-qa.json"
+    },
+    {
+      "id": "phase-1-backend-pdf",
+      "phase": "1-backend-pdf",
+      "phase_number": "1",
+      "wave": 2,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/report/pdfRenderer.ts",
+        "server/report/pdfBlocks.ts",
+        "server/report/pdfCharts.ts",
+        "tests/unit/pdfRenderer.test.ts"
+      ],
+      "scope": "CAP-ra-diagnosis-report; AC-ra-06, AC-ra-07, AC-ra-08",
+      "done": "`pnpm exec vitest run tests/unit/pdfRenderer.test.ts tests/unit/reportModel.test.ts` passa",
+      "caps": [
+        "CAP-ra-diagnosis-report"
+      ],
+      "acs": [
+        "AC-ra-06",
+        "AC-ra-07",
+        "AC-ra-08"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/pdfRenderer.test.ts tests/unit/reportModel.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-1-backend-document",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-05",
+        "AC-ra-09",
+        "AC-ra-10",
+        "AC-ra-11"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-diagnosis-report",
+          "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/pdfRenderer.test.ts tests/unit/forbiddenTerms.test.ts` + impressão em escala de cinza de um PDF exportado"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 17862,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/report/pdfRenderer.ts",
+            "bytes": 12190
+          },
+          {
+            "path": "server/report/pdfBlocks.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/pdfCharts.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/pdfRenderer.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 15026,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-backend-pdf.md",
+      "prompt_digest": "d57e9cd87b66750b43634c9d1e6242a03a4b0f9390ca6b88d8043fcd91c3b0ae",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-pdf.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-pdf-qa.json"
+    },
+    {
+      "id": "phase-3-backend-action-domain",
+      "phase": "3-backend-action-domain",
+      "phase_number": "3",
+      "wave": 2,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "shared/domain/actionProgress.ts",
+        "shared/content/actionProgressOptions.ts",
+        "shared/format/dates.ts",
+        "tests/unit/actionProgress.test.ts",
+        "tests/unit/dates.test.ts",
+        "prisma/schema.prisma",
+        "prisma/migrations/20261026000100_action_progress/migration.sql",
+        "server/repositories/actionProgressRepository.ts",
+        "shared/domain/actionPlan.ts"
+      ],
+      "scope": "CAP-ra-action-tracking, CAP-ra-action-inheritance; AC-ra-31; IF-004",
+      "done": "`pnpm exec prisma validate` + `pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts` + `node scripts/smoke-migrate.mjs` passam",
+      "caps": [
+        "CAP-ra-action-tracking",
+        "CAP-ra-action-inheritance"
+      ],
+      "acs": [
+        "AC-ra-31"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec prisma validate` + `pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts` + `node scripts/smoke-migrate.mjs` passam"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-1-backend-files",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-26",
+        "AC-ra-27",
+        "AC-ra-28",
+        "AC-ra-29",
+        "AC-ra-30",
+        "AC-ra-63",
+        "AC-ra-32",
+        "AC-ra-57"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-action-tracking",
+          "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts tests/api/actionRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/actions.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-action-inheritance",
+          "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/actionRoutes.test.ts tests/unit/actionProgress.test.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 22100,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "shared/domain/actionProgress.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/content/actionProgressOptions.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/format/dates.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/actionProgress.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/dates.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "prisma/schema.prisma",
+            "bytes": 1687
+          },
+          {
+            "path": "prisma/migrations/20261026000100_action_progress/migration.sql",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/actionProgressRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/domain/actionPlan.ts",
+            "bytes": 2398
+          }
+        ],
+        "estimated_initial_tokens": 13093,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-3-backend-action-domain.md",
+      "prompt_digest": "1cc9d2443ec37559714333d9400ddc73da4a4c0b6da52b97aceb97349f5c7c16",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-backend-action-domain.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-backend-action-domain-qa.json"
+    },
+    {
+      "id": "phase-1-backend-report-api",
+      "phase": "1-backend-report-api",
+      "phase_number": "1",
+      "wave": 3,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/validation/reportSchemas.ts",
+        "server/services/reportService.ts",
+        "server/routes/reportRoutes.ts",
+        "server/files/downloadsFolder.ts",
+        "src/api/reportApi.ts",
+        "tests/api/reportRoutes.test.ts"
+      ],
+      "scope": "CAP-ra-report-center, CAP-ra-pdf-delivery; AC-ra-17, AC-ra-19; IF-001",
+      "done": "`pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-report-center",
+        "CAP-ra-pdf-delivery"
+      ],
+      "acs": [
+        "AC-ra-17",
+        "AC-ra-19"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-1-backend-pdf",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-files",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-01",
+        "AC-ra-02",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-18",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-60",
+        "AC-ra-61"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        },
+        {
+          "cap": "CAP-ra-pdf-delivery",
+          "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + \"Abrir PDF\" e \"Mostrar na pasta\" no webview do Play no Windows (OQ-ra-1)"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 25083,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/validation/reportSchemas.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/reportService.ts",
+            "bytes": 3421
+          },
+          {
+            "path": "server/routes/reportRoutes.ts",
+            "bytes": 641
+          },
+          {
+            "path": "server/files/downloadsFolder.ts",
+            "bytes": 4573
+          },
+          {
+            "path": "src/api/reportApi.ts",
+            "bytes": 691
+          },
+          {
+            "path": "tests/api/reportRoutes.test.ts",
+            "bytes": 19551
+          }
+        ],
+        "estimated_initial_tokens": 26980,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-backend-report-api.md",
+      "prompt_digest": "8abb15a90a6520e1a7b754a0bd489bb59b17a6a9673fa603e28c379cbb35943f",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-report-api.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-backend-report-api-qa.json"
+    },
+    {
+      "id": "phase-4-backend-diary-domain",
+      "phase": "4-backend-diary-domain",
+      "phase_number": "4",
+      "wave": 3,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "shared/domain/diary.ts",
+        "tests/unit/diary.test.ts",
+        "shared/format/dates.ts",
+        "tests/unit/dates.test.ts",
+        "shared/domain/types.ts",
+        "shared/domain/unitEconomics.ts",
+        "shared/domain/completeness.ts",
+        "shared/domain/diaryPrefill.ts",
+        "tests/unit/unitEconomics.test.ts",
+        "tests/unit/diaryPrefill.test.ts"
+      ],
+      "scope": "CAP-ra-diary, CAP-ra-diary-prefill; AC-ra-41, AC-ra-44, AC-ra-45; IF-004",
+      "done": "`pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts` passa sem mudar as expectativas da versão 1",
+      "caps": [
+        "CAP-ra-diary",
+        "CAP-ra-diary-prefill"
+      ],
+      "acs": [
+        "AC-ra-41",
+        "AC-ra-44",
+        "AC-ra-45"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts` passa sem mudar as expectativas da versão 1"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-3-backend-action-domain",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-38",
+        "AC-ra-39",
+        "AC-ra-40",
+        "AC-ra-42",
+        "AC-ra-43",
+        "AC-ra-46",
+        "AC-ra-47",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-diary",
+          "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/api/diaryRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/diary.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-diary-prefill",
+          "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts` + `pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 23970,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "shared/domain/diary.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/diary.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/format/dates.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/dates.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/domain/types.ts",
+            "bytes": 9194
+          },
+          {
+            "path": "shared/domain/unitEconomics.ts",
+            "bytes": 6316
+          },
+          {
+            "path": "shared/domain/completeness.ts",
+            "bytes": 3188
+          },
+          {
+            "path": "shared/domain/diaryPrefill.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/unitEconomics.test.ts",
+            "bytes": 16779
+          },
+          {
+            "path": "tests/unit/diaryPrefill.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 29724,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-4-backend-diary-domain.md",
+      "prompt_digest": "8547b10c7673ba3fd41c661c9abb776b5381a0eb3132cd6a645139d134bc47bc",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-backend-diary-domain.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-backend-diary-domain-qa.json"
+    },
+    {
+      "id": "phase-1-frontend-report-center",
+      "phase": "1-frontend-report-center",
+      "phase_number": "1",
+      "wave": 4,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/reports/ReportCenterPage.tsx",
+        "src/features/reports/ReportOptions.tsx",
+        "src/features/reports/ReportPreview.tsx",
+        "src/features/reports/ReportSheet.tsx",
+        "src/features/reports/ReportSheetCharts.tsx",
+        "src/features/reports/useReportPreview.ts",
+        "src/features/reports/ReportDelivery.tsx",
+        "src/styles/global.css"
+      ],
+      "scope": "CAP-ra-report-center, CAP-ra-pdf-delivery; AC-ra-01, AC-ra-02, AC-ra-03, AC-ra-04, AC-ra-19, AC-ra-58; IF-001, IF-002, IF-004",
+      "done": "`pnpm typecheck` passa e as telas usam só as rotas e campos do IF-001 e do IF-002",
+      "caps": [
+        "CAP-ra-report-center",
+        "CAP-ra-pdf-delivery"
+      ],
+      "acs": [
+        "AC-ra-01",
+        "AC-ra-02",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-19",
+        "AC-ra-58"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e as telas usam só as rotas e campos do IF-001 e do IF-002"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-1-frontend-company-tabs",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-document",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-report-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-files",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-17",
+        "AC-ra-18",
+        "AC-ra-57",
+        "AC-ra-60",
+        "AC-ra-61"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        },
+        {
+          "cap": "CAP-ra-pdf-delivery",
+          "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + \"Abrir PDF\" e \"Mostrar na pasta\" no webview do Play no Windows (OQ-ra-1)"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 25603,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/reports/ReportCenterPage.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/reports/ReportOptions.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/reports/ReportPreview.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/reports/ReportSheet.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/reports/ReportSheetCharts.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/reports/useReportPreview.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/reports/ReportDelivery.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/styles/global.css",
+            "bytes": 5129
+          }
+        ],
+        "estimated_initial_tokens": 89243,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-frontend-report-center.md",
+      "prompt_digest": "a57e9c37292ec336f9e27709d77995b26aab23c1b195d3829e00889901a7142f",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-frontend-report-center.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-frontend-report-center-qa.json"
+    },
+    {
+      "id": "phase-2-backend-brand-reports",
+      "phase": "2-backend-brand-reports",
+      "phase_number": "2",
+      "wave": 4,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/app.ts",
+        "src/api/brandApi.ts",
+        "tests/api/brandRoutes.test.ts",
+        "server/report/documentParts.ts",
+        "server/report/pdfRenderer.ts",
+        "server/services/reportService.ts",
+        "tests/unit/pdfRenderer.test.ts"
+      ],
+      "scope": "CAP-ra-brand; AC-ra-21, AC-ra-22; IF-003",
+      "done": "`pnpm exec vitest run tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/reportRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-brand"
+      ],
+      "acs": [
+        "AC-ra-21",
+        "AC-ra-22"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/reportRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-backend-brand",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-report-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-pdf",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-files",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-20",
+        "AC-ra-57",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-brand",
+          "command": "pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` + `pnpm exec playwright test tests/e2e/brand.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 18101,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/app.ts",
+            "bytes": 3648
+          },
+          {
+            "path": "src/api/brandApi.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/api/brandRoutes.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/documentParts.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/pdfRenderer.ts",
+            "bytes": 12190
+          },
+          {
+            "path": "server/services/reportService.ts",
+            "bytes": 3421
+          },
+          {
+            "path": "tests/unit/pdfRenderer.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 18680,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-2-backend-brand-reports.md",
+      "prompt_digest": "37dbdfc5d744687d8a0ce27ce35a5013d9a112295040d4dfa4b06c4e55112e03",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-brand-reports.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-brand-reports-qa.json"
+    },
+    {
+      "id": "phase-1-frontend-result",
+      "phase": "1-frontend-result",
+      "phase_number": "1",
+      "wave": 5,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/result/ResultPage.tsx",
+        "src/features/result/ConfidenceNote.tsx",
+        "src/features/result/RiskList.tsx",
+        "src/features/result/ExportReportDialog.tsx",
+        "src/features/home/OwnerHome.tsx"
+      ],
+      "scope": "CAP-ra-polish, CAP-ra-report-center; AC-ra-01, AC-ra-23, AC-ra-24, AC-ra-25; IF-001, IF-004",
+      "done": "`pnpm typecheck` passa e nada importa `ExportReportDialog`",
+      "caps": [
+        "CAP-ra-polish",
+        "CAP-ra-report-center"
+      ],
+      "acs": [
+        "AC-ra-01",
+        "AC-ra-23",
+        "AC-ra-24",
+        "AC-ra-25"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e nada importa `ExportReportDialog`"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-1-frontend-report-center",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-backend-document",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-02",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-10",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-60",
+        "AC-ra-61"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        },
+        {
+          "cap": "CAP-ra-polish",
+          "command": "pnpm exec vitest run tests/unit/confidenceText.test.ts` + `pnpm exec playwright test tests/e2e/result.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 23062,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/result/ResultPage.tsx",
+            "bytes": 12257
+          },
+          {
+            "path": "src/features/result/ConfidenceNote.tsx",
+            "bytes": 1907
+          },
+          {
+            "path": "src/features/result/RiskList.tsx",
+            "bytes": 3542
+          },
+          {
+            "path": "src/features/result/ExportReportDialog.tsx",
+            "bytes": 5699
+          },
+          {
+            "path": "src/features/home/OwnerHome.tsx",
+            "bytes": 9920
+          }
+        ],
+        "estimated_initial_tokens": 102070,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-1-frontend-result.md",
+      "prompt_digest": "3b2f3767c8c7a697a6c6ff9b0dea8c3f15c1a6c1196c6ec5f1c3d603462e08f1",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-frontend-result.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-1-frontend-result-qa.json"
+    },
+    {
+      "id": "phase-2-backend-evolution",
+      "phase": "2-backend-evolution",
+      "phase_number": "2",
+      "wave": 5,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/services/historyService.ts",
+        "shared/domain/compareDiagnoses.ts",
+        "shared/content/comparisonCopy.ts",
+        "server/report/evolutionDocument.ts",
+        "server/validation/reportSchemas.ts",
+        "server/services/reportService.ts",
+        "tests/unit/evolutionDocument.test.ts",
+        "tests/fixtures/rulesV2.ts"
+      ],
+      "scope": "CAP-ra-evolution-report; AC-ra-12, AC-ra-13; IF-001, IF-004",
+      "done": "`pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/api/historyRoutes.test.ts tests/api/reportRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-evolution-report"
+      ],
+      "acs": [
+        "AC-ra-12",
+        "AC-ra-13"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/api/historyRoutes.test.ts tests/api/reportRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-backend-brand-reports",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-11",
+        "AC-ra-14"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-evolution-report",
+          "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 15552,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/services/historyService.ts",
+            "bytes": 9682
+          },
+          {
+            "path": "shared/domain/compareDiagnoses.ts",
+            "bytes": 5122
+          },
+          {
+            "path": "shared/content/comparisonCopy.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/evolutionDocument.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/validation/reportSchemas.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/reportService.ts",
+            "bytes": 3421
+          },
+          {
+            "path": "tests/unit/evolutionDocument.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/fixtures/rulesV2.ts",
+            "bytes": 549
+          }
+        ],
+        "estimated_initial_tokens": 17163,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-2-backend-evolution.md",
+      "prompt_digest": "37b917f4e6876501054e8043ed5c8501ed74d546cd241568cc0c06579ed6b85d",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-evolution.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-evolution-qa.json"
+    },
+    {
+      "id": "phase-2-frontend-brand",
+      "phase": "2-frontend-brand",
+      "phase_number": "2",
+      "wave": 5,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/components/form/PhoneField.tsx",
+        "src/features/settings/brandLogoImage.ts",
+        "src/features/settings/BrandSection.tsx",
+        "src/features/settings/SettingsPage.tsx",
+        "src/features/reports/ReportSheet.tsx",
+        "src/components/feedback/ConfirmDialog.tsx"
+      ],
+      "scope": "CAP-ra-brand; AC-ra-20, AC-ra-21; IF-003, IF-004",
+      "done": "`pnpm typecheck` passa e a seção usa só o IF-003",
+      "caps": [
+        "CAP-ra-brand"
+      ],
+      "acs": [
+        "AC-ra-20",
+        "AC-ra-21"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e a seção usa só o IF-003"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-backend-brand",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-brand-reports",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-frontend-report-center",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-22",
+        "AC-ra-57",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-brand",
+          "command": "pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` + `pnpm exec playwright test tests/e2e/brand.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 18094,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/components/form/PhoneField.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/settings/brandLogoImage.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/settings/BrandSection.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/settings/SettingsPage.tsx",
+            "bytes": 12637
+          },
+          {
+            "path": "src/features/reports/ReportSheet.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/components/feedback/ConfirmDialog.tsx",
+            "bytes": 3450
+          }
+        ],
+        "estimated_initial_tokens": 90967,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-2-frontend-brand.md",
+      "prompt_digest": "58e4cd196df66bd0a339610e6f02697cc46897e88d97195fc9822314463acb9b",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-frontend-brand.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-frontend-brand-qa.json"
+    },
+    {
+      "id": "phase-3-backend-actions-api",
+      "phase": "3-backend-actions-api",
+      "phase_number": "3",
+      "wave": 5,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/validation/actionSchemas.ts",
+        "server/services/actionService.ts",
+        "server/routes/actionRoutes.ts",
+        "server/app.ts",
+        "src/api/actionsApi.ts",
+        "tests/api/actionRoutes.test.ts",
+        "server/repositories/diagnosisRepository.ts",
+        "server/services/diagnosisService.ts",
+        "tests/api/diagnosisRoutes.test.ts"
+      ],
+      "scope": "CAP-ra-action-tracking, CAP-ra-action-inheritance; AC-ra-29, AC-ra-31, AC-ra-32; IF-005",
+      "done": "`pnpm exec vitest run tests/api/actionRoutes.test.ts tests/api/diagnosisRoutes.test.ts tests/api/historyRoutes.test.ts tests/api/companyRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-action-tracking",
+        "CAP-ra-action-inheritance"
+      ],
+      "acs": [
+        "AC-ra-29",
+        "AC-ra-31",
+        "AC-ra-32"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/actionRoutes.test.ts tests/api/diagnosisRoutes.test.ts tests/api/historyRoutes.test.ts tests/api/companyRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-3-backend-action-domain",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-brand-reports",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-26",
+        "AC-ra-27",
+        "AC-ra-28",
+        "AC-ra-30",
+        "AC-ra-63",
+        "AC-ra-57"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-action-tracking",
+          "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts tests/api/actionRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/actions.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-action-inheritance",
+          "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/actionRoutes.test.ts tests/unit/actionProgress.test.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 22116,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/validation/actionSchemas.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/actionService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/routes/actionRoutes.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/app.ts",
+            "bytes": 3648
+          },
+          {
+            "path": "src/api/actionsApi.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/api/actionRoutes.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/diagnosisRepository.ts",
+            "bytes": 4807
+          },
+          {
+            "path": "server/services/diagnosisService.ts",
+            "bytes": 8295
+          },
+          {
+            "path": "tests/api/diagnosisRoutes.test.ts",
+            "bytes": 40093
+          }
+        ],
+        "estimated_initial_tokens": 39480,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-3-backend-actions-api.md",
+      "prompt_digest": "2eb217e252beb58e0326cbd5128fd044db0c31a352399a4d9c3c04d254a29f83",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-backend-actions-api.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-backend-actions-api-qa.json"
+    },
+    {
+      "id": "phase-2-backend-portfolio",
+      "phase": "2-backend-portfolio",
+      "phase_number": "2",
+      "wave": 6,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "shared/domain/followUp.ts",
+        "tests/unit/followUp.test.ts",
+        "server/repositories/portfolioRepository.ts",
+        "server/services/portfolioService.ts",
+        "server/services/homeService.ts",
+        "tests/api/homeRoutes.test.ts",
+        "server/report/portfolioDocument.ts",
+        "tests/unit/portfolioDocument.test.ts",
+        "server/services/reportService.ts",
+        "tests/unit/forbiddenTerms.test.ts"
+      ],
+      "scope": "CAP-ra-portfolio-report, CAP-ra-evolution-report; AC-ra-11, AC-ra-15; IF-001, IF-008",
+      "done": "`pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/homeRoutes.test.ts` passa com a tela do consultor igual",
+      "caps": [
+        "CAP-ra-portfolio-report",
+        "CAP-ra-evolution-report"
+      ],
+      "acs": [
+        "AC-ra-11",
+        "AC-ra-15"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/homeRoutes.test.ts` passa com a tela do consultor igual"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-backend-evolution",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-12",
+        "AC-ra-13",
+        "AC-ra-14",
+        "AC-ra-16"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-evolution-report",
+          "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-portfolio-report",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/api/homeRoutes.test.ts` + `pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 19151,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "shared/domain/followUp.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/followUp.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/portfolioRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/portfolioService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/homeService.ts",
+            "bytes": 14739
+          },
+          {
+            "path": "tests/api/homeRoutes.test.ts",
+            "bytes": 29766
+          },
+          {
+            "path": "server/report/portfolioDocument.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/portfolioDocument.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/reportService.ts",
+            "bytes": 3421
+          },
+          {
+            "path": "tests/unit/forbiddenTerms.test.ts",
+            "bytes": 3711
+          }
+        ],
+        "estimated_initial_tokens": 35394,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-2-backend-portfolio.md",
+      "prompt_digest": "82e6a1156f48f0fdc72e5eb9884104f984e15bcd63275684ff688296314fde55",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-portfolio.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-backend-portfolio-qa.json"
+    },
+    {
+      "id": "phase-3-frontend-actions",
+      "phase": "3-frontend-actions",
+      "phase_number": "3",
+      "wave": 6,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/components/form/DateField.tsx",
+        "src/components/feedback/UndoNotice.tsx",
+        "src/features/actions/useActionStatus.ts",
+        "src/features/actions/ActionProgressRow.tsx",
+        "src/features/actions/ActionEditDialog.tsx",
+        "src/features/actions/CompanyActionsTab.tsx",
+        "src/features/companies/CompanyTabs.tsx",
+        "src/App.tsx",
+        "src/features/result/ActionPlanList.tsx",
+        "src/features/result/ResultPage.tsx"
+      ],
+      "scope": "CAP-ra-action-tracking; AC-ra-26, AC-ra-27, AC-ra-28, AC-ra-30, AC-ra-63; IF-004, IF-005",
+      "done": "`pnpm typecheck` passa e as telas usam só o IF-005",
+      "caps": [
+        "CAP-ra-action-tracking"
+      ],
+      "acs": [
+        "AC-ra-26",
+        "AC-ra-27",
+        "AC-ra-28",
+        "AC-ra-30",
+        "AC-ra-63"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e as telas usam só o IF-005"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-3-backend-actions-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-action-domain",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-frontend-result",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-frontend-company-tabs",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-29",
+        "AC-ra-57"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-action-tracking",
+          "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts tests/api/actionRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/actions.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 20251,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/components/form/DateField.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/components/feedback/UndoNotice.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/actions/useActionStatus.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/actions/ActionProgressRow.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/actions/ActionEditDialog.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/actions/CompanyActionsTab.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/companies/CompanyTabs.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/App.tsx",
+            "bytes": 4139
+          },
+          {
+            "path": "src/features/result/ActionPlanList.tsx",
+            "bytes": 1507
+          },
+          {
+            "path": "src/features/result/ResultPage.tsx",
+            "bytes": 12257
+          }
+        ],
+        "estimated_initial_tokens": 92954,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-3-frontend-actions.md",
+      "prompt_digest": "970ff351671010c0d147f30906eeacd8095d2ea892c1deeb74163361c900d153",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-frontend-actions.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-frontend-actions-qa.json"
+    },
+    {
+      "id": "phase-4-backend-diary-api",
+      "phase": "4-backend-diary-api",
+      "phase_number": "4",
+      "wave": 6,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/20261026000200_diary_entries/migration.sql",
+        "server/repositories/diaryRepository.ts",
+        "server/validation/diarySchemas.ts",
+        "server/services/diaryService.ts",
+        "server/routes/diaryRoutes.ts",
+        "server/app.ts",
+        "src/api/diaryApi.ts",
+        "tests/api/diaryRoutes.test.ts",
+        "shared/content/calculatorOptions.ts"
+      ],
+      "scope": "CAP-ra-diary, CAP-ra-diary-prefill; AC-ra-39, AC-ra-43; IF-006",
+      "done": "`pnpm exec vitest run tests/api/diaryRoutes.test.ts tests/api/companyRoutes.test.ts` + `node scripts/smoke-migrate.mjs` passam",
+      "caps": [
+        "CAP-ra-diary",
+        "CAP-ra-diary-prefill"
+      ],
+      "acs": [
+        "AC-ra-39",
+        "AC-ra-43"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/diaryRoutes.test.ts tests/api/companyRoutes.test.ts` + `node scripts/smoke-migrate.mjs` passam"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-4-backend-diary-domain",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-actions-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-action-domain",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-38",
+        "AC-ra-40",
+        "AC-ra-41",
+        "AC-ra-42",
+        "AC-ra-44",
+        "AC-ra-45",
+        "AC-ra-46",
+        "AC-ra-47",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-diary",
+          "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/api/diaryRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/diary.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-diary-prefill",
+          "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts` + `pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 23892,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "prisma/schema.prisma",
+            "bytes": 1687
+          },
+          {
+            "path": "prisma/migrations/20261026000200_diary_entries/migration.sql",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/diaryRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/validation/diarySchemas.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/diaryService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/routes/diaryRoutes.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/app.ts",
+            "bytes": 3648
+          },
+          {
+            "path": "src/api/diaryApi.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/api/diaryRoutes.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "shared/content/calculatorOptions.ts",
+            "bytes": 4231
+          }
+        ],
+        "estimated_initial_tokens": 16729,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-4-backend-diary-api.md",
+      "prompt_digest": "5af197e330a906f9b8f7841fcea6cc147abc290b623c8a3506a5554cc9549282",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-backend-diary-api.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-backend-diary-api-qa.json"
+    },
+    {
+      "id": "phase-2-frontend-evolution-portfolio",
+      "phase": "2-frontend-evolution-portfolio",
+      "phase_number": "2",
+      "wave": 7,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/reports/ReportOptions.tsx",
+        "src/features/history/ComparePage.tsx",
+        "src/features/reports/PortfolioReportPage.tsx",
+        "src/features/home/ConsultantHome.tsx",
+        "src/App.tsx"
+      ],
+      "scope": "CAP-ra-evolution-report, CAP-ra-portfolio-report; AC-ra-12, AC-ra-14, AC-ra-16; IF-001, IF-004",
+      "done": "`pnpm typecheck` passa",
+      "caps": [
+        "CAP-ra-evolution-report",
+        "CAP-ra-portfolio-report"
+      ],
+      "acs": [
+        "AC-ra-12",
+        "AC-ra-14",
+        "AC-ra-16"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-backend-evolution",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-portfolio",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-frontend-report-center",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-frontend-actions",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-11",
+        "AC-ra-13",
+        "AC-ra-15"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-evolution-report",
+          "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-portfolio-report",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/api/homeRoutes.test.ts` + `pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 18784,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/reports/ReportOptions.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/history/ComparePage.tsx",
+            "bytes": 15318
+          },
+          {
+            "path": "src/features/reports/PortfolioReportPage.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/home/ConsultantHome.tsx",
+            "bytes": 9546
+          },
+          {
+            "path": "src/App.tsx",
+            "bytes": 4139
+          }
+        ],
+        "estimated_initial_tokens": 97770,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-2-frontend-evolution-portfolio.md",
+      "prompt_digest": "8e1165cfd18a3dbf8a0dd00f8deb02fe588390c49e06c7a069a5520fa6617a78",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-frontend-evolution-portfolio.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-2-frontend-evolution-portfolio-qa.json"
+    },
+    {
+      "id": "phase-3-backend-action-reports",
+      "phase": "3-backend-action-reports",
+      "phase_number": "3",
+      "wave": 7,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/repositories/portfolioRepository.ts",
+        "server/services/portfolioService.ts",
+        "server/report/reportModel.ts",
+        "server/report/evolutionDocument.ts",
+        "server/report/portfolioDocument.ts",
+        "server/services/reportService.ts",
+        "tests/unit/reportModel.test.ts",
+        "tests/unit/evolutionDocument.test.ts",
+        "tests/unit/portfolioDocument.test.ts"
+      ],
+      "scope": "CAP-ra-action-tracking, CAP-ra-diagnosis-report, CAP-ra-evolution-report, CAP-ra-portfolio-report; AC-ra-05, AC-ra-12, AC-ra-15; IF-001",
+      "done": "`pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts tests/api/reportRoutes.test.ts tests/api/homeRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-action-tracking",
+        "CAP-ra-diagnosis-report",
+        "CAP-ra-evolution-report",
+        "CAP-ra-portfolio-report"
+      ],
+      "acs": [
+        "AC-ra-05",
+        "AC-ra-12",
+        "AC-ra-15"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts tests/api/reportRoutes.test.ts tests/api/homeRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-3-backend-actions-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-portfolio",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-06",
+        "AC-ra-07",
+        "AC-ra-08",
+        "AC-ra-09",
+        "AC-ra-10",
+        "AC-ra-11",
+        "AC-ra-13",
+        "AC-ra-14",
+        "AC-ra-16",
+        "AC-ra-26",
+        "AC-ra-27",
+        "AC-ra-28",
+        "AC-ra-29",
+        "AC-ra-30",
+        "AC-ra-63",
+        "AC-ra-57"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-diagnosis-report",
+          "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/pdfRenderer.test.ts tests/unit/forbiddenTerms.test.ts` + impressão em escala de cinza de um PDF exportado"
+        },
+        {
+          "cap": "CAP-ra-evolution-report",
+          "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-portfolio-report",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/api/homeRoutes.test.ts` + `pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-action-tracking",
+          "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts tests/api/actionRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/actions.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 31978,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/repositories/portfolioRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/portfolioService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/reportModel.ts",
+            "bytes": 7271
+          },
+          {
+            "path": "server/report/evolutionDocument.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/report/portfolioDocument.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/reportService.ts",
+            "bytes": 3421
+          },
+          {
+            "path": "tests/unit/reportModel.test.ts",
+            "bytes": 8578
+          },
+          {
+            "path": "tests/unit/evolutionDocument.test.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/portfolioDocument.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 25624,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-3-backend-action-reports.md",
+      "prompt_digest": "75f4a28d4159579e1d2ef1ea45ec67b1f208059ed809c5aaf085f72dce733d12",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-backend-action-reports.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-3-backend-action-reports-qa.json"
+    },
+    {
+      "id": "phase-5-backend-preferences",
+      "phase": "5-backend-preferences",
+      "phase_number": "5",
+      "wave": 7,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/validation/preferenceSchemas.ts",
+        "server/services/preferenceService.ts",
+        "src/api/preferencesApi.ts",
+        "tests/api/preferenceRoutes.test.ts",
+        "shared/domain/followUp.ts",
+        "tests/unit/followUp.test.ts"
+      ],
+      "scope": "CAP-ra-home-followup; AC-ra-34; IF-004, IF-009",
+      "done": "`pnpm exec vitest run tests/api/preferenceRoutes.test.ts tests/unit/followUp.test.ts` passa",
+      "caps": [
+        "CAP-ra-home-followup"
+      ],
+      "acs": [
+        "AC-ra-34"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/preferenceRoutes.test.ts tests/unit/followUp.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-backend-brand",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-portfolio",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-33",
+        "AC-ra-35",
+        "AC-ra-36",
+        "AC-ra-37",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-62"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-home-followup",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 18824,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/validation/preferenceSchemas.ts",
+            "bytes": 1527
+          },
+          {
+            "path": "server/services/preferenceService.ts",
+            "bytes": 4333
+          },
+          {
+            "path": "src/api/preferencesApi.ts",
+            "bytes": 1210
+          },
+          {
+            "path": "tests/api/preferenceRoutes.test.ts",
+            "bytes": 13230
+          },
+          {
+            "path": "shared/domain/followUp.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/unit/followUp.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 19562,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-5-backend-preferences.md",
+      "prompt_digest": "b7544d2fb285f78e6b5681c5238190f51007a5da81aff569eb26635ea5bd1980",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-backend-preferences.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-backend-preferences-qa.json"
+    },
+    {
+      "id": "phase-4-backend-diary-prefill",
+      "phase": "4-backend-diary-prefill",
+      "phase_number": "4",
+      "wave": 8,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/validation/diagnosisSchemas.ts",
+        "server/services/diagnosisService.ts",
+        "server/routes/diagnosisRoutes.ts",
+        "src/api/diagnosesApi.ts",
+        "tests/api/diagnosisRoutes.test.ts",
+        "server/report/reportModel.ts",
+        "server/report/evolutionDocument.ts",
+        "server/services/reportService.ts",
+        "tests/unit/reportModel.test.ts",
+        "tests/unit/evolutionDocument.test.ts"
+      ],
+      "scope": "CAP-ra-diary-prefill, CAP-ra-evolution-report; AC-ra-12, AC-ra-46, AC-ra-47; IF-007",
+      "done": "`pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts` passa",
+      "caps": [
+        "CAP-ra-diary-prefill",
+        "CAP-ra-evolution-report"
+      ],
+      "acs": [
+        "AC-ra-12",
+        "AC-ra-46",
+        "AC-ra-47"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-4-backend-diary-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-action-reports",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-actions-api",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-11",
+        "AC-ra-13",
+        "AC-ra-14",
+        "AC-ra-44",
+        "AC-ra-45"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-evolution-report",
+          "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-diary-prefill",
+          "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts` + `pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 20842,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/validation/diagnosisSchemas.ts",
+            "bytes": 6439
+          },
+          {
+            "path": "server/services/diagnosisService.ts",
+            "bytes": 8295
+          },
+          {
+            "path": "server/routes/diagnosisRoutes.ts",
+            "bytes": 1485
+          },
+          {
+            "path": "src/api/diagnosesApi.ts",
+            "bytes": 3901
+          },
+          {
+            "path": "tests/api/diagnosisRoutes.test.ts",
+            "bytes": 40093
+          },
+          {
+            "path": "server/report/reportModel.ts",
+            "bytes": 7271
+          },
+          {
+            "path": "server/report/evolutionDocument.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/reportService.ts",
+            "bytes": 3421
+          },
+          {
+            "path": "tests/unit/reportModel.test.ts",
+            "bytes": 8578
+          },
+          {
+            "path": "tests/unit/evolutionDocument.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 50163,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-4-backend-diary-prefill.md",
+      "prompt_digest": "7c273d7c4074a05b8ea087968b1d4bcfc5b59a7f7a64311ee061fcdfa6c6b47b",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-backend-diary-prefill.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-backend-diary-prefill-qa.json"
+    },
+    {
+      "id": "phase-5-backend-home",
+      "phase": "5-backend-home",
+      "phase_number": "5",
+      "wave": 8,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/services/portfolioService.ts",
+        "server/services/homeService.ts",
+        "src/api/homeApi.ts",
+        "tests/api/homeRoutes.test.ts",
+        "server/validation/companySchemas.ts",
+        "server/services/companyService.ts",
+        "server/app.ts",
+        "src/api/companiesApi.ts",
+        "tests/api/companyRoutes.test.ts"
+      ],
+      "scope": "CAP-ra-home-followup; AC-ra-33, AC-ra-35, AC-ra-36; IF-008, IF-010",
+      "done": "`pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/preferenceRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-home-followup"
+      ],
+      "acs": [
+        "AC-ra-33",
+        "AC-ra-35",
+        "AC-ra-36"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/preferenceRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-5-backend-preferences",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-action-reports",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-4-backend-diary-api",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-34",
+        "AC-ra-37",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-62"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-home-followup",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 19094,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/services/portfolioService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/homeService.ts",
+            "bytes": 14739
+          },
+          {
+            "path": "src/api/homeApi.ts",
+            "bytes": 3299
+          },
+          {
+            "path": "tests/api/homeRoutes.test.ts",
+            "bytes": 29766
+          },
+          {
+            "path": "server/validation/companySchemas.ts",
+            "bytes": 3178
+          },
+          {
+            "path": "server/services/companyService.ts",
+            "bytes": 6058
+          },
+          {
+            "path": "server/app.ts",
+            "bytes": 3648
+          },
+          {
+            "path": "src/api/companiesApi.ts",
+            "bytes": 2894
+          },
+          {
+            "path": "tests/api/companyRoutes.test.ts",
+            "bytes": 27463
+          }
+        ],
+        "estimated_initial_tokens": 55070,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-5-backend-home.md",
+      "prompt_digest": "b851607d9842372c1e091c44d46ea93577041572f6bdbf239f3a1a6a21e8b98b",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-backend-home.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-backend-home-qa.json"
+    },
+    {
+      "id": "phase-4-frontend-diary",
+      "phase": "4-frontend-diary",
+      "phase_number": "4",
+      "wave": 9,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/components/form/MonthField.tsx",
+        "src/components/form/MoneyField.tsx",
+        "src/features/diary/CompanyDiaryTab.tsx",
+        "src/features/diary/DiaryMonthForm.tsx",
+        "src/features/diary/DiaryCostChart.tsx",
+        "src/features/companies/CompanyTabs.tsx",
+        "src/App.tsx",
+        "src/features/diagnosis/CalculatorBlock.tsx",
+        "src/features/result/NumbersSummary.tsx"
+      ],
+      "scope": "CAP-ra-diary, CAP-ra-diary-prefill; AC-ra-38, AC-ra-40, AC-ra-41, AC-ra-42, AC-ra-44, AC-ra-46; IF-004, IF-006, IF-007",
+      "done": "`pnpm typecheck` passa e as telas usam só o IF-006 e o IF-007",
+      "caps": [
+        "CAP-ra-diary",
+        "CAP-ra-diary-prefill"
+      ],
+      "acs": [
+        "AC-ra-38",
+        "AC-ra-40",
+        "AC-ra-41",
+        "AC-ra-42",
+        "AC-ra-44",
+        "AC-ra-46"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e as telas usam só o IF-006 e o IF-007"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-4-backend-diary-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-4-backend-diary-domain",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-4-backend-diary-prefill",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-frontend-actions",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-frontend-evolution-portfolio",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-39",
+        "AC-ra-43",
+        "AC-ra-45",
+        "AC-ra-47",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-diary",
+          "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/api/diaryRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/diary.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-diary-prefill",
+          "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts` + `pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 24023,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/components/form/MonthField.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/components/form/MoneyField.tsx",
+            "bytes": 2128
+          },
+          {
+            "path": "src/features/diary/CompanyDiaryTab.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/diary/DiaryMonthForm.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/diary/DiaryCostChart.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/companies/CompanyTabs.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/App.tsx",
+            "bytes": 4139
+          },
+          {
+            "path": "src/features/diagnosis/CalculatorBlock.tsx",
+            "bytes": 11003
+          },
+          {
+            "path": "src/features/result/NumbersSummary.tsx",
+            "bytes": 3083
+          }
+        ],
+        "estimated_initial_tokens": 96065,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-4-frontend-diary.md",
+      "prompt_digest": "b60bd88a74607002cea3c132e6d8cb201fca6ec8267e754956c212952bdcfeab",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-frontend-diary.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-4-frontend-diary-qa.json"
+    },
+    {
+      "id": "phase-5-frontend-owner-home",
+      "phase": "5-frontend-owner-home",
+      "phase_number": "5",
+      "wave": 10,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/home/OwnerHome.tsx",
+        "src/features/home/ReevaluationCountdown.tsx",
+        "src/features/home/OwnerFollowUpWidgets.tsx",
+        "src/features/home/ScoreTrend.tsx",
+        "src/features/actions/ActionProgressRow.tsx",
+        "src/features/home/OnboardingTour.tsx"
+      ],
+      "scope": "CAP-ra-home-followup; AC-ra-26, AC-ra-33, AC-ra-37; IF-008, IF-009",
+      "done": "`pnpm typecheck` passa e nada importa `ScoreTrend`",
+      "caps": [
+        "CAP-ra-home-followup"
+      ],
+      "acs": [
+        "AC-ra-26",
+        "AC-ra-33",
+        "AC-ra-37"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e nada importa `ScoreTrend`"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-5-backend-home",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-5-backend-preferences",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-frontend-actions",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-frontend-result",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-4-frontend-diary",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-34",
+        "AC-ra-35",
+        "AC-ra-36",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-62"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-home-followup",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 19108,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/home/OwnerHome.tsx",
+            "bytes": 9920
+          },
+          {
+            "path": "src/features/home/ReevaluationCountdown.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/home/OwnerFollowUpWidgets.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/home/ScoreTrend.tsx",
+            "bytes": 5301
+          },
+          {
+            "path": "src/features/actions/ActionProgressRow.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/home/OnboardingTour.tsx",
+            "bytes": 11221
+          }
+        ],
+        "estimated_initial_tokens": 96652,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-5-frontend-owner-home.md",
+      "prompt_digest": "497c3c532f3dda77f474a86725543adfddc44e622fb49aa46de40a840faa7bd9",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-frontend-owner-home.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-frontend-owner-home-qa.json"
+    },
+    {
+      "id": "phase-5-frontend-consultant-settings",
+      "phase": "5-frontend-consultant-settings",
+      "phase_number": "5",
+      "wave": 9,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/home/ConsultantHome.tsx",
+        "src/features/companies/CompaniesPage.tsx",
+        "src/features/settings/ReevaluationSection.tsx",
+        "src/features/settings/SettingsPage.tsx"
+      ],
+      "scope": "CAP-ra-home-followup; AC-ra-34, AC-ra-35, AC-ra-62; IF-008, IF-009, IF-010",
+      "done": "`pnpm typecheck` passa",
+      "caps": [
+        "CAP-ra-home-followup"
+      ],
+      "acs": [
+        "AC-ra-34",
+        "AC-ra-35",
+        "AC-ra-62"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-5-backend-home",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-5-backend-preferences",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-frontend-evolution-portfolio",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-frontend-brand",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-33",
+        "AC-ra-36",
+        "AC-ra-37",
+        "AC-ra-57",
+        "AC-ra-58"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-home-followup",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 18890,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/home/ConsultantHome.tsx",
+            "bytes": 9546
+          },
+          {
+            "path": "src/features/companies/CompaniesPage.tsx",
+            "bytes": 11759
+          },
+          {
+            "path": "src/features/settings/ReevaluationSection.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/settings/SettingsPage.tsx",
+            "bytes": 12637
+          }
+        ],
+        "estimated_initial_tokens": 100293,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-5-frontend-consultant-settings.md",
+      "prompt_digest": "b5be8c6fb52dd3ffe307a6b29c7f840d178dc4e32ed0717456835d980e35dcc2",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-frontend-consultant-settings.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-5-frontend-consultant-settings-qa.json"
+    },
+    {
+      "id": "phase-6-backend-questionnaire-api",
+      "phase": "6-backend-questionnaire-api",
+      "phase_number": "6",
+      "wave": 9,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/20261026000300_questionnaire_sends/migration.sql",
+        "server/validation/questionnaireSchemas.ts",
+        "server/repositories/questionnaireRepository.ts",
+        "server/repositories/diagnosisRepository.ts",
+        "server/services/questionnaireService.ts",
+        "server/routes/questionnaireRoutes.ts",
+        "server/app.ts",
+        "src/api/questionnaireApi.ts",
+        "tests/api/questionnaireRoutes.test.ts"
+      ],
+      "scope": "CAP-ra-remote-questionnaire; AC-ra-48, AC-ra-51, AC-ra-52, AC-ra-53; IF-011",
+      "done": "`pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/diagnosisRoutes.test.ts` + `node scripts/smoke-migrate.mjs` passam",
+      "caps": [
+        "CAP-ra-remote-questionnaire"
+      ],
+      "acs": [
+        "AC-ra-48",
+        "AC-ra-51",
+        "AC-ra-52",
+        "AC-ra-53"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/diagnosisRoutes.test.ts` + `node scripts/smoke-migrate.mjs` passam"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-6-backend-questionnaire-file",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-5-backend-home",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-4-backend-diary-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-actions-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-brand",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-49",
+        "AC-ra-50",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-remote-questionnaire",
+          "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 21284,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "prisma/schema.prisma",
+            "bytes": 1687
+          },
+          {
+            "path": "prisma/migrations/20261026000300_questionnaire_sends/migration.sql",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/validation/questionnaireSchemas.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/questionnaireRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/repositories/diagnosisRepository.ts",
+            "bytes": 4807
+          },
+          {
+            "path": "server/services/questionnaireService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/routes/questionnaireRoutes.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/app.ts",
+            "bytes": 3648
+          },
+          {
+            "path": "src/api/questionnaireApi.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "tests/api/questionnaireRoutes.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 15713,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-6-backend-questionnaire-api.md",
+      "prompt_digest": "d540bd3116008d2edcda4710f2a32c61a799b56ac5206f0e122f7ec4b83272cf",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-backend-questionnaire-api.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-backend-questionnaire-api-qa.json"
+    },
+    {
+      "id": "phase-6-backend-questionnaire-attention",
+      "phase": "6-backend-questionnaire-attention",
+      "phase_number": "6",
+      "wave": 10,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/repositories/portfolioRepository.ts",
+        "server/services/portfolioService.ts",
+        "server/services/historyService.ts",
+        "server/validation/companySchemas.ts",
+        "src/api/historyApi.ts",
+        "tests/api/questionnaireRoutes.test.ts"
+      ],
+      "scope": "CAP-ra-remote-questionnaire; AC-ra-35, AC-ra-48, AC-ra-51; IF-008, IF-010, IF-011",
+      "done": "`pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/historyRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-remote-questionnaire"
+      ],
+      "acs": [
+        "AC-ra-35",
+        "AC-ra-48",
+        "AC-ra-51"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/historyRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-6-backend-questionnaire-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-5-backend-home",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-evolution",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-49",
+        "AC-ra-50",
+        "AC-ra-52",
+        "AC-ra-53",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-remote-questionnaire",
+          "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 20906,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/repositories/portfolioRepository.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/portfolioService.ts",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "server/services/historyService.ts",
+            "bytes": 9682
+          },
+          {
+            "path": "server/validation/companySchemas.ts",
+            "bytes": 3178
+          },
+          {
+            "path": "src/api/historyApi.ts",
+            "bytes": 2276
+          },
+          {
+            "path": "tests/api/questionnaireRoutes.test.ts",
+            "bytes": 0,
+            "new_file": true
+          }
+        ],
+        "estimated_initial_tokens": 18021,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-6-backend-questionnaire-attention.md",
+      "prompt_digest": "7f21c029f235e170e3253fa93a934eb5d3b6ca469daeb462c9e43a65e3761b4c",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-backend-questionnaire-attention.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-backend-questionnaire-attention-qa.json"
+    },
+    {
+      "id": "phase-7-backend-backup",
+      "phase": "7-backend-backup",
+      "phase_number": "7",
+      "wave": 10,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "server/validation/backupSchemas.ts",
+        "server/services/backupService.ts",
+        "src/api/backupApi.ts",
+        "tests/api/backupRoutes.test.ts",
+        "tests/api/playRoutes.test.ts",
+        "server/services/assistantSummaryService.ts",
+        "server/routes/playRoutes.ts"
+      ],
+      "scope": "CAP-ra-data-continuity; AC-ra-55, AC-ra-56; IF-012",
+      "done": "`pnpm exec vitest run tests/api/backupRoutes.test.ts tests/api/playRoutes.test.ts` passa",
+      "caps": [
+        "CAP-ra-data-continuity"
+      ],
+      "acs": [
+        "AC-ra-55",
+        "AC-ra-56"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm exec vitest run tests/api/backupRoutes.test.ts tests/api/playRoutes.test.ts` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-6-backend-questionnaire-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-4-backend-diary-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-3-backend-actions-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-5-backend-preferences",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-2-backend-brand",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-54"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-data-continuity",
+          "command": "pnpm build` + `pnpm test` + `pnpm test:e2e` + `node scripts/smoke-migrate.mjs` + `node scripts/smoke-boot.mjs` + `node scripts/smoke-store-package.mjs` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + update de uma instalação da versão 1 com dados no Play"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 13362,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "server/validation/backupSchemas.ts",
+            "bytes": 5792
+          },
+          {
+            "path": "server/services/backupService.ts",
+            "bytes": 8745
+          },
+          {
+            "path": "src/api/backupApi.ts",
+            "bytes": 1373
+          },
+          {
+            "path": "tests/api/backupRoutes.test.ts",
+            "bytes": 30482
+          },
+          {
+            "path": "tests/api/playRoutes.test.ts",
+            "bytes": 22511
+          },
+          {
+            "path": "server/services/assistantSummaryService.ts",
+            "bytes": 2899
+          },
+          {
+            "path": "server/routes/playRoutes.ts",
+            "bytes": 2156
+          }
+        ],
+        "estimated_initial_tokens": 43660,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-7-backend-backup.md",
+      "prompt_digest": "0513c5a51042dd3836ddd9825fcd5a84bca105b7632d7fc9780b5a2893b8e790",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-7-backend-backup.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-7-backend-backup-qa.json"
+    },
+    {
+      "id": "phase-7-backend-release",
+      "phase": "7-backend-release",
+      "phase_number": "7",
+      "wave": 11,
+      "owner": "lane",
+      "lane": "backend",
+      "files": [
+        "manifest.json",
+        "system.json",
+        "package.json",
+        "scripts/smoke-migrate.mjs",
+        "scripts/smoke-store-package.mjs"
+      ],
+      "scope": "CAP-ra-data-continuity; AC-ra-54",
+      "done": "`node scripts/smoke-migrate.mjs` + `node --check scripts/smoke-store-package.mjs` passam",
+      "caps": [
+        "CAP-ra-data-continuity"
+      ],
+      "acs": [
+        "AC-ra-54"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`node scripts/smoke-migrate.mjs` + `node --check scripts/smoke-store-package.mjs` passam"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-6-backend-questionnaire-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-6-backend-questionnaire-attention",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-7-backend-backup",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-55",
+        "AC-ra-56"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-data-continuity",
+          "command": "pnpm build` + `pnpm test` + `pnpm test:e2e` + `node scripts/smoke-migrate.mjs` + `node scripts/smoke-boot.mjs` + `node scripts/smoke-store-package.mjs` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + update de uma instalação da versão 1 com dados no Play"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 12996,
+        "reads": [],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "manifest.json",
+            "bytes": 741
+          },
+          {
+            "path": "system.json",
+            "bytes": 208
+          },
+          {
+            "path": "package.json",
+            "bytes": 2209
+          },
+          {
+            "path": "scripts/smoke-migrate.mjs",
+            "bytes": 12099
+          },
+          {
+            "path": "scripts/smoke-store-package.mjs",
+            "bytes": 14672
+          }
+        ],
+        "estimated_initial_tokens": 21463,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-7-backend-release.md",
+      "prompt_digest": "be5bce40fe9743e7863c4fa854a55c018c41b691e343f6c0ff1b604b6844deaa",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-7-backend-release.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-7-backend-release-qa.json"
+    },
+    {
+      "id": "phase-6-frontend-questionnaire",
+      "phase": "6-frontend-questionnaire",
+      "phase_number": "6",
+      "wave": 11,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+        "src/features/questionnaire/ImportAnswersDialog.tsx",
+        "src/features/companies/CompanyPage.tsx",
+        "src/features/history/CompanyTimeline.tsx",
+        "src/features/home/ConsultantHome.tsx",
+        "src/features/companies/CompaniesPage.tsx"
+      ],
+      "scope": "CAP-ra-remote-questionnaire; AC-ra-48, AC-ra-51, AC-ra-52, AC-ra-53; IF-011",
+      "done": "`pnpm typecheck` passa e os diálogos usam só o IF-011",
+      "caps": [
+        "CAP-ra-remote-questionnaire"
+      ],
+      "acs": [
+        "AC-ra-48",
+        "AC-ra-51",
+        "AC-ra-52",
+        "AC-ra-53"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa e os diálogos usam só o IF-011"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-6-backend-questionnaire-api",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-6-backend-questionnaire-attention",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-5-frontend-consultant-settings",
+          "gate": "after_dev"
+        },
+        {
+          "unit": "phase-1-frontend-company-tabs",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-49",
+        "AC-ra-50",
+        "AC-ra-59"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-remote-questionnaire",
+          "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 20949,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/questionnaire/ImportAnswersDialog.tsx",
+            "bytes": 0,
+            "new_file": true
+          },
+          {
+            "path": "src/features/companies/CompanyPage.tsx",
+            "bytes": 12938
+          },
+          {
+            "path": "src/features/history/CompanyTimeline.tsx",
+            "bytes": 12265
+          },
+          {
+            "path": "src/features/home/ConsultantHome.tsx",
+            "bytes": 9546
+          },
+          {
+            "path": "src/features/companies/CompaniesPage.tsx",
+            "bytes": 11759
+          }
+        ],
+        "estimated_initial_tokens": 107605,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-6-frontend-questionnaire.md",
+      "prompt_digest": "363388eaff3c062f9f7a1a8a019e37d64a13d55a890a8e82b2d55a2d204fe05f",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-frontend-questionnaire.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-6-frontend-questionnaire-qa.json"
+    },
+    {
+      "id": "phase-7-frontend-backup",
+      "phase": "7-frontend-backup",
+      "phase_number": "7",
+      "wave": 11,
+      "owner": "lane",
+      "lane": "frontend",
+      "files": [
+        "src/features/settings/BackupSection.tsx"
+      ],
+      "scope": "CAP-ra-data-continuity; AC-ra-55; IF-012",
+      "done": "`pnpm typecheck` passa",
+      "caps": [
+        "CAP-ra-data-continuity"
+      ],
+      "acs": [
+        "AC-ra-55"
+      ],
+      "verification": [
+        {
+          "cap": null,
+          "command": "`pnpm typecheck` passa"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-7-backend-backup",
+          "gate": "after_dev"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-54",
+        "AC-ra-56"
+      ],
+      "integration_verification": [
+        {
+          "cap": "CAP-ra-data-continuity",
+          "command": "pnpm build` + `pnpm test` + `pnpm test:e2e` + `node scripts/smoke-migrate.mjs` + `node scripts/smoke-boot.mjs` + `node scripts/smoke-store-package.mjs` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + update de uma instalação da versão 1 com dados no Play"
+        }
+      ],
+      "context": {
+        "prompt_bytes": 12708,
+        "reads": [
+          {
+            "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+            "bytes": 147753,
+            "why": "frontend files in this unit"
+          }
+        ],
+        "window": {
+          "limit_tokens": null,
+          "source": "unknown"
+        },
+        "source_files": [
+          {
+            "path": "src/features/settings/BackupSection.tsx",
+            "bytes": 8366
+          }
+        ],
+        "estimated_initial_tokens": 84414,
+        "estimate_basis": "utf8_bytes_divided_by_2"
+      },
+      "prompt": ".aioson/context/execution-prompts/relatorios-e-acompanhamento/phase-7-frontend-backup.md",
+      "prompt_digest": "ea2aa6be2bde56abae0f114bcc7223ea3eb1aabd3c60bf679bb97003b8ea5fe7",
+      "report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-7-frontend-backup.json",
+      "qa_report": ".aioson/context/reports/relatorios-e-acompanhamento/{run_id}/phase-7-frontend-backup-qa.json"
+    },
+    {
+      "id": "phase-2-integration-e2e",
+      "phase": "2-integration-e2e",
+      "phase_number": "2",
+      "wave": 12,
+      "owner": "integration",
+      "lane": null,
+      "files": [
+        "tests/e2e/support/fixtures.ts",
+        "tests/e2e/report.spec.ts",
+        "tests/e2e/result.spec.ts",
+        "tests/e2e/brand.spec.ts",
+        "tests/e2e/portfolioReport.spec.ts",
+        ".aioson/plans/relatorios-e-acompanhamento/harness-contract.json"
+      ],
+      "scope": "CAP-ra-report-center, CAP-ra-pdf-delivery, CAP-ra-polish, CAP-ra-brand, CAP-ra-evolution-report, CAP-ra-portfolio-report; AC-ra-02, AC-ra-17, AC-ra-18, AC-ra-20, AC-ra-60, AC-ra-61; as demais ACs das CAPs citadas viajam como contexto e são exercitadas pelas specs desta linha",
+      "done": "`pnpm build` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/result.spec.ts tests/e2e/brand.spec.ts tests/e2e/portfolioReport.spec.ts tests/e2e/history.spec.ts` + smoke: no webview do Play no Windows, exportar os três PDFs com marca, \"Abrir PDF\" e \"Mostrar na pasta\"",
+      "caps": [
+        "CAP-ra-report-center",
+        "CAP-ra-pdf-delivery",
+        "CAP-ra-polish",
+        "CAP-ra-brand",
+        "CAP-ra-evolution-report",
+        "CAP-ra-portfolio-report"
+      ],
+      "acs": [
+        "AC-ra-02",
+        "AC-ra-17",
+        "AC-ra-18",
+        "AC-ra-20",
+        "AC-ra-60",
+        "AC-ra-61"
+      ],
+      "verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        },
+        {
+          "cap": "CAP-ra-pdf-delivery",
+          "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + \"Abrir PDF\" e \"Mostrar na pasta\" no webview do Play no Windows (OQ-ra-1)"
+        },
+        {
+          "cap": "CAP-ra-polish",
+          "command": "pnpm exec vitest run tests/unit/confidenceText.test.ts` + `pnpm exec playwright test tests/e2e/result.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-brand",
+          "command": "pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` + `pnpm exec playwright test tests/e2e/brand.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-evolution-report",
+          "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-portfolio-report",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/api/homeRoutes.test.ts` + `pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "depends_on": [],
+      "capability_acs": [
+        "AC-ra-01",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-10",
+        "AC-ra-11",
+        "AC-ra-12",
+        "AC-ra-13",
+        "AC-ra-14",
+        "AC-ra-15",
+        "AC-ra-16",
+        "AC-ra-19",
+        "AC-ra-21",
+        "AC-ra-22",
+        "AC-ra-23",
+        "AC-ra-24",
+        "AC-ra-25",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-59"
+      ]
+    },
+    {
+      "id": "phase-6-integration-e2e",
+      "phase": "6-integration-e2e",
+      "phase_number": "6",
+      "wave": 13,
+      "owner": "integration",
+      "lane": null,
+      "files": [
+        "tests/e2e/actions.spec.ts",
+        "tests/e2e/diary.spec.ts",
+        "tests/e2e/calculator.spec.ts",
+        "tests/e2e/home.spec.ts",
+        "tests/e2e/settings.spec.ts",
+        "tests/e2e/companies.spec.ts",
+        "tests/e2e/remoteQuestionnaire.spec.ts"
+      ],
+      "scope": "CAP-ra-action-tracking, CAP-ra-action-inheritance, CAP-ra-diary, CAP-ra-diary-prefill, CAP-ra-home-followup, CAP-ra-remote-questionnaire; AC-ra-27, AC-ra-31, AC-ra-36, AC-ra-39, AC-ra-49, AC-ra-52; as demais ACs das CAPs citadas viajam como contexto e são exercitadas pelas specs desta linha",
+      "done": "`pnpm build` + `pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/diary.spec.ts tests/e2e/calculator.spec.ts tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/questionnaire.spec.ts tests/e2e/firstRun.spec.ts` + smoke: no Play, concluir um segundo diagnóstico com 3 meses de diário e importar respostas de outro navegador",
+      "caps": [
+        "CAP-ra-action-tracking",
+        "CAP-ra-action-inheritance",
+        "CAP-ra-diary",
+        "CAP-ra-diary-prefill",
+        "CAP-ra-home-followup",
+        "CAP-ra-remote-questionnaire"
+      ],
+      "acs": [
+        "AC-ra-27",
+        "AC-ra-31",
+        "AC-ra-36",
+        "AC-ra-39",
+        "AC-ra-49",
+        "AC-ra-52"
+      ],
+      "verification": [
+        {
+          "cap": "CAP-ra-action-tracking",
+          "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts tests/api/actionRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/actions.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-action-inheritance",
+          "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/actionRoutes.test.ts tests/unit/actionProgress.test.ts"
+        },
+        {
+          "cap": "CAP-ra-diary",
+          "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/api/diaryRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/diary.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-diary-prefill",
+          "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts` + `pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-home-followup",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-remote-questionnaire",
+          "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-2-integration-e2e",
+          "gate": "after_qa"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-26",
+        "AC-ra-28",
+        "AC-ra-29",
+        "AC-ra-30",
+        "AC-ra-63",
+        "AC-ra-32",
+        "AC-ra-33",
+        "AC-ra-34",
+        "AC-ra-35",
+        "AC-ra-37",
+        "AC-ra-38",
+        "AC-ra-40",
+        "AC-ra-41",
+        "AC-ra-42",
+        "AC-ra-43",
+        "AC-ra-44",
+        "AC-ra-45",
+        "AC-ra-46",
+        "AC-ra-47",
+        "AC-ra-48",
+        "AC-ra-50",
+        "AC-ra-51",
+        "AC-ra-53",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-59",
+        "AC-ra-62"
+      ]
+    },
+    {
+      "id": "phase-7-integration-release",
+      "phase": "7-integration-release",
+      "phase_number": "7",
+      "wave": 14,
+      "owner": "integration",
+      "lane": null,
+      "files": [
+        "tests/e2e/backup.spec.ts",
+        "tests/e2e/accessibility.spec.ts"
+      ],
+      "scope": "CAP-ra-data-continuity, CAP-ra-report-center, CAP-ra-brand, CAP-ra-diary, CAP-ra-home-followup, CAP-ra-remote-questionnaire; AC-ra-54, AC-ra-55, AC-ra-57, AC-ra-58, AC-ra-59, AC-ra-60",
+      "done": "`pnpm build` + `pnpm test` + `pnpm test:e2e` + `node scripts/smoke-migrate.mjs` + `node scripts/smoke-boot.mjs` + `node scripts/smoke-store-package.mjs` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + smoke: update de uma instalação da versão 1 com dados no Play",
+      "caps": [
+        "CAP-ra-data-continuity",
+        "CAP-ra-report-center",
+        "CAP-ra-brand",
+        "CAP-ra-diary",
+        "CAP-ra-home-followup",
+        "CAP-ra-remote-questionnaire"
+      ],
+      "acs": [
+        "AC-ra-54",
+        "AC-ra-55",
+        "AC-ra-57",
+        "AC-ra-58",
+        "AC-ra-59",
+        "AC-ra-60"
+      ],
+      "verification": [
+        {
+          "cap": "CAP-ra-report-center",
+          "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+        },
+        {
+          "cap": "CAP-ra-brand",
+          "command": "pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` + `pnpm exec playwright test tests/e2e/brand.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-diary",
+          "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/api/diaryRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/diary.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-home-followup",
+          "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-remote-questionnaire",
+          "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+        },
+        {
+          "cap": "CAP-ra-data-continuity",
+          "command": "pnpm build` + `pnpm test` + `pnpm test:e2e` + `node scripts/smoke-migrate.mjs` + `node scripts/smoke-boot.mjs` + `node scripts/smoke-store-package.mjs` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + update de uma instalação da versão 1 com dados no Play"
+        }
+      ],
+      "depends_on": [
+        {
+          "unit": "phase-6-integration-e2e",
+          "gate": "after_qa"
+        }
+      ],
+      "capability_acs": [
+        "AC-ra-01",
+        "AC-ra-02",
+        "AC-ra-03",
+        "AC-ra-04",
+        "AC-ra-20",
+        "AC-ra-21",
+        "AC-ra-22",
+        "AC-ra-33",
+        "AC-ra-34",
+        "AC-ra-35",
+        "AC-ra-36",
+        "AC-ra-37",
+        "AC-ra-38",
+        "AC-ra-39",
+        "AC-ra-40",
+        "AC-ra-41",
+        "AC-ra-42",
+        "AC-ra-43",
+        "AC-ra-48",
+        "AC-ra-49",
+        "AC-ra-50",
+        "AC-ra-51",
+        "AC-ra-52",
+        "AC-ra-53",
+        "AC-ra-56",
+        "AC-ra-61",
+        "AC-ra-62"
+      ]
+    }
+  ],
+  "integration": {
+    "owner": "dev",
+    "units": [
+      "phase-2-integration-e2e",
+      "phase-6-integration-e2e",
+      "phase-7-integration-release"
+    ],
+    "role": {
+      "role": "integration_dev",
+      "host": "claude",
+      "model": "claude-opus-5-5",
+      "reasoning_effort": "xhigh"
+    },
+    "verification": [
+      {
+        "cap": "CAP-ra-report-center",
+        "command": "pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + central aberta no dev-link do Play"
+      },
+      {
+        "cap": "CAP-ra-diagnosis-report",
+        "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/pdfRenderer.test.ts tests/unit/forbiddenTerms.test.ts` + impressão em escala de cinza de um PDF exportado"
+      },
+      {
+        "cap": "CAP-ra-polish",
+        "command": "pnpm exec vitest run tests/unit/confidenceText.test.ts` + `pnpm exec playwright test tests/e2e/result.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-pdf-delivery",
+        "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + \"Abrir PDF\" e \"Mostrar na pasta\" no webview do Play no Windows (OQ-ra-1)"
+      },
+      {
+        "cap": "CAP-ra-brand",
+        "command": "pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` + `pnpm exec playwright test tests/e2e/brand.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-remote-questionnaire",
+        "command": "Teste Q-10 aprovado pelo dono + `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-action-tracking",
+        "command": "pnpm exec vitest run tests/unit/actionProgress.test.ts tests/unit/dates.test.ts tests/api/actionRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/actions.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-action-inheritance",
+        "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/actionRoutes.test.ts tests/unit/actionProgress.test.ts"
+      },
+      {
+        "cap": "CAP-ra-diary",
+        "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/dates.test.ts tests/api/diaryRoutes.test.ts` + `node scripts/smoke-migrate.mjs` + `pnpm exec playwright test tests/e2e/diary.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-diary-prefill",
+        "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diaryPrefill.test.ts tests/unit/diagnosisRules.test.ts tests/unit/evaluateDiagnosis.test.ts tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts` + `pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-evolution-report",
+        "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/unit/forbiddenTerms.test.ts tests/api/historyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-portfolio-report",
+        "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/unit/portfolioDocument.test.ts tests/api/homeRoutes.test.ts` + `pnpm exec playwright test tests/e2e/portfolioReport.spec.ts tests/e2e/home.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-home-followup",
+        "command": "pnpm exec vitest run tests/unit/followUp.test.ts tests/api/homeRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/companyRoutes.test.ts` + `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts"
+      },
+      {
+        "cap": "CAP-ra-data-continuity",
+        "command": "pnpm build` + `pnpm test` + `pnpm test:e2e` + `node scripts/smoke-migrate.mjs` + `node scripts/smoke-boot.mjs` + `node scripts/smoke-store-package.mjs` + `aioson harness:check . --slug=relatorios-e-acompanhamento` + update de uma instalação da versão 1 com dados no Play"
+      }
+    ]
+  },
+  "warnings": [
+    {
+      "check": "unit_spans_surfaces",
+      "message": "unit phase-6-backend-questionnaire-file (phase \"6-backend-questionnaire-file\") writes backend (server/questionnaire/questionnaireFile.ts, server/questionnaire/questionnaireClient.js) and frontend (server/questionnaire/questionnaireStyles.css) files in one context — one row per lane/surface in the same wave, joined by Interface Contract rows (IF-*), lets each side run on its own model",
+      "unit": "phase-6-backend-questionnaire-file",
+      "backend": [
+        "server/questionnaire/questionnaireFile.ts",
+        "server/questionnaire/questionnaireClient.js"
+      ],
+      "frontend": [
+        "server/questionnaire/questionnaireStyles.css"
+      ]
+    }
+  ],
+  "summary": {
+    "lanes": 2,
+    "units": 35,
+    "lane_units": 32,
+    "integration_units": 3,
+    "waves": 14,
+    "edges": 80,
+    "processes": 64,
+    "parallelism": {
+      "max_concurrent_units": 5,
+      "serial_chain": 11,
+      "critical_path_processes": 22,
+      "serial": false
+    },
+    "ceiling": {
+      "max_files": 10,
+      "max_acs": 6
+    },
+    "context_bytes_max": 215210
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "fb9387d5-49f2-4677-a695-a3d4e9048feb",
+  "unit_id": "phase-2-frontend-report",
+  "phase": "2-frontend-report",
+  "wave": 8,
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "started_at": "2026-10-23T01:47:00-03:00",
+  "finished_at": "2026-10-23T01:50:30-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-dm-report"],
+    "acceptance_criteria": ["AC-dm-36"],
+    "interfaces": ["IF-006"],
+    "files_reviewed": [
+      "src/api/reportApi.ts",
+      "src/features/result/ExportReportDialog.tsx",
+      "src/features/result/ResultPage.tsx"
+    ]
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "ResultPage.tsx has 19 top-level import lines by grep (the implementer reported 17), above the advisory limit of 15. The overage predates this unit and reducing it would mean moving ResultHeader or ExportReportDialog wiring out of this file, which is outside the unit. No edit made; not a local failure."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "tests/unit/reportModel.test.ts, tests/api/reportRoutes.test.ts",
+      "summary": "Not run: `pnpm test -- tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts`. Capability-wide check owned by integration per the unit contract; this unit's local Done when is `pnpm build`. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "Not run: `pnpm test:e2e -- tests/e2e/report.spec.ts`. The file does not exist yet at review time (phase 4 integration-e2e-features produces it). Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-report",
+      "ac": "AC-dm-36",
+      "path": "Play dev-link smoke",
+      "summary": "Not run: Play dev-link smoke (open a completed result, click Exportar PDF, Salvar PDF, open the file in <home>/Downloads). Needs the running AIOSON Play desktop, which is not available in this unattended session. Deferred to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-report-qa/build.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-report-qa/build.exit",
+      "summary": "Run in the foreground. tsc --noEmit and vite build finished with exit 0 (build ~1s). The log has no error or warning lines."
+    },
+    {
+      "kind": "review",
+      "summary": "Read the three unit files. exportReport() posts to /api/diagnoses/:id/report with no body; httpClient.post sends `{}` as JSON for body-less writes (src/api/httpClient.ts). The server route (server/routes/reportRoutes.ts) is mounted in server/app.ts and returns { fileName, directory } from saveFile. The PDF button sits in ResultHeader's actions div next to CompareWithLink (ResultPage.tsx). The dialog keeps the Radix close from firing mid-save: handleOpenChange ignores close while busy, and handleSave calls event.preventDefault(), which makes Radix Close skip onOpenChange. Success shows role=status result-pdf-saved; failure shows role=alert result-pdf-error with 'Tentar de novo'."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred AC-dm-36 checks to run after all producers finish: (1) `pnpm test -- tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts`; (2) `pnpm test:e2e -- tests/e2e/report.spec.ts`, which must be created by phase 4 and should export from the result page, check the result-pdf-saved message and find the file in the injected downloadsDir; (3) in the Play dev-link, open a completed result, click Exportar PDF, then Salvar PDF, and open the saved file in <home>/Downloads to confirm every AC-dm-36 field.",
+      "paths": ["tests/unit/reportModel.test.ts", "tests/api/reportRoutes.test.ts", "tests/e2e/report.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "ExportReportDialog.handleSave must keep its event.preventDefault() call. Radix Close skips onOpenChange when the click event is default-prevented, so removing it would close the dialog while the save is still running.",
+      "paths": ["src/features/result/ExportReportDialog.tsx"]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "project-context",
+  "slug": null,
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "blocking",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "project-context",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "exitCode": 0
+}

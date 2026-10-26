@@ -1,0 +1,198 @@
+{
+  "schema_version": "review-report/v1",
+  "packet_id": "sha256:fafb2e722ecd927715b04bd50abc56aabfe240b5e8f600829e48321e0419f32f",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "agent": "sheldon",
+  "profile": "specification",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+    "sha256": "aa9ce19392c75dc0d46ce19a7fa66338d20e5fc480b1e884f507caee94dae56b"
+  },
+  "passes_completed": 2,
+  "review_status": "pass",
+  "summary": "Revisão em duas passadas, feita sem agentes extras a pedido do dono (economia de tokens).\n\nVerificações:\n- Fontes conferidas: 2/2, com hash; 10/10 PROM na Source Coverage.\n- Autoridade do refinamento: rodada 1, source_hash e applied_hash conferidos, 14 decisões aceitas com seleção válida e mapeadas.\n- Protótipo: vínculo current, 31/31 interações, identidade current.\n- kind=prd: limpo depois dos reparos; classificação MEDIUM.\n\nReparos feitos no próprio PRD: estado vazio da aba Ações (AC-ra-63, BR-ra-21); 'hoje' como data local; logo conferida pelo conteúdo; formato AAAA-MM-DD nos nomes de arquivo; comportamento da evolução e da carteira antes da parte 2; 'Exportar PDF' do resultado; filtros de atenção da lista; gasto como total único no preenchimento pelo diário; risco do diário antigo registrado (OQ-ra-3).\n\nNenhuma questão bloqueante para o @planner; Q-10 bloqueia só a parte 3.",
+  "findings": [
+    {
+      "id": "SH-001",
+      "lens": "coverage",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "O protótipo tem estado vazio na aba Ações (#/empresa/c3/acoes) e o PRD não tinha critério para ele.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-63 e BR-ra-21 adicionados"
+        }
+      ],
+      "impact": "Estado material do protótipo ficaria sem prova no QA",
+      "recommendation": "Manter AC-ra-63 no plano da parte 2",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-002",
+      "lens": "ambiguity",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "Ações vencidas e reavaliação dependiam de 'hoje' sem dizer de qual relógio.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "RULE-ra-06 e RULE-ra-07 agora dizem 'data local do computador'"
+        }
+      ],
+      "impact": "Dois implementadores poderiam usar UTC e local e discordar perto da meia-noite",
+      "recommendation": "Usar a data local em todas as contagens",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-003",
+      "lens": "failure-modes",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "A logo era validada só por formato declarado; um arquivo renomeado para .png passaria.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-21 exige conferência pelo conteúdo e testa texto renomeado"
+        }
+      ],
+      "impact": "Upload inseguro ou PDF quebrado (security-baseline, upload)",
+      "recommendation": "Conferir a assinatura do arquivo antes de reduzir a imagem",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-004",
+      "lens": "edge-cases",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "Evolução e carteira na parte 1 citavam seções que só existem com a parte 2, sem dizer o que aparece antes.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-12 e AC-ra-15 dizem que a página e a coluna não aparecem antes da parte 2"
+        }
+      ],
+      "impact": "A parte 1 não seria utilizável sozinha (F10)",
+      "recommendation": "Esconder as seções sem dados de andamento ou diário",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-005",
+      "lens": "ambiguity",
+      "status": "resolved",
+      "severity": "info",
+      "description": "O formato da data nos nomes de arquivo não estava escrito.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-17 e AC-ra-48 fixam AAAA-MM-DD, como a versão 1"
+        }
+      ],
+      "impact": "Nomes diferentes entre relatórios",
+      "recommendation": "Seguir o formato da versão 1",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-006",
+      "lens": "ambiguity",
+      "status": "resolved",
+      "severity": "info",
+      "description": "Não estava claro se 'Exportar PDF' no resultado abre a central ou salva direto.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-25 diz que salva direto com as opções padrão e mostra o estado da AC-ra-17"
+        }
+      ],
+      "impact": "Comportamento diferente do protótipo",
+      "recommendation": "Salvar direto, respostas desligadas",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-007",
+      "lens": "coverage",
+      "status": "resolved",
+      "severity": "info",
+      "description": "A lista de empresas do protótipo tem filtros de atenção; o PRD só citava o destino do clique.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-35 cobre filtro ativo, lista vazia e 'Limpar filtros'"
+        }
+      ],
+      "impact": "Drill-down sem estado vazio",
+      "recommendation": "Reusar o padrão da AC-dm-09",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-008",
+      "lens": "edge-cases",
+      "status": "resolved",
+      "severity": "info",
+      "description": "No preenchimento pelo diário, um mês com só o total não cabia nas 6 partes da calculadora.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "AC-ra-44 mostra o gasto como total único quando algum dos 3 meses tem só o total"
+        }
+      ],
+      "impact": "Usuário veria partes inventadas",
+      "recommendation": "Total único, painel recalcula igual",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Nenhum"
+    },
+    {
+      "id": "SH-009",
+      "lens": "ownership",
+      "status": "resolved",
+      "severity": "info",
+      "description": "Os 3 meses mais recentes do diário podem ser antigos e ainda contar como medidos.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+          "detail": "OQ-ra-3 registrada como risco conhecido, com o dono"
+        }
+      ],
+      "impact": "Custo 'medido' com dados velhos",
+      "recommendation": "Mostrar os meses usados e deixar corrigir (AC-ra-46); rever na calibração",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Baixo: o usuário vê os meses e corrige"
+    }
+  ],
+  "completed_at": "2026-10-25T03:05:00.000Z"
+}

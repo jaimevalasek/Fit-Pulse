@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "protocol_id": "hnd-dev-qa-1792991596381",
+  "created_at": "2026-10-26T05:13:16.381Z",
+  "workflow_mode": "feature",
+  "classification": "MEDIUM",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "from": {
+    "agent_id": "dev",
+    "capability_transferred": "implement_feature"
+  },
+  "to": {
+    "agent_id": "qa",
+    "capability_required": "verify_feature"
+  },
+  "capabilities_transferred": [
+    "implement_feature"
+  ],
+  "artifact_uris": [
+    {
+      "path": ".aioson/context/implementation-plan-relatorios-e-acompanhamento.md",
+      "kind": "plan",
+      "agent": "dev",
+      "added_at": "2026-10-26T05:13:16.380Z"
+    },
+    {
+      "path": ".aioson/context/dev-state.md",
+      "kind": "evidence",
+      "agent": "dev",
+      "added_at": "2026-10-26T05:13:16.380Z"
+    },
+    {
+      "path": ".aioson/context/features/relatorios-e-acompanhamento/dossier.md",
+      "kind": "dossier",
+      "agent": "dev",
+      "added_at": "2026-10-26T05:13:16.380Z"
+    }
+  ],
+  "gate_status": {},
+  "autonomy_mode": "guarded",
+  "validation": {
+    "handoff_contract_ok": true,
+    "technical_gate_ok": true,
+    "validated_at": "2026-10-26T05:13:16.381Z"
+  }
+}

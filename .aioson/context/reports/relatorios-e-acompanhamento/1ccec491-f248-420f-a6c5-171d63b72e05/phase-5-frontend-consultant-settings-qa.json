@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "9f756286-80cb-49df-ba2d-274a7dcc87f5",
+  "unit": "phase-5-frontend-consultant-settings",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T00:35:00Z",
+  "finished_at": "2026-10-26T00:42:47Z",
+  "verdict": "BLOCKED",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_blocked_by_sibling",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-35",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "Done-when `pnpm typecheck` exits 1 on two runs (logs typecheck-1.log and typecheck-2.log, exit codes 1). All 3 errors are in files owned by phase-5-frontend-owner-home (wave 10): OwnerHome.tsx(5,36) TS2305 HomeTrendPoint not exported by @/api/homeApi; OwnerHome.tsx(198,35) TS2339 'trend' missing on OwnerHomeData; ScoreTrend.tsx(1,15) TS2305 HomeTrendPoint. No error is reported in ConsultantHome.tsx, CompaniesPage.tsx, ReevaluationSection.tsx or SettingsPage.tsx. Not a defect of this unit; the Done-when cannot pass until the wave-10 owner-home unit removes trend/HomeTrendPoint and deletes ScoreTrend.tsx."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-34",
+      "path": "tests/e2e/settings.spec.ts",
+      "summary": "Capability e2e not run by this unit: `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts`. These are capability-level checks for integration and depend on the wave-10 owner-home unit; they were not run here."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-62",
+      "path": "src/features/settings/SettingsPage.tsx",
+      "summary": "Play dev-link walkthrough for the settings and consultant home screens was not run; no running Play host is available in this QA session. Integration must run it after the wave-10 unit lands."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "run": 1,
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-1.log",
+      "result": "3 errors, all in OwnerHome.tsx and ScoreTrend.tsx (sibling-owned); none in unit files"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "run": 2,
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-2.log",
+      "result": "identical to run 1 (re-run required before attributing the failure to a sibling)"
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/settings/ReevaluationSection.tsx",
+      "result": "Select id settings-reevaluation with data-aioson-id settings-reevaluation-interval; value bound to preferences.reevaluationIntervalDays; change calls savePreferences({ reevaluationIntervalDays }); error region role=alert present. Option values 60/90/120/180 not individually re-verified by QA."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/home/ConsultantHome.tsx",
+      "result": "data-aioson-id consult-attention present; overdueActions reduced by overdueCount; reevaluationDays used in hints; indicator links built as /empresas?atencao=<value> with data-attention."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/companies/CompaniesPage.tsx",
+      "result": "?atencao= parsed into filters.attention and passed to listCompanies; 'Limpar filtros' present in the active-filter area and in the empty state 'Nenhuma empresa encontrada'."
+    },
+    {
+      "kind": "note",
+      "result": "Grep only. The implementer's claim that OnboardingTour.tsx still says 'mais de 90 dias' was not re-verified by QA."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "After phase-5-frontend-owner-home (wave 10) removes HomeTrendPoint/trend from OwnerHome.tsx and deletes ScoreTrend.tsx, rerun `pnpm typecheck` (expected exit 0). Then run `pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts` and the Play dev-link walkthrough. Until the rerun passes, this unit's Done-when stays unverified.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "The companies list filter from the prototype is ?filtro=, but this unit implements ?atencao= (attention) and keeps ?estagio= (stage). E2e authors should use ?atencao=. Phase 6 should add an 'aguardando' value to CompanyAttention and a matching card in AttentionWidgets.",
+      "paths": ["src/features/companies/CompaniesPage.tsx", "src/features/home/ConsultantHome.tsx"]
+    },
+    {
+      "to": "unit:phase-5-frontend-owner-home",
+      "kind": "note",
+      "text": "Reported by the implementer, not re-verified by QA: OnboardingTour.tsx consultant step 'Hora de refazer' still says 'mais de 90 dias', while ConsultantHome now uses data.reevaluationDays. New anchor data-aioson-id='consult-attention' is available.",
+      "paths": ["src/features/home/OnboardingTour.tsx", "src/features/home/ConsultantHome.tsx"]
+    }
+  ]
+}

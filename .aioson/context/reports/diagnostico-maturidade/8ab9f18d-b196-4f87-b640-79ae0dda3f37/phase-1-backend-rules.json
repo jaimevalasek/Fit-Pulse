@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "01cf4465-2f3b-4633-bd0a-8df8da4ea8ad",
+  "agent": "dev",
+  "host": "claude",
+  "lane": "backend",
+  "phase": "phase-1-backend-rules",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "started_at": "2026-10-23T03:38:14Z",
+  "finished_at": "2026-10-23T03:47:25Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "shared/domain/unitEconomics.ts",
+    "shared/domain/dimensionScores.ts",
+    "shared/domain/stageGate.ts",
+    "shared/domain/confidence.ts",
+    "shared/domain/riskSignals.ts",
+    "shared/domain/completeness.ts",
+    "tests/unit/unitEconomics.test.ts",
+    "tests/unit/diagnosisRules.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "product_gap",
+      "severity": "low",
+      "paths": ["shared/domain/unitEconomics.ts", "shared/domain/dimensionScores.ts", "shared/domain/stageGate.ts"],
+      "text": "The PRD does not say what happens when the owner types R$ 0,00 of spend with new customers above 0 (CAC = 0). I kept the output finite and followed RULE-dm-02 literally: cacCents 0, ratio null (a division by zero is not a number), paybackMonths 0, neverPaysBack false. Consequence: the 'ratio' item of Canal e receita is worth 0 points and the stage 3 gate stops at the lock 'ratio' (action text 'cada cliente deixa menos de 3 vezes o que custou'), which reads wrong for a customer that cost nothing. Needs a product decision (for example, treat a free customer as above the healthy band) before the rules are frozen; covered by a test that documents the current behavior."
+    },
+    {
+      "kind": "decision",
+      "severity": "low",
+      "paths": ["shared/domain/riskSignals.ts"],
+      "text": "BR-dm-15 only names SIG-02 for a R$ 0 margin. A customer that never pays back also satisfies SIG-06 ('Payback > 12 meses'), so detectRisks fires SIG-06 when neverPaysBack is true (the margin R$ 0 case returns SIG-02 and SIG-06). If the owner wants SIG-02 alone, remove the neverPaysBack clause in the SIG-06 check."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "paths": ["tests/unit/diagnosisRules.test.ts"],
+      "text": "The two test files are larger than the 300-line ideal (about 385 and 567 logic lines by a rough count; `aioson rules:check` reports 0 violations). I could not split them because the unit contract allows only these two test files; the evaluate unit's G1-G4 end-to-end tests live in tests/unit/evaluateDiagnosis.test.ts."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "`pnpm test -- <files>` does not filter: pnpm passes the `--` to vitest and the whole suite runs (7 files, 395 tests in the final run). My first full run showed 2 failures in tests/api/playRoutes.test.ts (unit phase-1-backend-http, then still implementing: 503 database_unavailable and 403 host_not_allowed with empty Host); the final run of the official command passed with exit code 0. Focused run of only my two files: `pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diagnosisRules.test.ts` => 201 tests pass."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm test -- tests/unit/unitEconomics.test.ts tests/unit/diagnosisRules.test.ts",
+      "exit_code": 0,
+      "result": "7 test files / 395 tests passed (whole suite ran; includes the 2 files of this unit)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-dev/official.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-dev/official.exit"
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/unitEconomics.test.ts tests/unit/diagnosisRules.test.ts",
+      "exit_code": 0,
+      "result": "2 test files / 201 tests passed",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-rules-dev/focused.log"
+    },
+    {
+      "kind": "typecheck",
+      "command": "npx tsc --noEmit",
+      "exit_code": 0,
+      "result": "no diagnostics for the whole project"
+    },
+    {
+      "kind": "mutation_sanity",
+      "result": "Four deliberate mutations of the rule modules (ratio <= 5 band edge, measured vs estimated cost gate, payback > 12 edge, half-up rounding) made 12 tests fail; the sources were restored afterwards and the suite is green again."
+    },
+    {
+      "kind": "rules_check",
+      "command": "aioson rules:check . --files=<the 8 files of the unit>",
+      "result": "0 violations (RULES=OK)"
+    },
+    {
+      "kind": "acceptance",
+      "result": "AC-dm-15, AC-dm-51 (unitEconomics.test.ts: G1-G4 numbers, half-up cents, BR-dm-14, BR-dm-15, no NaN/Infinity). AC-dm-19, AC-dm-21, AC-dm-23, AC-dm-24 (diagnosisRules.test.ts). Also covered at module level: AC-dm-18 scores, AC-dm-20 stage and lock (G1-G4 + edge table including estimated cost blocking stage 3), AC-dm-49 confidence, AC-dm-14 pendingBlocks. The e2e halves of these ACs are left to integration."
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-1-backend-evaluate",
+      "kind": "contract_change",
+      "text": "Module API to compose in evaluateDiagnosis(input, rules): computeUnitEconomics(calculator, rules): UnitEconomics (shared/domain/unitEconomics.ts); computeDimensionScores(answers, unitEconomics, rules): Record<DimensionKey, DimensionResult> and findWeakestDimension(dimensions): DimensionKey (dimensionScores.ts); computeStageAndLock({ answers, dimensions, unitEconomics }, rules): { stage, lock } (stageGate.ts); detectRisks({ answers, dimensions, unitEconomics }, rules): RiskResult[] already sorted and cut to rules.risk.maxRisks (riskSignals.ts); computeConfidence(answers, unitEconomics, rules): ConfidenceResult (confidence.ts). All are pure, never throw and never return NaN/Infinity. Not written here and still yours: the action plan (actionPlan.ts) and evaluateDiagnosis.ts. For the plan: 'invest' is eligible only when unitEconomics.origin === 'measured', confidence.level === 'high' and stage >= rules.plan.invest.minStage (RULE-dm-10); the 'dep' action follows SIG-04 being in the risks list.",
+      "paths": ["shared/domain/unitEconomics.ts", "shared/domain/dimensionScores.ts", "shared/domain/stageGate.ts", "shared/domain/riskSignals.ts", "shared/domain/confidence.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-evaluate",
+      "kind": "note",
+      "text": "UnitEconomics conventions: paybackMonths is null when the customer never pays back (neverPaysBack true), because Infinity would not survive JSON; the origin is 'unknown' when new customers is 0 (BR-dm-14) while newCustomersOrigin stays 'measured'; ratio is computed from the rounded cents (ltvCents / cacCents) and kept exact (9 decimals) for gates and risks; ratio is null when cacCents is 0. Reference tests for G1-G4 end to end (computeUnitEconomics -> scores -> stage -> risks -> confidence) are yours in tests/unit/evaluateDiagnosis.test.ts; my tests feed the same G1-G4 numbers into each module separately and match the PRD table."
+    },
+    {
+      "to": "unit:phase-1-backend-diagnoses",
+      "kind": "contract_change",
+      "text": "pendingBlocks(answers, calculator): BlockNumber[] (shared/domain/completeness.ts) is the completeness check for POST /api/diagnoses/:id/complete; a non-empty result is the 422 'incomplete' body's pendingBlocks. Rules: block 1 needs spend (mode exact with at least one cost part typed, an explicit R$ 0,00 counts; or a range; or 'não sei'), new customers (exact integer >= 0, 0 counts; or a range; or 'não sei'), average purchase (integer cents >= 0), purchases per year, relationship length and margin (integer 0..100, 0 counts). Blocks 2 to 8 need every question answered with 0..3, and null ('não sei') counts only for mp1, mp3, cm1, mm1 and co1. Also exported: isBlockComplete(block, answers, calculator) and isCalculatorComplete(calculator) for the block rail.",
+      "paths": ["shared/domain/completeness.ts"]
+    },
+    {
+      "to": "unit:phase-1-frontend-questionnaire",
+      "kind": "note",
+      "text": "UnitEconomicsPanel: call computeUnitEconomics(calculator, rulesV1) on every change and read cacCents, ltvCents, ratio, paybackMonths, neverPaysBack and origin. Show formatPayback(economics.neverPaysBack ? 'never' : economics.paybackMonths) and formatRatioWithBand(economics.ratio); mark values 'estimado por faixa' when origin === 'estimated'; when newCustomers === 0 (newCustomersOrigin 'measured', origin 'unknown') show NOT_CALCULATED_LABEL plus NO_NEW_CUSTOMERS_EXPLANATION (BR-dm-14). Call pendingBlocks(...) for the completion gate and the block rail.",
+      "paths": ["shared/domain/unitEconomics.ts", "shared/domain/completeness.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Product decision needed before the rules are frozen: a spend of R$ 0,00 with new customers above 0 gives CAC 0 and no ratio (see findings). Also confirm that SIG-06 should fire together with SIG-02 for a R$ 0 margin (BR-dm-15). Neither is covered by the PRD; the current behavior is documented by tests in tests/unit/unitEconomics.test.ts and tests/unit/diagnosisRules.test.ts."
+    }
+  ]
+}

@@ -1,0 +1,1580 @@
+{
+  "schema": 1,
+  "name": "prototype-relatorios-e-acompanhamento",
+  "feature": "relatorios-e-acompanhamento",
+  "scope": "prototype",
+  "target": {
+    "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+    "kind": "file"
+  },
+  "browser": {
+    "mode": "bundled",
+    "label": "Playwright Chromium (bundled)",
+    "version": "151.0.7922.34"
+  },
+  "started_at": "2026-10-24T23:39:40.689Z",
+  "finished_at": "2026-10-24T23:40:06.858Z",
+  "ok": true,
+  "stopped_at": null,
+  "superseded_artifacts": {
+    "files": 0,
+    "bytes": 0
+  },
+  "steps": [
+    {
+      "index": 0,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 446,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 1,
+      "do": "expect",
+      "ids": [
+        "PROM-002"
+      ],
+      "note": "tour de primeiro uso explica as telas novas em linguagem leiga",
+      "ok": true,
+      "ms": 115,
+      "detail": "css=.tour-pop is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.tour-pop"
+    },
+    {
+      "index": 2,
+      "do": "expect",
+      "ids": [
+        "PROM-001"
+      ],
+      "target": "css=.tour-pop",
+      "ok": true,
+      "ms": 142,
+      "detail": "text of css=.tour-pop (1): \"Relatórios em PDFEsta é a prévia do PDF, página por página: capa, resumo, gráfico das 8 dimensões e riscos. \"Exportar PD…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.tour-pop contains \"Relatórios em PDF\""
+    },
+    {
+      "index": 3,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Pular\"]",
+      "ok": true,
+      "ms": 368,
+      "detail": "click role=button[name=\"Pular\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 4,
+      "do": "expect",
+      "ids": [],
+      "ok": true,
+      "ms": 3,
+      "detail": "css=.tour-pop is not visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "hidden: css=.tour-pop"
+    },
+    {
+      "index": 5,
+      "do": "expect",
+      "ids": [
+        "PROM-001",
+        "PROM-004"
+      ],
+      "note": "a prévia em papel é o foco da central de relatórios",
+      "ok": true,
+      "ms": 3,
+      "detail": "css=[data-aioson-primary] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-primary]"
+    },
+    {
+      "index": 6,
+      "do": "expect",
+      "ids": [
+        "PROM-002",
+        "PROM-004"
+      ],
+      "note": "capa, resumo executivo, 8 dimensões, riscos e como ler",
+      "target": "css=.pages .paper",
+      "ok": true,
+      "ms": 45,
+      "detail": "css=.pages .paper count = 5",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.pages .paper = 5"
+    },
+    {
+      "index": 7,
+      "do": "expect",
+      "ids": [
+        "PROM-002",
+        "PROM-004"
+      ],
+      "ok": true,
+      "ms": 4,
+      "detail": "css=.paper[aria-label*=\"Resumo executivo\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.paper[aria-label*=\"Resumo executivo\"]"
+    },
+    {
+      "index": 8,
+      "do": "expect",
+      "ids": [
+        "PROM-002",
+        "PROM-004"
+      ],
+      "note": "matriz de riscos 5×5 desenhada",
+      "ok": true,
+      "ms": 3,
+      "detail": "css=.matrix is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.matrix"
+    },
+    {
+      "index": 9,
+      "do": "check",
+      "ids": [
+        "PROM-004"
+      ],
+      "note": "apêndice com as respostas, desligado por padrão",
+      "target": "css=[data-change=\"rep-answers\"]",
+      "ok": true,
+      "ms": 355,
+      "detail": "check css=[data-change=\"rep-answers\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 10,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "target": "css=.pages .paper",
+      "ok": true,
+      "ms": 58,
+      "detail": "css=.pages .paper count = 6",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.pages .paper = 6"
+    },
+    {
+      "index": 11,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "ok": true,
+      "ms": 4,
+      "detail": "css=.paper[aria-label*=\"Respostas do questionário\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.paper[aria-label*=\"Respostas do questionário\"]"
+    },
+    {
+      "index": 12,
+      "do": "click",
+      "ids": [
+        "PROM-001"
+      ],
+      "target": "css=[data-aioson-id=\"report-export\"]",
+      "ok": true,
+      "ms": 379,
+      "detail": "click css=[data-aioson-id=\"report-export\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 13,
+      "do": "expect",
+      "ids": [
+        "PROM-001"
+      ],
+      "target": "css=.dialog",
+      "ok": true,
+      "ms": 5,
+      "detail": "text of css=.dialog (1): \"Exportar o relatório do diagnóstico em PDFPadaria Trigo Bom · diagnóstico de 27/08/2026 · 6 páginas · com as respostasAr…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.dialog contains \"padaria-trigo-bom-2026-08-27.pdf\""
+    },
+    {
+      "index": 14,
+      "do": "click",
+      "ids": [
+        "PROM-001"
+      ],
+      "target": "css=[data-aioson-id=\"export-confirm\"]",
+      "ok": true,
+      "ms": 451,
+      "detail": "click css=[data-aioson-id=\"export-confirm\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 15,
+      "do": "expect",
+      "ids": [
+        "PROM-001"
+      ],
+      "note": "salvo na pasta Downloads",
+      "ok": true,
+      "ms": 1027,
+      "detail": "css=[data-aioson-id=\"export-saved\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"export-saved\"]"
+    },
+    {
+      "index": 16,
+      "do": "expect",
+      "ids": [
+        "PROM-001",
+        "PROM-004"
+      ],
+      "note": "Abrir PDF depois de salvar",
+      "ok": true,
+      "ms": 59,
+      "detail": "css=[data-aioson-id=\"open-pdf\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"open-pdf\"]"
+    },
+    {
+      "index": 17,
+      "do": "expect",
+      "ids": [
+        "PROM-001",
+        "PROM-004"
+      ],
+      "ok": true,
+      "ms": 3,
+      "detail": "css=[data-aioson-id=\"show-folder\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"show-folder\"]"
+    },
+    {
+      "index": 18,
+      "do": "click",
+      "ids": [],
+      "target": "css=[data-aioson-id=\"open-pdf\"]",
+      "ok": true,
+      "ms": 818,
+      "detail": "click css=[data-aioson-id=\"open-pdf\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 19,
+      "do": "expect",
+      "ids": [
+        "PROM-001"
+      ],
+      "note": "o resultado da exportação fica visível depois que o diálogo fecha",
+      "target": "css=[data-aioson-id=\"export-notice\"]",
+      "ok": true,
+      "ms": 67,
+      "detail": "text of css=[data-aioson-id=\"export-notice\"] (1): \"PDF salvo em Downloads: padaria-trigo-bom-2026-08-27.pdf\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=[data-aioson-id=\"export-notice\"] contains \"PDF salvo em Downloads\""
+    },
+    {
+      "index": 20,
+      "do": "click",
+      "ids": [
+        "PROM-004"
+      ],
+      "target": "css=[data-aioson-id=\"type-evo\"]",
+      "ok": true,
+      "ms": 384,
+      "detail": "click css=[data-aioson-id=\"type-evo\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 21,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "note": "relatório de evolução",
+      "ok": true,
+      "ms": 65,
+      "detail": "css=.paper[aria-label*=\"Antes e depois\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.paper[aria-label*=\"Antes e depois\"]"
+    },
+    {
+      "index": 22,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "target": "css=.paper[aria-label*=\"Antes e depois\"]",
+      "ok": true,
+      "ms": 8,
+      "detail": "text of css=.paper[aria-label*=\"Antes e depois\"] (1): \"Antes e depois\n        1 → 2Subiu um degrau: Descoberta para Ajuste— → R$ 82Custo por cliente32 → 53Média das 8 dimensõe…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.paper[aria-label*=\"Antes e depois\"] contains \"1 → 2\""
+    },
+    {
+      "index": 23,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 3,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 24,
+      "do": "expect",
+      "ids": [
+        "PROM-001"
+      ],
+      "note": "falha de gravação explica e não altera nada",
+      "ok": true,
+      "ms": 52,
+      "detail": "css=.dialog [role=\"alert\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.dialog [role=\"alert\"]"
+    },
+    {
+      "index": 25,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Tentar de novo\"]",
+      "ok": true,
+      "ms": 257,
+      "detail": "click role=button[name=\"Tentar de novo\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 26,
+      "do": "expect",
+      "ids": [
+        "PROM-001"
+      ],
+      "ok": true,
+      "ms": 908,
+      "detail": "css=[data-aioson-id=\"export-saved\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"export-saved\"]"
+    },
+    {
+      "index": 27,
+      "do": "press",
+      "ids": [],
+      "ok": true,
+      "ms": 63,
+      "detail": "pressed Escape",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 28,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 2,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 29,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "note": "sem diagnóstico concluído não há relatório",
+      "ok": true,
+      "ms": 74,
+      "detail": "css=[data-aioson-id=\"reports-empty\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"reports-empty\"]"
+    },
+    {
+      "index": 30,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 3,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 31,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#b-email",
+      "ok": true,
+      "ms": 70,
+      "detail": "filled css=#b-email with \"marina@\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 32,
+      "do": "click",
+      "ids": [],
+      "target": "css=[data-aioson-id=\"brand-save\"]",
+      "ok": true,
+      "ms": 446,
+      "detail": "click css=[data-aioson-id=\"brand-save\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 33,
+      "do": "expect",
+      "ids": [
+        "PROM-008"
+      ],
+      "note": "e-mail inválido recusado no campo",
+      "ok": true,
+      "ms": 3,
+      "detail": "css=#b-email[aria-invalid=\"true\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=#b-email[aria-invalid=\"true\"]"
+    },
+    {
+      "index": 34,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Simular arquivo SVG\"]",
+      "ok": true,
+      "ms": 380,
+      "detail": "click role=button[name=\"Simular arquivo SVG\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 35,
+      "do": "expect",
+      "ids": [
+        "PROM-008"
+      ],
+      "target": "css=#e-logo",
+      "ok": true,
+      "ms": 5,
+      "detail": "text of css=#e-logo (1): \"Use uma imagem PNG ou JPG. Arquivos SVG não são aceitos.\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=#e-logo contains \"Use uma imagem PNG ou JPG\""
+    },
+    {
+      "index": 36,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Preencher com um exemplo\"]",
+      "ok": true,
+      "ms": 314,
+      "detail": "click role=button[name=\"Preencher com um exemplo\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 37,
+      "do": "click",
+      "ids": [
+        "PROM-008"
+      ],
+      "target": "css=[data-aioson-id=\"brand-save\"]",
+      "ok": true,
+      "ms": 337,
+      "detail": "click css=[data-aioson-id=\"brand-save\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 38,
+      "do": "expect",
+      "ids": [
+        "PROM-008"
+      ],
+      "note": "capa mostra a marca salva",
+      "target": "css=.cover-preview .cover-brand",
+      "ok": true,
+      "ms": 5,
+      "detail": "text of css=.cover-preview .cover-brand (1): \"Rumo Consultoria(11) 98877-6655 · marina@rumoconsultoria.com.br · rumoconsultoria.com.br\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.cover-preview .cover-brand contains \"Rumo Consultoria\""
+    },
+    {
+      "index": 39,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 67,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 40,
+      "do": "expect",
+      "ids": [
+        "PROM-008"
+      ],
+      "note": "nome de quem entrega na capa",
+      "target": "css=.pages .paper >> nth=0",
+      "ok": true,
+      "ms": 135,
+      "detail": "text of css=.pages .paper >> nth=0 (1): \"Rumo Consultoria(11) 98877-6655 · marina@rumoconsultoria.com.br · rumoconsultoria.com.brRelatório de evoluçãoPadaria Tri…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.pages .paper >> nth=0 contains \"Rumo Consultoria\""
+    },
+    {
+      "index": 41,
+      "do": "expect",
+      "ids": [
+        "PROM-008"
+      ],
+      "note": "e no rodapé das páginas",
+      "target": "css=.pages .paper >> nth=1",
+      "ok": true,
+      "ms": 72,
+      "detail": "text of css=.pages .paper >> nth=1 (1): \"Antes e depois\n        1 → 2Subiu um degrau: Descoberta para Ajuste— → R$ 82Custo por cliente32 → 53Média das 8 dimensõe…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.pages .paper >> nth=1 contains \"Rumo Consultoria\""
+    },
+    {
+      "index": 42,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 3,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 43,
+      "do": "expect",
+      "ids": [
+        "PROM-005",
+        "PROM-003"
+      ],
+      "note": "a ação repetida herda o andamento (decisão F3)",
+      "ok": true,
+      "ms": 61,
+      "detail": "\"Continua do diagnóstico de 20/04/2026\" found 1×",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "page shows \"Continua do diagnóstico de 20/04/2026\""
+    },
+    {
+      "index": 44,
+      "do": "expect",
+      "ids": [
+        "PROM-005"
+      ],
+      "ok": true,
+      "ms": 5,
+      "detail": "\"Vencida em 15/10/2026\" found 1×",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "page shows \"Vencida em 15/10/2026\""
+    },
+    {
+      "index": 45,
+      "do": "expect",
+      "ids": [
+        "PROM-005",
+        "PROM-003"
+      ],
+      "target": "css=[data-aioson-id=\"reeval-line\"]",
+      "ok": true,
+      "ms": 62,
+      "detail": "text of css=[data-aioson-id=\"reeval-line\"] (1): \"Refazer em 25/11/2026 · faltam 32 dias\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=[data-aioson-id=\"reeval-line\"] contains \"faltam 32 dias\""
+    },
+    {
+      "index": 46,
+      "do": "expect",
+      "ids": [
+        "PROM-005"
+      ],
+      "note": "ações não repetidas ficam encerradas",
+      "ok": true,
+      "ms": 69,
+      "detail": "css=[data-aioson-id=\"closed-actions\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"closed-actions\"]"
+    },
+    {
+      "index": 47,
+      "do": "select",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=[data-aioson-id=\"status-d2-teste\"]",
+      "ok": true,
+      "ms": 77,
+      "detail": "selected \"doing\" in css=[data-aioson-id=\"status-d2-teste\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 48,
+      "do": "expect",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=.toasts",
+      "ok": true,
+      "ms": 127,
+      "detail": "text of css=.toasts (1): \"Marca salva. Os próximos PDFs saem com ela.\"Testar um anúncio com orçamento pequeno\" agora está em andamento.Desfazer\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.toasts contains \"agora está em andamento\""
+    },
+    {
+      "index": 49,
+      "do": "click",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=[data-aioson-id=\"edit-d2-teste\"]",
+      "ok": true,
+      "ms": 416,
+      "detail": "click css=[data-aioson-id=\"edit-d2-teste\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 50,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#a-due",
+      "ok": true,
+      "ms": 72,
+      "detail": "filled css=#a-due with \"31022026\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 51,
+      "do": "click",
+      "ids": [],
+      "target": "css=#act-form button[type=submit]",
+      "ok": true,
+      "ms": 529,
+      "detail": "click css=#act-form button[type=submit]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 52,
+      "do": "expect",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=#e-due",
+      "ok": true,
+      "ms": 67,
+      "detail": "text of css=#e-due (1): \"Data inválida. Use DD/MM/AAAA, por exemplo 15/11/2026.\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=#e-due contains \"Data inválida\""
+    },
+    {
+      "index": 53,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#a-due",
+      "ok": true,
+      "ms": 145,
+      "detail": "filled css=#a-due with \"15112026\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 54,
+      "do": "select",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=#a-role",
+      "ok": true,
+      "ms": 9,
+      "detail": "selected \"Consultor\" in css=#a-role",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 55,
+      "do": "click",
+      "ids": [],
+      "target": "css=#act-form button[type=submit]",
+      "ok": true,
+      "ms": 524,
+      "detail": "click css=#act-form button[type=submit]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 56,
+      "do": "expect",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=[data-aioson-id=\"action-d2-teste\"]",
+      "ok": true,
+      "ms": 4,
+      "detail": "text of css=[data-aioson-id=\"action-d2-teste\"] (1): \"03\n    Testar um anúncio com orçamento pequenoUm teste curto mostra se o canal traz cliente pelo custo que você aguenta.…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=[data-aioson-id=\"action-d2-teste\"] contains \"Prazo 15/11/2026\""
+    },
+    {
+      "index": 57,
+      "do": "expect",
+      "ids": [
+        "PROM-005"
+      ],
+      "target": "css=[data-aioson-id=\"action-d2-teste\"]",
+      "ok": true,
+      "ms": 64,
+      "detail": "text of css=[data-aioson-id=\"action-d2-teste\"] (1): \"03\n    Testar um anúncio com orçamento pequenoUm teste curto mostra se o canal traz cliente pelo custo que você aguenta.…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=[data-aioson-id=\"action-d2-teste\"] contains \"Consultor\""
+    },
+    {
+      "index": 58,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 67,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 59,
+      "do": "expect",
+      "ids": [
+        "PROM-006",
+        "PROM-003"
+      ],
+      "note": "3 meses anotados contam como medido (decisão F4)",
+      "ok": true,
+      "ms": 64,
+      "detail": "\"Custo por cliente medido\" found 1×",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "page shows \"Custo por cliente medido\""
+    },
+    {
+      "index": 60,
+      "do": "click",
+      "ids": [
+        "PROM-006"
+      ],
+      "target": "css=[data-aioson-id=\"add-month\"] >> nth=0",
+      "ok": true,
+      "ms": 327,
+      "detail": "click css=[data-aioson-id=\"add-month\"] >> nth=0",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 61,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#m-month",
+      "ok": true,
+      "ms": 9,
+      "detail": "filled css=#m-month with \"092026\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 62,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#m-cust",
+      "ok": true,
+      "ms": 63,
+      "detail": "filled css=#m-cust with \"30\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 63,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#m-ads",
+      "ok": true,
+      "ms": 66,
+      "detail": "filled css=#m-ads with \"120000\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 64,
+      "do": "click",
+      "ids": [],
+      "target": "css=[data-aioson-id=\"month-save\"]",
+      "ok": true,
+      "ms": 4289,
+      "detail": "click css=[data-aioson-id=\"month-save\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 65,
+      "do": "expect",
+      "ids": [
+        "PROM-006"
+      ],
+      "note": "mês duplicado recusado",
+      "target": "css=#e-month",
+      "ok": true,
+      "ms": 64,
+      "detail": "text of css=#e-month (1): \"Setembro de 2026 já está anotado. Edite o mês na lista.\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=#e-month contains \"já está anotado\""
+    },
+    {
+      "index": 66,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#m-month",
+      "ok": true,
+      "ms": 8,
+      "detail": "filled css=#m-month with \"102026\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 67,
+      "do": "click",
+      "ids": [
+        "PROM-006"
+      ],
+      "target": "css=[data-aioson-id=\"month-save\"]",
+      "ok": true,
+      "ms": 330,
+      "detail": "click css=[data-aioson-id=\"month-save\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 68,
+      "do": "expect",
+      "ids": [
+        "PROM-006"
+      ],
+      "ok": true,
+      "ms": 3,
+      "detail": "css=[data-aioson-id=\"month-2026-10\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"month-2026-10\"]"
+    },
+    {
+      "index": 69,
+      "do": "expect",
+      "ids": [
+        "PROM-006"
+      ],
+      "note": "o app calcula o custo por cliente do mês",
+      "target": "css=[data-aioson-id=\"month-2026-10\"]",
+      "ok": true,
+      "ms": 3,
+      "detail": "text of css=[data-aioson-id=\"month-2026-10\"] (1): \"out/2026\n    R$ 1.200,00gasto em 1 parte\n    30clientes novos\n    R$ 40,00por cliente\n    EditarExcluir\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=[data-aioson-id=\"month-2026-10\"] contains \"R$ 40,00\""
+    },
+    {
+      "index": 70,
+      "do": "click",
+      "ids": [
+        "PROM-006"
+      ],
+      "target": "css=[data-aioson-id=\"month-2026-10\"] [data-act=\"delete-month\"]",
+      "ok": true,
+      "ms": 331,
+      "detail": "click css=[data-aioson-id=\"month-2026-10\"] [data-act=\"delete-month\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 71,
+      "do": "expect",
+      "ids": [
+        "PROM-006"
+      ],
+      "ok": true,
+      "ms": 5,
+      "detail": "role=dialog[name=/Excluir outubro de 2026/] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: role=dialog[name=/Excluir outubro de 2026/]"
+    },
+    {
+      "index": 72,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Excluir mês\"]",
+      "ok": true,
+      "ms": 700,
+      "detail": "click role=button[name=\"Excluir mês\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 73,
+      "do": "expect",
+      "ids": [
+        "PROM-006"
+      ],
+      "ok": true,
+      "ms": 2,
+      "detail": "css=[data-aioson-id=\"month-2026-10\"] is not visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "hidden: css=[data-aioson-id=\"month-2026-10\"]"
+    },
+    {
+      "index": 74,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 3,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 75,
+      "do": "expect",
+      "ids": [
+        "PROM-006"
+      ],
+      "ok": true,
+      "ms": 65,
+      "detail": "css=[data-aioson-id=\"diary-empty\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"diary-empty\"]"
+    },
+    {
+      "index": 76,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 68,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 77,
+      "do": "expect",
+      "ids": [
+        "PROM-005",
+        "PROM-003"
+      ],
+      "ok": true,
+      "ms": 75,
+      "detail": "\"Refazer o diagnóstico\" found 1×",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "page shows \"Refazer o diagnóstico\""
+    },
+    {
+      "index": 78,
+      "do": "expect",
+      "ids": [
+        "PROM-006",
+        "PROM-003"
+      ],
+      "ok": true,
+      "ms": 5,
+      "detail": "css=[data-aioson-id=\"home-diary-widget\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"home-diary-widget\"]"
+    },
+    {
+      "index": 79,
+      "do": "click",
+      "ids": [],
+      "target": "css=[data-aioson-id=\"mode-toggle\"]",
+      "ok": true,
+      "ms": 330,
+      "detail": "click css=[data-aioson-id=\"mode-toggle\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 80,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "ok": true,
+      "ms": 3,
+      "detail": "\"Sua carteira\" found 1×",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "page shows \"Sua carteira\""
+    },
+    {
+      "index": 81,
+      "do": "click",
+      "ids": [
+        "PROM-004"
+      ],
+      "target": "css=[data-aioson-id=\"home-portfolio-report\"]",
+      "ok": true,
+      "ms": 598,
+      "detail": "click css=[data-aioson-id=\"home-portfolio-report\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 82,
+      "do": "expect",
+      "ids": [
+        "PROM-004"
+      ],
+      "note": "relatório da carteira",
+      "ok": true,
+      "ms": 53,
+      "detail": "css=.paper[aria-label*=\"Empresas por estágio\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=.paper[aria-label*=\"Empresas por estágio\"]"
+    },
+    {
+      "index": 83,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 4,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 84,
+      "do": "click",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=[data-aioson-id=\"send-questionnaire\"]",
+      "ok": true,
+      "ms": 390,
+      "detail": "click css=[data-aioson-id=\"send-questionnaire\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 85,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "note": "forma B: computador (decisão F1)",
+      "target": "css=.dialog",
+      "ok": true,
+      "ms": 7,
+      "detail": "text of css=.dialog (1): \"Enviar questionário para Padaria Trigo BomO FitPulse gera um arquivo que abre no navegador do computador do cliente, sem…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.dialog contains \"abre no navegador do computador\""
+    },
+    {
+      "index": 86,
+      "do": "click",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=[data-aioson-id=\"send-generate\"]",
+      "ok": true,
+      "ms": 336,
+      "detail": "click css=[data-aioson-id=\"send-generate\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 87,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=.dialog",
+      "ok": true,
+      "ms": 762,
+      "detail": "text of css=.dialog (1): \"Arquivo geradoSalvo na pasta Downloadsquestionario-padaria-trigo-bom.htmlMande o arquivo com a mensagem que você copiou.…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.dialog contains \"questionario-padaria-trigo-bom.html\""
+    },
+    {
+      "index": 88,
+      "do": "click",
+      "ids": [],
+      "target": "role=link[name=\"Ver como o cliente vê\"]",
+      "ok": true,
+      "ms": 270,
+      "detail": "click role=link[name=\"Ver como o cliente vê\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 89,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "ok": true,
+      "ms": 3,
+      "detail": "css=[data-aioson-id=\"desktop-note\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"desktop-note\"]"
+    },
+    {
+      "index": 90,
+      "do": "fill",
+      "ids": [],
+      "target": "css=#cq-spend",
+      "ok": true,
+      "ms": 58,
+      "detail": "filled css=#cq-spend with \"315000\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 91,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Próximo bloco\"]",
+      "ok": true,
+      "ms": 334,
+      "detail": "click role=button[name=\"Próximo bloco\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 92,
+      "do": "click",
+      "ids": [],
+      "target": "css=.rail [data-i=\"7\"]",
+      "ok": true,
+      "ms": 350,
+      "detail": "click css=.rail [data-i=\"7\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 93,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Revisar\"]",
+      "ok": true,
+      "ms": 392,
+      "detail": "click role=button[name=\"Revisar\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 94,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "ok": true,
+      "ms": 3,
+      "detail": "\"Revise e salve\" found 1×",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "page shows \"Revise e salve\""
+    },
+    {
+      "index": 95,
+      "do": "click",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=[data-aioson-id=\"client-save\"]",
+      "ok": true,
+      "ms": 333,
+      "detail": "click css=[data-aioson-id=\"client-save\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 96,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "note": "o cliente salva o arquivo de respostas",
+      "ok": true,
+      "ms": 918,
+      "detail": "css=[data-aioson-id=\"client-saved\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"client-saved\"]"
+    },
+    {
+      "index": 97,
+      "do": "goto",
+      "ids": [],
+      "ok": true,
+      "ms": 3,
+      "detail": "navigated to file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 98,
+      "do": "click",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=[data-aioson-id=\"import-answers\"]",
+      "ok": true,
+      "ms": 345,
+      "detail": "click css=[data-aioson-id=\"import-answers\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 99,
+      "do": "click",
+      "ids": [],
+      "target": "css=[data-act=\"import-pick\"][data-i=\"1\"]",
+      "ok": true,
+      "ms": 720,
+      "detail": "click css=[data-act=\"import-pick\"][data-i=\"1\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 100,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "note": "arquivo de outra empresa recusado sem alterar nada",
+      "target": "css=.dialog [role=\"alert\"]",
+      "ok": true,
+      "ms": 878,
+      "detail": "text of css=.dialog [role=\"alert\"] (1): \"Não foi possível importarEste arquivo é de Ateliê Linha Fina, não de Padaria Trigo Bom. Nada foi alterado.\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.dialog [role=\"alert\"] contains \"não de Padaria Trigo Bom\""
+    },
+    {
+      "index": 101,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Escolher outro arquivo\"]",
+      "ok": true,
+      "ms": 276,
+      "detail": "click role=button[name=\"Escolher outro arquivo\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 102,
+      "do": "click",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=[data-act=\"import-pick\"][data-i=\"0\"]",
+      "ok": true,
+      "ms": 277,
+      "detail": "click css=[data-act=\"import-pick\"][data-i=\"0\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 103,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "target": "css=.dialog",
+      "ok": true,
+      "ms": 748,
+      "detail": "text of css=.dialog (1): \"Importar respostas de Padaria Trigo BomRascunho criadoAs respostas que Padaria Trigo Bom salvou em 23/10/2026 viraram um…\"",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "css=.dialog contains \"Rascunho criado\""
+    },
+    {
+      "index": 104,
+      "do": "click",
+      "ids": [],
+      "target": "role=button[name=\"Fechar\"]",
+      "ok": true,
+      "ms": 269,
+      "detail": "click role=button[name=\"Fechar\"]",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": []
+    },
+    {
+      "index": 105,
+      "do": "expect",
+      "ids": [
+        "PROM-007"
+      ],
+      "ok": true,
+      "ms": 3,
+      "detail": "css=[data-aioson-id=\"imported-draft\"] is visible",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "expected": "visible: css=[data-aioson-id=\"imported-draft\"]"
+    },
+    {
+      "index": 106,
+      "do": "eval",
+      "ids": [
+        "PROM-002"
+      ],
+      "note": "sem termos de terceiros nem login",
+      "ok": true,
+      "ms": 3,
+      "detail": "eval → true",
+      "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "artifacts": [],
+      "value": "true"
+    }
+  ],
+  "ids": {
+    "PROM-002": {
+      "status": "pass",
+      "steps": [
+        1,
+        6,
+        7,
+        8,
+        106
+      ],
+      "error": null
+    },
+    "PROM-001": {
+      "status": "pass",
+      "steps": [
+        2,
+        5,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        19,
+        24,
+        26
+      ],
+      "error": null
+    },
+    "PROM-004": {
+      "status": "pass",
+      "steps": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        16,
+        17,
+        20,
+        21,
+        22,
+        29,
+        80,
+        81,
+        82
+      ],
+      "error": null
+    },
+    "PROM-008": {
+      "status": "pass",
+      "steps": [
+        33,
+        35,
+        37,
+        38,
+        40,
+        41
+      ],
+      "error": null
+    },
+    "PROM-005": {
+      "status": "pass",
+      "steps": [
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        52,
+        54,
+        56,
+        57,
+        77
+      ],
+      "error": null
+    },
+    "PROM-003": {
+      "status": "pass",
+      "steps": [
+        43,
+        45,
+        59,
+        77,
+        78
+      ],
+      "error": null
+    },
+    "PROM-006": {
+      "status": "pass",
+      "steps": [
+        59,
+        60,
+        65,
+        67,
+        68,
+        69,
+        70,
+        71,
+        73,
+        75,
+        78
+      ],
+      "error": null
+    },
+    "PROM-007": {
+      "status": "pass",
+      "steps": [
+        84,
+        85,
+        86,
+        87,
+        89,
+        94,
+        95,
+        96,
+        98,
+        100,
+        102,
+        103,
+        105
+      ],
+      "error": null
+    }
+  },
+  "smoke": {
+    "entry": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+    "trigger": "click role=button[name=\"Pular\"]",
+    "boundary": "",
+    "state": "css=.dialog [role=\"alert\"] is visible; css=[data-aioson-id=\"export-saved\"] is visible; css=[data-aioson-id=\"reports-empty\"] is visible; css=#b-email[aria-invalid=\"true\"] is visible; text of css=#e-logo (1): \"Use uma imagem PNG ou JPG. Arquivos SVG não são aceitos.\"; text of css=.cover-preview .cover-brand (1): \"Rumo Consultoria(11) 98877-6655 · marina@rumoconsultoria.com.br · rumoconsultoria.com.br\"; text of css=.pages .paper >> nth=0 (1): \"Rumo Consultoria(11) 98877-6655 · marina@rumoconsultoria.com.br · rumoconsultoria.com.brRelatório de evoluçãoPadaria Tri…\"; text of css=.pages .paper >> nth=1 (1): \"Antes e depois\n        1 → 2Subiu um degrau: Descoberta para Ajuste— → R$ 82Custo por cliente32 → 53Média das 8 dimensõe…\"; \"Continua do diagnóstico de 20/04/2026\" found 1×; \"Vencida em 15/10/2026\" found 1×; text of css=[data-aioson-id=\"reeval-line\"] (1): \"Refazer em 25/11/2026 · faltam 32 dias\"; css=[data-aioson-id=\"closed-actions\"] is visible; text of css=.toasts (1): \"Marca salva. Os próximos PDFs saem com ela.\"Testar um anúncio com orçamento pequeno\" agora está em andamento.Desfazer\"; text of css=#e-due (1): \"Data inválida. Use DD/MM/AAAA, por exemplo 15/11/2026.\"; text of css=[data-aioson-id=\"action-d2-teste\"] (1): \"03\n    Testar um anúncio com orçamento pequenoUm teste curto mostra se o canal traz cliente pelo custo que você aguenta.…\"; text of css=[data-aioson-id=\"action-d2-teste\"] (1): \"03\n    Testar um anúncio com orçamento pequenoUm teste curto mostra se o canal traz cliente pelo custo que você aguenta.…\"; \"Custo por cliente medido\" found 1×; text of css=#e-month (1): \"Setembro de 2026 já está anotado. Edite o mês na lista.\"; css=[data-aioson-id=\"month-2026-10\"] is visible; text of css=[data-aioson-id=\"month-2026-10\"] (1): \"out/2026\n    R$ 1.200,00gasto em 1 parte\n    30clientes novos\n    R$ 40,00por cliente\n    EditarExcluir\"; role=dialog[name=/Excluir outubro de 2026/] is visible; css=[data-aioson-id=\"month-2026-10\"] is not visible; css=[data-aioson-id=\"diary-empty\"] is visible; \"Refazer o diagnóstico\" found 1×; css=[data-aioson-id=\"home-diary-widget\"] is visible; \"Sua carteira\" found 1×; css=.paper[aria-label*=\"Empresas por estágio\"] is visible; text of css=.dialog (1): \"Enviar questionário para Padaria Trigo BomO FitPulse gera um arquivo que abre no navegador do computador do cliente, sem…\"; text of css=.dialog (1): \"Arquivo geradoSalvo na pasta Downloadsquestionario-padaria-trigo-bom.htmlMande o arquivo com a mensagem que você copiou.…\"; css=[data-aioson-id=\"desktop-note\"] is visible; \"Revise e salve\" found 1×; css=[data-aioson-id=\"client-saved\"] is visible; text of css=.dialog [role=\"alert\"] (1): \"Não foi possível importarEste arquivo é de Ateliê Linha Fina, não de Padaria Trigo Bom. Nada foi alterado.\"; text of css=.dialog (1): \"Importar respostas de Padaria Trigo BomRascunho criadoAs respostas que Padaria Trigo Bom salvou em 23/10/2026 viraram um…\"; css=[data-aioson-id=\"imported-draft\"] is visible; eval → true",
+    "visible": "visible: css=.tour-pop; css=.tour-pop contains \"Relatórios em PDF\"; hidden: css=.tour-pop; visible: css=[data-aioson-primary]; css=.pages .paper = 5; visible: css=.paper[aria-label*=\"Resumo executivo\"]; visible: css=.matrix; css=.pages .paper = 6; visible: css=.paper[aria-label*=\"Respostas do questionário\"]; css=.dialog contains \"padaria-trigo-bom-2026-08-27.pdf\"; visible: css=[data-aioson-id=\"export-saved\"]; visible: css=[data-aioson-id=\"open-pdf\"]; visible: css=[data-aioson-id=\"show-folder\"]; css=[data-aioson-id=\"export-notice\"] contains \"PDF salvo em Downloads\"; visible: css=.paper[aria-label*=\"Antes e depois\"]; css=.paper[aria-label*=\"Antes e depois\"] contains \"1 → 2\"; visible: css=.dialog [role=\"alert\"]; visible: css=[data-aioson-id=\"export-saved\"]; visible: css=[data-aioson-id=\"reports-empty\"]; visible: css=#b-email[aria-invalid=\"true\"]; css=#e-logo contains \"Use uma imagem PNG ou JPG\"; css=.cover-preview .cover-brand contains \"Rumo Consultoria\"; css=.pages .paper >> nth=0 contains \"Rumo Consultoria\"; css=.pages .paper >> nth=1 contains \"Rumo Consultoria\"; page shows \"Continua do diagnóstico de 20/04/2026\"; page shows \"Vencida em 15/10/2026\"; css=[data-aioson-id=\"reeval-line\"] contains \"faltam 32 dias\"; visible: css=[data-aioson-id=\"closed-actions\"]; css=.toasts contains \"agora está em andamento\"; css=#e-due contains \"Data inválida\"; css=[data-aioson-id=\"action-d2-teste\"] contains \"Prazo 15/11/2026\"; css=[data-aioson-id=\"action-d2-teste\"] contains \"Consultor\"; page shows \"Custo por cliente medido\"; css=#e-month contains \"já está anotado\"; visible: css=[data-aioson-id=\"month-2026-10\"]; css=[data-aioson-id=\"month-2026-10\"] contains \"R$ 40,00\"; visible: role=dialog[name=/Excluir outubro de 2026/]; hidden: css=[data-aioson-id=\"month-2026-10\"]; visible: css=[data-aioson-id=\"diary-empty\"]; page shows \"Refazer o diagnóstico\"; visible: css=[data-aioson-id=\"home-diary-widget\"]; page shows \"Sua carteira\"; visible: css=.paper[aria-label*=\"Empresas por estágio\"]; css=.dialog contains \"abre no navegador do computador\"; css=.dialog contains \"questionario-padaria-trigo-bom.html\"; visible: css=[data-aioson-id=\"desktop-note\"]; page shows \"Revise e salve\"; visible: css=[data-aioson-id=\"client-saved\"]; css=.dialog [role=\"alert\"] contains \"não de Padaria Trigo Bom\"; css=.dialog contains \"Rascunho criado\"; visible: css=[data-aioson-id=\"imported-draft\"]"
+  },
+  "console": {
+    "errors": 0,
+    "warnings": 0,
+    "page_errors": 0,
+    "samples": []
+  },
+  "network": {
+    "requests": 4,
+    "failed": 0,
+    "rows": [
+      {
+        "method": "GET",
+        "url": "file:///C:/dev/playapps/v-stage/.aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+        "status": 200,
+        "failed": false
+      },
+      {
+        "method": "GET",
+        "url": "https://fonts.googleapis.com/css2",
+        "status": 200,
+        "failed": false
+      },
+      {
+        "method": "GET",
+        "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+        "status": 200,
+        "failed": false
+      },
+      {
+        "method": "GET",
+        "url": "https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2",
+        "status": 200,
+        "failed": false
+      }
+    ]
+  },
+  "warnings": [],
+  "injection": {
+    "count": 0,
+    "hidden_chars": 0,
+    "families": {},
+    "samples": []
+  },
+  "scenario": {
+    "requests": 0,
+    "iterations": 0,
+    "judgments": {
+      "pass": 0,
+      "fail": 0,
+      "skipped": 0,
+      "concerns": 0
+    }
+  },
+  "script": {
+    "path": ".aioson/briefings/relatorios-e-acompanhamento/walkthrough.json",
+    "sha256": "4b450cc72a1ba9abf16d297d96a8417fe6295819ef3269fa150def33bbf62618"
+  },
+  "replay": "aioson browser:run . --script=.aioson/briefings/relatorios-e-acompanhamento/walkthrough.json --file=.aioson/briefings/relatorios-e-acompanhamento/prototype.html --slug=relatorios-e-acompanhamento --prototype",
+  "persisted": false,
+  "report_path": "",
+  "markdown_path": ""
+}

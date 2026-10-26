@@ -1,0 +1,34 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "sources",
+  "slug": "relatorios-e-acompanhamento",
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "sources",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "applicable": true,
+    "sources_total": 2,
+    "sources_present": 2,
+    "sources_missing": 0,
+    "promises_total": 10,
+    "promises_required": 8,
+    "promises_research_unpinned": 0,
+    "coverage_rows": 10,
+    "coverage_checked": true,
+    "lifecycle_stage": "pre_product",
+    "absorbed": false,
+    "approval_drift": false
+  },
+  "exitCode": 0
+}

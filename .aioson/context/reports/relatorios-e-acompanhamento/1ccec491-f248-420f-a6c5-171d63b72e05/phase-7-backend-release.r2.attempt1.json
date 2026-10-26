@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "a4eaf706-51ca-46fa-9e96-7c5cc25386c2",
+  "unit": "phase-7-backend-release",
+  "lane": "backend",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-26T01:25:00Z",
+  "finished_at": "2026-10-26T01:36:00Z",
+  "verdict": "PASS",
+  "summary": "The upstream repair landed: src/features/report-center/ now holds the 8 report files, src/features/reports/ is gone, and src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx import @/features/report-center/*. On that tree the unit's local Done-when passes (node scripts/smoke-migrate.mjs exit 0, 6/6; node --check of both smokes exit 0) and the full node scripts/smoke-store-package.mjs now passes 8/8 (exit 0): the package carries 216 files with the four new migrations, the questionnaire assets and manifest schema_version 2; a 0.1.0 install with owner data is overlaid with the current package, pnpm install and the vite build run, the app boots on PORT/BACKEND_PORT, companies, diagnoses, drafts and preferences are identical, the four new tables exist and the questionnaire files are in place. manifest.json, system.json and package.json are at 0.2.0, schema_version 2, requires_migration true. No file of this unit was edited in this round: the earlier r0 to r2 work (version bump, smoke-migrate, smoke-store-package including assertPackageContents and the descriptor cleanup) already covers the repaired tree.",
+  "files_changed": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "manifest.json",
+      "summary": "A real 0.1.0 -> 0.2.0 update of an installation with data through the AIOSON Play (Settings -> Instalar App -> Linkar pasta, or a local package) and the green badge were not run: they need the Play desktop app, which this environment cannot run. scripts/smoke-store-package.mjs reproduces the same flow (v1 install, owner data, overlay of the current package, pnpm install, boot, data comparison) and passes 8/8."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": ".aioson/system-packages/fitpulse/fitpulse-0.2.0.json",
+      "summary": "A packager output of an earlier inspection run existed before this unit's smoke runs and `aioson system:package .` rewrites it on every smoke run (now 1304139 bytes, with the report-center files). scripts/smoke-store-package.mjs removes only the descriptor it created itself, so this pre-existing file stays. A delete by hand was denied earlier in this unit and was not retried. It is outside this unit's write paths and safe to delete."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "result": "PASS 6/6 (v1 data identical after prepare-app --migrate, four new tables empty, repeated deploy no-op, cascades work)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/a1-smoke-migrate.log"
+    },
+    {
+      "command": "node --check scripts/smoke-store-package.mjs; node --check scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "result": "both exit 0",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/a1-check.log"
+    },
+    {
+      "command": "node scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "result": "PASS 8/8 (216 files packaged, v1 install, owner data, update overlay, boot on PORT/BACKEND_PORT, data identical, 4 new tables, questionnaire assets, schema version 2)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-7-backend-release-dev/a1-smoke-store.log"
+    },
+    {
+      "command": "node -e (read manifest.json, system.json, package.json)",
+      "exit_code": 0,
+      "result": "manifest 0.2.0, compatibility.schema_version 2, requires_migration true; system.json 0.2.0; package.json 0.2.0"
+    },
+    {
+      "command": "grep features/reports|features/report-center in src and tests",
+      "exit_code": 0,
+      "result": "no remaining import of features/reports; four imports point to features/report-center"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "AC-ra-54 store smoke is green on the renamed tree (node scripts/smoke-store-package.mjs exit 0, 8/8, about 5 minutes, foreground). Remaining integration checks of the phase that are not part of this unit: pnpm build, pnpm test, pnpm test:e2e, node scripts/smoke-boot.mjs, aioson harness:check . --slug=relatorios-e-acompanhamento, and the manual Play update of a v1 installation with data (Settings -> Instalar App -> Linkar pasta, or local package) to confirm the data and the green badge.",
+      "paths": ["scripts/smoke-store-package.mjs", "scripts/smoke-migrate.mjs", "manifest.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The aioson packager skips any folder named 'reports' at any depth (DEV_ONLY_DIRS). Any future folder with that name under src/, server/ or shared/ would be dropped from the store package again; scripts/smoke-store-package.mjs (assertPackageContents) fails with the list of dropped files if that happens. .aioson/system-packages/fitpulse/fitpulse-0.2.0.json is a stray packager output that may be deleted."
+    }
+  ]
+}

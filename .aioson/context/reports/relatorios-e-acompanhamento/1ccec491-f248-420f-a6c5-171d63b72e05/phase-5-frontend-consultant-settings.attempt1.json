@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "fe581f9b-f665-4db5-9f15-8de4c179f8db",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-5-frontend-consultant-settings",
+  "started_at": "2026-10-26T01:25:00Z",
+  "finished_at": "2026-10-26T01:31:40Z",
+  "verdict": "PASS",
+  "summary": "Repair attempt for upstream_contract_repair (phase-2-frontend-brand). The upstream rename src/features/reports/ -> src/features/report-center/ has already landed: the 8 report files live in src/features/report-center/, and src/App.tsx, src/features/result/ResultPage.tsx and src/features/settings/BrandSection.tsx import @/features/report-center/*. None of this unit's files import the old path, so no source change was needed. The unit's previous work stands: ConsultantHome 'O que precisa de você' (atrasada/vencidas/risco/rascunhos -> #/empresas?atencao=X, reevaluationDays), CompaniesPage ?atencao= filter with active-filter text, 'Nenhuma empresa encontrada' and 'Limpar filtros', ReevaluationSection (60/90 recomendado/120/180) wired into SettingsPage 'Lembrete de reavaliação'. pnpm typecheck (tsc --noEmit) now passes on the whole tree.",
+  "files_changed": [],
+  "findings": [
+    {
+      "kind": "environment_note",
+      "severity": "low",
+      "path": "package.json",
+      "summary": "A plain `pnpm typecheck` exited 1 before tsc ran: pnpm's verify-deps-before-run saw package.json change (phase-7-backend-release is editing it at the same time) and started `pnpm install`. Its postinstall (`scripts/prepare-app.mjs`, `prisma migrate deploy`) then failed with 'SQLite database error: database is locked' on data/fitpulse.db. This was not a type error. The same script run with `pnpm --config.verify-deps-before-run=false typecheck` (tsc --noEmit) exited 0. After phase-7 finishes, integration should run `pnpm install` once with no process holding data/fitpulse.db."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "Capability-level checks are outside this unit's Done when and were not run here: playwright tests/e2e/home.spec.ts, settings.spec.ts, companies.spec.ts, firstRun.spec.ts, accessibility.spec.ts (AC-ra-34 interval with reload, AC-ra-35 drill-down filters, AC-ra-62 mode switch), plus the Play dev-link walkthrough. They belong to integration, after the sibling e2e specs exist."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "inspection",
+      "summary": "src/features/reports/ absent; src/features/report-center/ holds PortfolioReportPage, ReportCenterPage, ReportDelivery, ReportOptions, ReportPreview, ReportSheet, ReportSheetCharts, useReportPreview; imports in App.tsx, ResultPage.tsx and BrandSection.tsx point to @/features/report-center/*."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-dev/typecheck-repair2.log",
+      "summary": "tsc --noEmit clean on the whole project."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-dev/typecheck-repair.log",
+      "summary": "Failed inside pnpm's automatic install (prisma migrate deploy: database is locked) before tsc ran; environmental, see findings."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "phase-5-frontend-consultant-settings: tsc --noEmit is clean on the whole tree. Still to run at integration: pnpm install (no process holding data/fitpulse.db, after phase-7-backend-release finishes with package.json), then pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts. Consultant links use #/empresas?atencao=<atrasada|vencidas|risco|rascunhos|sem-diagnostico> (the plan's param, not the prototype's ?filtro=). The 'aguardando' widget (awaitingQuestionnaires ?? []) belongs to the phase-6 frontend.",
+      "paths": ["src/features/home/ConsultantHome.tsx", "src/features/companies/CompaniesPage.tsx", "src/features/settings/ReevaluationSection.tsx", "src/features/settings/SettingsPage.tsx"]
+    }
+  ]
+}

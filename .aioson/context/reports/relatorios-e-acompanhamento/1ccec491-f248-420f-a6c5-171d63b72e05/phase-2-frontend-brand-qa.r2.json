@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "e0573f71-4fb1-47b2-b9a9-d12535ecfd5e",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-2-frontend-brand",
+  "wave": 5,
+  "cap": ["CAP-ra-brand"],
+  "ac": ["AC-ra-20", "AC-ra-21"],
+  "interfaces": ["IF-003", "IF-004"],
+  "started_at": "2026-10-25T22:20:00-03:00",
+  "finished_at": "2026-10-25T22:30:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-20, AC-ra-21",
+      "path": "tests/e2e/brand.spec.ts",
+      "summary": "Not run: `pnpm exec playwright test tests/e2e/brand.spec.ts`. The file does not exist on the current tree (checked with ls), so the capability-wide e2e check is still unwritten. It is owned by integration and is not part of this unit's Done when."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-20, AC-ra-21",
+      "path": "manifest.json",
+      "summary": "Not run: the Play dev-link walkthrough (Settings -> Instalar App -> Linkar pasta; save a PNG logo and a JPG logo in Configurações -> Seus relatórios; export the three PDFs; check cover and footer). It needs the AIOSON Play desktop app, which this environment cannot run."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "package.json",
+      "summary": "Not run: plain `pnpm typecheck` (the exact Done-when command). Running it can start pnpm's deps check, which runs `pnpm install` and a postinstall `prisma migrate deploy` that fails with 'database is locked' on data/fitpulse.db while a preview holds it. An accidental pnpm exec in this session reproduced that failure (exit 1), so the plain command was not rerun. The verified equivalent is `pnpm --config.verify-deps-before-run=false typecheck` (`tsc --noEmit`, exit 0). Environmental; a fix belongs in package.json or the preview lifecycle, not in this unit."
+    }
+  ],
+  "prior_findings_recheck": [
+    {
+      "round": 1,
+      "ref": "src/features/reports/ holds 8 files; report-center missing; store build fails",
+      "status": "resolved",
+      "observed": "src/features/reports/ does not exist; src/features/report-center/ holds the 8 files (PortfolioReportPage, ReportCenterPage, ReportDelivery, ReportOptions, ReportPreview, ReportSheet, ReportSheetCharts, useReportPreview). grep for 'features/reports' over src, scripts, tests, server and shared has no hits. Importers repointed: src/App.tsx:12-13, src/features/result/ResultPage.tsx:23, src/features/settings/BrandSection.tsx:13."
+    },
+    {
+      "round": 1,
+      "ref": "store smoke stops at step 1/8 (Steps 2-8 unreachable)",
+      "status": "resolved",
+      "observed": "`node scripts/smoke-store-package.mjs` exit 0; all 8/8 steps reported, ending with [smoke-store-package] PASS."
+    },
+    {
+      "round": 1,
+      "ref": "real 0.1.0 -> 0.2.0 update through AIOSON Play",
+      "status": "still_not_run",
+      "observed": "Needs the Play desktop app; recorded above as verification_not_run."
+    },
+    {
+      "round": 1,
+      "ref": "stale 1.2 MB .aioson/system-packages/fitpulse-0.2.0.json",
+      "status": "outside_unit",
+      "observed": "Not in this unit's write paths; the smoke run passed with it present. No action taken here."
+    },
+    {
+      "round": 2,
+      "ref": "rename blocker (same as round 1) and smoke not rerun",
+      "status": "resolved",
+      "observed": "Both resolved as above; smoke rerun in this round with exit 0."
+    },
+    {
+      "round": 2,
+      "ref": "tests/e2e/brand.spec.ts and Play walkthrough not run",
+      "status": "still_not_run",
+      "observed": "brand.spec.ts absent on the tree; Play walkthrough not runnable here. Both recorded as verification_not_run findings for integration."
+    },
+    {
+      "round": 2,
+      "ref": "plain pnpm typecheck exits 1 before tsc runs",
+      "status": "not_reproduced_plain_environmental",
+      "observed": "Plain command not rerun (see finding). The flagged variant exits 0. An accidental pnpm exec reproduced the deps-check and prisma migrate failure, so the cause is confirmed as environmental."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/typecheck.exit",
+      "summary": "tsc --noEmit clean on the current tree, including the report-center imports (local Done when)."
+    },
+    {
+      "kind": "command",
+      "command": "node scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/smoke.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/smoke.exit",
+      "summary": "8/8 steps on the real tree: package 0.2.0 (216 files, schema v2), install 0.1.0, owner data written, update, updated app answers on PORT=49924 BACKEND_PORT=49925, data identical, 4 new tables, questionnaire files. PASS."
+    },
+    {
+      "kind": "command",
+      "command": "node node_modules/vitest/vitest.mjs run --config <exec-temp>/vitest.qa.config.mjs (scratch test brandLogoImage.qa.test.ts, outside project root)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/brandLogoImage.qa.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-frontend-brand-qa/brandLogoImage.qa.exit",
+      "summary": "10/10 pass against src/features/settings/brandLogoImage.ts: PNG/JPEG magic bytes; GIF/WebP/short refused; >2 MB and empty refused with exact message 'Use uma imagem PNG ou JPG de até 2 MB.'; renamed non-image refused; undecodable PNG refused; 1200x600 PNG shrinks to 600x300 in PNG; tall JPEG shrinks to 120x600 with white ground and quality 0.9; <=600 px kept byte-identical. DOM and createImageBitmap stubbed (node environment)."
+    },
+    {
+      "kind": "inspection",
+      "summary": "BrandSection.tsx imports the brand API only from @/api/brandApi (getBrand, saveBrand, saveBrandLogo, removeBrandLogo, resetBrand, brandLogoUrl) plus the shared isApiError guard from @/api/httpClient. No direct fetch in any unit file (grep). IF-003 holds."
+    },
+    {
+      "kind": "inspection",
+      "summary": "PhoneField.tsx, ConfirmDialog.tsx, SettingsPage.tsx (data-aioson-id brand-section at :335) and ReportSheet.tsx (now report-center) re-read: no defect found. ConfirmDialog's preventDefault blocks the Radix auto-close so the busy state and error alert hold."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Still open for the capability: (1) write tests/e2e/brand.spec.ts, then run `pnpm exec playwright test tests/e2e/brand.spec.ts` with the preview stopped (or with --config.verify-deps-before-run=false); (2) run the Play dev-link walkthrough: Settings -> Instalar App -> Linkar pasta; save a PNG logo and a JPG logo in Configurações -> Seus relatórios; export the three PDFs; check cover and footer. Plain `pnpm typecheck` also needs the preview stopped, or the same verify-deps flag."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Rename AC-ra-54 (src/features/reports -> src/features/report-center) verified on this tree: folder moved, no stale import, smoke 8/8 PASS.",
+      "paths": ["src/features/report-center/", "src/App.tsx", "src/features/result/ResultPage.tsx", "src/features/settings/BrandSection.tsx", "scripts/smoke-store-package.mjs"]
+    }
+  ]
+}

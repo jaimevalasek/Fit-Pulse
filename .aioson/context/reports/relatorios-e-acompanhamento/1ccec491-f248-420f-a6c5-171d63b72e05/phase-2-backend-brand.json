@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "e4d12fc3-3ae4-443f-839b-7affb653cec9",
+  "agent": "dev",
+  "host": "claude",
+  "lane": "backend",
+  "unit": "phase-2-backend-brand",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T22:48:00Z",
+  "finished_at": "2026-10-25T22:59:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "shared/format/phone.ts",
+    "shared/format/contact.ts",
+    "tests/unit/contactFormat.test.ts",
+    "server/validation/brandSchemas.ts",
+    "server/files/imageSignature.ts",
+    "tests/unit/imageSignature.test.ts",
+    "server/services/brandService.ts",
+    "server/routes/brandRoutes.ts",
+    "server/repositories/preferenceRepository.ts",
+    "server/services/preferenceService.ts"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "Capability-level checks of CAP-ra-brand were not run because they belong to other units or need the integration wiring: `pnpm exec vitest run tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts` (neither file exists yet), `pnpm exec playwright test tests/e2e/brand.spec.ts` (needs the frontend and the app.ts mount), and the dev-link check in the Play. AC-ra-21 is covered here at the server level by tests/unit/imageSignature.test.ts and by a scratch probe of the real router (see evidence), not by a committed API test.",
+      "paths": ["tests/api/brandRoutes.test.ts", "tests/unit/pdfRenderer.test.ts", "tests/e2e/brand.spec.ts", "server/app.ts"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "server/app.ts does not mount the brand router yet (the file is outside this unit and owned concurrently by phase-1-backend-files). Until integration mounts it, GET/PUT/DELETE /api/brand and /api/brand/logo answer 404 in the real app.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "shared/format/phone.ts carries its own copy of the two small caret helpers (digitsBefore, caretAfterDigitCount) that shared/format/cnpj.ts keeps private. cnpj.ts is outside this unit, so the helpers were not extracted; a later cleanup can move them to one shared module.",
+      "paths": ["shared/format/phone.ts", "shared/format/cnpj.ts"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "preferenceRepository.readAll was removed and replaced by readKeys(keys); its only caller was preferenceService. Any other unit that imports readAll must switch to readKeys with its own keys."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm exec vitest run tests/unit/contactFormat.test.ts tests/unit/imageSignature.test.ts tests/api/preferenceRoutes.test.ts",
+      "result": "PASS",
+      "exit_code": 0,
+      "summary": "3 test files, 166 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-dev/done-when.log"
+    },
+    {
+      "check": "pnpm exec tsc --noEmit (whole project)",
+      "result": "PASS",
+      "exit_code": 0,
+      "summary": "no type errors, including the other units' files present at that moment",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-dev/tsc.log"
+    },
+    {
+      "check": "scratch vitest probe of createBrandRoutes + createBrandService on a migrated test database (own config in the run temp dir, not committed)",
+      "result": "PASS",
+      "exit_code": 0,
+      "summary": "9 tests: defaults and normalized save; partial PUT and clearing; per-field validation messages with nothing saved; PNG and JPEG stored and served with their type; SVG, SVG declared png, text renamed png, GIF, bad base64, data URL, empty, 2 MB+1 and 2.1 MB refused with 422 logo_invalid and the exact message; 3 MB body gives 413 payload_too_large with the same message; 1200 px refused; exactly 2 MB and 600 px accepted; nothing changes after any refusal; remove logo, 404 without logo, reset; readIdentity returns bytes; preferences service unaffected; JSON and host guards still apply",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-dev/probe.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Mount the brand router in server/app.ts BEFORE `app.use(express.json({ limit: \"1mb\" }))`, next to the backup router: `const brand = createBrandService({ prisma: deps.prisma, now: deps.now }); app.use(createBrandRoutes({ brand }));`. The router brings its own parsers (16 KB for PUT /api/brand, 3 MB for PUT /api/brand/logo). Pass the same `brand` service to reportService: `brand.readIdentity()` returns `{ name, phone, email, website, logo: { mimeType, bytes, updatedAt } | null }`, all null meaning the FitPulse brand.",
+      "paths": ["server/app.ts", "server/routes/brandRoutes.ts", "server/services/brandService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-003 as built. Brand = { name, phone, email, website: string|null, hasLogo: boolean, logoUpdatedAt: ISO string|null } (null, not empty string, when unset). GET/PUT/DELETE /api/brand: PUT is partial (only the keys sent change; null or blank clears; unknown keys dropped); DELETE forgets name, contacts AND logo and answers the empty Brand. PUT /api/brand/logo body { mimeType, dataBase64 } (bare base64, no data: prefix), DELETE /api/brand/logo (idempotent, answers Brand), GET /api/brand/logo answers the bytes with Content-Type image/png|image/jpeg, Cache-Control no-cache, nosniff, or 404 logo_not_found. Stored forms: phone masked `(11) 91234-5678`, site without http(s):// and without a lone trailing slash, host lower-cased, e-mail trimmed. Errors: 400 validation_failed with `fields` {name|phone|email|website: message} using the AC-ra-20 texts (name: 'O nome pode ter até 80 caracteres.'); 422 logo_invalid with 'Use uma imagem PNG ou JPG de até 2 MB.' for any non PNG/JPEG by content, undecodable base64, or more than 2 MB; the 3 MB body limit answers 413 payload_too_large carrying that same message.",
+      "paths": ["server/routes/brandRoutes.ts", "server/validation/brandSchemas.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "ASSUMPTION for the frontend brand unit: the server has no image library, so it does not resize. It REFUSES a PNG/JPEG whose longer side is above 600 px (422 logo_invalid, message 'A logo deve ter no máximo 600 px no lado maior.'), reading the size from the IHDR/SOFn. brandLogoImage.ts must therefore reduce to 600 px (same format) before sending. src cannot import from server/, so the 2 MB, 600 px and refusal text are duplicated there: BRAND_LOGO_MAX_BYTES=2*1024*1024, BRAND_LOGO_MAX_SIDE=600, 'Use uma imagem PNG ou JPG de até 2 MB.' (exports in server/validation/brandSchemas.ts). The declared mimeType must be image/png or image/jpeg; the stored type comes from the bytes (a JPEG sent as image/png is accepted and stored as JPEG).",
+      "paths": ["server/validation/brandSchemas.ts", "server/services/brandService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "For the PDF units: imageSignature only checks the first bytes (PNG signature + IHDR, JPEG up to the frame header), as the plan says; it does not prove the whole file decodes. The renderer should draw the logo inside a try/catch and fall back to no logo, so a damaged file can never stop the three PDFs. Phone/e-mail/site are already stored in print form; documentParts should print them as they come.",
+      "paths": ["server/files/imageSignature.ts", "server/report/pdfRenderer.ts", "server/report/documentParts.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Frontend helpers for BrandSection/PhoneField in shared/format: phone.ts exports maskPhone, maskPhoneInput(raw, caret, previous) -> { value, caret }, getPhoneError (blank is fine), normalizePhone, PHONE_MASK_MAX_LENGTH (15, for maxLength), PHONE_INVALID_MESSAGE; contact.ts exports getEmailError, getWebsiteError, normalizeEmail, normalizeWebsite and the two messages. All are pure and never throw. A landline stops at 10 digits and a number whose first digit after the area code is 9 is a mobile (11 digits); '(11) 1234-5678' and '(11) 91234-5678' are the two accepted shapes.",
+      "paths": ["shared/format/phone.ts", "shared/format/contact.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for CAP-ra-brand once the sibling units land: `pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts` and `pnpm exec playwright test tests/e2e/brand.spec.ts`. The brandRoutes API test can reuse the scenarios of the scratch probe described in evidence (PNG, JPG, SVG, text renamed to .png, 3 MB body, 2.1 MB, 1200 px, invalid fields, nothing changes on refusal). Also note the backup (AC-ra-55) will need to read the `brand.*` preference keys (brand.name, brand.phone, brand.email, brand.website, brand.logo_mime, brand.logo_data, brand.logo_updated_at) if the logo is to travel in the safety copy.",
+      "paths": ["tests/api/brandRoutes.test.ts", "tests/e2e/brand.spec.ts", "server/services/backupService.ts"]
+    }
+  ]
+}

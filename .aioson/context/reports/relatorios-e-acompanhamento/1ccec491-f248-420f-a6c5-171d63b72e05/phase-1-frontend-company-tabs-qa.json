@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "4097a607-9d9b-4877-975b-19c019caa8c3",
+  "unit": "phase-1-frontend-company-tabs",
+  "wave": 1,
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T22:53:54Z",
+  "finished_at": "2026-10-25T22:55:28Z",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-report-center"],
+    "acceptance_criteria": ["AC-ra-61"],
+    "done_when": "pnpm typecheck passa e a aba índice mantém a linha do tempo da versão 1"
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "integration_pending",
+      "severity": "medium",
+      "cap": "CAP-ra-report-center",
+      "ac": "AC-ra-61",
+      "path": "src/App.tsx",
+      "summary": "A rota aninhada 'relatorios' ainda não existe em src/App.tsx (a company route em L84-86 só tem o filho index). O link 'Relatórios' (src/features/companies/CompanyTabs.tsx L36, data-aioson-id tab-relatorios) aponta para /empresa/:companyId/relatorios, que cai no NotFoundScreen (rota '*', L91) até a integração registrar ReportCenterPage. Diferido para a integração (phase-1-frontend-report-center, wave 4); não reprova esta unidade."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-report-center",
+      "ac": "AC-ra-61",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "Não executado: 'pnpm exec playwright test tests/e2e/report.spec.ts' (botão 'Relatórios' na primeira dobra em 1280 e 390 px, na página da empresa e no resultado). Motivo: o spec pertence a outra unidade e depende da rota de relatórios e do botão da página de resultado, ainda não integrados. Não foi executado nesta revisão."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "PASS: tsc --noEmit sem erros de tipo",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-company-tabs-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-company-tabs-qa/typecheck.exit"
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/companies.spec.ts tests/e2e/history.spec.ts",
+      "exit_code": 0,
+      "result": "PASS: 15 passed (50.7s). Aba índice mantém a linha do tempo da versão 1: história/timeline (history.spec.ts 25, 85, 124) e empresas (companies.spec.ts 43-234), incluindo arquivar/restaurar/excluir, busca/filtros, 390 px e axe.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-company-tabs-qa/e2e.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-company-tabs-qa/e2e.exit"
+    },
+    {
+      "command": "code review of src/App.tsx, src/features/companies/CompanyPage.tsx, CompanyTabs.tsx, CompanyDiagnosesTab.tsx",
+      "exit_code": 0,
+      "result": "Nenhum defeito local encontrado. CompanyTabs define as abas (diagnosticos, relatorios) com NavLink; CompanyDiagnosesTab renderiza CompanyTimeline com estado vazio e ações de arquivar/restaurar/excluir; CompanyPage exporta useCompanyOutlet e CompanyOutletContext para a aba de relatórios.",
+      "log": null
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Registrar a rota aninhada em src/App.tsx dentro de <Route path=\"empresa/:companyId\">, ao lado do index: import { ReportCenterPage } from \"@/features/reports/ReportCenterPage\" e <Route path=\"relatorios\" element={<ReportCenterPage />} />. Só após phase-1-frontend-report-center existir. Sem isso, o link 'Relatórios' cai no NotFound.",
+      "paths": ["src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Quando a rota e o botão 'Relatórios' na página de resultado existirem, executar em 1280 e 390 px: pnpm exec playwright test tests/e2e/report.spec.ts (AC-ra-61). Seletor da página da empresa: [data-aioson-id=\"tab-relatorios\"]; nav com aria-label 'Seções da empresa' e data-aioson-tour 'abas'.",
+      "paths": ["tests/e2e/report.spec.ts", "src/features/companies/CompanyTabs.tsx"]
+    },
+    {
+      "to": "unit:phase-1-frontend-report-center",
+      "kind": "note",
+      "text": "Confirmado por leitura: ReportCenterPage deve ser filho do layout da empresa, usar useCompanyOutlet() de @/features/companies/CompanyPage (retorna CompanyOutletContext { company, reload, onStartDiagnosis?, onStatusAction }) e renderizar só o próprio conteúdo com h2 próprio; StartDiagnosisButton está exportado do mesmo módulo para o estado vazio (BR-ra-01)."
+    }
+  ]
+}

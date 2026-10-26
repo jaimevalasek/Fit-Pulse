@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "a8a7ca26-e0e2-4975-a54d-6533e7f28de0",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "unit": "phase-1-backend-http",
+  "phase": "1-backend-http",
+  "wave": 3,
+  "capabilities": ["CAP-dm-play-runtime"],
+  "acceptance_criteria": ["AC-dm-41", "AC-dm-42"],
+  "interfaces": ["IF-001", "IF-010"],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:48:33Z",
+  "finished_at": "2026-10-23T03:50:07Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-42",
+      "path": "tests/api/playRoutes.test.ts",
+      "summary": "AC-dm-42 is checked only against rows seeded through Prisma; the PRD wording 'depois de uma conclusão real pela API' (a company created and a diagnosis completed through the API, then the summary read) is not exercised because companyRoutes and diagnosisRoutes are not mounted in this wave. Deferred to integration, which must add the API-driven case once those routes exist."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-41",
+      "path": "server/main.ts",
+      "summary": "Real SIGTERM/SIGINT delivery to the backend process was not run by QA (win32 does not deliver POSIX signals via kill). The implementer's evidence is an in-process SIGINT with an open keep-alive connection, which QA did not re-run; the shutdown path on macOS/Linux is unverified. QA also did not re-run the ad-hoc boot of server/main.ts."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-41",
+      "path": "package.json",
+      "summary": "Capability-wide checks outside this unit's Done-when were not run by QA: `node scripts/smoke-boot.mjs`, `pnpm build`, `pnpm test:e2e`, `node scripts/smoke-store-package.mjs` and the Play dev-link. They depend on sibling units and the integrated app, so they belong to integration (see messages[])."
+    },
+    {
+      "kind": "cross_unit_defect",
+      "severity": "low",
+      "cap": "CAP-dm-play-runtime",
+      "ac": "AC-dm-45",
+      "path": "server/db/prismaClient.ts",
+      "summary": "FitPulseSqliteAdapterFactory.connect() (lines 16-18) calls super.connect() and then adapter.executeScript(CONNECTION_PRAGMAS) with no try/finally, so a PRAGMA failure (e.g. 'file is not a database') leaves the SQLite handle open; on win32 the file stays locked until exit. Confirmed by reading the code; not reproduced by QA. Owned by phase-1-backend-db; not edited here. The new test removes its temp folders best-effort, so this does not fail the unit."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "AC-dm-42 end-to-end (deferred from this unit): once companyRoutes and diagnosisRoutes are mounted in server/app.ts, add a case to tests/api/playRoutes.test.ts (or the diagnosis test) that creates a company and completes a diagnosis through the API, then calls GET /api/assistant/summary and repeats the exact-fields, no-money and no-answers assertions. Also check that the summary's lockingDimension (display name) matches the product wording.",
+      "paths": ["tests/api/playRoutes.test.ts", "server/services/assistantSummaryService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The Done-when command `pnpm test -- tests/api/playRoutes.test.ts` runs the whole suite: pnpm forwards `--`, so vitest receives `-- tests/api/playRoutes.test.ts` and runs every test file (7 files, 395 tests, exit 0 in this run). The unit's own file alone is `npx vitest run tests/api/playRoutes.test.ts` (48 tests, exit 0). The Done-when result therefore depends on sibling test files passing.",
+      "paths": ["package.json"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining CAP-dm-play-runtime checks to run after integration, all not run by QA: (1) `node scripts/smoke-boot.mjs` (loopback-only listen on both ports; the Vite proxy must not rewrite Host to anything other than 127.0.0.1 or localhost, because the guard checks only the hostname); (2) `pnpm build`; (3) `pnpm test:e2e`; (4) `node scripts/smoke-store-package.mjs`; (5) dev-link in the Play with the webview badge green. On win32 a connection to a non-loopback IPv4 times out instead of being refused, so 'never connected' is the pass criterion for LAN probes.",
+      "paths": ["scripts/smoke-boot.mjs", "scripts/smoke-store-package.mjs", "server/main.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-db",
+      "kind": "note",
+      "text": "server/db/prismaClient.ts connect(): if adapter.executeScript(CONNECTION_PRAGMAS) throws after super.connect() succeeded, the adapter is never disposed. Wrap the PRAGMA step so the adapter is closed on failure and the error rethrown. Not edited by phase-1-backend-http.",
+      "paths": ["server/db/prismaClient.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm test -- tests/api/playRoutes.test.ts",
+      "exit_code": 0,
+      "result": "vitest run -- tests/api/playRoutes.test.ts: Test Files 7 passed (7), Tests 395 passed (395). pnpm forwards the -- so the whole suite ran.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-qa/verify-unit.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-qa/verify-unit.exit"
+    },
+    {
+      "kind": "command",
+      "command": "npx vitest run tests/api/playRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 1 passed (1), Tests 48 passed (48).",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-qa/verify-isolated.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-qa/verify-isolated.exit"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit: no diagnostics.",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-qa/typecheck.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-backend-http-qa/typecheck.exit"
+    },
+    {
+      "kind": "review",
+      "command": "read of unit files and test file",
+      "exit_code": 0,
+      "result": "Read server/app.ts, server/http/requestGuards.ts, server/http/errorHandler.ts, server/services/domainError.ts, server/routes/playRoutes.ts, server/services/assistantSummaryService.ts, server/main.ts and tests/api/playRoutes.test.ts (describe blocks 187-612). No defect found in the unit files; the assertions match the AC-dm-41/42 and IF-001/010 claims. manifest.json port_env confirms backend uses BACKEND_PORT."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "66cc899b-5a97-49ed-ad75-009a87c92140",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "started_at": "2026-10-23T05:12:00Z",
+  "finished_at": "2026-10-23T05:18:00Z",
+  "lane": "backend",
+  "phase": "4-backend-backup",
+  "wave": 10,
+  "unit": "phase-4-backend-backup",
+  "scope": {
+    "capabilities": ["CAP-dm-backup"],
+    "acceptance_criteria": ["AC-dm-37"],
+    "interfaces": ["IF-009"]
+  },
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-backup",
+      "ac": "AC-dm-37",
+      "path": "tests/e2e/backup.spec.ts",
+      "summary": "Not run: `pnpm test:e2e -- tests/e2e/backup.spec.ts`. The e2e spec and the BackupSection UI belong to the frontend lane and the integration owner, outside this unit's files. Deferred to integration; the `role=\"alert\"` refusal in AC-dm-37 is only covered there."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-backup",
+      "ac": "AC-dm-37",
+      "path": "scripts/smoke-migrate.mjs",
+      "summary": "Not run: phase-4 integration checks `node scripts/smoke-migrate.mjs`, `node scripts/smoke-boot.mjs`, `node scripts/smoke-store-package.mjs`, `aioson harness:check . --slug=diagnostico-maturidade` and the manual Windows store smoke (AC-dm-01/36/37/44/45). Deferred to integration by the phase plan; they are not this unit's Done-when."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-dm-backup",
+      "ac": "AC-dm-37",
+      "path": "tests/api/backupRoutes.test.ts",
+      "summary": "OBS-3370ac confirmed: `pnpm test -- tests/api/backupRoutes.test.ts` forwards a literal `--` and runs the whole suite (17 files, 757 tests, exit 0). The Done-when command passes as written, but it does not isolate this file. Not fixed here: the runner configuration is outside the unit's files."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "cap": "CAP-dm-backup",
+      "ac": "AC-dm-37",
+      "path": "server/services/backupService.ts",
+      "summary": "In import(), when only formatVersion or schemaVersion is newer than the app (rulesVersion is not), backup_newer_version still prints the file's own rulesVersion (for example 'regras v1'). The message is defined in terms of the rules version, so it is accurate but may read as confusing. Left as is."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred checks after all producers finish: `pnpm test:e2e -- tests/e2e/backup.spec.ts`, `pnpm test`, `pnpm test:e2e`, `node scripts/smoke-migrate.mjs`, `node scripts/smoke-boot.mjs`, `node scripts/smoke-store-package.mjs`, `aioson harness:check . --slug=diagnostico-maturidade`, then the manual Windows smoke steps 1-5 of the phase plan. Also confirm the e2e refusal path shows the backend's backup_invalid / backup_newer_version message with role=alert."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "IF-009 as built: export -> 200 { fileName, directory, companies, diagnoses }; import -> 200 { imported: {companies, diagnoses}, skipped: {companies, diagnoses} }. Errors use { error: { code, message } }: 422 backup_invalid, 422 backup_newer_version (with rulesVersion), 500 write_failed, 413 above 10 MB, 400 invalid_json, 415 for other content types. Confirmed against src/api/backupApi.ts."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Behaviour the UI/e2e should know: records whose id already exists are skipped, never overwritten; a draft from the file is skipped (counted in skipped.diagnoses) when its company already has an open draft (RULE-dm-13); export covers companies and diagnoses only, not preferences."
+    },
+    {
+      "to": "unit:phase-4-backend-backup",
+      "kind": "note",
+      "text": "QA review found no defect in the unit files; no corrections were made."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/backupRoutes.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-qa/done-when.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-qa/done-when.exit",
+      "result": "17 files, 757 tests passed (runner forwards '--' and ignores the file filter, OBS-3370ac)"
+    },
+    {
+      "command": "npx vitest run tests/api/backupRoutes.test.ts",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-qa/focused.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-qa/focused.exit",
+      "result": "1 file, 44 tests passed"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-backend-backup-qa/typecheck.exit",
+      "result": "tsc --noEmit clean"
+    }
+  ]
+}

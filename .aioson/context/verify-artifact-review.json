@@ -1,0 +1,23 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "review",
+  "slug": "relatorios-e-acompanhamento",
+  "root": "C:\\dev\\playapps\\v-stage",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [
+    "review.html is stale: source_hash differs from the current briefings.md — regenerate the review for the next round",
+    "refinement-feedback.json missing or unreadable — expected right after review generation"
+  ],
+  "checks": [
+    {
+      "id": "review:relatorios-e-acompanhamento",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "exitCode": 0
+}

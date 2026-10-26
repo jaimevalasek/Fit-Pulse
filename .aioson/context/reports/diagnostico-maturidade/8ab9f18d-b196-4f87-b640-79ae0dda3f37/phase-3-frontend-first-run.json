@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "490875e7-76e5-4327-9011-62fc7df5fbb1",
+  "unit_id": "phase-3-frontend-first-run",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:52:00Z",
+  "finished_at": "2026-10-23T05:11:00Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/firstRun/WelcomeModePage.tsx",
+    "src/features/firstRun/WelcomeCompanyPage.tsx",
+    "src/features/home/OnboardingTour.tsx",
+    "src/components/layout/AppShell.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "The previous-attempt finding (body-less POST/PUT/PATCH answered 415 json_required) is already repaired in the current tree: request() sets Content-Type application/json for every POST/PUT/PATCH and sends `{}` when there is no body (JSON_WRITE_METHODS). No edit by this unit; requireJsonWrites on the server was not touched."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "path": "tests/e2e/firstRun.spec.ts",
+      "summary": "Capability check `pnpm test:e2e -- tests/e2e/firstRun.spec.ts` (fresh-db project) was not run: the spec is outside this unit's allowed files and the e2e evidence for AC-dm-01/02/03 belongs to integration. The Play dev-link opening with `data/` deleted was not run either (needs the Play desktop runtime)."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "Home screens carry no data-aioson-tour attributes and are outside this unit. OnboardingTour looks up `[data-aioson-tour=<anchor>]` first and falls back to the existing data-aioson-id of each region (owner: escada, home-trava, result-actions, home-draft, nav; consultant: escada, consult-stalled, consult-old, nav). AppShell's nav now has data-aioson-tour=\"nav\". If a step's region is absent (e.g. no lock note), the card shows centered over the scrim and the step count stays 5/4."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm build",
+      "command": "pnpm build",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-frontend-first-run-dev/build.log",
+      "summary": "tsc --noEmit and vite build completed (built in 1.30s); only the existing >500 kB chunk-size warning."
+    },
+    {
+      "check": "AC-dm-01 wiring",
+      "result": "implemented",
+      "summary": "App.tsx index route renders RootRedirect: GET /api/companies (active, then archived) -> no company => Navigate #/boas-vindas, else #/inicio. #/boas-vindas shows 'Vamos descobrir em que degrau a sua empresa está' with no DB/port/login/config screen; AppShell hides nav, mode chip and '?' on /boas-vindas*."
+    },
+    {
+      "check": "AC-dm-02 wiring",
+      "result": "implemented",
+      "summary": "'Para a minha empresa' / 'Atendo várias empresas' navigate to #/boas-vindas/empresa?modo=owner|consultant. 'Começar o diagnóstico' validates name/segment/sales channel (+optional revenue, CNPJ), then createCompany -> savePreferences({usageMode, focusCompanyId}) -> startDiagnosis(companyId) -> navigate #/diagnostico/:id (new draft opens on block 1, 'Seus números'). A retry after a later step fails reuses the created company."
+    },
+    {
+      "check": "AC-dm-03 wiring",
+      "result": "implemented",
+      "summary": "TourProvider (OnboardingTour.tsx) wraps AppShell; auto-opens once per mode on #/inicio when tourSeen[mode] is false and the first region exists (home with data). 5 owner steps / 4 consultant steps, 'N de M' counter, 'Pular o tour', Voltar, Próximo/Entendi, Esc closes; closing saves tourSeen[mode]=true. The header '?' (data-aioson-id tour-reopen) calls openTour, navigating to #/inicio first when needed."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred first-run checks: write tests/e2e/firstRun.spec.ts in the fresh-db Playwright project and run `pnpm test:e2e -- tests/e2e/firstRun.spec.ts`. Selectors available: wizard-mode, wizard-mode-empresa, wizard-mode-consultoria, wizard-company, wizard-form, wizard-submit, wizard-back, wizard-error, root-loading, root-error, tour-card, tour-count ('1 de 5' / '1 de 4'), tour-skip, tour-prev, tour-next, tour-reopen, tour-highlight. Then in the Play dev-link delete data/ and confirm the app opens on the wizard and ends on 'Seus números'.",
+      "paths": ["tests/e2e/firstRun.spec.ts", "src/App.tsx", "src/features/firstRun/WelcomeModePage.tsx", "src/features/firstRun/WelcomeCompanyPage.tsx", "src/features/home/OnboardingTour.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "src/features/home/OnboardingTour.tsx exports TourProvider (mounted in App.tsx inside HashRouter, around AppShell), useTour() -> { openTour() } and TOURS. Any screen may call useTour().openTour() (e.g. a 'Rever o tour' button in Configurações). App.tsx index route no longer redirects to /empresas; it decides between #/boas-vindas and #/inicio (BR-dm-11).",
+      "paths": ["src/features/home/OnboardingTour.tsx", "src/App.tsx", "src/components/layout/AppShell.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Optional polish outside this unit: add data-aioson-tour attributes on the home regions (escada/trava/acoes/rascunho in OwnerHome, carteira/parados/antigos in ConsultantHome) to match the prototype; the tour already finds them through their data-aioson-id fallbacks.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ConsultantHome.tsx"]
+    }
+  ]
+}

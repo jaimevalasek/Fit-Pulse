@@ -1,0 +1,552 @@
+{
+  "schema_version": "1.2",
+  "briefing_slug": "relatorios-e-acompanhamento",
+  "source_briefing_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+  "source_hash": "fd6133fa0e1131b283992492522e04fc16beed1ff4d44d65ced1ff2f88ba65b1",
+  "review_generated_at": "2026-10-24T22:10:30.002Z",
+  "last_modified_at": "2026-10-24T22:16:32.000Z",
+  "export_method": "manual-save",
+  "round": 1,
+  "sections": [
+    {
+      "id": "context",
+      "title": "Context",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "**Origem.** Depois de usar a primeira versão do FitPulse, o dono escreveu em 2026-10-24: \"o sistema ficou bom, mas acho que faltou coisas, tipo exportar relatórios em PDF e poderia avaliar sobre melhorias que daria para fazer ficar mais profissional e mais eficaz?\" (`SRC-001`).\n\n**O que já existe (inspecionado em 2026-10-24, app rodando no preview do Play):**\n\n| Área | Situação | Evidência |\n|---|---|---|\n| PDF | **Existe, mas passa despercebido.** O botão \"Exportar PDF\" fica só na tela de resultado de um diagnóstico. O PDF vai direto para a pasta Downloads: não abre, não pergunta onde salvar e o aviso sai em letra pequena. Não há nenhum PDF do FitPulse na pasta Downloads do dono, o que sugere que ele nunca encontrou o botão | `src/features/result/ExportReportDialog.tsx:96-146`, `server/services/reportService.ts:47-86` |\n| Conteúdo do PDF | 3 páginas, só texto e barras: estágio, 3 ações, notas das 8 dimensões, números, riscos e confiança. Faltam capa, resumo executivo, gráfico, matriz de riscos visual, evolução, explicação do método e a marca de quem entrega | `server/report/pdfRenderer.ts:212-286`, amostra gerada fora da pasta Downloads |\n| Outros relatórios | Não existem relatório de evolução nem da carteira de empresas. A comparação existe só como tela | `src/features/history/ComparePage.tsx`, `server/routes/reportRoutes.ts` (uma única rota) |\n| Ações | O plano mostra 3 ações, mas não dá para marcar o que foi feito, pôr prazo ou responsável | `src/features/result/ActionPlanList.tsx`; PRD anterior, `CAP-dm-action-tracking` = deferred |\n| Lembrete | A tela inicial do consultor já mostra \"empresas sem diagnóstico há mais de 90 dias\". O dono vê só \"Refazer a cada 3 meses…\", sem contagem nem aviso | `src/features/home/ConsultantHome.tsx`, captura da tela inicial |\n| Números | O número central do método, quanto custa conquistar um cliente, aparece \"não calculado\" quando o dono não sabe o gasto ou os clientes novos. A primeira ação recomendada é anotar isso por 30 dias, mas o app não tem onde anotar | Tela de resultado da empresa \"Aioson\"; `shared/domain/unitEconomics.ts` |\n| Questionário à distância | Não existe; estava deferido no PRD anterior | PRD anterior, `CAP-dm-file-bridge` = deferred |\n\n**Escolhas do dono nesta sessão (2026-10-24, perguntas estruturadas):**\n- Entram as quatro frentes: **relatórios completos**, **acompanhar as ações**, **diário de números** e **questionário à distância**.\n- O PDF sai **com a marca de quem entrega**: nome, logo e contato configuráveis; o dono pode deixar em branco.\n- Pasta do briefing: `relatorios-e-acompanhamento`.\n\n**Mudança de decisões anteriores.** No PRD `diagnostico-maturidade` ficaram fora do V1, e agora entram por escolha do dono:\n- a troca de respostas por arquivo;\n- marcar ações e o lembrete de reavaliação;\n- o check-in mensal de números (\"Option C\" do briefing anterior);\n- a marca do consultor no PDF.\n\nContinuam fora:\n- o plano escrito por IA (só depois da calibração das regras);\n- o benchmark entre empresas (exige nuvem).\n\n**Estado do workflow.** A feature `diagnostico-maturidade` ainda consta como `in_progress` em `.aioson/context/features.md`. Esta é uma feature nova, que depende dela e não a substitui.",
+      "original_hash": "9ae0d0a620b5f993e3d2599d694128c25f3ecc5166477ee3fb4dfaa3a7f72e84",
+      "current_text": "**Origem.** Depois de usar a primeira versão do FitPulse, o dono escreveu em 2026-10-24: \"o sistema ficou bom, mas acho que faltou coisas, tipo exportar relatórios em PDF e poderia avaliar sobre melhorias que daria para fazer ficar mais profissional e mais eficaz?\" (`SRC-001`).\n\n**O que já existe (inspecionado em 2026-10-24, app rodando no preview do Play):**\n\n| Área | Situação | Evidência |\n|---|---|---|\n| PDF | **Existe, mas passa despercebido.** O botão \"Exportar PDF\" fica só na tela de resultado de um diagnóstico. O PDF vai direto para a pasta Downloads: não abre, não pergunta onde salvar e o aviso sai em letra pequena. Não há nenhum PDF do FitPulse na pasta Downloads do dono, o que sugere que ele nunca encontrou o botão | `src/features/result/ExportReportDialog.tsx:96-146`, `server/services/reportService.ts:47-86` |\n| Conteúdo do PDF | 3 páginas, só texto e barras: estágio, 3 ações, notas das 8 dimensões, números, riscos e confiança. Faltam capa, resumo executivo, gráfico, matriz de riscos visual, evolução, explicação do método e a marca de quem entrega | `server/report/pdfRenderer.ts:212-286`, amostra gerada fora da pasta Downloads |\n| Outros relatórios | Não existem relatório de evolução nem da carteira de empresas. A comparação existe só como tela | `src/features/history/ComparePage.tsx`, `server/routes/reportRoutes.ts` (uma única rota) |\n| Ações | O plano mostra 3 ações, mas não dá para marcar o que foi feito, pôr prazo ou responsável | `src/features/result/ActionPlanList.tsx`; PRD anterior, `CAP-dm-action-tracking` = deferred |\n| Lembrete | A tela inicial do consultor já mostra \"empresas sem diagnóstico há mais de 90 dias\". O dono vê só \"Refazer a cada 3 meses…\", sem contagem nem aviso | `src/features/home/ConsultantHome.tsx`, captura da tela inicial |\n| Números | O número central do método, quanto custa conquistar um cliente, aparece \"não calculado\" quando o dono não sabe o gasto ou os clientes novos. A primeira ação recomendada é anotar isso por 30 dias, mas o app não tem onde anotar | Tela de resultado da empresa \"Aioson\"; `shared/domain/unitEconomics.ts` |\n| Questionário à distância | Não existe; estava deferido no PRD anterior | PRD anterior, `CAP-dm-file-bridge` = deferred |\n\n**Escolhas do dono nesta sessão (2026-10-24, perguntas estruturadas):**\n- Entram as quatro frentes: **relatórios completos**, **acompanhar as ações**, **diário de números** e **questionário à distância**.\n- O PDF sai **com a marca de quem entrega**: nome, logo e contato configuráveis; o dono pode deixar em branco.\n- Pasta do briefing: `relatorios-e-acompanhamento`.\n\n**Mudança de decisões anteriores.** No PRD `diagnostico-maturidade` ficaram fora do V1, e agora entram por escolha do dono:\n- a troca de respostas por arquivo;\n- marcar ações e o lembrete de reavaliação;\n- o check-in mensal de números (\"Option C\" do briefing anterior);\n- a marca do consultor no PDF.\n\nContinuam fora:\n- o plano escrito por IA (só depois da calibração das regras);\n- o benchmark entre empresas (exige nuvem).\n\n**Estado do workflow.** A feature `diagnostico-maturidade` ainda consta como `in_progress` em `.aioson/context/features.md`. A execução terminou em 2026-10-23, mas o QA final não foi registrado. Esta é uma feature nova, que depende dela e não a substitui. Decidido no refinamento (F13): rodar o @qa em `diagnostico-maturidade` e fechar a feature (`feature:close`) antes de o @product começar esta.\n\n**Decisões do refinamento (rodada 1, 2026-10-24).** O dono aceitou todas as recomendações:\n\n| Achado | Decisão |\n|---|---|\n| F1 | Questionário à distância: arquivo que abre no navegador do **computador** |\n| F2 | Contato só do próprio usuário na marca; responsável pela ação escolhido por papel, sem nome de pessoa |\n| F3 | Diagnóstico novo traz plano novo; a ação que se repete herda o andamento; as outras ficam \"encerradas\" no histórico |\n| F4 | Diário: 3 meses ou mais contam como medido |\n| F5 | Diário nas mesmas 6 partes de gasto da calculadora, com atalho \"só sei o total\" |\n| F6 | PDF continua na pasta Downloads, com \"Abrir PDF\" e \"Mostrar na pasta\"; lembretes só dentro do app |\n| F7 | Logo PNG ou JPG até 2 MB, reduzida para no máximo 600 px; entra na cópia de segurança |\n| F8 | Sem cor de destaque personalizada |\n| F9 | Relatório de evolução usa o mesmo cálculo da tela de comparação |\n| F10 | Um PRD, executado em 3 partes |\n| F11 | Respostas no PDF: opção desligada por padrão; gráfico em barras; só as 3 ações; CSV da carteira fica para depois |\n| F12 | No modo consultoria, o consultor digita o diário do cliente |\n| F13 | QA e fechamento de `diagnostico-maturidade` antes do @product |\n| F14 | Telas novas seguem a identidade já aprovada do FitPulse |",
+      "status": "change_requested",
+      "comments_count": 0
+    },
+    {
+      "id": "problem",
+      "title": "Problem",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "**Dono de pequena empresa.**\n- **Quando** termina o diagnóstico e quer mostrar o resultado a um sócio, ao contador ou a um banco, **quero** um documento que pareça sério e se explique sozinho, **para** ser levado a sério sem precisar abrir o app na frente dos outros.\n- Hoje, o botão de PDF fica escondido, o arquivo some na pasta Downloads e o documento é uma lista de texto sem resumo nem gráfico.\n\n**Quando** sai do diagnóstico com 3 ações e o número de custo por cliente \"não calculado\"…\n- **quero** ser lembrado do que combinei fazer e ter onde anotar gasto e clientes novos mês a mês;\n- **para** chegar ao próximo diagnóstico com números medidos e ver se as ações funcionaram.\n\nHoje, o app só serve no dia do diagnóstico:\n- as ações não têm prazo nem estado;\n- nada lembra de refazer o diagnóstico;\n- os números continuam desconhecidos 3 meses depois.\n\nCom isso, o próximo diagnóstico repete a mesma trava e o método perde credibilidade.\n\n**Consultor.**\n- **Quando** entrega o diagnóstico a um cliente, **quero** um relatório com a minha marca, a evolução desde a última visita e o andamento das ações, **para** justificar o meu trabalho e manter o cliente.\n- **Quando** o cliente está longe, **quero** que ele responda o questionário sem eu estar junto, **para** não perder uma reunião só com perguntas.\n- Hoje, o consultor:\n  - entrega um PDF com a marca FitPulse;\n  - não tem relatório de evolução nem visão da carteira em PDF;\n  - precisa preencher o questionário junto com o cliente.\n\n**Custo de não fazer.** O FitPulse fica igual aos diagnósticos de disparo único que o PRD anterior quis superar (`researchs/ferramentas-diagnostico-mercado/summary.md` §1.4). É um retrato bonito, não uma ferramenta de acompanhamento.",
+      "original_hash": "62757404bdce3c4ef5e10bc558fc91cad96d5789847ffeda1f9c49027ea63e44",
+      "current_text": "**Dono de pequena empresa.**\n- **Quando** termina o diagnóstico e quer mostrar o resultado a um sócio, ao contador ou a um banco, **quero** um documento que pareça sério e se explique sozinho, **para** ser levado a sério sem precisar abrir o app na frente dos outros.\n- Hoje, o botão de PDF fica escondido, o arquivo some na pasta Downloads e o documento é uma lista de texto sem resumo nem gráfico.\n\n**Quando** sai do diagnóstico com 3 ações e o número de custo por cliente \"não calculado\"…\n- **quero** ser lembrado do que combinei fazer e ter onde anotar gasto e clientes novos mês a mês;\n- **para** chegar ao próximo diagnóstico com números medidos e ver se as ações funcionaram.\n\nHoje, o app só serve no dia do diagnóstico:\n- as ações não têm prazo nem estado;\n- nada lembra de refazer o diagnóstico;\n- os números continuam desconhecidos 3 meses depois.\n\nCom isso, o próximo diagnóstico repete a mesma trava e o método perde credibilidade.\n\n**Consultor.**\n- **Quando** entrega o diagnóstico a um cliente, **quero** um relatório com a minha marca, a evolução desde a última visita e o andamento das ações, **para** justificar o meu trabalho e manter o cliente.\n- **Quando** o cliente está longe, **quero** que ele responda o questionário sem eu estar junto, **para** não perder uma reunião só com perguntas.\n- Hoje, o consultor:\n  - entrega um PDF com a marca FitPulse;\n  - não tem relatório de evolução nem visão da carteira em PDF;\n  - precisa preencher o questionário junto com o cliente.\n\n**Custo de não fazer.** O FitPulse fica igual aos diagnósticos de disparo único que o PRD anterior quis superar (`researchs/ferramentas-diagnostico-mercado/summary.md` §1.4). É um retrato bonito, não uma ferramenta de acompanhamento.",
+      "status": "unchanged",
+      "comments_count": 0
+    },
+    {
+      "id": "proposed-solution",
+      "title": "Proposed solution",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "A direção foi fixada pelo dono: as quatro frentes, com a marca de quem entrega. Abaixo estão a forma recomendada de cada frente e as variações que o @product ainda decide. Nada aqui está aprovado como escopo.\n\n**1. Central de relatórios e PDF profissional**\n- **Onde encontrar:**\n  - um botão \"Relatórios\" na página da empresa e no resultado;\n  - no modo consultoria, também na tela inicial.\n  - O botão \"Exportar PDF\" continua no resultado.\n- **Relatório do diagnóstico, em versão nova:**\n  - capa com a marca de quem entrega, a empresa e a data;\n  - resumo executivo de 1 página: estágio, trava, 3 ações e o número-chave;\n  - gráfico das 8 dimensões (radar ou barras agrupadas por encaixes e frentes);\n  - matriz de riscos 5×5 desenhada;\n  - números com explicação;\n  - andamento das ações, quando houver acompanhamento;\n  - apêndice \"Como ler este relatório\", com o método em linguagem simples;\n  - opcional: apêndice com as respostas do questionário.\n- **Relatório de evolução:**\n  - compara dois diagnósticos da mesma empresa: estágio antes e depois, diferença por dimensão e ações concluídas no período;\n  - quando houver diário, mostra a curva do custo por cliente.\n- **Relatório da carteira** (modo consultoria):\n  - empresas por estágio, data do último diagnóstico, atrasadas para reavaliação, risco alto e ações vencidas.\n- **Depois de salvar:**\n  - botões \"Abrir PDF\" e \"Mostrar na pasta\";\n  - escolher a pasta fica como opção a investigar (Q-3).\n- **Alternativa considerada:** gerar o PDF pelo \"Imprimir\" do navegador, a partir de uma página HTML.\n  - Ganho: o layout é mais fácil de fazer.\n  - Problema: depende do diálogo de impressão do webview do Play, que não foi verificado.\n  - Recomendação: manter o gerador atual no servidor (`pdfkit`), que já tem fontes, quebra de página e testes.\n\n**2. Marca de quem entrega**\n- Em Configurações → \"Seus relatórios\": nome de quem entrega, logo (PNG ou JPG), contato livre e cor de destaque opcional.\n- Tudo em branco significa a marca FitPulse.\n- A marca entra:\n  - na capa e no rodapé dos PDFs;\n  - na cópia de segurança, para não se perder ao trocar de computador.\n\n**3. Acompanhamento das ações**\n- Cada ação do plano de um diagnóstico concluído ganha:\n  - estado: a fazer, em andamento, feita ou não se aplica;\n  - prazo;\n  - responsável (texto livre);\n  - nota.\n- O resultado do diagnóstico continua imutável. O andamento é um registro separado, ligado ao diagnóstico.\n- **Tela inicial do dono:** ações vencidas e \"faltam N dias para refazer o diagnóstico\". O intervalo é configurável, com 90 dias como padrão.\n- **Tela inicial do consultor:** ganha \"ações vencidas\" na carteira.\n- O lembrete aparece dentro do app; um aviso do sistema operacional depende do Play (Q-5).\n- **Variação para o @product:** permitir que o usuário acrescente ações próprias além das 3 (Q-7).\n\n**4. Diário de números**\n- Por empresa, um registro por mês:\n  - gasto para atrair clientes;\n  - clientes novos;\n  - opcional: origem dos clientes (por canal), que conversa com a ação \"Anotar a origem de cada cliente\".\n- **O app mostra:**\n  - o custo por cliente de cada mês;\n  - a tendência;\n  - o aviso \"faltam N meses para ter um número medido\".\n- **No próximo diagnóstico:**\n  - o bloco \"Seus números\" já vem preenchido com a média do diário e marcado como **medido**;\n  - o usuário pode corrigir.\n  - A regra de quantos meses contam como medido fica para Q-8.\n- **Alternativa considerada:** importar planilha.\n  - Recomendação: não importar no começo, porque o público é leigo e o formato da planilha varia.\n\n**5. Questionário à distância**\n- **Forma recomendada (B):**\n  1. O consultor gera um **arquivo de questionário** da empresa: um HTML único, que abre em qualquer navegador sem instalar nada.\n  2. O cliente responde com a mesma ajuda e a mesma opção \"não sei\".\n  3. Ao terminar, o HTML gera um **arquivo de respostas**, que o cliente devolve por WhatsApp ou e-mail. O app não envia nada.\n  4. O consultor importa o arquivo, que vira um rascunho da empresa para revisar e concluir.\n- **Alternativas consideradas:**\n  - (A) O cliente instala o Play e o FitPulse e exporta as respostas. É mais simples de construir, mas exige instalação do cliente, que é leigo.\n  - (C) Questionário em PDF para imprimir, com o consultor digitando as respostas. Não precisa de tecnologia nenhuma, mas é trabalho manual e tem erro de digitação.\n- A escolha é do @product com o dono (Q-9). Os riscos de B estão em `## Risks`.\n\n**6. Acabamento** (defeitos vistos na inspeção, independentes das frentes acima)\n- \"1 de 26 item sem o número\" → \"itens\".\n- Na lista de riscos da tela de resultado, \"Probabilidade 4 de 5\" quebra em várias linhas na coluna estreita.\n- O botão \"Exportar PDF\" precisa de mais destaque e de uma confirmação visível de onde o arquivo foi parar.\n\n**Fatiamento sugerido** (o @product ou o @planner decide):\n\n| Fatia | Conteúdo |\n|---|---|\n| 1 | Relatórios + marca + acabamento |\n| 2 | Acompanhamento das ações + diário de números |\n| 3 | Questionário à distância |\n\nCada fatia é utilizável sozinha.",
+      "original_hash": "cf59a78f992b065079bd801417b8b4f0ed7741c732e6cea588420ee60e2ca1f5",
+      "current_text": "A direção foi fixada pelo dono: as quatro frentes, com a marca de quem entrega. As formas abaixo incorporam as decisões do refinamento (F1 a F14, ver `## Context`). O escopo final é do @product.\n\n**1. Central de relatórios e PDF profissional**\n- **Onde encontrar:**\n  - um botão \"Relatórios\" na página da empresa e no resultado;\n  - no modo consultoria, também na tela inicial.\n  - O botão \"Exportar PDF\" continua no resultado.\n- **Relatório do diagnóstico, em versão nova:**\n  - capa com a marca de quem entrega, a empresa e a data;\n  - resumo executivo de 1 página: estágio, trava, 3 ações e o número-chave;\n  - gráfico das 8 dimensões em barras agrupadas por encaixes e frentes, com o número escrito, legível impresso em preto e branco (F11);\n  - matriz de riscos 5×5 desenhada;\n  - números com explicação;\n  - andamento das ações, quando houver acompanhamento;\n  - apêndice \"Como ler este relatório\", com o método em linguagem simples;\n  - apêndice com as respostas do questionário: opção na hora de exportar, desligada por padrão, porque as respostas trazem valores em reais (F11).\n- **Relatório de evolução:**\n  - compara dois diagnósticos da mesma empresa: estágio antes e depois, diferença por dimensão e ações concluídas no período;\n  - quando houver diário, mostra a curva do custo por cliente;\n  - usa o mesmo cálculo da tela de comparação, inclusive o recálculo do diagnóstico anterior quando as regras mudaram, e só fica disponível quando a comparação também está: 2 diagnósticos concluídos da mesma empresa (F9).\n- **Relatório da carteira** (modo consultoria):\n  - empresas por estágio, data do último diagnóstico, atrasadas para reavaliação e risco alto;\n  - \"ações vencidas\" entra quando a parte 2 for entregue (F10);\n  - exportação em planilha (CSV) fica para depois (F11).\n- **Depois de salvar:**\n  - o PDF continua salvo na pasta Downloads;\n  - botões \"Abrir PDF\" e \"Mostrar na pasta\": o backend do app abre o arquivo pelo sistema operacional;\n  - não há \"escolher a pasta\", porque o Play não oferece diálogo de \"salvar como\" (F6).\n- **Alternativa considerada:** gerar o PDF pelo \"Imprimir\" do navegador, a partir de uma página HTML.\n  - Ganho: o layout é mais fácil de fazer.\n  - Problema: depende do diálogo de impressão do webview do Play, que não foi verificado.\n  - Recomendação: manter o gerador atual no servidor (`pdfkit`), que já tem fontes, quebra de página e testes.\n\n**2. Marca de quem entrega**\n- Em Configurações → \"Seus relatórios\": nome de quem entrega, logo (PNG ou JPG de até 2 MB, reduzida para no máximo 600 px) e o contato do próprio usuário: telefone, e-mail ou site (F2, F7).\n- Sem cor de destaque personalizada: o PDF mantém as cores do FitPulse (F8).\n- Tudo em branco significa a marca FitPulse.\n- A marca entra:\n  - na capa e no rodapé dos PDFs;\n  - na cópia de segurança, para não se perder ao trocar de computador.\n\n**3. Acompanhamento das ações**\n- Cada ação do plano de um diagnóstico concluído ganha:\n  - estado: a fazer, em andamento, feita ou não se aplica;\n  - prazo;\n  - responsável, escolhido numa lista de papéis: dono, equipe de vendas, equipe de marketing, consultor ou outro, sem nome de pessoa (F2);\n  - nota.\n- O resultado do diagnóstico continua imutável. O andamento é um registro separado, ligado ao diagnóstico.\n- **Quando sai um diagnóstico novo (F3):**\n  - vem o plano novo, com as 3 ações dele;\n  - a ação que se repete (mesma ação do catálogo, `shared/domain/actionPlan.ts`) herda estado, prazo, responsável e nota;\n  - as ações do plano anterior que não se repetem ficam no histórico daquele diagnóstico como \"encerradas\", com o estado em que estavam.\n- **Tela inicial do dono:** ações vencidas e \"faltam N dias para refazer o diagnóstico\". O intervalo é configurável, com 90 dias como padrão.\n- **Tela inicial do consultor:** ganha \"ações vencidas\" na carteira.\n- O lembrete aparece só dentro do app, na tela inicial. O Play não oferece aviso do sistema operacional para apps (F6).\n- Só as 3 ações do plano, cada uma com nota livre. Ações próprias ficam fora desta versão (F11).\n\n**4. Diário de números**\n- Por empresa, um registro por mês:\n  - gasto para atrair clientes, nas mesmas 6 partes da calculadora (anúncios, agência ou freelancer, comissões, descontos e brindes, parte do salário, ferramentas), com o atalho \"só sei o total\" (F5);\n  - clientes novos;\n  - opcional: origem dos clientes (por canal), que conversa com a ação \"Anotar a origem de cada cliente\".\n- **O app mostra:**\n  - o custo por cliente de cada mês;\n  - a tendência;\n  - o aviso \"faltam N meses para ter um número medido\".\n- **No próximo diagnóstico:**\n  - com 3 meses ou mais anotados, o bloco \"Seus números\" já vem preenchido com a média dos 3 últimos e marcado como **medido** (F4);\n  - com 1 ou 2 meses, o valor aparece como sugestão, ainda marcado como estimado;\n  - o preenchimento mostra a origem (\"do diário: média de 3 meses\") e o usuário pode corrigir antes de concluir (F5).\n- **Modo consultoria:** o consultor digita os meses do cliente (F12).\n- **Alternativa considerada:** importar planilha.\n  - Recomendação: não importar no começo, porque o público é leigo e o formato da planilha varia.\n\n**5. Questionário à distância**\n- **Forma escolhida (B, F1): arquivo que abre no navegador do computador.**\n  1. O consultor gera um **arquivo de questionário** da empresa: um HTML único, que abre em qualquer navegador sem instalar nada.\n  2. O cliente abre o arquivo no navegador do **computador** e responde com a mesma ajuda, a mesma opção \"não sei\" e a calculadora. A mensagem ao cliente diz \"abra no computador\", porque no celular o formulário não roda de forma confiável.\n  3. Ao terminar, o HTML gera um **arquivo de respostas**, que o cliente devolve por WhatsApp ou e-mail. O app não envia nada.\n  4. O consultor importa o arquivo, que vira um rascunho da empresa para revisar e concluir.\n- **Alternativas consideradas:**\n  - (A) O cliente instala o Play e o FitPulse e exporta as respostas. É mais simples de construir, mas exige instalação do cliente, que é leigo.\n  - (C) Questionário em PDF para imprimir, com o consultor digitando as respostas. Não precisa de tecnologia nenhuma, mas é trabalho manual e tem erro de digitação.\n- Escolhida pelo dono em F1. Antes de construir, testar a abertura em Chrome, Edge e Safari (Q-10). Os riscos de B estão em `## Risks`.\n\n**6. Acabamento** (defeitos vistos na inspeção, independentes das frentes acima)\n- \"1 de 26 item sem o número\" → \"itens\".\n- Na lista de riscos da tela de resultado, \"Probabilidade 4 de 5\" quebra em várias linhas na coluna estreita.\n- O botão \"Exportar PDF\" precisa de mais destaque e de uma confirmação visível de onde o arquivo foi parar.\n\n**Fatiamento decidido (F10):** um único PRD, executado nesta ordem:\n\n| Fatia | Conteúdo |\n|---|---|\n| 1 | Relatórios + marca + acabamento |\n| 2 | Acompanhamento das ações + diário de números |\n| 3 | Questionário à distância |\n\nCada fatia é utilizável sozinha.",
+      "status": "change_requested",
+      "comments_count": 0
+    },
+    {
+      "id": "themes",
+      "title": "Themes",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "| Tema | O que muda para o usuário | Objetos novos ou alterados | Gerenciamento necessário |\n|---|---|---|---|\n| T1 Relatórios | Encontrar, gerar e abrir 3 tipos de PDF profissionais | Nenhum objeto persistido: o PDF é gerado e salvo em arquivo. Opções de exportação (incluir respostas? incluir evolução?) | Escolher o tipo, as opções e o diagnóstico ou o par a comparar. Falha de gravação, como hoje, não altera nada. Estados vazios: sem diagnóstico concluído não há relatório; a evolução exige 2 concluídos da mesma empresa; a carteira só existe no modo consultoria e explica isso quando a carteira está vazia |\n| T2 Marca | O PDF sai com a identidade de quem entrega | Preferência de marca (nome, logo, contato, cor) | Criar, editar e remover a logo; voltar ao padrão; entrar na cópia de segurança; validar formato e tamanho da imagem |\n| T3 Ações | Saber o que fazer, até quando, e o que já foi feito | Andamento de cada ação, ligado a um diagnóstico concluído e imutável; intervalo de reavaliação | Listar por empresa e na tela inicial, editar o estado, filtrar vencidas, arquivar junto com o diagnóstico ou a empresa; cópia de segurança |\n| T4 Diário | Ter números medidos antes do próximo diagnóstico | Registro mensal por empresa | Criar, editar e excluir um mês; estado vazio que explica por que anotar; evitar mês duplicado; usar no preenchimento do próximo diagnóstico; cópia de segurança |\n| T5 Questionário à distância | O cliente responde sem o consultor | Arquivo de questionário (saída) e arquivo de respostas (entrada) → rascunho | Gerar, importar, recusar arquivo de outra empresa, de versão de regras incompatível ou corrompido; mostrar de onde veio o rascunho |\n| T6 Acabamento | Texto e layout corretos | — | — |\n\n**Impactos transversais:**\n- novas tabelas e migração (`compatibility.schema_version` passa de 1 para 2; migração versionada, nunca `db push`);\n- cópia de segurança com nova versão de formato, que continua importando arquivos da versão 1;\n- `GET /api/aioson-play` atualizado só se surgirem rotas expostas ao Play;\n- testes de PDF (hoje existe `tests/e2e/report.spec.ts` e `unpdf` nos devDependencies).",
+      "original_hash": "e215ed469b563287ff21f3d38614c079aeeadb0d124544b3d52da8330762a0ee",
+      "current_text": "| Tema | O que muda para o usuário | Objetos novos ou alterados | Gerenciamento necessário |\n|---|---|---|---|\n| T1 Relatórios | Encontrar, gerar e abrir 3 tipos de PDF profissionais | Nenhum objeto persistido: o PDF é gerado e salvo em arquivo. Opções de exportação (incluir respostas? incluir evolução?) | Escolher o tipo, as opções e o diagnóstico ou o par a comparar. Falha de gravação, como hoje, não altera nada. Estados vazios: sem diagnóstico concluído não há relatório; a evolução exige 2 concluídos da mesma empresa; a carteira só existe no modo consultoria e explica isso quando a carteira está vazia |\n| T2 Marca | O PDF sai com a identidade de quem entrega | Preferência de marca (nome, logo, contato do próprio usuário; sem cor) | Criar, editar e remover a logo; voltar ao padrão; entrar na cópia de segurança; validar formato e tamanho da imagem |\n| T3 Ações | Saber o que fazer, até quando, e o que já foi feito | Andamento de cada ação (estado, prazo, responsável por papel, nota), ligado a um diagnóstico concluído e imutável e herdado quando a ação se repete no diagnóstico seguinte; intervalo de reavaliação | Listar por empresa e na tela inicial, editar o estado, filtrar vencidas, arquivar junto com o diagnóstico ou a empresa; cópia de segurança |\n| T4 Diário | Ter números medidos antes do próximo diagnóstico | Registro mensal por empresa, nas 6 partes de gasto da calculadora + clientes novos | Criar, editar e excluir um mês; estado vazio que explica por que anotar; evitar mês duplicado; usar no preenchimento do próximo diagnóstico; cópia de segurança |\n| T5 Questionário à distância | O cliente responde sem o consultor | Arquivo de questionário (saída) e arquivo de respostas (entrada) → rascunho | Gerar, importar, recusar arquivo de outra empresa, de versão de regras incompatível ou corrompido; mostrar de onde veio o rascunho |\n| T6 Acabamento | Texto e layout corretos | — | — |\n\n**Identidade visual (F14):** as telas novas seguem a identidade já aprovada e implementada do FitPulse (Tinta & Ouro, metal bronze antigo; `.aioson/briefings/diagnostico-maturidade/identity.md`, `src/styles/tokens.css`).\n\n**Impactos transversais:**\n- novas tabelas e migração (`compatibility.schema_version` passa de 1 para 2; migração versionada, nunca `db push`);\n- cópia de segurança com nova versão de formato, que continua importando arquivos da versão 1;\n- `GET /api/aioson-play` atualizado só se surgirem rotas expostas ao Play;\n- testes de PDF (hoje existe `tests/e2e/report.spec.ts` e `unpdf` nos devDependencies).",
+      "status": "change_requested",
+      "comments_count": 0
+    },
+    {
+      "id": "risks",
+      "title": "Risks",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "| # | Risco | Tipo | Efeito | Mitigação proposta |\n|---|---|---|---|---|\n| R-1 | Escopo grande: quatro frentes com objetos novos, migração e PDF | Viabilidade | Entrega longa; a fatia 1, que o dono pediu primeiro, atrasa | Fatiar (1 → 2 → 3); o @product pode aprovar todas e o @planner executar por fases |\n| R-2 | Conflito com a decisão de LGPD do PRD anterior (\"o V1 guarda só dados da empresa\", sem nome, e-mail ou telefone de pessoas). Marca, contato do consultor e \"responsável\" pela ação introduzem dados de pessoas | Conformidade | Retrabalho ou questão legal | Contato e responsável como texto livre e opcional, com aviso; incluir na cópia de segurança e na exclusão. Decisão em Q-6 |\n| R-3 | A regra \"resultado imutável depois de concluído\" pode ser quebrada se o andamento das ações for gravado dentro do resultado | Integridade | Comparações e PDFs antigos mudam sem querer | Andamento em tabela própria; o resultado nunca é reescrito |\n| R-4 | Questionário em HTML (forma B): e-mail e antivírus podem bloquear um `.html` com script anexado; arquivo adulterado; regras do questionário mudam entre gerar e importar | Viabilidade, segurança | O cliente não consegue abrir ou o consultor importa dados errados | Validar o arquivo de respostas por esquema (zod) e pela versão das regras; recusar sem alterar nada; instruir envio por WhatsApp; testar em Gmail e Outlook (Q-10) |\n| R-5 | Logo enviada pelo usuário: imagem grande, formato estranho, SVG com script | Segurança, robustez | PDF pesado ou falha | Aceitar só PNG/JPG até um tamanho máximo e redimensionar; recusar o resto com mensagem clara |\n| R-6 | Webview do Play: abrir o PDF ou a pasta, ou escolher onde salvar, pode não funcionar | Viabilidade | \"Abrir PDF\" não faz nada | Investigar (Q-3); o caminho garantido é o backend abrir o arquivo pelo sistema operacional; manter a mensagem de onde salvou |\n| R-7 | O dono pode não criar o hábito de anotar números todo mês | Valor | Diário vazio; o custo por cliente continua não calculado | Lembrete mensal na tela inicial; registro em 2 campos; mostrar o ganho (\"com 3 meses anotados, o app calcula o seu custo por cliente\") |\n| R-8 | Gráficos desenhados à mão no `pdfkit` (radar, matriz) podem ficar ilegíveis em impressão preto e branco | Usabilidade | Relatório menos profissional | Barras com rótulos e números sempre visíveis; testar a impressão em escala de cinza |\n| R-9 | O diário preencher o diagnóstico seguinte muda a confiança e o estágio | Integridade | O usuário não entende por que o estágio mudou | Mostrar a origem (\"do diário: média de 3 meses\") e permitir corrigir antes de concluir |\n| R-10 | A cópia de segurança da versão 2 não pode quebrar a importação de arquivos da versão 1 | Compatibilidade | Perda de dados ao trocar de computador | Importador aceita v1 e v2; v2 recusada por app antigo (já é o comportamento) |",
+      "original_hash": "651f9ee1577f09de3cc78687c5717f1492ee50fc5296a05dafbb9afe6c1a501c",
+      "current_text": "| # | Risco | Tipo | Efeito | Mitigação proposta |\n|---|---|---|---|---|\n| R-1 | Escopo grande: quatro frentes com objetos novos, migração e PDF | Viabilidade | Entrega longa; a fatia 1, que o dono pediu primeiro, atrasa | Fatiar (1 → 2 → 3); o @product pode aprovar todas e o @planner executar por fases |\n| R-2 | Conflito com a decisão de LGPD do PRD anterior (\"o V1 guarda só dados da empresa\", sem nome, e-mail ou telefone de pessoas). Marca, contato do consultor e \"responsável\" pela ação introduzem dados de pessoas | Conformidade | Retrabalho ou questão legal | Decidido (F2): contato só do próprio usuário; responsável escolhido por papel, sem nome de pessoa. O app continua sem guardar dados de terceiros |\n| R-3 | A regra \"resultado imutável depois de concluído\" pode ser quebrada se o andamento das ações for gravado dentro do resultado | Integridade | Comparações e PDFs antigos mudam sem querer | Andamento em tabela própria; o resultado nunca é reescrito |\n| R-4 | Questionário em HTML (forma B): e-mail e antivírus podem bloquear um `.html` com script anexado; arquivo adulterado; regras do questionário mudam entre gerar e importar | Viabilidade, segurança | O cliente não consegue abrir ou o consultor importa dados errados | Forma B restrita ao navegador do computador (F1). Validar o arquivo de respostas por esquema (zod) e pela versão das regras; recusar sem alterar nada; testar em Chrome, Edge e Safari, e o envio por Gmail, Outlook e WhatsApp (Q-10) |\n| R-5 | Logo enviada pelo usuário: imagem grande, formato estranho, SVG com script | Segurança, robustez | PDF pesado ou falha | Decidido (F7): só PNG ou JPG até 2 MB, reduzida para no máximo 600 px; recusar o resto com mensagem clara |\n| R-6 | Webview do Play: abrir o PDF ou a pasta, ou escolher onde salvar, pode não funcionar | Viabilidade | \"Abrir PDF\" não faz nada | Resolvido (F6): o backend abre o arquivo e a pasta pelo sistema operacional; sem \"escolher a pasta\"; manter a mensagem de onde salvou |\n| R-7 | O dono pode não criar o hábito de anotar números todo mês | Valor | Diário vazio; o custo por cliente continua não calculado | Lembrete mensal na tela inicial; registro em 2 campos; mostrar o ganho (\"com 3 meses anotados, o app calcula o seu custo por cliente\") |\n| R-8 | Gráficos desenhados à mão no `pdfkit` (radar, matriz) podem ficar ilegíveis em impressão preto e branco | Usabilidade | Relatório menos profissional | Barras com rótulos e números sempre visíveis; testar a impressão em escala de cinza |\n| R-9 | O diário preencher o diagnóstico seguinte muda a confiança e o estágio | Integridade | O usuário não entende por que o estágio mudou | Mostrar a origem (\"do diário: média de 3 meses\") e permitir corrigir antes de concluir |\n| R-10 | A cópia de segurança da versão 2 não pode quebrar a importação de arquivos da versão 1 | Compatibilidade | Perda de dados ao trocar de computador | Importador aceita v1 e v2; v2 recusada por app antigo (já é o comportamento) |\n| R-11 | A herança de andamento entre diagnósticos (F3) pode duplicar ou perder uma ação se a regra de \"mesma ação\" não for exata | Integridade | Ação aparece duas vezes ou perde o estado | Comparar pela chave da ação do catálogo (`ActionKey`); teste dedicado para ação repetida, nova e encerrada |\n| R-12 | A versão 1 não teve o QA final registrado | Qualidade | Defeitos da versão 1 aparecem durante a versão 2 | Rodar o @qa em `diagnostico-maturidade` e fechar a feature antes do @product (F13) |",
+      "status": "change_requested",
+      "comments_count": 0
+    },
+    {
+      "id": "identified-gaps",
+      "title": "Identified gaps",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "| Gap | Hoje | Desejado | Delta mensurável |\n|---|---|---|---|\n| Descobrir o PDF | Botão só no resultado; arquivo some na pasta Downloads | Relatórios a 1 clique da página da empresa; o PDF abre depois de salvo | Usuário novo encontra e abre um PDF em menos de 30 s (teste com usuário) |\n| Qualidade do PDF | 3 páginas de texto, marca FitPulse fixa | Capa, resumo de 1 página, gráfico, matriz, método, marca de quem entrega | Resumo executivo cabe em 1 página; a marca configurada aparece na capa e no rodapé |\n| Tipos de relatório | 1 (diagnóstico) | 3 (diagnóstico, evolução, carteira) | +2 relatórios |\n| Vida entre diagnósticos | Nenhuma | Ações com estado e prazo, lembrete de reavaliação, diário mensal | Percentual de ações com estado definido; meses anotados por empresa |\n| Custo por cliente | \"não calculado\" quando o dono não sabe | Calculado a partir do diário | Próximo diagnóstico com o custo marcado como \"medido\" depois de N meses de diário |\n| Coleta à distância | Inexistente | Cliente responde sozinho; o consultor importa um rascunho | Importação de um arquivo válido gera rascunho sem redigitação |\n\n**Lacunas de conteúdo a escrever** (rascunho pelo @product, aprovação do dono, como no F5 anterior):\n- texto do apêndice \"Como ler este relatório\";\n- textos do estado vazio do diário;\n- instrução ao cliente no questionário à distância.",
+      "original_hash": "ccd1bb1f5dba8a12fdbcabf1c2d5e796500ddcc831663fc23997a099b2944da9",
+      "current_text": "| Gap | Hoje | Desejado | Delta mensurável |\n|---|---|---|---|\n| Descobrir o PDF | Botão só no resultado; arquivo some na pasta Downloads | Relatórios a 1 clique da página da empresa; o PDF abre depois de salvo (\"Abrir PDF\", \"Mostrar na pasta\"; F6) | Usuário novo encontra e abre um PDF em menos de 30 s (teste com usuário) |\n| Qualidade do PDF | 3 páginas de texto, marca FitPulse fixa | Capa, resumo de 1 página, gráfico, matriz, método, marca de quem entrega | Resumo executivo cabe em 1 página; a marca configurada aparece na capa e no rodapé |\n| Tipos de relatório | 1 (diagnóstico) | 3 (diagnóstico, evolução, carteira) | +2 relatórios |\n| Vida entre diagnósticos | Nenhuma | Ações com estado e prazo, lembrete de reavaliação, diário mensal | Percentual de ações com estado definido; meses anotados por empresa |\n| Custo por cliente | \"não calculado\" quando o dono não sabe | Calculado a partir do diário | Próximo diagnóstico com o custo marcado como \"medido\" depois de N meses de diário |\n| Coleta à distância | Inexistente | Cliente responde sozinho; o consultor importa um rascunho | Importação de um arquivo válido gera rascunho sem redigitação |\n\n**Lacunas de conteúdo a escrever** (rascunho pelo @product, aprovação do dono, como no F5 anterior):\n- texto do apêndice \"Como ler este relatório\";\n- textos do estado vazio do diário;\n- instrução ao cliente no questionário à distância.",
+      "status": "change_requested",
+      "comments_count": 0
+    },
+    {
+      "id": "sources",
+      "title": "Sources",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "Nenhuma pesquisa na web nesta sessão. A evidência está registrada em `researchs/fitpulse-avaliacao-pos-v1/summary.md` (SRC-001). A avaliação veio da inspeção do repositório e do app rodando no preview do Play (`http://localhost:3543`) em 2026-10-24:\n- capturas de início, empresa e resultado;\n- uma amostra do PDF atual gerada por script numa pasta temporária, sem gravar na pasta Downloads do dono.\n\nTambém foram consultados:\n- o PRD anterior: `.aioson/context/prd-diagnostico-maturidade.md` (Capability Map e Out of scope);\n- as docs do Play: `.aioson/docs/integrations/`, sem contrato de notificação do app para o sistema operacional nem de diálogo de salvar arquivo.\n\n### Source Inventory\n\n| Source | Path | Type | Role | Fingerprint | Usage | Purpose |\n|---|---|---|---|---|---|---|\n| SRC-001 | researchs/fitpulse-avaliacao-pos-v1/summary.md | research | intent+evidence | sha256:e5d0e17419f84b29cac9a6d86ef1847942a1d421e36ab8163723c825a98e6028 | consulted | Pedido literal do dono, as 3 escolhas estruturadas de 2026-10-24 e as constatações da inspeção do código, do app em execução e do PRD anterior |\n| SRC-002 | researchs/ferramentas-diagnostico-mercado/summary.md | research | evidence | sha256:471fcee75a26487482b726f94867a5fc7ed56edaf26621a97a599ee424abe745 | consulted | §1.4: diagnósticos de mercado são de disparo único e quase nenhum acompanha a evolução |\n\n### Source Promise Map\n\n| PROM | Source | Locator | Approved intent | State |\n|---|---|---|---|---|\n| PROM-001 | SRC-001 | §1, \"exportar relatórios em PDF\" | Exportar relatórios em PDF que o usuário encontre e use | required |\n| PROM-002 | SRC-001 | §1, \"ficar mais profissional\" | Melhorias que deixem o app e as entregas mais profissionais | required |\n| PROM-003 | SRC-001 | §1, \"e mais eficaz\" | Melhorias que façam o diagnóstico gerar resultado de fato | required |\n| PROM-004 | SRC-001 | §2 \"Quais melhorias entram\": Relatórios completos | PDF profissional + relatório de evolução + relatório da carteira + abrir o PDF depois de salvar | required |\n| PROM-005 | SRC-001 | §2 \"Quais melhorias entram\": Acompanhar as ações | Marcar ações, prazo, responsável e lembrete de refazer em 90 dias | required |\n| PROM-006 | SRC-001 | §2 \"Quais melhorias entram\": Diário de números | Anotar gasto e clientes novos por mês; o app calcula o custo por cliente | required |\n| PROM-007 | SRC-001 | §2 \"Quais melhorias entram\": Questionário à distância | O cliente responde longe do consultor e o consultor importa as respostas | required |\n| PROM-008 | SRC-001 | §2 \"Quem entrega o PDF\" | Nome, logo e contato de quem entrega na capa e no rodapé; em branco significa FitPulse | required |\n| PROM-009 | SRC-001 | §3.6, CAP-dm-ai-plan | Plano escrito por IA | deferred |\n| PROM-010 | SRC-001 | §3.6, CAP-dm-benchmark | Comparar com empresas do mesmo segmento | not_applicable |",
+      "original_hash": "40c838e515d76b6d7265f54fc41040719d0bac946c04c91fb4392b39a8444d19",
+      "current_text": "Nenhuma pesquisa na web nesta sessão. A evidência está registrada em `researchs/fitpulse-avaliacao-pos-v1/summary.md` (SRC-001). A avaliação veio da inspeção do repositório e do app rodando no preview do Play (`http://localhost:3543`) em 2026-10-24:\n- capturas de início, empresa e resultado;\n- uma amostra do PDF atual gerada por script numa pasta temporária, sem gravar na pasta Downloads do dono.\n\nTambém foram consultados:\n- o PRD anterior: `.aioson/context/prd-diagnostico-maturidade.md` (Capability Map e Out of scope);\n- as docs do Play: `.aioson/docs/integrations/`, sem contrato de notificação do app para o sistema operacional nem de diálogo de salvar arquivo.\n\n### Source Inventory\n\n| Source | Path | Type | Role | Fingerprint | Usage | Purpose |\n|---|---|---|---|---|---|---|\n| SRC-001 | researchs/fitpulse-avaliacao-pos-v1/summary.md | research | intent+evidence | sha256:e5d0e17419f84b29cac9a6d86ef1847942a1d421e36ab8163723c825a98e6028 | consulted | Pedido literal do dono, as 3 escolhas estruturadas de 2026-10-24 e as constatações da inspeção do código, do app em execução e do PRD anterior |\n| SRC-002 | researchs/ferramentas-diagnostico-mercado/summary.md | research | evidence | sha256:471fcee75a26487482b726f94867a5fc7ed56edaf26621a97a599ee424abe745 | consulted | §1.4: diagnósticos de mercado são de disparo único e quase nenhum acompanha a evolução |\n\n### Source Promise Map\n\n| PROM | Source | Locator | Approved intent | State |\n|---|---|---|---|---|\n| PROM-001 | SRC-001 | §1, \"exportar relatórios em PDF\" | Exportar relatórios em PDF que o usuário encontre e use | required |\n| PROM-002 | SRC-001 | §1, \"ficar mais profissional\" | Melhorias que deixem o app e as entregas mais profissionais | required |\n| PROM-003 | SRC-001 | §1, \"e mais eficaz\" | Melhorias que façam o diagnóstico gerar resultado de fato | required |\n| PROM-004 | SRC-001 | §2 \"Quais melhorias entram\": Relatórios completos | PDF profissional + relatório de evolução + relatório da carteira + abrir o PDF depois de salvar | required |\n| PROM-005 | SRC-001 | §2 \"Quais melhorias entram\": Acompanhar as ações | Marcar ações, prazo, responsável e lembrete de refazer em 90 dias | required |\n| PROM-006 | SRC-001 | §2 \"Quais melhorias entram\": Diário de números | Anotar gasto e clientes novos por mês; o app calcula o custo por cliente | required |\n| PROM-007 | SRC-001 | §2 \"Quais melhorias entram\": Questionário à distância | O cliente responde longe do consultor e o consultor importa as respostas | required |\n| PROM-008 | SRC-001 | §2 \"Quem entrega o PDF\" | Nome, logo e contato de quem entrega na capa e no rodapé; em branco significa FitPulse | required |\n| PROM-009 | SRC-001 | §3.6, CAP-dm-ai-plan | Plano escrito por IA | deferred |\n| PROM-010 | SRC-001 | §3.6, CAP-dm-benchmark | Comparar com empresas do mesmo segmento | not_applicable |",
+      "status": "unchanged",
+      "comments_count": 0
+    },
+    {
+      "id": "open-questions",
+      "title": "Open questions",
+      "source_path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "original_text": "1. **Q-1 [decision-required]** Fatiar a entrega em 3 partes (relatórios + marca → ações + diário → questionário à distância) ou entregar tudo de uma vez? Recomendado: fatiar, porque o pedido original foi o PDF.\n2. **Q-2 [decision-required]** O apêndice com as respostas do questionário entra no PDF sempre, nunca ou como opção na hora de exportar? Recomendado: opção, desligada por padrão, porque as respostas trazem valores em reais.\n3. **Q-3 [research-able]** O webview do Play permite abrir um arquivo ou uma pasta pelo backend do app (`start`, `open`, `xdg-open`) e oferece algum diálogo de \"salvar como\"? Define se existem os botões \"Abrir PDF\" e \"Escolher pasta\".\n4. **Q-4 [decision-required]** Gráfico das 8 dimensões no PDF: radar (mais \"consultoria\") ou barras agrupadas (mais legível impresso)? Recomendado: barras, pelo R-8.\n5. **Q-5 [research-able]** O Play oferece algum canal de aviso ao usuário fora da janela do app? Se não, o lembrete fica só na tela inicial.\n6. **Q-6 [decision-required]** Aceitar dados de pessoas (contato do consultor, responsável pela ação), revertendo a regra de coleta mínima do PRD anterior? Recomendado: sim, como texto livre e opcional, com exclusão junto com a empresa e na cópia de segurança.\n7. **Q-7 [decision-required]** Permitir que o usuário acrescente ações próprias além das 3 do plano?\n8. **Q-8 [decision-required]** Quantos meses de diário bastam para o custo por cliente contar como \"medido\" no próximo diagnóstico (1, 2 ou 3)? Depende de como as regras atuais classificam \"medido\" × \"estimado\" (`shared/domain/unitEconomics.ts`, `confidence.ts`).\n9. **Q-9 [decision-required]** Forma do questionário à distância: B (arquivo HTML que abre no navegador), A (cliente instala o Play) ou C (PDF para imprimir)? Recomendado: B.\n10. **Q-10 [testable]** Um `.html` com script enviado por Gmail, Outlook e WhatsApp chega e abre no celular e no computador do cliente?\n11. **Q-11 [decision-required]** O relatório da carteira deve ter também uma exportação em planilha (CSV) para quem gosta de Excel?\n12. **Q-12 [decision-required]** Encerrar formalmente a feature `diagnostico-maturidade`, que ainda está `in_progress`, antes de o @product começar esta, ou trabalhar em paralelo?\n13. **Q-13 [out-of-scope]** Plano de ação escrito por IA e benchmark entre empresas continuam fora (PROM-009, PROM-010).\n14. **Q-14 [decision-required]** No modo consultoria, quem preenche o diário de números do cliente? O consultor digita, ou o arquivo do questionário à distância também leva e traz os meses do diário? Recomendado: o consultor digita no começo; o envio pelo arquivo fica como extensão da forma B.",
+      "original_hash": "eb97d2a1b525ee79151ac34500f391f1132ca27366f19c1dc7dccf9285337c93",
+      "current_text": "1. **Q-1 [decision-required]** Fatiar a entrega em 3 partes (relatórios + marca → ações + diário → questionário à distância) ou entregar tudo de uma vez? Recomendado: fatiar, porque o pedido original foi o PDF. **Resolvida (F10): um PRD, executado em 3 partes.**\n2. **Q-2 [decision-required]** O apêndice com as respostas do questionário entra no PDF sempre, nunca ou como opção na hora de exportar? Recomendado: opção, desligada por padrão, porque as respostas trazem valores em reais. **Resolvida (F11): opção na hora de exportar, desligada por padrão.**\n3. **Q-3 [research-able]** O webview do Play permite abrir um arquivo ou uma pasta pelo backend do app (`start`, `open`, `xdg-open`) e oferece algum diálogo de \"salvar como\"? Define se existem os botões \"Abrir PDF\" e \"Escolher pasta\". **Resolvida (F6): o backend abre o PDF e a pasta pelo sistema operacional; sem \"salvar como\".**\n4. **Q-4 [decision-required]** Gráfico das 8 dimensões no PDF: radar (mais \"consultoria\") ou barras agrupadas (mais legível impresso)? Recomendado: barras, pelo R-8. **Resolvida (F11): barras agrupadas.**\n5. **Q-5 [research-able]** O Play oferece algum canal de aviso ao usuário fora da janela do app? Se não, o lembrete fica só na tela inicial. **Resolvida (F6): não há canal; lembrete só dentro do app.**\n6. **Q-6 [decision-required]** Aceitar dados de pessoas (contato do consultor, responsável pela ação), revertendo a regra de coleta mínima do PRD anterior? Recomendado: sim, como texto livre e opcional, com exclusão junto com a empresa e na cópia de segurança. **Resolvida (F2): contato só do próprio usuário; responsável por papel.**\n7. **Q-7 [decision-required]** Permitir que o usuário acrescente ações próprias além das 3 do plano? **Resolvida (F11): só as 3 ações, com nota livre.**\n8. **Q-8 [decision-required]** Quantos meses de diário bastam para o custo por cliente contar como \"medido\" no próximo diagnóstico (1, 2 ou 3)? Depende de como as regras atuais classificam \"medido\" × \"estimado\" (`shared/domain/unitEconomics.ts`, `confidence.ts`). **Resolvida (F4): 3 meses.**\n9. **Q-9 [decision-required]** Forma do questionário à distância: B (arquivo HTML que abre no navegador), A (cliente instala o Play) ou C (PDF para imprimir)? Recomendado: B. **Resolvida (F1): forma B, no navegador do computador.**\n10. **Q-10 [testable]** Um `.html` com script enviado por Gmail, Outlook e WhatsApp chega e abre no celular e no computador do cliente? **Fazer antes de construir a parte 3 (forma B escolhida em F1).**\n11. **Q-11 [decision-required]** O relatório da carteira deve ter também uma exportação em planilha (CSV) para quem gosta de Excel? **Resolvida (F11): fica para depois.**\n12. **Q-12 [decision-required]** Encerrar formalmente a feature `diagnostico-maturidade`, que ainda está `in_progress`, antes de o @product começar esta, ou trabalhar em paralelo? **Resolvida (F13): QA e fechamento de `diagnostico-maturidade` antes do @product.**\n13. **Q-13 [out-of-scope]** Plano de ação escrito por IA e benchmark entre empresas continuam fora (PROM-009, PROM-010).\n14. **Q-14 [decision-required]** No modo consultoria, quem preenche o diário de números do cliente? O consultor digita, ou o arquivo do questionário à distância também leva e traz os meses do diário? Recomendado: o consultor digita no começo; o envio pelo arquivo fica como extensão da forma B. **Resolvida (F12): o consultor digita.**",
+      "status": "change_requested",
+      "comments_count": 0
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "section_id": "proposed-solution",
+      "category": "pending-decision",
+      "severity": "high",
+      "blocking": true,
+      "text": "A frente 5 (questionário à distância) tem três formas possíveis, e cada uma muda o que será construído. A forma B (arquivo HTML) tem um problema no celular: o visualizador do iPhone e alguns visualizadores do WhatsApp abrem o HTML sem rodar o formulário, e gravar o arquivo de respostas no celular é instável (R-4, Q-10). O questionário atual tem 8 blocos, ajuda por pergunta, \"não sei\" e a calculadora de custo por cliente (shared/content/questionBank.ts, src/features/diagnosis/CalculatorBlock.tsx); tudo isso precisaria ir junto no arquivo.",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "Como o cliente responde o questionário longe do consultor?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "html-no-computador",
+          "label": "Arquivo que abre no navegador do computador",
+          "description": "O consultor gera um arquivo. O cliente abre no navegador do computador (não no celular), responde com a mesma ajuda e o mesmo \"não sei\" e salva um arquivo de respostas para devolver. O consultor importa e vira um rascunho para revisar.",
+          "impact": "Cliente não instala nada. Exige testar em Chrome, Edge e Safari antes de construir, e a mensagem ao cliente precisa dizer \"abra no computador\". É a forma mais trabalhosa de construir das três.",
+          "recommended": true,
+          "evidence_refs": [
+            ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+            "shared/content/questionBank.ts"
+          ]
+        },
+        {
+          "id": "cliente-instala-play",
+          "label": "Cliente instala o Play e o FitPulse",
+          "description": "O cliente instala o FitPulse no próprio computador, responde lá e exporta as respostas num arquivo que o consultor importa.",
+          "impact": "Mais simples de construir: reaproveita o questionário que já existe. Mas exige que um cliente leigo instale o Play, o que muitos não vão fazer.",
+          "recommended": false,
+          "evidence_refs": []
+        },
+        {
+          "id": "roteiro-impresso",
+          "label": "Roteiro em PDF para imprimir",
+          "description": "O consultor exporta um PDF com as perguntas e as opções de resposta. O cliente responde à mão ou por mensagem e o consultor digita as respostas no app.",
+          "impact": "O mais simples de todos e funciona com qualquer cliente. Em troca, o consultor redigita tudo e pode errar na digitação.",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "html-no-computador"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        ".aioson/briefings/relatorios-e-acompanhamento/briefings.md"
+      ]
+    },
+    {
+      "id": "F2",
+      "section_id": "risks",
+      "category": "pending-decision",
+      "severity": "high",
+      "blocking": true,
+      "text": "Dois campos novos mexem com dados de pessoas: o contato de quem entrega (na marca do PDF) e o responsável por cada ação. A primeira versão decidiu guardar só dados da empresa, por cuidado com a LGPD (PRD diagnostico-maturidade, Out of scope: \"Dados pessoais de contato\"). O contato de quem entrega é do próprio usuário do app, que digita o que quiser mostrar. Já o responsável pela ação seria o nome de outra pessoa, como um funcionário do cliente.",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "Como tratar os dados de pessoas nos relatórios e nas ações?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "contato-proprio-responsavel-papel",
+          "label": "Contato próprio sim; responsável por papel",
+          "description": "Quem entrega pode pôr o próprio nome, telefone, e-mail ou site na marca. O responsável pela ação é escolhido numa lista de papéis (dono, equipe de vendas, equipe de marketing, consultor, outro), sem nome de pessoa.",
+          "impact": "O PDF fica profissional e o app continua sem guardar dados de terceiros. Fica menos preciso quando a empresa tem várias pessoas no mesmo papel.",
+          "recommended": true,
+          "evidence_refs": [
+            ".aioson/context/prd-diagnostico-maturidade.md"
+          ]
+        },
+        {
+          "id": "texto-livre-opcional",
+          "label": "Texto livre e opcional nos dois",
+          "description": "Contato e responsável são campos de texto livre e opcionais, com um aviso de que ficam guardados no computador. Saem na cópia de segurança e são apagados junto com a empresa.",
+          "impact": "Mais flexível. Passa a guardar nomes de terceiros, e isso precisa constar no texto de Configurações sobre o que o app guarda.",
+          "recommended": false,
+          "evidence_refs": []
+        },
+        {
+          "id": "so-empresa",
+          "label": "Só dados da empresa",
+          "description": "A marca do PDF tem só o nome e a logo da empresa de quem entrega, sem contato pessoal. As ações não têm responsável.",
+          "impact": "Mantém a regra da primeira versão. O relatório do consultor fica sem como contatá-lo e as ações sem dono.",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "contato-proprio-responsavel-papel"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        ".aioson/context/prd-diagnostico-maturidade.md"
+      ]
+    },
+    {
+      "id": "F3",
+      "section_id": "proposed-solution",
+      "category": "gap",
+      "severity": "high",
+      "blocking": true,
+      "text": "O briefing não diz o que acontece com as ações quando a empresa conclui um diagnóstico novo. Hoje, cada diagnóstico gera 3 ações a partir de um catálogo fixo (shared/domain/actionPlan.ts, buildActionPlan; tipo ActionKey em shared/domain/types.ts:153), então a mesma ação pode reaparecer no diagnóstico seguinte. Sem essa regra, o app pode mostrar duas vezes a mesma ação, uma \"feita\" e outra \"a fazer\", ou perder o andamento.",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "Quando sai um diagnóstico novo, o que acontece com as ações do anterior?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "herdar-repetidas",
+          "label": "Plano novo, herdando as que se repetem",
+          "description": "O diagnóstico novo traz o plano novo. A ação que se repete herda estado, prazo e nota. As que não se repetem ficam no histórico do diagnóstico anterior como \"encerradas\", com o estado em que estavam.",
+          "impact": "O usuário não perde o que já fez nem vê ações duplicadas. A regra de herança fica um pouco mais complexa de construir e testar.",
+          "recommended": true,
+          "evidence_refs": [
+            "shared/domain/actionPlan.ts",
+            "shared/domain/types.ts"
+          ]
+        },
+        {
+          "id": "plano-limpo",
+          "label": "Cada diagnóstico começa do zero",
+          "description": "O diagnóstico novo traz o plano novo, todo como \"a fazer\". O andamento anterior fica só no histórico do diagnóstico antigo.",
+          "impact": "Mais simples. Uma ação já começada volta para \"a fazer\" se reaparecer, o que confunde.",
+          "recommended": false,
+          "evidence_refs": []
+        },
+        {
+          "id": "lista-continua",
+          "label": "Uma lista contínua por empresa",
+          "description": "Cada empresa tem uma lista única de ações. Um diagnóstico novo acrescenta as ações que ainda não estão na lista, e as antigas continuam abertas até alguém marcar.",
+          "impact": "Parece um gerenciador de tarefas. A lista cresce, e o plano deixa de ser \"as 3 ações que atacam a trava agora\".",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "herdar-repetidas"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        "shared/domain/actionPlan.ts"
+      ]
+    },
+    {
+      "id": "F4",
+      "section_id": "open-questions",
+      "category": "pending-decision",
+      "severity": "medium",
+      "blocking": false,
+      "text": "Q-8: o diário só tem valor se preencher o próximo diagnóstico com números \"medidos\". Hoje, o custo por cliente só sai \"medido\" quando o gasto e os clientes novos são valores exatos; faixas viram \"estimado\" (shared/domain/unitEconomics.ts:63-93). Falta decidir quantos meses de diário bastam para contar como medido.",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "Quantos meses anotados no diário bastam para o custo por cliente contar como \"medido\"?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "tres-meses",
+          "label": "3 meses",
+          "description": "Com 3 meses ou mais, o próximo diagnóstico usa a média dos 3 últimos como medido. Com 1 ou 2 meses, o app mostra o valor como sugestão, ainda marcado como estimado.",
+          "impact": "Número mais confiável, porque um mês ruim não distorce. O dono precisa de 3 meses para ver o número medido.",
+          "recommended": true,
+          "evidence_refs": [
+            "shared/domain/unitEconomics.ts"
+          ]
+        },
+        {
+          "id": "um-mes",
+          "label": "1 mês",
+          "description": "Qualquer mês anotado já conta como medido.",
+          "impact": "Resultado imediato. Um mês fora do normal (festa, promoção) pode mudar o estágio da empresa.",
+          "recommended": false,
+          "evidence_refs": []
+        },
+        {
+          "id": "dois-meses",
+          "label": "2 meses",
+          "description": "Com 2 meses ou mais, usa a média dos meses anotados.",
+          "impact": "Meio-termo entre rapidez e confiabilidade.",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "tres-meses"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        "shared/domain/unitEconomics.ts"
+      ]
+    },
+    {
+      "id": "F5",
+      "section_id": "proposed-solution",
+      "category": "gap",
+      "severity": "medium",
+      "blocking": false,
+      "text": "O briefing descreve o diário com um único campo de gasto. A calculadora atual pede o gasto em 6 partes (anúncios, agência, comissões, descontos, parte do salário e ferramentas; shared/content/calculatorOptions.ts, SPEND_PART_OPTIONS). Se o diário guardar só o total, o próximo diagnóstico não consegue preencher as partes e o usuário redigita.",
+      "recommendation": "O diário usa as mesmas 6 partes de gasto da calculadora e oferece o atalho \"só sei o total\". O preenchimento do próximo diagnóstico mostra a origem (\"do diário: média de 3 meses\") e deixa corrigir antes de concluir (R-9).",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        "shared/content/calculatorOptions.ts",
+        "shared/domain/unitEconomics.ts"
+      ]
+    },
+    {
+      "id": "F6",
+      "section_id": "identified-gaps",
+      "category": "gap",
+      "severity": "medium",
+      "blocking": false,
+      "text": "Q-3 e Q-5 podem ser respondidas pelo próprio projeto. (1) O backend do app roda no computador do usuário, então consegue abrir o PDF e a pasta pelo sistema operacional (Windows, macOS e Linux têm comando próprio para isso). As docs do Play não oferecem um diálogo de \"salvar como\" (.aioson/docs/integrations/). (2) As docs do Play não têm canal de aviso do app para o sistema operacional: as notificações do Play vêm do aioson.com (.aioson/docs/integrations/platform-architecture.md §3.5).",
+      "recommendation": "Manter o salvamento na pasta Downloads, acrescentar os botões \"Abrir PDF\" e \"Mostrar na pasta\" e tirar \"escolher a pasta\". O lembrete de reavaliação e de ações vencidas aparece só dentro do app, na tela inicial. Q-3 e Q-5 ficam resolvidas assim.",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        "server/services/reportService.ts",
+        ".aioson/docs/integrations/platform-architecture.md"
+      ]
+    },
+    {
+      "id": "F7",
+      "section_id": "themes",
+      "category": "risk",
+      "severity": "medium",
+      "blocking": false,
+      "text": "A logo vai para a cópia de segurança, que tem limite de 10 MB (server/validation/backupSchemas.ts:12). As preferências hoje são pares de texto (model Preference em prisma/schema.prisma). Uma logo grande pode estourar o limite ou deixar o PDF pesado.",
+      "recommendation": "Aceitar logo PNG ou JPG de até 2 MB e reduzir para no máximo 600 px antes de guardar. Ela entra na cópia de segurança, e o importador continua aceitando cópias da versão 1, sem logo.",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        "server/validation/backupSchemas.ts",
+        "prisma/schema.prisma"
+      ]
+    },
+    {
+      "id": "F8",
+      "section_id": "proposed-solution",
+      "category": "scope-suggestion",
+      "severity": "low",
+      "blocking": false,
+      "text": "A marca inclui uma \"cor de destaque opcional\". O app segue a identidade Tinta & Ouro, em que cada app tem um metal próprio (no FitPulse, o bronze antigo). Uma cor qualquer escolhida pelo usuário pode ficar ilegível no papel ou brigar com a identidade.",
+      "recommendation": "Tirar a cor de destaque. A marca de quem entrega fica em nome, logo e contato; o PDF mantém as cores do FitPulse.",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        ".aioson/briefings/diagnostico-maturidade/identity.md"
+      ]
+    },
+    {
+      "id": "F9",
+      "section_id": "proposed-solution",
+      "category": "risk",
+      "severity": "medium",
+      "blocking": false,
+      "text": "O relatório de evolução repete o que a tela de comparação já faz, inclusive recalcular o diagnóstico anterior quando as regras mudaram (RULE-dm-11 / decisão F10; server/services/historyService.ts compare, shared/domain/compareDiagnoses.ts). Se o PDF fizer a conta por outro caminho, a tela e o PDF podem mostrar números diferentes.",
+      "recommendation": "O relatório de evolução usa o mesmo cálculo da tela de comparação, sem lógica própria, e só fica disponível quando a tela de comparação também está (2 diagnósticos concluídos da mesma empresa).",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        "server/services/historyService.ts",
+        "shared/domain/compareDiagnoses.ts"
+      ]
+    },
+    {
+      "id": "F10",
+      "section_id": "open-questions",
+      "category": "pending-decision",
+      "severity": "medium",
+      "blocking": false,
+      "text": "Q-1: as quatro frentes juntas são uma entrega grande (a classificação da CLI deu MEDIUM, com 4 fronteiras de runtime e 9 módulos). O pedido original era o PDF. Detalhe: o relatório da carteira mostraria \"ações vencidas\", que só existem depois da fatia 2.",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "Como entregar as quatro frentes?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "fatiar-tres",
+          "label": "Em 3 partes",
+          "description": "Parte 1: relatórios, marca e acabamento. Parte 2: acompanhamento das ações e diário de números. Parte 3: questionário à distância. Um único PRD, com o plano de execução nessa ordem. O relatório da carteira ganha \"ações vencidas\" quando a parte 2 chegar.",
+          "impact": "O PDF chega antes e cada parte já funciona sozinha. O relatório da carteira muda um pouco entre as partes.",
+          "recommended": true,
+          "evidence_refs": [
+            ".aioson/briefings/relatorios-e-acompanhamento/briefings.md"
+          ]
+        },
+        {
+          "id": "tudo-junto",
+          "label": "Tudo de uma vez",
+          "description": "As quatro frentes são construídas e entregues juntas.",
+          "impact": "Uma entrega só, coerente. O PDF demora mais a chegar.",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "fatiar-tres"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": []
+    },
+    {
+      "id": "F11",
+      "section_id": "open-questions",
+      "category": "ambiguity",
+      "severity": "low",
+      "blocking": false,
+      "text": "Q-2, Q-4, Q-7 e Q-11 são detalhes em que o briefing já tem uma recomendação clara; dá para fechar todos de uma vez.",
+      "recommendation": "Apêndice com as respostas: opção na hora de exportar, desligada por padrão (Q-2). Gráfico das 8 dimensões: barras agrupadas por encaixes e frentes, com o número escrito, legível impresso em preto e branco (Q-4). Ações: só as 3 do plano, cada uma com nota livre, sem ações próprias nesta versão (Q-7). Exportação da carteira em planilha (CSV): fica para depois (Q-11).",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        ".aioson/briefings/relatorios-e-acompanhamento/briefings.md"
+      ]
+    },
+    {
+      "id": "F12",
+      "section_id": "open-questions",
+      "category": "pending-decision",
+      "severity": "low",
+      "blocking": false,
+      "text": "Q-14: no modo consultoria, o diário de números é do cliente, mas quem usa o app é o consultor.",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "No modo consultoria, quem preenche o diário de números do cliente?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "consultor-digita",
+          "label": "O consultor digita",
+          "description": "O cliente passa os números do mês (por mensagem ou na reunião) e o consultor anota no app.",
+          "impact": "Nada novo a construir além do diário. O consultor tem o trabalho de cobrar e digitar.",
+          "recommended": true,
+          "evidence_refs": []
+        },
+        {
+          "id": "via-arquivo",
+          "label": "Também pelo arquivo à distância",
+          "description": "O arquivo do questionário à distância também leva e traz os meses do diário.",
+          "impact": "O cliente anota sozinho. Só vale se a forma escolhida em F1 usar arquivo, e aumenta a parte 3.",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "consultor-digita"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": []
+    },
+    {
+      "id": "F13",
+      "section_id": "context",
+      "category": "risk",
+      "severity": "medium",
+      "blocking": false,
+      "text": "Q-12: a execução da primeira versão terminou em 2026-10-23 (.aioson/context/execution-state-diagnostico-maturidade.json, status completed), mas o workflow ainda aponta \"next: dev\" para diagnostico-maturidade. Também não existe qa-report e features.md ainda mostra in_progress. A nova feature vai construir em cima de uma base que não teve o QA final registrado.",
+      "recommendation": "Antes de o @product começar esta feature, rodar o @qa em diagnostico-maturidade e fechar a feature (feature:close). Assim a nova entrega parte de uma base verificada e o workflow não mistura as duas.",
+      "status": "accepted",
+      "note": "",
+      "question": "",
+      "selection_mode": null,
+      "options": [],
+      "selected_option_ids": [],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        ".aioson/context/execution-state-diagnostico-maturidade.json",
+        ".aioson/context/features.md"
+      ]
+    },
+    {
+      "id": "F14",
+      "section_id": "themes",
+      "category": "pending-decision",
+      "severity": "low",
+      "blocking": false,
+      "text": "As telas novas (central de relatórios, acompanhamento das ações, diário, marca em Configurações) precisam de um protótipo antes da aprovação. Este briefing ainda não tem identidade visual própria. O FitPulse já tem uma identidade aprovada e implementada: Tinta & Ouro com o metal bronze antigo (.aioson/briefings/diagnostico-maturidade/identity.md, src/styles/tokens.css).",
+      "recommendation": "",
+      "status": "accepted",
+      "note": "",
+      "question": "Qual identidade visual o protótipo das telas novas deve seguir?",
+      "selection_mode": "single",
+      "options": [
+        {
+          "id": "identity-references",
+          "label": "A identidade que o FitPulse já usa",
+          "description": "Copiar para este briefing a identidade já aprovada e implementada do FitPulse (cores, tipografia, espaçamento e componentes). As telas novas ficam iguais às que já existem.",
+          "impact": "Tudo fica coerente e não há nada para escolher de novo. Não abre espaço para mudar o visual.",
+          "recommended": true,
+          "evidence_refs": [
+            ".aioson/briefings/diagnostico-maturidade/identity.md",
+            "src/styles/tokens.css"
+          ]
+        },
+        {
+          "id": "identity-intent",
+          "label": "Definir a partir do protótipo novo",
+          "description": "Fazer o protótipo primeiro e consolidar a identidade a partir do que for aceito nele.",
+          "impact": "Abre espaço para ajustar o visual, mas pode criar diferença entre as telas novas e as antigas.",
+          "recommended": false,
+          "evidence_refs": []
+        },
+        {
+          "id": "identity-later",
+          "label": "Decidir depois",
+          "description": "Seguir sem registrar a identidade agora.",
+          "impact": "O protótipo e o desenvolvimento ficam sem uma referência visual registrada para estas telas.",
+          "recommended": false,
+          "evidence_refs": []
+        }
+      ],
+      "selected_option_ids": [
+        "identity-references"
+      ],
+      "rationale": "O dono pediu para seguir com as recomendações (\"pode prosseguir com o recomendado que você adicionou\", 2026-10-24).",
+      "evidence_refs": [
+        ".aioson/briefings/diagnostico-maturidade/identity.md"
+      ]
+    }
+  ],
+  "comments": [],
+  "decisions": [],
+  "blocking_items": []
+}

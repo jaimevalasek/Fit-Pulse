@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "e4ce07fc-5b2c-4a44-846d-425abd0dfe79",
+  "unit": "phase-1-frontend-result",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:12:53Z",
+  "finished_at": "2026-10-23T04:17:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/result/ResultPage.tsx",
+    "src/features/result/StageLadder.tsx",
+    "src/features/result/ActionPlanList.tsx",
+    "src/features/result/DimensionScores.tsx",
+    "src/features/result/RiskList.tsx",
+    "src/features/result/NumbersSummary.tsx",
+    "src/features/result/ConfidenceNote.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-level checks for CAP-dm-result were not run because they belong to sibling units or integration: `pnpm test -- tests/unit/forbiddenTerms.test.ts` and `pnpm test:e2e -- tests/e2e/result.spec.ts`. Neither test file is in this unit's allowed files, and the e2e run needs the diagnosis backend (phase-1-backend-diagnoses), which is still being implemented. AC-dm-28 and AC-dm-47 are implemented in the UI but have not been verified end-to-end."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "The section entrance animation from the prototype ('rise') was left out. global.css is outside this unit's allowed files, and Tailwind ships no matching keyframes. The only motion is the dimension bar fill. It is driven by IntersectionObserver and is skipped (bars render filled) when prefers-reduced-motion is reduce or IntersectionObserver is missing. The global reduced-motion rule in global.css also turns off transitions. 'Exportar PDF' and 'Comparar com …' are not rendered because they belong to CAP-dm-report and CAP-dm-compare."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-result-dev/build.log",
+      "summary": "tsc --noEmit passed, then vite build finished ('built in 947ms')"
+    },
+    {
+      "kind": "static_check",
+      "summary": "Ran a grep for /\\bV[1-4]\\b/i, Método V4, V4 Company, PPA, CREP and vacinas over src/features/result and src/App.tsx: no matches. The copy says 'regras da versão N', not 'regras v1'."
+    },
+    {
+      "kind": "static_check",
+      "summary": "The compiled CSS contains the reveal rule (group-data-[revealed=false] → scale-x 0) and the dashed hatch gradient for the previous ladder step."
+    }
+  ],
+  "acceptance": {
+    "AC-dm-28": "Implemented. StageLadder renders role=img with aria-label 'Estágio N de 4: Nome. Diagnóstico anterior no estágio P. Trava para subir: <LOCK_PHRASES>.', the previous step dashed with an 'antes' tag, and the padlock on step stage+1 when there is a lock. ResultPage then shows the italic lock phrase (voice-human), the 3 actions, and the 'Orientação baseada nas suas respostas. Não substitui uma análise financeira.' note, followed by encaixes, frentes, números, riscos and confiança. e2e verification is deferred to integration.",
+    "AC-dm-47": "Implemented for the result screen. Bars start filled under reduced motion and no other animation runs. e2e verification is deferred to integration."
+  },
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Route #/resultado/:diagnosisId now renders ResultPage, and the unused PendingScreen was removed from src/App.tsx. ResultPage calls getDiagnosis(id) and then getCompany for the breadcrumb. A draft redirects to #/diagnostico/:id. A completed diagnosis with no result shows the 'result-missing' state. Data hooks for e2e: data-aioson-id = result, escada, ladder-steps (role=img with the AC-dm-28 label), ladder-lock, result-trava, result-lock-phrase, result-actions, result-guidance, result-fits, result-fronts, dim-<key>, result-numbers, number-cac|ltv|ratio|payback, result-risks (li[data-risk-id][data-level]), result-no-risks, result-confidence[data-level], result-provisional, result-loading, result-error, result-not-found. The bar groups have [data-reveal][data-revealed=true|false].",
+      "paths": ["src/features/result/ResultPage.tsx", "src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Assumption: on GET /api/diagnoses/:id for a completed diagnosis, `previous` is the diagnosis the company completed before this one, not this one. The ladder draws previous.stage as the dashed 'antes' step and the caption says 'Antes: estágio N'. If the backend returns this diagnosis as `previous`, the caption will be wrong (the dashed step is still skipped when previous.stage equals the current stage). Please confirm against phase-1-backend-diagnoses.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/api/diagnosesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks to run after all producers finish: `pnpm test -- tests/unit/forbiddenTerms.test.ts` and `pnpm test:e2e -- tests/e2e/result.spec.ts`. The e2e spec should cover the layers, the ladder aria-label, the risk list and the no-risk state, confidence and the provisional note, a scan of the rendered text, emulateMedia reducedMotion with bars filled at once, 390px with no horizontal scroll, axe, and time to result. StageLadder({stage, previousStage?, lock?, caption?, className?}) is exported for the Phase 3 home screen.",
+      "paths": ["src/features/result/StageLadder.tsx"]
+    }
+  ]
+}

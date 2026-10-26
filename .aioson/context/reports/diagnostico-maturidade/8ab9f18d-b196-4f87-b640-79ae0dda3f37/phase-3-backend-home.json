@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "871a6418-011a-4dc1-abe0-c95308281613",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "started_at": "2026-10-23T04:55:16Z",
+  "finished_at": "2026-10-23T05:03:53Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/services/homeService.ts (new)",
+    "server/routes/homeRoutes.ts (new)",
+    "server/app.ts (import + mount of createHomeRoutes after the preference routes)",
+    "tests/api/homeRoutes.test.ts (new, 32 tests)"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "In this repo `pnpm test -- <file>` hands a literal `--` to vitest, which then ignores the file filter and runs the whole suite (16 files, 713 tests, exit 0, includes tests/api/homeRoutes.test.ts). The focused run `pnpm exec vitest run tests/api/homeRoutes.test.ts` was also executed: 1 file, 32 tests, exit 0.",
+      "paths": [
+        "package.json"
+      ]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "Mutation check on the 7-day and 90-day lines: changing `>` to `>=` in isOlderThan made exactly the 4 boundary tests fail; reverted and the suite is green again.",
+      "paths": [
+        "server/services/homeService.ts",
+        "tests/api/homeRoutes.test.ts"
+      ]
+    },
+    {
+      "kind": "process_note",
+      "severity": "low",
+      "text": "Slip during report writing: an unquoted shell heredoc expanded backticks and ran `pnpm test:e2e` and `pnpm test` once each by accident. No Playwright config or tests/e2e exists yet, so the e2e run found nothing and only wrote test-results/.last-run.json; a stray empty file named `=` was also created in the project root. Both were removed (test-results/ and `=`). No source, data/ or dist/ file was changed by it (dist/ was rebuilt at 02:01 by another lane before the slip)."
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "text": "Not part of this unit's Done when and not run: tests/e2e/home.spec.ts and the other Playwright specs (AC-dm-32, AC-dm-35, AC-dm-46, AC-dm-47 and the browser side of AC-dm-33/34). This unit delivers the API half of AC-dm-33 and AC-dm-34: the indicators follow concluding, archiving and restoring a diagnosis, the injected clock, and the data behind the filtered lists."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm test -- tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "summary": "Test Files 16 passed (16); Tests 713 passed (713)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/home-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/home-final.exit"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "summary": "Test Files 1 passed (1); Tests 32 passed (32)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/home-focused-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/home-focused-final.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "summary": "no diagnostics, including the frontend files present at that moment",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/tsc-final.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/tsc-final.exit"
+    },
+    {
+      "command": "mutation: isOlderThan '>' replaced by '>='",
+      "exit_code": 1,
+      "summary": "4 boundary tests failed as expected (stale-draft line, overdue line, both clock-moves); mutation reverted",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-3-backend-home-dev/mutation.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-3-frontend-home",
+      "kind": "note",
+      "text": "GET /api/home is live. I read src/api/homeApi.ts: its OwnerHomeData / ConsultantHomeData types match the server response field by field (mode, company, latest, draft as TimelineDraft, trend; companyCount, byStage[4] with count + companies, withoutDiagnosis, staleDrafts, overdue, highRisk). idleDays and daysSince are whole days elapsed on the server clock.",
+      "paths": [
+        "server/services/homeService.ts",
+        "src/api/homeApi.ts"
+      ]
+    },
+    {
+      "to": "unit:phase-3-frontend-home",
+      "kind": "contract_change",
+      "text": "Owner mode with no active company at all answers 404 company_not_found (as does an unknown or archived explicit companyId). The root route must choose between the wizard and the home from the companies list or the preferences, not from a 200 here. Consultant mode ignores companyId and answers 200 with companyCount 0 for the empty state (AC-dm-35).",
+      "paths": [
+        "server/services/homeService.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Server side of CAP-dm-home is done and mounted in server/app.ts. Decisions to carry into QA and e2e: (1) 'sem diagnóstico há mais de 90 dias' lists companies whose LATEST completed, non-archived diagnosis is older than 90 days (strict >); companies with no completed diagnosis are in withoutDiagnosis, not in overdue. (2) staleDrafts compares the draft's updatedAt with 7 days (strict >). (3) highRisk uses the frozen risk level 'high' of the latest diagnosis (score 16 or more under rules v1), not the current rules. (4) The thresholds are exported as STALE_DRAFT_DAYS and OVERDUE_DIAGNOSIS_DAYS from server/services/homeService.ts. (5) Prisma's @updatedAt follows the real clock, not the injected one, so an e2e that needs a stalled draft must write updatedAt directly.",
+      "paths": [
+        "server/services/homeService.ts",
+        "server/routes/homeRoutes.ts",
+        "server/app.ts"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks left to integration (not run here; no environment limit involved): the Playwright specs (tests/e2e/home.spec.ts and the others) once the frontend lane and the Playwright setup exist; the AC-dm-32/35 screens, AC-dm-46 (390 px, 44 px targets, focus, contrast) and AC-dm-47 (prefers-reduced-motion). This unit's tests are part of the full `pnpm test`, which passed (713 tests) through the unit command."
+    }
+  ]
+}

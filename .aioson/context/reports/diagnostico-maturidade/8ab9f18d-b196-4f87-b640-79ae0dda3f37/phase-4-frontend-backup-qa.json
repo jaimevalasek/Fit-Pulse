@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "94ce2129-9368-4403-9922-2f95d3bf0283",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "unit": "phase-4-frontend-backup",
+  "phase": "4-frontend-backup",
+  "wave": 9,
+  "capabilities": ["CAP-dm-backup"],
+  "acceptance_criteria": ["AC-dm-37"],
+  "interfaces": ["IF-009"],
+  "started_at": "2026-10-23T04:50:00Z",
+  "finished_at": "2026-10-23T04:59:30Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-backup",
+      "ac": "AC-dm-37",
+      "path": "server/routes/backupRoutes.ts",
+      "summary": "Backend route/service for IF-009 do not exist yet (server/routes/backupRoutes.ts, server/services/backupService.ts; phase 4-backend-backup, wave 10). Not run: `pnpm test -- tests/api/backupRoutes.test.ts`. The export -> import round trip and the server-side refusal (422 backup_invalid / backup_newer_version, 413) cannot be exercised yet. Deferred to integration; not a defect of this unit."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-backup",
+      "ac": "AC-dm-37",
+      "path": "tests/e2e/backup.spec.ts",
+      "summary": "E2E spec for AC-dm-37 does not exist yet (phase 4-integration-e2e-features). Not run: `pnpm test:e2e -- tests/e2e/backup.spec.ts`. The UI path (export button -> 'Cópia salva' alert; import file -> 'Cópia importada' or role=alert refusal) is verified only by reading the code and by the build, not by a browser run. Deferred to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-frontend-backup-qa/build.log",
+      "summary": "tsc --noEmit && vite build: built in 666ms; the log ends with EXIT_CODE=0. Run in the foreground in C:/dev/playapps/v-stage. This is the unit's local Done when."
+    },
+    {
+      "command": "Read/Grep review of src/api/backupApi.ts, src/features/settings/BackupSection.tsx, src/features/settings/SettingsPage.tsx",
+      "exit_code": 0,
+      "log": null,
+      "summary": "Code read against IF-009 and AC-dm-37. The endpoints match the implementer's contract (POST /api/backup/export; POST /api/backup/import with the parsed JSON). The results are role=alert with data-state and the data-aioson-id selectors listed in the implementer note. The Button component forwards data-aioson-id and disabled via ...props. BackupSection is placed after ThemeSection in SettingsPage. No simple local defect found."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Cross-lane assumptions to confirm when phase 4-backend-backup lands: (1) the import response's `skipped` must be an object { companies: number, diagnoses: number } (src/api/backupApi.ts:22-25, BackupSection.tsx importSummary); (2) the server import size limit must be 10 MB, matching BACKUP_MAX_BYTES (src/api/backupApi.ts:6); (3) 422 backup_newer_version should carry details.rulesVersion (BackupSection.tsx newerVersionMessage); (4) export failures should answer 500 write_failed with a message.",
+      "paths": ["src/api/backupApi.ts", "src/features/settings/BackupSection.tsx", "server/routes/backupRoutes.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "To run the deferred checks: after phase 4-backend-backup and 4-integration-e2e-features exist, run `pnpm test -- tests/api/backupRoutes.test.ts` and `pnpm test:e2e -- tests/e2e/backup.spec.ts` in C:/dev/playapps/v-stage. Selectors: section [data-aioson-id=settings-backup]; buttons [data-aioson-id=backup-export] and [data-aioson-id=backup-import]; file input [data-aioson-id=backup-import-file] (setInputFiles, .json); results role=alert with data-aioson-id backup-export-saved, backup-export-error, backup-import-done, backup-import-error.",
+      "paths": ["tests/e2e/backup.spec.ts", "tests/api/backupRoutes.test.ts"]
+    },
+    {
+      "to": "lane:backend",
+      "kind": "note",
+      "text": "The frontend's httpClient already sends Content-Type application/json and a `{}` body for POST, so a body-less POST to /api/backup/export is not rejected with 415. No backend action needed for that.",
+      "paths": ["src/api/httpClient.ts"]
+    }
+  ]
+}

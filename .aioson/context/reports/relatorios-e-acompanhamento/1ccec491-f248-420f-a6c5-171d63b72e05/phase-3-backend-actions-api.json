@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "babdb3da-ebd2-40ae-8b41-60e0c2d0cf62",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-3-backend-actions-api",
+  "started_at": "2026-10-25T23:35:33.000Z",
+  "finished_at": "2026-10-25T23:44:00.000Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/validation/actionSchemas.ts (new)",
+    "server/services/actionService.ts (new)",
+    "server/routes/actionRoutes.ts (new)",
+    "server/app.ts (mounts createActionRoutes)",
+    "src/api/actionsApi.ts (new)",
+    "server/repositories/diagnosisRepository.ts (listCompletedRecords; completeDraft now passes a CompletionContext to build and creates the tracking rows in the same transaction)",
+    "server/services/diagnosisService.ts (complete applies inheritActionProgress from the last completed, non-archived diagnosis)",
+    "tests/api/actionRoutes.test.ts (new, 33 tests)",
+    "tests/api/diagnosisRoutes.test.ts (9 inheritance tests added)"
+  ],
+  "findings": [
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "text": "AC-ra-32 says deleting the company also deletes the diary. The diary table belongs to Phase 4 and does not exist yet, so the test proves only the cascade of action_progress (rows of the deleted company gone, the other company's rows kept). The diary part must be proven when the diary lands."
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "text": "AC-ra-29 is proven in the API test by comparing the raw diagnosis rows (result, stage, rulesVersion, completedAt, updatedAt), GET /api/diagnoses/:id and GET /api/diagnoses/:id/comparison before and after tracking edits and after a new conclusion. The PDF of a previous diagnosis is not compared here: the 'Andamento das ações' page and the report documents belong to the phase-3-backend-action-reports unit."
+    },
+    {
+      "kind": "design_decision",
+      "severity": "low",
+      "text": "Archived diagnoses are left out of the company 'closed' list (the timeline treats them as put away); GET /api/diagnoses/:id/actions of an archived diagnosis still answers with isCurrent=false and PATCH answers 409 plan_closed. Overdue is only true for the current plan (RULE-ra-06)."
+    },
+    {
+      "kind": "design_decision",
+      "severity": "low",
+      "text": "IF-005 was extended with two error codes the plan did not list: 409 diagnosis_not_completed (GET/PATCH on a draft; drafts have no actions) and 404 action_not_found (actionKey not in the diagnosis plan). 400 validation_failed refuses unknown keys (ownerName, result, diagnosisId) with fields._root."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/actionRoutes.test.ts tests/api/diagnosisRoutes.test.ts tests/api/historyRoutes.test.ts tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "4 files passed, 189 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-dev/done-when.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit clean for the whole repository at the time of the run",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-dev/typecheck2.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api",
+      "exit_code": 0,
+      "result": "11 files passed, 495 tests passed (regression check of every API suite after the completeDraft change)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-actions-api-dev/all-api.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-3-frontend-actions",
+      "kind": "contract_change",
+      "text": "IF-005 is live. src/api/actionsApi.ts exports getCompanyActions(companyId), getDiagnosisActions(diagnosisId) and updateAction(diagnosisId, actionKey, patch) plus the types ActionProgress, ActionPlan, CompanyActions, DiagnosisActions, ActionPatch and InheritedFrom. ActionProgress = { diagnosisId, actionKey, status, dueDate (YYYY-MM-DD|null), ownerRole|null, note|null, overdue, inheritedFrom: { diagnosisId, completedAt }|null, updatedAt }. Company: { current: { diagnosisId, completedAt, actions[] }|null, closed: [{ diagnosisId, completedAt, actions[] }] } (closed newest first, archived diagnoses not listed). Diagnosis: { isCurrent, actions[] } with actions in the order of result.plan. PATCH is partial and null clears dueDate/ownerRole/note; a blank note is stored as null; the server limit is 500 characters counted as typed. Errors: 400 validation_failed (fields.status|dueDate|ownerRole|note|_root), 404 diagnosis_not_found|company_not_found|action_not_found, 409 plan_closed (plan replaced or diagnosis archived: show the action closed, without controls) and 409 diagnosis_not_completed (draft). updatedAt falls back to the diagnosis completedAt while a version 1 diagnosis has no row. React key = diagnosisId:actionKey.",
+      "paths": ["src/api/actionsApi.ts", "server/services/actionService.ts", "server/routes/actionRoutes.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "DiagnosisRepository.completeDraft changed: build now receives (draft, { latestCompleted: { record, progress } | null }) and returns { values: CompletionValues, actionProgress: InheritedActionProgress[] }; the repository creates the tracking rows with createMany in the same transaction. I found no other caller in server/, tests/ or scripts/. New DiagnosisRepository.listCompletedRecords(companyId) returns the completed, non-archived diagnoses with their stored result, newest first (null when the company does not exist); the portfolio/report units can reuse it.",
+      "paths": ["server/repositories/diagnosisRepository.ts", "server/services/diagnosisService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Not run by this unit (outside its Done when): pnpm build, node scripts/smoke-migrate.mjs, Playwright (tests/e2e/actions.spec.ts, result.spec.ts, history.spec.ts) and the walkthrough in the Play dev-link. AC-ra-32's 'diário' cascade needs the Phase 4 diary table; AC-ra-29's PDF comparison needs the reports unit's 'Andamento das ações' page."
+    }
+  ]
+}

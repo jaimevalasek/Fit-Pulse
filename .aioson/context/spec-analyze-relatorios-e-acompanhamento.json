@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "feature": "relatorios-e-acompanhamento",
+  "classification": "MEDIUM",
+  "strict": false,
+  "analyzed_at": "2026-10-26T05:13:07.755Z",
+  "artifacts_present": [
+    "project_context",
+    "prd",
+    "implementation_plan",
+    "dev_state",
+    "features"
+  ],
+  "contract_present": true,
+  "feature_completeness": {
+    "applicable": true,
+    "ok": true,
+    "summary": {
+      "promised_capabilities": 20,
+      "source_promises": 10,
+      "source_promises_covered": 10,
+      "required_capabilities": 14,
+      "current_system_fit_rows": 14,
+      "prototype_binding": "current",
+      "acceptance_criteria": 63,
+      "lens_decisions": 0,
+      "engineering_controls": 11,
+      "leverage_rows": 253,
+      "delivery_rows": 14,
+      "executed_capabilities": 0,
+      "errors": 0
+    }
+  },
+  "stage": "dev",
+  "findings": [
+    {
+      "severity": "warning",
+      "check": "orphan_reference",
+      "message": "1 REQ/AC id(s) referenced downstream but not declared in the canonical PRD/legacy requirements for relatorios-e-acompanhamento: AC-dm-32 (drift or cross-feature reference)",
+      "artifacts": [
+        "implementation_plan"
+      ]
+    },
+    {
+      "severity": "info",
+      "check": "delivery_drift_unmeasured",
+      "message": "git is unavailable here, so the delivered change set could not be compared with the plan",
+      "artifacts": [
+        "git"
+      ]
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "warnings": 1,
+    "info": 1
+  }
+}

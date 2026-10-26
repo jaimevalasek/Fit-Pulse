@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "5090c825-0863-4e5c-818b-a0e817f42d0b",
+  "unit": "phase-6-frontend-questionnaire",
+  "wave": 11,
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T22:35:00-03:00",
+  "finished_at": "2026-10-25T22:38:00-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-remote-questionnaire"],
+    "acceptance_criteria": ["AC-ra-48", "AC-ra-51", "AC-ra-52", "AC-ra-53"],
+    "interface": "IF-011",
+    "done_when": "pnpm typecheck passa e os diálogos usam só o IF-011",
+    "unit_files": [
+      "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+      "src/features/questionnaire/ImportAnswersDialog.tsx",
+      "src/features/companies/CompanyPage.tsx",
+      "src/features/history/CompanyTimeline.tsx",
+      "src/features/home/ConsultantHome.tsx",
+      "src/features/companies/CompaniesPage.tsx"
+    ]
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "package.json",
+      "summary": "The literal `pnpm typecheck` exits 1 in this environment. pnpm runs its pre-run deps check, which executes `pnpm install`, and the postinstall `prisma migrate deploy` fails with 'SQLite database error: database is locked' on data/fitpulse.db. The Play preview is running on port 3543 (.aioson/preview.json, running=true) and holds that database. tsc never ran in that run. The check body passes: `pnpm --config.verify-deps-before-run=false typecheck` exits 0 with empty output. The preview was not stopped because it is shared environment state."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "tests/unit/questionnaireFile.test.ts",
+      "summary": "Deferred to integration, not run by this unit: `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` and `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts`. These are outside this unit's Done-when line and were listed by the implementer as integration checks."
+    },
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+      "summary": "The literal wording 'os diálogos usam só o IF-011' is not strictly met: 'Mostrar na pasta' calls filesApi.revealSavedFile (IF-002), with only the file id sent. The implementation plan (implementation-plan-relatorios-e-acompanhamento.md:56,314) specifies this reveal, so it is treated as a wording mismatch in the contract rather than a defect."
+    },
+    {
+      "kind": "finding",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "path": "src/features/companies/CompanyPage.tsx",
+      "summary": "The company page fetches the whole consultant home (getConsultantHome) only to show one pending-questionnaire line and swallows its errors. This is a known contract gap (single-company attention endpoint absent), not a functional defect in this unit."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 1,
+      "note": "Failed in pnpm's pre-run deps check and postinstall prisma migrate deploy (database is locked); tsc did not run.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-attempt1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-attempt1.exit"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "note": "Runs `tsc --noEmit` with empty output; this is the unit's typecheck body.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-noverify-attempt1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-qa/typecheck-noverify-attempt1.exit"
+    },
+    {
+      "kind": "inspection",
+      "summary": "Grep of src/features for @/api imports, fetch( and the IF-011 symbols. questionnaire dialogs import only questionnaireApi (sendQuestionnaire, importAnswers), httpClient.isApiError and filesApi.revealSavedFile. No fetch( calls. CompanyPage, CompanyTimeline, ConsultantHome and CompaniesPage use homeApi, historyApi, companiesApi and httpClient only."
+    },
+    {
+      "kind": "inspection",
+      "summary": "SendQuestionnaireDialog.tsx:92,113 renders send.message from the IF-011 response (questionnaireApi.ts:13) through the copy hook, so the client text is server-built, not client-built."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm typecheck` once the Play preview on port 3543 is stopped, or use `pnpm --config.verify-deps-before-run=false typecheck`. The default run fails in postinstall prisma migrate deploy on the locked data/fitpulse.db; the tsc body exits 0. Also run the deferred suites: `pnpm exec vitest run tests/unit/questionnaireFile.test.ts tests/api/questionnaireRoutes.test.ts` and `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts`.",
+      "paths": [".aioson/preview.json", "data/fitpulse.db", "package.json"]
+    }
+  ]
+}

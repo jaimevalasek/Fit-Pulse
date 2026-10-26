@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "dd00b7ab-cf30-4ba1-9b17-ef711ea7538e",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T21:10:00-03:00",
+  "finished_at": "2026-10-25T21:17:00-03:00",
+  "verdict": "PASS",
+  "findings": [],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/api/preferenceRoutes.test.ts tests/unit/followUp.test.ts",
+      "result": "exit 0; 2 test files, 79 tests passed",
+      "covers": ["AC-ra-34", "IF-004", "IF-009"]
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "result": "exit 0 (tsc --noEmit, with the other units' files as they were at that moment)"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/api/brandRoutes.test.ts tests/api/homeRoutes.test.ts",
+      "result": "exit 0; 2 test files, 75 tests passed (neighbours that read /api/preferences)"
+    }
+  ],
+  "files_changed": [
+    "server/validation/preferenceSchemas.ts",
+    "server/services/preferenceService.ts",
+    "src/api/preferencesApi.ts",
+    "shared/domain/followUp.ts",
+    "tests/api/preferenceRoutes.test.ts",
+    "tests/unit/followUp.test.ts"
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-009: GET/PUT /api/preferences now carry reevaluationIntervalDays (60|90|120|180, default 90) and tourSeenVersion (integer 0..99, default 0). Both are optional on PUT, stored as text under reevaluation_interval_days and tour_seen_version, and a stored value outside the accepted set reads as the default. The interval outside the four options answers 400 validation_failed with the field name. PreferencesView and the client type Preferences now require both fields.",
+      "paths": ["server/services/preferenceService.ts", "src/api/preferencesApi.ts", "server/validation/preferenceSchemas.ts"]
+    },
+    {
+      "to": "lane:backend",
+      "kind": "note",
+      "text": "shared/domain/followUp.ts already existed from an earlier phase (reevaluationOf, daysBetweenIsoDates, addDaysToIsoDate, isReevaluationInterval, REEVALUATION_INTERVAL_OPTIONS, DEFAULT_REEVALUATION_DAYS); existing exports are unchanged. Added formatDays(n), reevaluationCountdown(reevaluation) -> {amount, relation, text} ('83 dias até 23/10/2026' / '9 dias de atraso desde 23/10/2026'; '1 dia' singular, due day itself is '0 dias até') and reevaluationTimeline(lastDay, today, dueDate) -> {last, today, next, text} from ISO days ('Último: .. · Hoje: .. · Próximo: ..'). homeService and the home screens can import these instead of formatting the dates themselves.",
+      "paths": ["shared/domain/followUp.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The home/consultant lanes should read the interval through GET /api/preferences (or preferenceService.get().reevaluationIntervalDays) rather than a fixed 90; portfolioService still uses OVERDUE_DIAGNOSIS_DAYS = DEFAULT_REEVALUATION_DAYS and is not part of this unit. The OnboardingTour should compare tourSeenVersion with 2 and PUT { tourSeenVersion: 2 } when the 5-step tour is closed; the tourSeen flags of each mode are untouched by this unit.",
+      "paths": ["server/services/portfolioService.ts", "src/features/home/OnboardingTour.tsx"]
+    }
+  ]
+}

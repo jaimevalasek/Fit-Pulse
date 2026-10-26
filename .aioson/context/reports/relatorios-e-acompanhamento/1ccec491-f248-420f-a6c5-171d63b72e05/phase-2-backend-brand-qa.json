@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "bf30c019-8546-4407-968e-2a036f81481e",
+  "unit": "phase-2-backend-brand",
+  "phase": "2-backend-brand",
+  "wave": 1,
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T19:58:00-03:00",
+  "finished_at": "2026-10-25T20:02:00-03:00",
+  "verdict": "PASS",
+  "capabilities": ["CAP-ra-brand"],
+  "acceptance_criteria": ["AC-ra-21"],
+  "interfaces": ["IF-003", "IF-004"],
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "defect",
+      "severity": "low",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "shared/format/phone.ts",
+      "line": 106,
+      "summary": "maskPhoneInput treats any deleted separator as a Backspace and removes the digit before the caret; a forward Delete over '-' or ')' does the same, so the user loses a digit they did not select.",
+      "failure_scenario": "Field holds '(11) 91234-5678', caret right before '-', user presses Delete. Browser reports '(11) 912345678' with caret 10; maskPhoneInput returns '(11) 91235-678' (digit '4' removed). Confirmed with a scratch probe in the run temp dir. Backspace over '-' gives the same result by design (see the comment above the function); the helper receives no inputType, so Delete and Backspace cannot be told apart. Not corrected: the fix needs a signature change (pass the input type) and sits in a helper the frontend unit consumes."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "tests/api/brandRoutes.test.ts",
+      "summary": "Capability-level API test not run: file does not exist yet (sibling/integration). Command: pnpm exec vitest run tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts. Reason: file not written in this run; deferred. No committed test currently exercises brandService or brandRoutes (grep for brandService/createBrandService/BRAND_LOGO over tests/ returns nothing), so the 2 MB, 600 px, 413, 'nothing changes after refusal' and route-shape behaviour are not covered by committed tests; the implementer's scratch probe was not re-run by this review."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "tests/unit/pdfRenderer.test.ts",
+      "summary": "Capability-level PDF renderer test not run: file does not exist yet (sibling unit phase-1-backend-document / integration). Command: pnpm exec vitest run tests/unit/pdfRenderer.test.ts. Reason: not written in this run."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "tests/e2e/brand.spec.ts",
+      "summary": "Playwright end-to-end check not run: command pnpm exec playwright test tests/e2e/brand.spec.ts. File does not exist; it needs the frontend BrandSection and the brand router mounted in server/app.ts, which belong to integration. Not runnable in this session."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "server/app.ts",
+      "summary": "Brand router is not mounted in the real app yet (server/app.ts is outside this unit and owned by phase-1-backend-files): GET/PUT/DELETE /api/brand and /api/brand/logo answer 404 in the running application until integration mounts createBrandRoutes. Deferred to integration; the unit's done-when does not exercise the app wiring."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-brand",
+      "ac": "AC-ra-21",
+      "path": "shared/format/phone.ts",
+      "summary": "Play dev-link check (webview renders, badge green) not run: requires the AIOSON Play desktop runtime, which is not available in this session."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks for CAP-ra-brand once siblings land: (1) mount the brand router in server/app.ts before app.use(express.json({ limit: '1mb' })): const brand = createBrandService({ prisma: deps.prisma, now: deps.now }); app.use(createBrandRoutes({ brand })); pass the same brand service to reportService (brand.readIdentity()). (2) Run pnpm exec vitest run tests/unit/imageSignature.test.ts tests/unit/contactFormat.test.ts tests/api/brandRoutes.test.ts tests/unit/pdfRenderer.test.ts tests/api/preferenceRoutes.test.ts and pnpm exec playwright test tests/e2e/brand.spec.ts. (3) brandRoutes API test should cover: PNG, JPG, SVG, text renamed .png, 2.1 MB and exactly 2 MB, 1200 px refusal, 3 MB body -> 413 payload_too_large, invalid fields -> validation_failed with nothing saved.",
+      "paths": ["server/app.ts", "tests/api/brandRoutes.test.ts", "tests/e2e/brand.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Server does not resize logos: it refuses PNG/JPEG with a longer side above 600 px (422 logo_invalid). The frontend brandLogoImage must reduce to 600 px on the longer side in the same format, and send mimeType exactly 'image/png' or 'image/jpeg' (other declared types are refused) with bare base64 (no data: prefix)."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "imageSignature checks only the leading bytes; it does not prove the whole file decodes. The PDF logo draw must sit inside try/catch and fall back to no logo.",
+      "paths": ["server/files/imageSignature.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "preferenceRepository.readAll was removed and replaced by readKeys(keys). Checked by this review: no remaining importer in server, shared, src, tests or scripts; only brandService and preferenceService call readKeys.",
+      "paths": ["server/repositories/preferenceRepository.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Phone mask: a forward Delete over the mask separator removes the preceding digit (same as Backspace by design). Acceptable for now; a later cleanup can pass the input type to maskPhoneInput.",
+      "paths": ["shared/format/phone.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm exec vitest run tests/unit/contactFormat.test.ts tests/unit/imageSignature.test.ts tests/api/preferenceRoutes.test.ts (done-when, re-run by QA)",
+      "result": "PASS",
+      "exit_code": 0,
+      "summary": "3 test files, 166 tests passed; duration 2.20s",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-qa/done-when.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-qa/done-when.exit"
+    },
+    {
+      "check": "pnpm exec tsc --noEmit (whole project, re-run by QA)",
+      "result": "PASS",
+      "exit_code": 0,
+      "summary": "no type errors reported",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-qa/tsc.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-qa/tsc.exit"
+    },
+    {
+      "check": "node probe of maskPhoneInput on separator deletion (scratch script in run temp dir)",
+      "result": "OBSERVED",
+      "exit_code": 0,
+      "summary": "maskPhoneInput('(11) 912345678', 10, '(11) 91234-5678') -> value '(11) 91235-678', caret 9",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-brand-qa/probe-phone-delete.log"
+    },
+    {
+      "check": "Code review of unit files (read-only): imageSignature.ts PNG IHDR/JPEG SOFn offsets, brandSchemas.ts, brandService.ts (refusal before write, atomic applyChanges), brandRoutes.ts (413 mapping, body limits), preferenceRepository.ts/preferenceService.ts (readKeys), phone.ts, contact.ts (normalize/blank handling)",
+      "result": "PASS",
+      "exit_code": null,
+      "summary": "No critical or high defects; blank phone/email/website normalize to null (clear); ZodError maps to validation_failed via server/http/errorHandler.ts"
+    }
+  ]
+}

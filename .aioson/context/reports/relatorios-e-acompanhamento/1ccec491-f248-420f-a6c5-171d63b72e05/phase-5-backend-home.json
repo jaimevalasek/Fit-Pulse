@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "84891ac3-4ab3-49cb-be06-43a6ef168cef",
+  "agent": "dev",
+  "lane": "backend",
+  "unit": "phase-5-backend-home",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T21:20:00-03:00",
+  "finished_at": "2026-10-25T21:38:00-03:00",
+  "verdict": "PASS",
+  "summary": "Home do dono agora traz reavaliação (com o intervalo escolhido), resumo e 3 ações do plano, resumo do diário e último PDF, sem trend. Home do consultor traz o intervalo e a lista de ações vencidas. GET /api/companies aceita attention=atrasada|vencidas|risco|rascunhos|sem-diagnostico, filtrando pelas mesmas listas que a home contou. O portfolioService lê o intervalo das preferências.",
+  "files_changed": [
+    "server/validation/companySchemas.ts",
+    "server/services/portfolioService.ts",
+    "server/services/companyService.ts",
+    "server/services/homeService.ts",
+    "server/app.ts",
+    "src/api/homeApi.ts",
+    "src/api/companiesApi.ts",
+    "tests/api/homeRoutes.test.ts",
+    "tests/api/companyRoutes.test.ts"
+  ],
+  "findings": [
+    {
+      "kind": "contract_change",
+      "severity": "medium",
+      "text": "src/api/homeApi.ts e o payload de GET /api/home do dono não têm mais `trend` nem HomeTrendPoint, como o plano manda. src/features/home/OwnerHome.tsx (linhas 5 e 198) e src/features/home/ScoreTrend.tsx (linha 1) ainda importam esse tipo, então `pnpm typecheck` falha só nesses 3 pontos até a unidade 5-frontend-owner-home (onda 10) reescrever a OwnerHome e aposentar o ScoreTrend. Nenhum erro de tipo vem de server/, shared/, tests/ ou do resto de src/.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx", "src/api/homeApi.ts"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "text": "O filtro `aguardando` do IF-010 e o campo `awaitingQuestionnaires[]` do IF-008 não foram implementados: dependem dos dados de questionário da fase 6 e entregá-los agora seria uma lista sempre vazia. ATTENTION_FILTERS (server/validation/companySchemas.ts) tem os 5 filtros atuais e ATTENTION_LISTS (server/services/portfolioService.ts) é um Record<AttentionFilter, ...>, então a fase 6 precisa acrescentar a chave nos dois lugares e o compilador exige a entrada da lista.",
+      "paths": ["server/validation/companySchemas.ts", "server/services/portfolioService.ts"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "text": "server/app.ts passa `now: deps.now` ao createReportService. Antes o horário do PDF salvo seguia o relógio real mesmo com relógio injetado, então `latestReport.savedAt` da home nunca batia com o relógio do app nos testes. Em produção deps.now é o relógio real: sem mudança. reportRoutes, brandRoutes e fileRoutes continuam passando."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-008 dono: { mode, company, latest, draft, reevaluation: { lastAt (ISO), dueAt (YYYY-MM-DD), today (YYYY-MM-DD, campo a mais além do contrato do plano, para a linha Último/Hoje/Próximo bater com a contagem), daysUntil (negativo quando atrasada), daysOverdue (0 em dia; o próprio dia do vencimento ainda é em dia), intervalDays } | null (null sem diagnóstico concluído e não arquivado), actions: { counts: { done, inProgress, todo, notApplicable, overdue (subconjunto de todo/inProgress) }, current: ActionProgress[] (formato do IF-005, as 3 ações do plano atual; [] sem diagnóstico) }, diary: { count, cacCents (3 meses mais recentes, null sem mês ou sem clientes), measuredFrom, measuredTo (YYYY-MM, null antes de 3 meses) }, latestReport: { fileId, fileName, savedAt } | null }. Sem `trend`.",
+      "paths": ["server/services/homeService.ts", "src/api/homeApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-008 consultor: os campos da versão 1 mais `reevaluationDays` (intervalo escolhido) e `overdueActions: [{ companyId, name, diagnosisId, overdueCount }]` (ações vencidas do plano atual, mais vencidas primeiro, só empresas ativas). Para a tela: com reevaluationDays use a frase 'mais de N dias'; no dono monte a contagem com reevaluationCountdown({ dueDate: dueAt, daysUntil, late: daysOverdue > 0, daysLate: daysOverdue }) e a linha com reevaluationTimeline(localIsoDate(new Date(lastAt)), today, dueAt) de shared/domain/followUp.ts.",
+      "paths": ["server/services/portfolioService.ts", "src/api/homeApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-010: GET /api/companies?attention=atrasada|vencidas|risco|rascunhos|sem-diagnostico (vazio ou em branco = sem filtro; outro valor = 400 validation_failed no campo attention). A lista filtrada é exatamente a lista que a home contou (mesma função, ATTENTION_LISTS sobre ConsultantHomeView), então os indicadores da home e o filtro nunca divergem. Só empresas ativas têm indicador: attention com archived=true devolve []. src/api/companiesApi.ts exporta o tipo CompanyAttention e o filtro `attention` em CompanyListFilters; CompaniesPage deve ler ?atencao= e passar para esse filtro.",
+      "paths": ["server/validation/companySchemas.ts", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "5-frontend-owner-home (onda 10) precisa remover o uso de `trend`/HomeTrendPoint em OwnerHome.tsx e apagar ScoreTrend.tsx; 5-frontend-consultant-settings deve usar overdueActions e reevaluationDays em ConsultantHome.tsx e o filtro CompanyAttention em CompaniesPage.tsx. Até lá o `pnpm typecheck` falha nesses 3 pontos, o que as unidades da onda 9 podem ver como erro que não é delas.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx", "src/features/home/ConsultantHome.tsx", "src/features/companies/CompaniesPage.tsx"]
+    },
+    {
+      "to": "unit:phase-6-backend-questionnaire-attention",
+      "kind": "note",
+      "text": "Para o `aguardando`: acrescentar a chave em ATTENTION_FILTERS (companySchemas.ts), o campo awaitingQuestionnaires em ConsultantHomeView e a entrada correspondente em ATTENTION_LISTS (portfolioService.ts). PortfolioService.needingAttention e CompanyService.list já usam essa tabela; não há outro ponto a alterar. Atenção ao test de companyRoutes que espera 400 para attention=urgente: aguardando passa a ser válido."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/preferenceRoutes.test.ts",
+      "result": "PASS: 3 arquivos, 182 testes, código de saída 0",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-dev/final.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/preferenceRoutes.test.ts tests/api/reportRoutes.test.ts tests/api/brandRoutes.test.ts tests/api/fileRoutes.test.ts",
+      "result": "PASS: 6 arquivos, 332 testes, código de saída 0 (depois de passar o relógio do app ao reportService)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-dev/run2.log"
+    },
+    {
+      "command": "pnpm exec vitest run",
+      "result": "PASS: 33 arquivos, 1495 testes, código de saída 0 (inclui tests/unit/portfolioDocument e forbiddenTerms, que usam buildPortfolio com 2 argumentos)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-dev/full.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "result": "Código de saída 1, com exatamente 3 erros, todos em src/features/home/OwnerHome.tsx e ScoreTrend.tsx (uso de HomeTrendPoint/trend, que sai por contrato); nenhum erro em server/, shared/, tests/ ou no restante de src/",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-backend-home-dev/typecheck2.log"
+    }
+  ],
+  "acceptance": {
+    "AC-ra-33": "dados do backend cobertos por teste de API: reevaluation com intervalo, today e atraso; actions com contagens e as 3 ações editáveis; diary; latestReport. A tela e o e2e são das unidades de frontend.",
+    "AC-ra-35": "backend coberto: overdueActions, reevaluationDays e attention filtrando pelas mesmas listas da home (teste que compara cada filtro com a lista da home). Falta o `aguardando` (fase 6), a tela e o e2e.",
+    "AC-ra-36": "coberto por teste de API que muda os dados: marcar ação como feita, mudar o intervalo, mudar o relógio e arquivar/restaurar diagnóstico mudam home do dono, home do consultor e a lista filtrada."
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "a98b7f30-78d0-4358-b6f8-abf0557ed6ca",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-companies",
+  "started_at": "2026-10-23T03:45:00Z",
+  "finished_at": "2026-10-23T04:25:26Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/companiesApi.ts",
+    "src/features/companies/CompaniesPage.tsx",
+    "src/features/companies/CompanyFormDialog.tsx",
+    "src/features/companies/CompanyPage.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "Upstream repair (415 json_required on body-less POST) is already in place: httpClient.request sets Content-Type application/json and sends body {} for every POST/PUT/PATCH (httpClient.ts:90-101). archiveCompany/restoreCompany in companiesApi.ts needed no change; requireJsonWrites was left untouched. Confirmed by a probe running the shipped companiesApi + httpClient against the real createApp."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-wide checks for CAP-dm-company (pnpm test:e2e -- tests/e2e/companies.spec.ts, the 390 px/axe checks and the Play dev-link walkthrough) are integration evidence and were not run by this unit; the e2e spec belongs to another unit."
+    },
+    {
+      "kind": "defect",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "Server errorHandler sends field errors at error.fields; httpClient.readErrorDetails maps error.details first, then the extra keys, so form field errors from the server are exposed as details.fields. CompanyFormDialog relies on client validation for the same rules (name 2-80, required selects, CNPJ check digit)."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-dev/build.log"
+    },
+    {
+      "kind": "command",
+      "command": "npx vitest run --config <run-temp>/vitest.probe.config.ts (probe: create, edit, list ?q, archive, list archived, restore, delete 409 when active, archive + delete, get 404 through src/api/companiesApi.ts against server/app.ts createApp)",
+      "exit_code": 0,
+      "result": "1 test passed",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-companies-dev/probe.log"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check over the 5 unit files (previous attempt)",
+      "exit_code": 0,
+      "result": "0 violations"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "CompanyPage exposes an onStartDiagnosis prop for the 'Começar o primeiro diagnóstico' / 'Novo diagnóstico' / 'Continuar diagnóstico' actions; it is not wired in src/App.tsx because starting a diagnosis is IF-003 (diagnosesApi). Wire it to diagnosesApi start + navigate to diagnostico/:diagnosisId.",
+      "paths": ["src/features/companies/CompanyPage.tsx", "src/App.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "The 'último resultado' link needs the latest completed diagnosis id, which IF-002 company payload does not carry (only latestStage/latestCompletedAt/draftId/completedCount). Add it to the company payload or resolve it via the history API.",
+      "paths": ["src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Server validation errors arrive at error.fields; httpClient keeps them under ApiError.details.fields. If server field errors should show inline in CompanyFormDialog, map details.fields there.",
+      "paths": ["src/api/httpClient.ts", "src/features/companies/CompanyFormDialog.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the capability checks: pnpm test -- tests/unit/cnpj.test.ts tests/api/companyRoutes.test.ts, then pnpm test:e2e -- tests/e2e/companies.spec.ts, then the Play dev-link walkthrough (Empresas: create, edit, archive, restore, delete).",
+      "paths": ["tests/e2e/companies.spec.ts"]
+    }
+  ]
+}

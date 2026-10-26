@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "ac1b0202-68c5-4c6f-bb8b-c6bb8ac0ec2b",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:20:00Z",
+  "finished_at": "2026-10-23T04:27:00Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "`pnpm test:e2e -- tests/e2e/history.spec.ts` was not run. It is the capability check of CAP-dm-history (AC-dm-30, AC-dm-31, AC-dm-48 in the browser) and depends on the frontend lane files (src/api/historyApi.ts, src/features/history/*, CompanyPage, ResultPage, App.tsx) and on tests/e2e/history.spec.ts, none of which belong to this unit. It is deferred integration evidence.",
+      "paths": ["tests/e2e/history.spec.ts"]
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "`pnpm test -- <files>` runs the whole vitest suite: pnpm forwards the literal `--` and vitest treats it as the end of options, so the file filter is dropped. The unit's Done-when command therefore ran 12 files / 600 tests (all passed, exit 0). The two unit files alone also pass (`pnpm exec vitest run tests/unit/compareDiagnoses.test.ts tests/api/historyRoutes.test.ts`: 34 tests, exit 0).",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "The unit could not add server/repositories/historyRepository.ts (not in the allowed files). The two queries the diagnosis repository lacks (list a company's diagnoses with draft and archived; set/clear archivedAt guarded by the opposite state) live in `createHistoryData` at the top of server/services/historyService.ts, separated from the rules, so they can move to a repository file unchanged. `findPrevious` and `toCalculator` in historyService.ts mirror the private helpers of diagnosisService.ts (same ordering: completedAt desc, same instant → larger id is older) because those are not exported and that file belongs to phase-1-backend-diagnoses.",
+      "paths": ["server/services/historyService.ts", "server/services/diagnosisService.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm test -- tests/unit/compareDiagnoses.test.ts tests/api/historyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "12 test files passed, 600 tests passed (filter dropped by the literal `--`, so the whole suite ran)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-dev/done-when.log"
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/api/historyRoutes.test.ts tests/unit/compareDiagnoses.test.ts",
+      "exit_code": 0,
+      "result": "2 files, 34 tests passed (14 in compareDiagnoses.test.ts, 20 in historyRoutes.test.ts)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-dev/focused-run3.log"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no diagnostics",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-dev/tsc2.log"
+    },
+    {
+      "kind": "ac_coverage",
+      "text": "AC-dm-30 (backend half): timeline with draft progress (completedBlocks of totalBlocks), completed entries with stage / rulesVersion / confidence, archived list apart, archive and restore keeping answers and result, first diagnosis with canCompare=false and comparison refused with 409 no_previous_diagnosis; covered in tests/api/historyRoutes.test.ts. AC-dm-31 (backend half): stage before → after, per-dimension before/after/delta, risks resolved and new, recalculation of the previous with the current rules and original score kept; covered in tests/unit/compareDiagnoses.test.ts (rulesV2 fixture) and tests/api/historyRoutes.test.ts (second app session with rulesV2; stored v1 result untouched)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "IF-005 as implemented. GET /api/companies/:id/timeline -> { draft: { id, currentBlock, completedBlocks, totalBlocks (8), createdAt, updatedAt } | null, completed: TimelineEntry[], archived: TimelineEntry[] } (newest first; `draft` is null, not absent, when there is none). TimelineEntry = { id, companyId, completedAt, archivedAt (null while active), stage, rulesVersion, confidence ('high'|'medium'|'low'), canCompare } - canCompare is false for the first diagnosis (BR-dm-08) and whenever no earlier non-archived completed diagnosis exists, so show 'Comparar' only when it is true. Unknown company -> 404 company_not_found.",
+      "paths": ["server/services/historyService.ts", "server/routes/historyRoutes.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "POST /api/diagnoses/:id/archive and /restore answer with the updated TimelineEntry (not a DiagnosisView, which has no archivedAt); both are idempotent. Draft -> 409 diagnosis_not_completed; unknown id -> 404 diagnosis_not_found. GET /api/diagnoses/:id/comparison -> DiagnosisComparison from shared/domain/compareDiagnoses.ts: { previous: {id, completedAt, stage, rulesVersion}, current: {...}, stageChange: {from, to, direction 'up'|'down'|'same'}, average: {before, after, delta} (mean of the 8 scores, rounded), dimensions: [{key, before, after, delta}] in DIMENSION_KEYS order, risksResolved: RiskResult[], risksNew: RiskResult[], recalculated?: { fromVersion, toVersion, originalScore: { stage, average } } }. Draft -> 409 diagnosis_not_completed; no earlier non-archived completed diagnosis -> 409 no_previous_diagnosis. When `recalculated` is present, previous.stage / previous.rulesVersion and the dimension 'before' values are the recalculated ones (the number that counts); originalScore is what it said when concluded. IF-005 only named `originalScore`; it is an object { stage, average } because the prototype notice needs both ('estágio N, média M').",
+      "paths": ["shared/domain/compareDiagnoses.ts", "server/services/historyService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Recalculation uses the app's current rules (deps.rules in createApp) only when previous.result.rulesVersion differs from current.result.rulesVersion. If the app ever holds three or more rules versions, a diagnosis frozen with an intermediate version will be compared against rules newer than its own; that needs a registry of historical Rules by version, which does not exist yet (only rulesV1 ships). Not a problem with v1 + the v2 test fixture.",
+      "paths": ["shared/domain/compareDiagnoses.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred capability checks after the frontend lane lands: `pnpm test:e2e -- tests/e2e/history.spec.ts` (second diagnosis from the first, comparison with arrow + text, archive/restore confirming and cancelling with the ConfirmDialog, no comparison offered for the first diagnosis), then the full `pnpm test` and `pnpm test:e2e`. Note `pnpm test -- <files>` ignores the file filter (literal `--`); use `pnpm exec vitest run <files>` for a focused run. server/app.ts is also edited by the CAP-dm-report unit later in this phase: this unit only added the historyRoutes mount and hoisted `const rules = deps.rules ?? rulesV1` shared by the diagnosis and history services.",
+      "paths": ["server/app.ts", "tests/e2e/history.spec.ts"]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+ "schema_version": "review-report/v1",
+ "packet_id": "sha256:c9b45565b85aecc47229136ca28ecf6521b3e36fb217b6c98db71f6522b8078c",
+ "feature_slug": "relatorios-e-acompanhamento",
+ "agent": "briefing",
+ "profile": "framing",
+ "review_mode": "self_review",
+ "artifact": {
+  "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+  "sha256": "fd6133fa0e1131b283992492522e04fc16beed1ff4d44d65ced1ff2f88ba65b1"
+ },
+ "passes_completed": 2,
+ "review_status": "decision_required",
+ "summary": "O problema está separado das soluções e apoiado em evidência do código e do app. Na revisão foram corrigidos os estados vazios dos relatórios e o preenchimento do diário no modo consultoria (Q-14). Ficam decisões do dono ou do @product: tamanho da entrega e fatiamento (Q-1), reversão da regra de coleta mínima de dados de pessoas (Q-6) e protótipo visual a cargo do @refiner.",
+ "findings": [
+  {
+   "id": "REVIEW-001",
+   "lens": "scope",
+   "status": "decision_required",
+   "severity": "warning",
+   "description": "As quatro frentes juntas são uma entrega grande, com objetos novos, migração e PDF; o pedido original era só o PDF.",
+   "evidence": [
+    {
+     "type": "artifact",
+     "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+     "detail": "## Proposed solution, 'Fatiamento sugerido'; ## Risks R-1; ## Open questions Q-1"
+    }
+   ],
+   "impact": "Sem fatiamento, o relatório pedido pelo dono atrasa por causa das frentes 3 a 5.",
+   "recommendation": "O @product aprova as quatro frentes e define as fatias 1 → 2 → 3 como ordem de entrega.",
+   "alternatives": [
+    "Entregar tudo de uma vez",
+    "Aprovar só a fatia 1 agora e voltar ao briefing depois"
+   ],
+   "confidence": "high",
+   "owner": "product",
+   "residual_risk": "Prazo maior se o fatiamento for recusado."
+  },
+  {
+   "id": "REVIEW-002",
+   "lens": "assumptions",
+   "status": "decision_required",
+   "severity": "warning",
+   "description": "A marca de quem entrega (contato) e o responsável pela ação introduzem dados de pessoas, contra a regra de coleta mínima do PRD anterior.",
+   "evidence": [
+    {
+     "type": "artifact",
+     "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+     "detail": "## Risks R-2; ## Open questions Q-6"
+    },
+    {
+     "type": "artifact",
+     "path": ".aioson/context/prd-diagnostico-maturidade.md",
+     "detail": "Out of scope: 'Dados pessoais de contato... coleta mínima (LGPD)'"
+    }
+   ],
+   "impact": "Retrabalho ou exposição legal se a regra não for revista explicitamente.",
+   "recommendation": "O dono decide em Q-6; recomendado: texto livre e opcional, apagado junto com a empresa e incluído na cópia de segurança.",
+   "alternatives": [
+    "Sem contato nem responsável: só o nome da empresa de quem entrega"
+   ],
+   "confidence": "high",
+   "owner": "user",
+   "residual_risk": "Baixo, com campos opcionais e exclusão em cascata."
+  },
+  {
+   "id": "REVIEW-003",
+   "lens": "future-state",
+   "status": "open",
+   "severity": "info",
+   "description": "A frente de relatórios e os novos estados na tela inicial são superfície visual; o protótipo ainda não existe.",
+   "evidence": [
+    {
+     "type": "artifact",
+     "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+     "detail": "verify:artifact: prototype unresolved"
+    }
+   ],
+   "impact": "O briefing:approve recusa até existir o protótipo ou o registro 'not_applicable'.",
+   "recommendation": "O @refiner atualiza o protótipo de diagnostico-maturidade com a central de relatórios, o acompanhamento e o diário, seguindo a identidade já aprovada.",
+   "alternatives": [],
+   "confidence": "high",
+   "owner": "refiner",
+   "residual_risk": "Nenhum depois do protótipo."
+  }
+ ],
+ "completed_at": "2026-10-24T22:20:00.000Z"
+}

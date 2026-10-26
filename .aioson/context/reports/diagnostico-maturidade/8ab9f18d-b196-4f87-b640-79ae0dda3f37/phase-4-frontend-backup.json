@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "00daf3dd-09fe-41f8-91f0-52309a80ec0d",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-4-frontend-backup",
+  "started_at": "2026-10-23T04:55:01Z",
+  "finished_at": "2026-10-23T04:57:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/backupApi.ts",
+    "src/features/settings/BackupSection.tsx",
+    "src/features/settings/SettingsPage.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "The previous-attempt upstream finding (body-less POST without Content-Type -> 415) is already fixed in the current httpClient: every POST/PUT/PATCH sends Content-Type application/json and a `{}` body when none is given. No edit made here (file outside this unit). exportBackup() relies on this."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "AC-dm-37 end-to-end (export -> import round trip and refusal with role=alert) was not exercised: server/routes/backupRoutes.ts (phase 4-backend-backup, wave 10) and tests/e2e/backup.spec.ts (4-integration-e2e-features) do not exist yet. Only the local Done when (pnpm build) decides this unit.",
+      "commands": ["pnpm test -- tests/api/backupRoutes.test.ts", "pnpm test:e2e -- tests/e2e/backup.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-4-frontend-backup-dev/build.log",
+      "summary": "tsc --noEmit && vite build: built in 1.05s, exit 0"
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:backend",
+      "kind": "contract_change",
+      "text": "src/api/backupApi.ts consumes IF-009 as: POST /api/backup/export (no body; client sends `{}` with Content-Type application/json) -> { fileName, directory, companies: number, diagnoses: number }. POST /api/backup/import with the parsed file JSON as the body -> { imported: { companies, diagnoses }, skipped: { companies, diagnoses } } — ASSUMPTION: `skipped` is an object with the same two counts (IF-009 leaves its shape open); please match it or report back. Errors: 422 backup_invalid; 422 backup_newer_version with `rulesVersion` as an extra key of `error` (number, e.g. 2); 413 for >10 MB. The UI shows error.message when present, so the server message for backup_newer_version should be the F-06 text 'O arquivo veio de uma versão mais nova do app (regras vN). Atualize o FitPulse pela loja do Play e tente de novo. Nenhum dado foi alterado.'",
+      "paths": ["src/api/backupApi.ts", "server/routes/backupRoutes.ts", "server/services/backupService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Selectors for tests/e2e/backup.spec.ts: section [data-aioson-id=settings-backup]; buttons [data-aioson-id=backup-export] 'Exportar meus dados' and [data-aioson-id=backup-import] 'Importar uma cópia'; hidden file input [data-aioson-id=backup-import-file] (use setInputFiles, accept .json). Results are role=\"alert\" with data-state success|error: backup-export-saved ('Cópia salva'), backup-export-error, backup-import-done ('Cópia importada'), backup-import-error ('Não foi possível importar {arquivo}' + 'Escolher outro arquivo'). Non-JSON and >10 MB files are refused client-side without calling the server. Run after 4-backend-backup: pnpm test -- tests/api/backupRoutes.test.ts and pnpm test:e2e -- tests/e2e/backup.spec.ts.",
+      "paths": ["src/features/settings/BackupSection.tsx", "src/features/settings/SettingsPage.tsx", "tests/e2e/backup.spec.ts"]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "17432e3e-a483-49d7-b90b-a3cf597179ee",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-6-frontend-questionnaire",
+  "started_at": "2026-10-26T00:58:29Z",
+  "finished_at": "2026-10-26T01:04:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/questionnaire/SendQuestionnaireDialog.tsx",
+    "src/features/questionnaire/ImportAnswersDialog.tsx",
+    "src/features/companies/CompanyPage.tsx",
+    "src/features/history/CompanyTimeline.tsx",
+    "src/features/home/ConsultantHome.tsx",
+    "src/features/companies/CompaniesPage.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "summary": "src/api/homeApi.ts ConsultantHomeData has no awaitingQuestionnaires field and src/api/companiesApi.ts CompanyAttention lacks \"aguardando\"; both files are outside this lane, so ConsultantHome.tsx, CompanyPage.tsx and CompaniesPage.tsx widen the types locally (intersection type / ListAttention + one cast at listCompanies).",
+      "paths": ["src/api/homeApi.ts", "src/api/companiesApi.ts", "src/features/home/ConsultantHome.tsx", "src/features/companies/CompaniesPage.tsx", "src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "summary": "GET /api/companies/:id carries no questionnaire send, so CompanyPage reads \"Questionário enviado em {data}\" from GET /api/home?mode=consultant awaitingQuestionnaires (filtered by companyId) and updates it from the POST /questionnaire sentAt. A company field (e.g. pendingQuestionnaireSentAt) would avoid the extra home call.",
+      "paths": ["src/features/companies/CompanyPage.tsx"]
+    },
+    {
+      "kind": "deviation",
+      "severity": "low",
+      "summary": "The prototype shows the client message before \"Gerar arquivo\"; the approved message is built by the server (buildClientMessage) and only arrives in the POST /questionnaire answer, so SendQuestionnaireDialog shows the 3 steps first and the message with \"Copiar mensagem\" and \"Mostrar na pasta\" after the file is saved.",
+      "paths": ["src/features/questionnaire/SendQuestionnaireDialog.tsx"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "summary": "Dialogs call only IF-011 (sendQuestionnaire, importAnswers) plus revealSavedFile (IF-002) with the fileId IF-011 returns for \"Mostrar na pasta\". ImportAnswersDialog refuses files over 1 MB and empty files locally with the same wording as server/validation/questionnaireSchemas.ts (avoids reading a huge file); every other refusal uses the server message + \"Nada foi alterado.\".",
+      "paths": ["src/features/questionnaire/ImportAnswersDialog.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Capability-wide checks were not run in this unit (integration evidence): pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts (spec owned by another unit / integration), pnpm build, and the Play dev-link walkthrough (send, answer in another browser, import, review and conclude).",
+      "paths": ["tests/e2e/remoteQuestionnaire.spec.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-frontend-questionnaire-dev/typecheck.log",
+      "summary": "tsc --noEmit over src, server, shared, tests: no errors"
+    },
+    {
+      "kind": "static_check",
+      "summary": "grep of @/api imports in src/features/questionnaire/*.tsx: only questionnaireApi (IF-011), filesApi.revealSavedFile (fileId from IF-011) and httpClient.isApiError"
+    }
+  ],
+  "acceptance_criteria": {
+    "AC-ra-48": "CompanyPage (consultant mode, active company) has \"Enviar questionário\"; SendQuestionnaireDialog explains 3 steps, POSTs IF-011, shows the saved file name/folder, \"Mostrar na pasta\", the server message with \"Copiar mensagem\"; clipboard failure selects the read-only textarea and shows the copy-by-hand hint; the page shows \"Questionário enviado em {data}\"; ConsultantHome adds the \"Questionários aguardando resposta\" indicator linking to /empresas?atencao=aguardando.",
+    "AC-ra-51": "ImportAnswersDialog: file picker (.fitpulse), \"Lendo o arquivo…\" status, \"Rascunho criado\" with \"Revisar e concluir\" -> /diagnostico/{draftId}; CompanyTimeline marks the draft \"Respostas do cliente, salvas em {data}\" with \"Revisar e concluir\"; company + timeline + sent notice reload after import.",
+    "AC-ra-52": "Refusals render in role=\"alert\" with the server's specific message + \"Nada foi alterado.\" and \"Escolher outro arquivo\".",
+    "AC-ra-53": "409 draft_exists opens ConfirmDialog \"Substituir o rascunho de {data}?\" with consequence and \"Substituir rascunho\"; Cancel/Esc closes keeping the draft; confirm repeats with replaceDraft: true."
+  },
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Please add awaitingQuestionnaires?: Array<{ companyId; name; sentAt; waitingDays }> to ConsultantHomeData in src/api/homeApi.ts and \"aguardando\" to CompanyAttention in src/api/companiesApi.ts; then the local widenings in ConsultantHome.tsx (HomeAttention, awaitingQuestionnaires()), CompaniesPage.tsx (ListAttention + cast at listCompanies) and CompanyPage.tsx (AwaitingHomeData) can be dropped.",
+      "paths": ["src/api/homeApi.ts", "src/api/companiesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Selectors for tests/e2e/remoteQuestionnaire.spec.ts: buttons [data-aioson-id=send-questionnaire] / [data-aioson-id=import-answers] (consultant mode only, hidden for archived companies); send modal [data-aioson-id=send-questionnaire-modal], [data-aioson-id=send-generate], [data-aioson-id=send-file-name], [data-aioson-id=send-message] (readonly textarea), [data-aioson-id=send-copy-message], [data-aioson-id=send-show-folder]; page line [data-aioson-id=questionnaire-sent]; import modal [data-aioson-id=import-answers-modal], hidden input [data-aioson-id=import-file-input] (use setInputFiles), [data-aioson-id=import-error] role=alert, [data-aioson-id=import-choose-file] (\"Escolher outro arquivo\" after a refusal), [data-aioson-id=import-review-draft]; replace confirm [data-aioson-id=import-replace-confirm]; timeline draft row data-source=client-answers with [data-aioson-id=imported-draft].",
+      "paths": ["tests/e2e/remoteQuestionnaire.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining capability checks to run after all producers: pnpm build; pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts; Play dev-link walkthrough (Enviar questionário -> open file in another browser -> Salvar minhas respostas -> Importar respostas -> Revisar e concluir), including the replace-draft confirm and cancel paths (AC-ra-53, AC-ra-59)."
+    }
+  ]
+}

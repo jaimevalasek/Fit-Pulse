@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "646a0b61-38fa-44a2-bc4e-1e1af34e9fcd",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T19:49:38-03:00",
+  "finished_at": "2026-10-25T20:15:00-03:00",
+  "verdict": "PASS",
+  "files_changed": [
+    "server/questionnaire/questionnaireFile.ts",
+    "server/questionnaire/questionnaireClient.js",
+    "server/questionnaire/questionnaireStyles.css",
+    "tests/unit/questionnaireFile.test.ts"
+  ],
+  "findings": [
+    {
+      "id": "F-1",
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "summary": "Q-10 owner matrix not run: Gmail, Outlook and WhatsApp channels; Chrome, Edge, Firefox and Safari; antivirus/e-mail blocking",
+      "detail": "The Done-when names a manual smoke by the owner. It cannot run in this unattended session. The example file is test-results/questionario-exemplo.html (written by the unit test; sample company, sample brand with a visible 48x48 logo). Not run: aioson dossier:add-finding . --slug=relatorios-e-acompanhamento --agent=dev --section=\"Q-10\" (there is no owner result to record; recording one would be fabricated). If any required channel or browser fails, Phase 6 stops and goes back to @product (forms A or C); Phase 7 continues without questionnaire sends.",
+      "paths": ["test-results/questionario-exemplo.html"]
+    },
+    {
+      "id": "F-2",
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "summary": "No automated run in Firefox or WebKit; only Chromium 156 was exercised",
+      "detail": "Playwright 1.64.1 expects firefox-1555 and webkit-2370. The machine has firefox-1466 and webkit-2104 (older). Launching the installed firefox-1466 through executablePath failed with a protocol error (Browser.setDefaultViewport). Installing browsers (pnpm exec playwright install) changes a shared environment and was not done. Residual risk to look at in the owner's Firefox/Safari run: the answers download is a Blob + a[download] click under CSP default-src 'none' (works in Chromium with zero CSP violations), and Safari's handling of the .fitpulse name and of the download itself."
+    },
+    {
+      "id": "F-3",
+      "severity": "medium",
+      "kind": "process_incident",
+      "summary": "A cleanup command of mine killed more processes than intended",
+      "detail": "To stop a hung smoke script I ran Stop-Process on every process whose command line contained 'browser-smoke.mts' or whose executable path contained 'ms-playwright'. It ended 19 processes: bash/sh/cmd/node (mine) plus chrome-headless-shell and firefox (most likely the browsers my script leaked, since the script did not close a browser when page.goto failed). I cannot rule out that one of those browser or shell processes belonged to another unit running at the same time (about 20:00-20:05 local on 2026-10-25). If another unit of this run reported an unexplained hang, kill or lost shell in that window, run its check again. No project file was affected. The script was fixed to close browsers in a finally block and no broad kill was used afterwards."
+    },
+    {
+      "id": "F-4",
+      "severity": "low",
+      "kind": "decision",
+      "summary": "RULE-ra-11 says the file carries only the company name; the file also carries the company's opaque record id",
+      "detail": "Import has to tell 'file of another company' from 'file of this company' (AC-ra-52) and names are not unique or stable, so company.id travels in the file and comes back in the .fitpulse file. It is the company's own id, nothing of any other company (the unit test asserts both generated files contain nothing of the other). If the API unit prefers matching by name only it can ignore company.id."
+    },
+    {
+      "id": "F-5",
+      "severity": "low",
+      "kind": "decision",
+      "summary": "The client's money mask is a ported copy of shared/format/money.ts maskMoneyInput, not an import",
+      "detail": "rules/form-fields-masks-and-validation.md says reuse the project's mask utilities. The questionnaire has to be one self-contained HTML with no module loading, so the mask is ported into questionnaireClient.js. tests/unit/questionnaireFile.test.ts loads the real client script and compares it with maskMoneyInput over 3,200 random keystrokes (digits, backspace, delete, non-digits, caret position, the 13-digit limit) plus fixed cases, so a change to the shared mask fails the test until the client is updated."
+    },
+    {
+      "id": "F-6",
+      "severity": "low",
+      "kind": "decision",
+      "summary": "Prototype intro line 'suas respostas ficam guardadas neste computador' was not implemented",
+      "detail": "The approved notice (PRD Conteudo v2, item 3) says the answers are lost if the page is closed before saving, so the file stores nothing (no localStorage, sessionStorage, cookie or IndexedDB; the unit test forbids them). The page asks the browser to confirm closing (beforeunload) while there are unsaved answers. Small additions beyond the approved copy: 'Baixar de novo' and 'Voltar as respostas' on the saved screen, a noscript line, and base-uri 'none' in the CSP."
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-6-backend-questionnaire-api",
+      "kind": "contract_change",
+      "text": "IF-004 contract of the .fitpulse answers file, produced by questionnaireClient.js and described by exports of server/questionnaire/questionnaireFile.ts (importing the module has no side effects; the .js and .css are read on the first buildQuestionnaireFile call). The file is JSON: { format: ANSWERS_FILE_FORMAT ('fitpulse-answers'), formatVersion: ANSWERS_FILE_FORMAT_VERSION (1), questionnaireVersion: QUESTIONNAIRE_VERSION (1), company: { id, name }, savedAt: ISO-8601 string from the client's clock, answers, calculator }. Refuse with the RULE-ra-10 messages: format different -> corrupted ('Este arquivo nao e um arquivo de respostas do FitPulse.'); formatVersion > app's -> newer; questionnaireVersion different, or answers keys the catalog does not know -> incompatible; company.id different from the company in the URL -> other company (name in the message comes from company.name). answers and calculator are exactly the shape of diagnosisPatchSchema (answers/calculator keys): a question key is present only if it was answered, null only where the catalog offers 'nao sei'; calculator keys are present only if filled and only for the mode picked (spendParts only with spendMode 'exact', spendRange only with 'range'; same for newCustomers); an unanswered file can legitimately carry answers {} and calculator {}. The unit test checks that the client output passes diagnosisPatchSchema.safeParse. Generation API: buildQuestionnaireFile({ company: { id, name }, brand: { name, phone, email, logoDataUrl } | null, sentAt: Date }) returns { html, fileName ('{empresa}-questionario-AAAA-MM-DD.html', local date), answersFileName ('respostas-{empresa}.fitpulse') }. brand.phone must already be the display text (for example '(11) 91234-5678'); logoDataUrl must be data:image/png|jpeg|webp;base64 (anything else is dropped); a brand whose fields are all empty is treated as no brand. buildClientMessage(companyName, brandName | null) returns the approved message for 'Copiar mensagem'. slugifyForFileName, questionnaireFileName and answersFileName are exported too. Constants for the 1 MB limit are not defined here.",
+      "paths": ["server/questionnaire/questionnaireFile.ts", "server/questionnaire/questionnaireClient.js", "server/validation/diagnosisSchemas.ts"]
+    },
+    {
+      "to": "unit:phase-6-frontend-questionnaire",
+      "kind": "note",
+      "text": "The dialog cannot import server code. The approved 'mensagem ao cliente' is built by buildClientMessage(companyName, brandName) in server/questionnaire/questionnaireFile.ts; the questionnaireService should return it (for example as a message field of POST /api/companies/:id/questionnaire) so SendQuestionnaireDialog shows exactly that text. The file's own texts (desktop notice, 'Revise e salve', 'N de 8 blocos respondidos', 'Salvar minhas respostas', 'Respostas salvas' and the send instruction with the brand) are inside the generated file and need no UI work.",
+      "paths": ["server/questionnaire/questionnaireFile.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Owner step still open (Q-10). Before handing the example to the owner, run 'pnpm exec vitest run tests/unit/questionnaireFile.test.ts' again: Playwright empties test-results/ at the start of every run, so test-results/questionario-exemplo.html may be gone. The owner sends it by Gmail, Outlook and WhatsApp to another computer, opens it in Chrome, Edge, Firefox and Safari, answers, saves, and notes any antivirus or e-mail block. Then record the matrix with aioson dossier:add-finding . --slug=relatorios-e-acompanhamento --agent=dev --section=\"Q-10\". If a required channel or browser fails, stop Phase 6 and return to @product (forms A or C); the later Phase 6 units (API, attention, frontend) should not be treated as approved before that.",
+      "paths": ["test-results/questionario-exemplo.html"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "For tests/e2e/remoteQuestionnaire.spec.ts: the generated file works in a real Chromium with zero requests (page.on('request') saw only the file: document), zero CSP violations and no page errors, and axe-core finds nothing in dark or light on block 1, a question block, the review screen and the saved screen. My ad hoc smoke (not in the repo; the run-scoped temp dir is removed on success) covered: help buttons, money mask and total, new-customers limit error, mode switch keeping typed values, partial save with one block missing (19 answers, 'Revise e salve' showing '7 de 8 blocos respondidos.' and one link), 'Baixar de novo', the missing-block link, the complete save (24 answers + 6 numbers, file name respostas-academia-forca-total.fitpulse, passes diagnosisPatchSchema), and the narrow-screen notice. It found and fixed one real bug (aria-labelledby of the mode areas was '[object HTMLDivElement]'), so keep an axe check and the mode switch ('Sei mais ou menos' then back to 'Sei os valores') in the e2e. Selectors available in the page: h1 'Questionario de crescimento', role=note notice, nav 'Blocos do questionario' (8 links), radio inputs named answer-{questionId} (values 0-3 or 'unknown'), mode-spend and mode-newCustomers radios (exact, range, unknown), #spend-ads... #spend-tools, #new-customers, #average-purchase, #margin, buttons 'Proximo bloco', 'Revisar', 'Salvar minhas respostas', 'Baixar de novo', 'Voltar as respostas'.",
+      "paths": ["tests/e2e/remoteQuestionnaire.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Packaging: questionnaireFile.ts reads questionnaireClient.js and questionnaireStyles.css next to itself with fs at run time (import.meta.url). They must be in the shipped package (the plan ships server/ in source mode); node scripts/smoke-store-package.mjs is the place to confirm it. shared/content/questionBank.ts was left unchanged, as the plan says (reuse).",
+      "paths": ["server/questionnaire/questionnaireFile.ts", "scripts/smoke-store-package.mjs"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm exec vitest run tests/unit/questionnaireFile.test.ts",
+      "result": "exit 0; 1 file, 22 tests passed (final run after the last code change). Writes test-results/questionario-exemplo.html (50,422 bytes).",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-dev/vitest-run7.log"
+    },
+    {
+      "kind": "test-coverage",
+      "acs": ["AC-ra-49", "AC-ra-50"],
+      "result": "Unit: no URL or network API in the file, CSP exact, one document with 2 scripts and 1 style, textContent only and no storage, 8 blocks and 24 questions equal to the catalog with help and 'nao sei' only where allowed, 6 calculator fields, approved notice, hostile company and brand names (</script>, <!--, quotes, U+2028/2029) cannot break out and round-trip exactly, file names only [a-z0-9-], only the company's own data, brand with logo or none, approved client message, client mask equals shared maskMoneyInput, block counting for 'N de 8', saved file passes diagnosisPatchSchema, send instruction with and without brand."
+    },
+    {
+      "kind": "command",
+      "command": "ad hoc: pnpm exec tsx <temp>/browser-smoke.mts (Playwright Chromium 156.0.8078.4 on file:// of test-results/questionario-exemplo.html, with axe-core, dark and light)",
+      "result": "exit 0; [chromium] PASS: 1 request seen (the file itself), no CSP violation, no console or page error, axe clean on 4 screens x 2 color schemes, downloads and PATCH-schema check as described in the integration message. Firefox and WebKit: not launchable (see F-2). Final run after the last code change: browser-smoke5.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-file-dev/browser-smoke5.log"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec tsc --noEmit",
+      "result": "exit 0 on the last run. An earlier run showed one error, TS2739 in server/services/reportService.ts (another unit's in-progress file); it was gone on the re-run."
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --changed",
+      "result": "exit 0; RULES=OK; no finding on the questionnaire files after splitting the client's 244-line boot() into small top-level functions."
+    }
+  ]
+}

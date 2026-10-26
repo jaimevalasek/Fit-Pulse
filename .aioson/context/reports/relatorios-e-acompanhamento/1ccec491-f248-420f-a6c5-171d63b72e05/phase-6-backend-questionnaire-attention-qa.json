@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "f144108b-7b25-4cc0-97a8-f3c8e5a1e52d",
+  "phase": "phase-6-backend-questionnaire-attention",
+  "unit": "phase-6-backend-questionnaire-attention",
+  "wave": 10,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "scope": {
+    "capabilities": ["CAP-ra-remote-questionnaire"],
+    "acceptance_criteria": ["AC-ra-35", "AC-ra-48", "AC-ra-51"],
+    "interfaces": ["IF-008", "IF-010", "IF-011"]
+  },
+  "started_at": "2026-10-25T21:57:00-03:00",
+  "finished_at": "2026-10-25T22:01:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "contract_deviation",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-51",
+      "path": "server/services/historyService.ts",
+      "summary": "draft.clientAnswersSavedAt is omitted when there is no client date, while IF-011 specifies `draft.clientAnswersSavedAt | null` (key present, null value).",
+      "detail": "historyService.ts toDraft (~L243-254) spreads clientAnswersSavedAt only when non-null. src/api/historyApi.ts declares it optional (`clientAnswersSavedAt?: string | null`). The unit's own test asserts absence (tests/api/questionnaireRoutes.test.ts ~L677 uses `?? null`, so it tolerates both). The exact-object tests tests/api/historyRoutes.test.ts (~L231-244, toEqual on the open draft) would fail if the key were always present; that file is outside this unit's file list and inside the Done-when, so the unit cannot change the shape without a correction outside its boundary. Functionally the frontend reads it with `?? null`, so behaviour is correct; the deviation is in the declared shape. Integration should update historyRoutes.test.ts and drop the optional marker, as the implementer proposed."
+    },
+    {
+      "kind": "contract_deviation",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-35",
+      "path": "server/services/portfolioService.ts",
+      "summary": "ConsultantHomeView.awaitingQuestionnaires is omitted when empty, while IF-008 lists `awaitingQuestionnaires[]` as a consultant home field.",
+      "detail": "portfolioService.ts buildPortfolio (~L300-303) assigns the key only when awaiting.length > 0. The unit's tests assert `toBeUndefined()` for the empty case (tests/api/questionnaireRoutes.test.ts ~L580, L629, L649), so the omission is locked in by this unit's own file. The exact-object test tests/api/homeRoutes.test.ts (~L653-668, toEqual on the empty consultant view) is outside the unit's file list and inside the Done-when; an always-present [] would break it. Consumers must read `awaitingQuestionnaires ?? []`. Integration should update homeRoutes.test.ts (add `awaitingQuestionnaires: []`), drop the optional marker, and flip the three toBeUndefined assertions, as the implementer proposed."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-35",
+      "path": "tests/e2e",
+      "summary": "Playwright specs for the phase were not run by this review: pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts.",
+      "detail": "Outside this unit's Done-when (which is vitest only). The specs depend on the frontend units (phase-5-frontend-owner-home, phase-6-frontend-questionnaire) that are still being implemented in this run. Not runnable as a local-unit check. Integration steps: after the frontend units land, run `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts` and capture the log and exit code."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-35",
+      "path": "manifest.json",
+      "summary": "Play dev-link walkthrough (Settings > Instalar App > Linkar pasta, webview renders with green badge) was not run.",
+      "detail": "Requires the AIOSON Play desktop runtime and a running preview; not available in this unattended session. Integration should run the walkthrough once the full phase set has landed and record the result."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts tests/api/historyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 4 passed (4); Tests 185 passed (185)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-attention-qa/vitest-run1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-attention-qa/vitest-run1.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "No errors (0 'error TS' lines). The implementer's earlier tsc failure in src/features/home/OwnerHome.tsx and ScoreTrend.tsx is no longer present at this run.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-attention-qa/tsc-run1.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-attention-qa/tsc-run1.exit"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Decide on the optional shape of awaitingQuestionnaires (IF-008) and draft.clientAnswersSavedAt (IF-011). Recommended: make both always present (`[]` and `null`) as the contract states. Steps: (1) tests/api/homeRoutes.test.ts ~L653-668 add `awaitingQuestionnaires: []` to the exact consultant view; (2) tests/api/historyRoutes.test.ts ~L231-244 add `clientAnswersSavedAt: null` to the exact draft; (3) in portfolioService.ts drop the `?` on ConsultantHomeView.awaitingQuestionnaires and always assign it in buildPortfolio; (4) in historyService.ts toDraft always emit clientAnswersSavedAt; (5) flip the three toBeUndefined assertions in tests/api/questionnaireRoutes.test.ts (~L580, L629, L649) to [] ; (6) drop the optional marker in src/api/historyApi.ts. Then re-run the four vitest files.",
+      "paths": ["tests/api/homeRoutes.test.ts", "tests/api/historyRoutes.test.ts", "tests/api/questionnaireRoutes.test.ts", "server/services/portfolioService.ts", "server/services/historyService.ts", "src/api/historyApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run at integration (not runnable inside this unit): `pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts`, then the Play dev-link walkthrough. Capture the log and exit code for each."
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "GET /api/home?mode=consultant carries awaitingQuestionnaires only when someone waits: read `home.awaitingQuestionnaires ?? []`. GET /api/companies?attention=aguardando is valid and returns exactly those companies. GET /api/companies/:id/timeline carries draft.clientAnswersSavedAt (ISO) only when set: read `?? null`."
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "ba7fff6d-2725-4a76-918b-07a704e75356",
+  "unit": "phase-2-backend-evolution",
+  "phase": "2-backend-evolution",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "capabilities": ["CAP-ra-evolution-report"],
+  "acceptance_criteria": ["AC-ra-12", "AC-ra-13"],
+  "interfaces": ["IF-001", "IF-004"],
+  "started_at": "2026-10-25T20:48:32-03:00",
+  "finished_at": "2026-10-25T20:51:09-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12, AC-ra-14",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "Not run: `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts`. Capability-level check outside this unit's Done when; needs a built UI and ReportOptions.tsx / ComparePage.tsx, which are outside this unit's files. Deferred to integration (see messages[])."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-13",
+      "path": "tests/unit/forbiddenTerms.test.ts",
+      "summary": "Not run: the evolution-PDF case of forbiddenTerms.test.ts. The file is outside this unit's allowed files. Deferred to integration; the unit's own forbidden-term check (evolutionDocument.test.ts) passes."
+    },
+    {
+      "kind": "deferred_by_plan",
+      "severity": "medium",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "server/services/reportService.ts",
+      "summary": "The diary half of 'O que foi feito no período' (custo por cliente do diário) is built and unit-tested in evolutionDocument.ts (EvolutionPeriod.diary), but reportService.prepareEvolution passes no diary because the diary storage only arrives in phase-4-backend-diary-api. AC-ra-12 is therefore only partly delivered for the period page until Phase 4 passes period.diary. Not a failure of this unit: its Done when does not cover the diary."
+    },
+    {
+      "kind": "contract_deviation",
+      "severity": "low",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "server/report/evolutionDocument.ts",
+      "summary": "AC-ra-12 says 'estágio antes → depois'. The document writes 'antes para depois' ('2 para 3', 'R$ ... para R$ ...') because the implementer reports the PDF fonts lack U+2192 and the arrow would be dropped. The font check is implementer-reported and was not re-verified here. Owner should accept the wording deviation or ask for a font with the glyph."
+    },
+    {
+      "kind": "contract_deviation",
+      "severity": "low",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "server/report/evolutionDocument.ts",
+      "summary": "'Antes e depois' spans three sheets (summary, 'Encaixes do negócio' bars, 'Frentes de crescimento' bars) instead of one. Reason given: 16 paired bars do not fit one A4 at the existing dimensionBars size. Page ids before-after, before-after-fit, before-after-front. Acceptable per the AC wording; flagged for the owner."
+    },
+    {
+      "kind": "maintainability",
+      "severity": "low",
+      "cap": "CAP-ra-evolution-report",
+      "ac": "AC-ra-12",
+      "path": "server/report/evolutionDocument.ts",
+      "summary": "Lines 169 and 194 hard-code rulesV1.dimensionSupport.warnBelow for the bar threshold text, while the belowWarning flags come from the rules passed in (shared/domain/dimensionScores.ts:80). No live defect: rulesV1 and the rulesV2 fixture share warnBelow = 50. Would diverge if a future rules version changed warnBelow. Same pattern in server/report/reportModel.ts:335, outside this unit."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/evolutionDocument.test.ts tests/api/historyRoutes.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 3 passed (3); Tests 113 passed (113); Duration 44.84s",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-evolution-qa/verify-unit.log",
+      "exit_code_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-2-backend-evolution-qa/verify-unit.exitcode",
+      "observed_by": "qa (this review run, foreground)"
+    },
+    {
+      "kind": "static_review",
+      "result": "Read by QA: server/validation/reportSchemas.ts (evolution selection), server/routes/reportRoutes.ts (preview uses query schema, export uses body schema), server/services/reportService.ts prepareEvolution and toPeriodActions, server/services/historyService.ts refusals and comparePair (same-diagnosis pair fails isOlder, so 409 comparison_out_of_order), shared/domain/compareDiagnoses.ts compareWithResults, server/report/evolutionDocument.ts (all pages), shared/content/comparisonCopy.ts, server/repositories/generatedFileRepository.ts (evolution_pdf kind present). No defect found in these paths."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the capability-level checks after the frontend and phase 4 land: `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/history.spec.ts` (AC-ra-12 interaction report-type-evolution; AC-ra-14 'Até' only offers later diagnoses). Steps: start the app with the Play-injected PORT (or the dev preview), build the UI, then run the command from the repo root; record the exit code."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Add the evolution PDF case to tests/unit/forbiddenTerms.test.ts (run `pnpm exec vitest run tests/unit/forbiddenTerms.test.ts`).",
+      "paths": ["tests/unit/forbiddenTerms.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "server/app.ts builds createReportService without `rules`; the service defaults to rulesV1 (same as app rules today). Pass `rules` there (one line) so a custom rules object also reaches the evolution recalculation. Not changed here: app.ts is owned by phase-3-backend-actions-api.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "AC-ra-13 holds by construction only if src/features/history/ComparePage.tsx imports DELTA_WORDS, STAGE_MOVES, formatDelta, formatComparisonMonth and recalculationNotice from shared/content/comparisonCopy.ts. ReportOptions must offer De/Até (Até only later diagnoses, AC-ra-14) and send kind 'evolution' with fromId/toId. QA did not verify the frontend side (outside this unit).",
+      "paths": ["src/features/history/ComparePage.tsx", "src/features/reports/ReportOptions.tsx", "shared/content/comparisonCopy.ts"]
+    },
+    {
+      "to": "unit:phase-4-backend-diary-api",
+      "kind": "contract_change",
+      "text": "When the diary exists, pass its months of the period as period.diary (DiaryChartPoint[], oldest first) into prepareEvolution in server/services/reportService.ts. Until then the AC-ra-12 diary half is absent and the period page shows only tracked actions.",
+      "paths": ["server/services/reportService.ts", "server/report/evolutionDocument.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Owner decision points (not failures): (a) 'para' used instead of the AC's '→' because the PDF fonts have no U+2192 glyph; (b) 'Antes e depois' is three sheets, not one. Both are reported as low contract deviations."
+    }
+  ]
+}

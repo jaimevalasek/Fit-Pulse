@@ -1,0 +1,32 @@
+{
+  "packet_id": "sha256:c9b45565b85aecc47229136ca28ecf6521b3e36fb217b6c98db71f6522b8078c",
+  "schema_version": "review-packet/v1",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "agent": "briefing",
+  "profile": "framing",
+  "review_mode": "self_review",
+  "artifact": {
+    "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+    "sha256": "fd6133fa0e1131b283992492522e04fc16beed1ff4d44d65ced1ff2f88ba65b1",
+    "bytes": 23046
+  },
+  "authorities": [
+    {
+      "kind": "project-context",
+      "path": ".aioson/context/project.context.md",
+      "sha256": "aa5d52c18597a00efa424f8855b0eee6f05a4f0158a574686e3c128c20db102c",
+      "bytes": 5400
+    }
+  ],
+  "reference_path": ".aioson/skills/process/review-intelligence/references/framing.md",
+  "challenge_lenses": [
+    "problem",
+    "user-value",
+    "scope",
+    "assumptions",
+    "future-state",
+    "ownership"
+  ],
+  "max_passes": 2,
+  "prepared_at": "2026-10-24T22:05:07.436Z"
+}

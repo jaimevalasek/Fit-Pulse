@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "e7671d47-3f2b-477f-98a2-6b90d8265477",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-26T00:12:00Z",
+  "finished_at": "2026-10-26T00:24:00Z",
+  "verdict": "PASS",
+  "summary": "The three report documents now carry the action tracking end to end. The diagnosis PDF gets 'Andamento das ações' from the stored tracking (overdue only on the current plan), the evolution PDF lists the tracked actions of the 'De' plan as closed (not overdue), and the portfolio counts the overdue actions of each company's current plan (RULE-ra-06) from the same service the PDF reads. Files changed: server/repositories/portfolioRepository.ts, server/services/portfolioService.ts, server/services/reportService.ts, tests/unit/reportModel.test.ts, tests/unit/evolutionDocument.test.ts, tests/unit/portfolioDocument.test.ts. server/report/reportModel.ts, evolutionDocument.ts and portfolioDocument.ts already had the tracking page/period page/overdue column and needed no change.",
+  "findings": [
+    {
+      "kind": "behavior_change",
+      "severity": "low",
+      "paths": ["server/services/reportService.ts", "tests/unit/evolutionDocument.test.ts"],
+      "text": "In the evolution PDF the actions of the 'De' plan are no longer tagged 'vencida'. The 'Até' diagnosis always closes that plan (comparePair refuses an archived or out-of-order pair), and RULE-ra-06 counts only the current plan; the 'Ações' tab already shows closed plans with overdue=false. The service test expectation changed from 'Em andamento · vencida'/bad to 'Em andamento'/warn."
+    },
+    {
+      "kind": "scope_gap",
+      "severity": "medium",
+      "paths": ["server/services/reportService.ts", "server/report/evolutionDocument.ts"],
+      "text": "AC-ra-12 asks for the cost per customer from the diary in 'O que foi feito no período'. The document already accepts period.diary, but reportService does not pass it: the diary service/repository is delivered by phase 4 (outside this unit). With only the action part, the page appears when the earlier plan was tracked and is left out otherwise, as the AC says for 'sem andamento e sem diário'."
+    },
+    {
+      "kind": "design_note",
+      "severity": "low",
+      "paths": ["server/services/portfolioService.ts"],
+      "text": "PortfolioRow.overdueActions is null while nothing was recorded on the current plan (every row still 'A fazer', no deadline, owner or note), a number (possibly 0) once the owner recorded anything, and null for a company without a diagnosis. This keeps the portfolio PDF free of an 'Ações vencidas: Nenhuma' line for portfolios nobody tracks, which the unmodified tests/api/homeRoutes.test.ts requires (completion already creates default rows, so a plain 0 would add that line and break its toEqual of three facts)."
+    },
+    {
+      "kind": "duplication",
+      "severity": "low",
+      "paths": ["server/services/portfolioService.ts", "server/services/reportService.ts"],
+      "text": "The predicate 'did the owner record anything on the action' exists twice (isRecorded in portfolioService, isTracked in reportService), both outside shared/domain/actionProgress.ts which this unit may not edit. Candidate to move there and share."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts tests/unit/portfolioDocument.test.ts tests/api/reportRoutes.test.ts tests/api/homeRoutes.test.ts",
+      "exit_code": 0,
+      "result": "5 files passed, 209 tests passed (baseline before my edits: 196 tests)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-dev/vitest-final2.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-dev/tsc-3.log"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/forbiddenTerms.test.ts tests/unit/pdfRenderer.test.ts tests/api/actionRoutes.test.ts tests/api/historyRoutes.test.ts tests/api/diagnosisRoutes.test.ts",
+      "exit_code": 0,
+      "result": "adjacent regression run: 5 files passed, 182 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-3-backend-action-reports-dev/vitest-adjacent.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Not run in this unit (deferred integration evidence from the phase plan): `pnpm build`, `node scripts/smoke-migrate.mjs`, `pnpm exec playwright test tests/e2e/actions.spec.ts tests/e2e/result.spec.ts tests/e2e/history.spec.ts`, and the dev-link walkthrough in the Play (change state and undo, complete a second diagnosis and see the inheritance, export the PDF with the tracking). `pnpm exec tsc --noEmit` passes."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "tests/api/reportRoutes.test.ts and tests/api/homeRoutes.test.ts were not edited and pass. Both are outside this unit's allowed files; the new coverage for the diagnosis tracking page and the portfolio count lives in tests/unit/reportModel.test.ts and tests/unit/portfolioDocument.test.ts (database-backed through createReportService / createPortfolioService).",
+      "paths": ["tests/api/reportRoutes.test.ts", "tests/api/homeRoutes.test.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "portfolioRepository.listActive() now also selects, per diagnosis, actionProgress {actionKey, status, dueDate, ownerRole, note} (type PortfolioRecord['diagnoses'][number]['actionProgress']; ActionProgressSummaryRecord exported). Portfolio.rows[].overdueActions is filled by buildPortfolio from the current plan only (RULE-ra-06, local day of the clock passed in) and is null while nothing was recorded on that plan. The ConsultantHomeView (IF-007) is unchanged; an 'ações vencidas' list for the home should be built from the same rows so the home and the PDF agree.",
+      "paths": ["server/repositories/portfolioRepository.ts", "server/services/portfolioService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Diary in the evolution PDF (AC-ra-12, 'custo por cliente do diário no período'): once the diary service exists, reportService.prepareEvolution should pass period.diary (DiaryChartPoint[] of the months between the two diagnoses) next to period.actions. Assumption made here: out of scope for this unit, since it depends on phase 4.",
+      "paths": ["server/services/reportService.ts"]
+    }
+  ]
+}

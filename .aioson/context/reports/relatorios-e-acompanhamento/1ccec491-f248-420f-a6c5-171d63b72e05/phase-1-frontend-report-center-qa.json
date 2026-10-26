@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "b176dd22-8d10-4aa9-892a-107f44e432d2",
+  "phase": "1-frontend-report-center",
+  "unit": "phase-1-frontend-report-center",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "started_at": "2026-10-25T20:29:38-03:00",
+  "finished_at": "2026-10-25T20:31:51-03:00",
+  "verdict": "PASS",
+  "scope": "Local unit scope only (CAP-ra-report-center, CAP-ra-pdf-delivery; AC-ra-01, AC-ra-02, AC-ra-03, AC-ra-04, AC-ra-19, AC-ra-58; IF-001, IF-002, IF-004). Capability-wide checks are deferred to integration. The workspace-wide pnpm typecheck exits 1 because of a sibling unit file (see findings[0]).",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "deferred_check",
+      "severity": "medium",
+      "cap": "CAP-ra-report-center",
+      "ac": "",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "Workspace `pnpm typecheck` exits 1 (exit code recorded in the QA temp dir): src/features/result/ResultPage.tsx(21,26) TS2305 imports describeConfidence, which ConfidenceNote.tsx no longer exports. The file belongs to the concurrent unit phase-1-frontend-result, still implementing; it is not a file of this unit. Zero type errors in this unit's files. Earlier run also showed 10 TS2304 errors in tests/unit/pdfRenderer.test.ts (phase-2-backend-brand-reports), cleared by the second run. Integration must re-run pnpm typecheck after phase-1-frontend-result lands."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-report-center",
+      "ac": "AC-ra-01, AC-ra-02, AC-ra-03, AC-ra-04, AC-ra-19, AC-ra-58",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "Not run: `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts`. Blocker: src/App.tsx has no route for ReportCenterPage (grep for relatorios/ReportCenterPage returns nothing), and App.tsx is outside this unit's write paths, so the screens are not reachable in the browser. Owned by integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-19",
+      "path": "src/features/reports/ReportDelivery.tsx",
+      "summary": "Not run: Play dev-link smoke (open the center, toggle answers, Exportar PDF, Abrir PDF, Mostrar na pasta). Blocker: the route is not wired (see above) and a running Play instance is required. Owned by integration."
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "cap": "CAP-ra-report-center",
+      "ac": "AC-ra-01",
+      "path": "src/features/reports/ReportCenterPage.tsx",
+      "summary": "The diagnosis list comes from getTimeline (src/api/historyApi.ts, existing v1 history route) because IF-001/IF-002 have no route that lists diagnoses. All report and file calls use only IF-001 (getReportPreview, exportReportFile) and IF-002 (openSavedFile, revealSavedFile). Checked against implementation-plan IF-001 row and reportApi.ts/filesApi.ts routes."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (run 1)",
+      "result": "exit 1; 10 'error TS' lines, all in tests/unit/pdfRenderer.test.ts (TS2304); zero in src/features/reports",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-qa/typecheck.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-qa/typecheck.exitcode"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (run 2)",
+      "result": "exit 1; 1 'error TS': src/features/result/ResultPage.tsx(21,26) TS2305 describeConfidence not exported by ./ConfidenceNote; zero in src/features/reports",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-qa/typecheck-rerun.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-qa/typecheck-rerun.exitcode"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (run 3)",
+      "result": "exit 1; same single error in src/features/result/ResultPage.tsx(21,26); no errors in this unit's files",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-qa/typecheck-rerun2.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-qa/typecheck-rerun2.exitcode"
+    },
+    {
+      "kind": "contract_review",
+      "summary": "Read ReportCenterPage.tsx, useReportPreview.ts, ReportOptions.tsx, ReportPreview.tsx, ReportDelivery.tsx, ReportSheet.tsx, ReportSheetCharts.tsx and global.css 826-880. AC-ra-01: company layout child via useCompanyOutlet, options left and paged preview right, ?diagnostico= pre-selects. AC-ra-02: preview refetched on every selection change, in-flight call aborted, changed page marked is-reprinted and scrolled to (findChangedPageId, JSON diff per page.id). AC-ra-03: empty state has Começar/Continuar o diagnóstico and no export; Evolução aria-disabled with BR-ra-02 sentence. AC-ra-04: loading aria-busy; error uses StatusView with 'Tentar de novo' and drops pages. AC-ra-19: write failure shows server message and 'Tentar de novo', nothing else changes. AC-ra-58: reprint 700ms, page entry (--dur 220ms from tokens.css), skeleton pulse and switch transitions inside @media (prefers-reduced-motion: no-preference). IF-001 and IF-002 routes and response fields match reportApi.ts and filesApi.ts."
+    },
+    {
+      "kind": "check",
+      "command": "test -f tests/e2e/report.spec.ts && test -f tests/e2e/accessibility.spec.ts",
+      "result": "both e2e spec files exist; not executed (see findings)"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire the route in src/App.tsx (outside this unit): inside <Route path=\"empresa/:companyId\"> add <Route path=\"relatorios\" element={<ReportCenterPage />} /> with import { ReportCenterPage } from \"@/features/reports/ReportCenterPage\". Then run `pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts` and the Play dev-link smoke (open the center, toggle answers, Exportar PDF, Abrir PDF, Mostrar na pasta). Re-run `pnpm typecheck` after phase-1-frontend-result lands; it currently fails only at src/features/result/ResultPage.tsx(21,26).",
+      "paths": ["src/App.tsx", "tests/e2e/report.spec.ts", "tests/e2e/accessibility.spec.ts"]
+    },
+    {
+      "to": "unit:phase-1-frontend-result",
+      "kind": "contract_change",
+      "text": "src/features/result/ResultPage.tsx line 21 imports describeConfidence from ./ConfidenceNote, which no longer exports it (TS2305). Either import the replacement from shared/format/confidenceText.ts or restore the export. This is the only remaining workspace typecheck error seen in the last run.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/features/result/ConfidenceNote.tsx"]
+    }
+  ]
+}

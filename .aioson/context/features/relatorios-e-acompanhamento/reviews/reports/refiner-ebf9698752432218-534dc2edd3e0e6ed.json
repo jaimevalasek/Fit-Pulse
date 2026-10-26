@@ -1,0 +1,58 @@
+{
+  "schema_version": "review-report/v1",
+  "packet_id": "sha256:ebf96987524322187716ed83d82e1a7fdc65e50e817ad25e30e8122ee5010074",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "agent": "refiner",
+  "profile": "framing",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+    "sha256": "fd0a1e854d4c618a0fead55259159119ee5ebbf4ce004756610bdebc8e12caba"
+  },
+  "passes_completed": 2,
+  "review_status": "pass",
+  "summary": "O briefing aplicado (rodada 1) tem as 14 decisões do dono incorporadas e nenhum bloqueio aberto. O que sobra são duas tarefas com dono e momento definidos: o teste do arquivo do questionário nos navegadores, antes da parte 3, e o QA e fechamento da versão 1, antes do @product. O protótipo cobre as 8 promessas exigidas (walkthrough 107/107).",
+  "findings": [
+    {
+      "id": "REVIEW-R5",
+      "lens": "future-state",
+      "status": "deferred",
+      "severity": "info",
+      "description": "Q-10: a abertura do arquivo do questionário em Chrome, Edge e Safari e o envio por Gmail, Outlook e WhatsApp ainda não foram testados.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+          "detail": "## Open questions Q-10; ## Risks R-4"
+        }
+      ],
+      "impact": "A parte 3 pode precisar de ajuste se algum navegador bloquear o formulário.",
+      "recommendation": "O @planner coloca o teste como primeira tarefa da parte 3, antes de construir o arquivo.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "planner",
+      "residual_risk": "Baixo: a forma B ficou restrita ao computador."
+    },
+    {
+      "id": "REVIEW-R6",
+      "lens": "ownership",
+      "status": "deferred",
+      "severity": "warning",
+      "description": "A versão 1 ainda não teve o QA final registrado (F13).",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+          "detail": "## Context, Estado do workflow; ## Risks R-12"
+        }
+      ],
+      "impact": "Defeitos da versão 1 podem aparecer misturados com a versão 2.",
+      "recommendation": "Rodar o @qa em diagnostico-maturidade e fechar a feature antes do @product.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "user",
+      "residual_risk": "Baixo, se a ordem combinada for seguida."
+    }
+  ],
+  "completed_at": "2026-10-24T23:30:00.000Z"
+}

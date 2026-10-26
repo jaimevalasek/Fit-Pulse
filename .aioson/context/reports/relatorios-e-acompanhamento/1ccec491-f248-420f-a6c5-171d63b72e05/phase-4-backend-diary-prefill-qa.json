@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "8c9157f6-80dd-4020-9603-5628aaa32837",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "unit": "phase-4-backend-diary-prefill",
+  "phase": "4-backend-diary-prefill",
+  "wave": 8,
+  "caps": ["CAP-ra-diary-prefill", "CAP-ra-evolution-report"],
+  "acceptance_criteria": ["AC-ra-12", "AC-ra-46", "AC-ra-47"],
+  "started_at": "2026-10-25T21:42:00-03:00",
+  "finished_at": "2026-10-25T21:47:00-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diary-prefill",
+      "ac": "AC-ra-44, AC-ra-45, AC-ra-46, AC-ra-47",
+      "path": "tests/e2e/diary.spec.ts",
+      "summary": "Not run: pnpm exec playwright test tests/e2e/diary.spec.ts tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts. These exercise the frontend diary tab, CalculatorBlock and NumbersSummary, which belong to the frontend lanes still being edited (phase-4-frontend-diary). Not part of this unit's Done-when. The backend half is covered by tests/api/diagnosisRoutes.test.ts (verified green here)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diary-prefill",
+      "ac": "",
+      "path": "package.json",
+      "summary": "Not run: pnpm build (tsc --noEmit && vite build) as a whole. The typecheck half fails on files of concurrent home work (see the low finding below), so vite build was not attempted to avoid attributing its result to this unit."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diary-prefill",
+      "ac": "AC-ra-44, AC-ra-46",
+      "path": "",
+      "summary": "Not run: Play dev-link walkthrough (note 3 months in the diary, start a new diagnosis, conclude, see 'do diário, medido' on the result). It needs the Play desktop runtime and the frontend screens. The same path is covered at API level in tests/api/diagnosisRoutes.test.ts."
+    },
+    {
+      "kind": "typecheck_failure_other_unit",
+      "severity": "low",
+      "cap": "",
+      "ac": "",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "pnpm exec tsc --noEmit exits 1 with 3 errors, all in src/features/home/OwnerHome.tsx (2) and src/features/home/ScoreTrend.tsx (1), which belong to the concurrent home work (phase-5). No error is in this unit's files or in code that imports them. Does not block this unit's PASS; integration must re-run after the home work settles."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Post-lane checks to run once all lanes finish: (1) pnpm exec tsc --noEmit must pass (currently fails only in src/features/home/OwnerHome.tsx and ScoreTrend.tsx); (2) pnpm build; (3) pnpm exec playwright test tests/e2e/diary.spec.ts tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts; (4) node scripts/smoke-migrate.mjs (not touched by this unit); (5) Play dev-link walkthrough: note 3 months in the diary, start a new diagnosis, conclude, see 'do diário, medido' on the result. Logs of the verifications run here are under .aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-qa/.",
+      "paths": ["server/services/diagnosisService.ts", "server/validation/diagnosisSchemas.ts", "server/services/reportService.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Reviewed and accepted the implementer's contract_change: diagnosisPatchSchema carries the stored calculator shape and refuses diarySource/diarySuggestion in a PATCH via superRefine (400). backupSchemas.ts unwraps .shape.calculator, so backups with diary marks restore. Verified by reading the code and by the green done-when run; no change made."
+    },
+    {
+      "to": "unit:phase-4-frontend-diary",
+      "kind": "note",
+      "text": "Frontend contract as built by this unit and confirmed in src/api/diagnosesApi.ts: applyDiarySuggestion(id) POSTs /api/diagnoses/:id/diary-suggestion with no body and returns the whole Diagnosis; 409 no_diary_suggestion when the draft has no suggestion, 409 diagnosis_not_draft once completed, 404 diagnosis_not_found. A PATCH that carries calculator.diarySource or calculator.diarySuggestion is refused with 400.",
+      "paths": ["src/api/diagnosesApi.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/diagnosisRoutes.test.ts tests/api/backupRoutes.test.ts tests/unit/reportModel.test.ts tests/unit/evolutionDocument.test.ts",
+      "exit_code": 0,
+      "result": "Test Files 4 passed (4); Tests 236 passed (236). Done-when satisfied.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-qa/done-when.log",
+      "exit_log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-qa/done-when.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 1,
+      "result": "3 errors, all in src/features/home/OwnerHome.tsx (2) and src/features/home/ScoreTrend.tsx (1); none in this unit's files. Attributed to concurrent home work, not this unit.",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-qa/tsc.log",
+      "exit_log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-prefill-qa/tsc.exit"
+    }
+  ]
+}

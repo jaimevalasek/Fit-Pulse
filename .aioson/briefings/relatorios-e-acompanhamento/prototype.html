@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FitPulse · Relatórios e acompanhamento (protótipo)</title>
+<meta name="theme-color" content="#0b0a08">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* FitPulse "Tinta & Ouro", metal do app: bronze antigo. Identidade: identity.md deste briefing. */
+:root{
+  --ground:#0b0a08;--ground-sunken:#0f0d0a;--surface:#161310;--surface-raised:#1d1914;--solid:#242019;
+  --text:#f5f1e8;--text-soft:#cdc5b4;--text-muted:#958c7a;
+  --line:rgba(224,203,163,.14);--line-strong:rgba(233,214,177,.28);
+  --bronze:#a8c07a;--bronze-contrast:#0b0a08;--gold:#e8ba52;--gold-contrast:#0b0a08;
+  --patina:#6ec6a2;--copper:#d8895b;--peril:#ee7c7c;--peril-contrast:#0b0a08;--scrim:rgba(5,4,3,.72);
+  --font-structure:"Inter","Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --font-human:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua",serif;
+  --font-machine:"JetBrains Mono","Cascadia Code",ui-monospace,monospace;
+  --accent:var(--bronze);--accent-contrast:var(--bronze-contrast);
+  --wash:color-mix(in oklab,var(--bronze) 13%,transparent);
+  --ok:var(--patina);--ok-wash:color-mix(in oklab,var(--patina) 14%,transparent);
+  --warn:var(--copper);--warn-wash:color-mix(in oklab,var(--copper) 14%,transparent);
+  --danger:var(--peril);--danger-wash:color-mix(in oklab,var(--peril) 14%,transparent);
+  --focus-ring:var(--gold);
+  --r-sm:6px;--r-md:10px;--r-lg:16px;--control:40px;--touch:44px;
+  --ease:cubic-bezier(.22,.61,.36,1);--fast:160ms;--dur:220ms;--batuta:360ms;
+  --paper:#fffdf7;--paper-ink:#1c1710;--paper-accent:#55692a;--paper-ink-mark:#0b0a08;
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --ground:#f1ede3;--ground-sunken:#e9e4d6;--surface:#f9f6ee;--surface-raised:#fffdf7;--solid:#fffdf7;
+  --text:#1c1710;--text-soft:#4c4436;--text-muted:#6b6252;
+  --line:rgba(92,74,44,.14);--line-strong:rgba(92,74,44,.26);
+  --bronze:#55692a;--bronze-contrast:#fffdf7;--gold:#8a6512;--gold-contrast:#fffdf7;
+  --patina:#177a58;--copper:#824421;--peril:#9e2d37;--peril-contrast:#fffdf7;--scrim:rgba(28,23,16,.42);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--ground);color:var(--text);font:400 1rem/1.6 var(--font-structure);font-family:var(--font-structure);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(55% 45% at 14% -4%,color-mix(in oklab,var(--bronze) 10%,transparent),transparent 72%),
+             radial-gradient(38% 34% at 100% 104%,color-mix(in oklab,var(--gold) 6%,transparent),transparent 70%);
+  animation:breathe 8s var(--ease) infinite alternate}
+:root[data-theme="light"] body::before{animation:none;opacity:.55}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+  background-image:radial-gradient(1.6px 1.6px at 12% 18%,var(--gold),transparent 70%),radial-gradient(2px 2px at 78% 12%,var(--bronze),transparent 70%),radial-gradient(1.5px 1.5px at 64% 64%,var(--gold),transparent 70%),radial-gradient(1.8px 1.8px at 28% 82%,var(--bronze),transparent 70%),radial-gradient(1.5px 1.5px at 90% 76%,var(--gold),transparent 70%);
+  background-size:100% 100%;animation:dust 22s linear infinite alternate}
+:root[data-theme="light"] body::after{display:none}
+@keyframes dust{from{background-position:0 0,0 0,0 0,0 0,0 0}to{background-position:-18px 10px,14px -12px,-10px -16px,16px 8px,-12px 14px}}
+@keyframes breathe{from{opacity:.7}to{opacity:1}}
+@keyframes ui-fade{from{opacity:0}to{opacity:1}}
+@keyframes ui-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes ui-page{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes ui-pulse{0%,100%{opacity:.45}50%{opacity:.9}}
+@keyframes batuta-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes reprint{0%{transform:translateY(-100%);opacity:0}15%{opacity:1}100%{transform:translateY(100%);opacity:0}}
+#main.entering>*{animation:ui-rise var(--dur) var(--ease) both}
+#main.entering>*:nth-child(2){animation-delay:60ms}#main.entering>*:nth-child(3){animation-delay:120ms}#main.entering>*:nth-child(4){animation-delay:180ms}#main.entering>*:nth-child(n+5){animation-delay:240ms}
+::selection{background:color-mix(in oklab,var(--bronze) 38%,transparent);color:var(--text)}
+html{caret-color:var(--bronze);scrollbar-color:color-mix(in oklab,var(--text-muted) 60%,transparent) transparent}
+a{text-underline-offset:3px;text-decoration-thickness:1px}
+h1,h2{text-wrap:balance}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;font-weight:700}
+p{margin:0}
+.m-only{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.mono{font-family:var(--font-machine);font-variant-numeric:tabular-nums}
+.human{font-family:var(--font-human);font-style:italic;color:var(--accent)}
+.soft{color:var(--text-soft)}
+.muted{color:var(--text-muted)}
+#app{position:relative}
+.shell{max-width:1120px;margin:0 auto;padding:16px 24px 96px}
+
+/* Topo */
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 10px 8px 12px;border:1px solid var(--line);border-radius:var(--r-lg);background:color-mix(in oklab,var(--surface) 84%,transparent);backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;min-height:var(--touch);padding-right:6px}
+.brand-mark{width:32px;height:32px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface-raised);display:grid;place-items:center;flex:none}
+.brand b{display:block;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+.brand small{display:block;font:500 .75rem/1.2 var(--font-machine);letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase}
+.main-nav{display:flex;gap:2px;margin:0 auto}
+.main-nav a{white-space:nowrap;display:inline-flex;align-items:center;min-height:var(--touch);padding:0 12px;color:var(--text-soft);text-decoration:none;font-weight:500;font-size:.9375rem;border-bottom:2px solid transparent;transition:color var(--fast) var(--ease),border-color var(--fast) var(--ease)}
+.main-nav a:hover{color:var(--text)}
+.main-nav a[aria-current="page"]{color:var(--text);border-bottom-color:var(--bronze)}
+.tools{display:flex;align-items:center;gap:4px}
+.mode-btn{min-height:var(--control);padding:0 10px;border-radius:var(--r-md);border:1px solid var(--line);background:none;color:var(--text-muted);font:500 .75rem/1 var(--font-machine);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:border-color var(--fast) var(--ease),color var(--fast) var(--ease)}
+.mode-btn:hover{color:var(--text);border-color:var(--line-strong)}
+.icon-btn{width:var(--control);height:var(--control);border-radius:var(--r-md);border:1px solid transparent;background:none;color:var(--text-soft);display:grid;place-items:center;cursor:pointer;transition:background var(--fast) var(--ease)}
+.icon-btn:hover{background:var(--surface-raised);color:var(--text)}
+.icon{width:18px;height:18px;flex:none}
+
+/* Cabeçalho de página e abas */
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px 24px;flex-wrap:wrap;margin:40px 0 24px}
+.crumb{display:inline-flex;align-items:center;min-height:32px;color:var(--accent);text-decoration:none;font-weight:500;font-size:.875rem}
+.page-head h1{font-size:clamp(1.75rem,1.2rem + 2.2vw,2.25rem);line-height:1.1;letter-spacing:-.03em;margin:2px 0 8px}
+.page-head .meta{color:var(--text-soft)}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto;scrollbar-width:none}
+.tabs a{display:inline-flex;align-items:center;gap:8px;min-height:var(--touch);padding:0 14px;margin-bottom:-1px;color:var(--text-soft);text-decoration:none;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;transition:color var(--fast) var(--ease),border-color var(--fast) var(--ease)}
+.tabs a:hover{color:var(--text)}
+.tabs a{position:relative}
+.tabs a[aria-current="page"]{color:var(--text);border-bottom-color:transparent}
+.tabs a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--bronze);transform-origin:left;animation:batuta-draw var(--batuta) var(--ease) both}
+.tabs .count{font:500 .75rem/1 var(--font-machine);color:var(--text-muted)}
+.tabs .count.attn{color:var(--warn)}
+.tabs .attn-dot{display:none;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.pauta{height:17px;margin:36px 0;border-left:2px solid var(--bronze);background:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px 4px)}
+.section-title{font-size:1.5rem;letter-spacing:-.02em;line-height:1.2}
+.section-sub{color:var(--text-soft);margin-top:4px}
+
+/* Botões e chips */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--control);padding:0 16px;border-radius:var(--r-md);border:1px solid var(--line-strong);background:transparent;color:var(--text);font:600 .9375rem/1 var(--font-structure);text-decoration:none;cursor:pointer;white-space:nowrap;transition:background var(--fast) var(--ease),border-color var(--fast) var(--ease),transform var(--fast) var(--ease)}
+.btn:hover{background:var(--surface-raised)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--bronze);border-color:var(--bronze);color:var(--bronze-contrast)}
+.btn-primary:hover{background:color-mix(in oklab,var(--bronze) 86%,var(--text))}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:var(--gold-contrast)}
+.btn-gold:hover{background:color-mix(in oklab,var(--gold) 86%,var(--text))}
+.btn-danger{background:var(--peril);border-color:var(--peril);color:var(--peril-contrast)}
+.btn-danger:hover{background:color-mix(in oklab,var(--peril) 86%,var(--text))}
+.btn-text{border-color:transparent;color:var(--accent);padding:0 10px}
+.btn-text:hover{background:var(--wash)}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed;transform:none}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:var(--r-sm);border:1px solid var(--line-strong);color:var(--text-soft);font:500 .75rem/1.2 var(--font-machine);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.chip-ok{color:var(--ok);border-color:color-mix(in oklab,var(--ok) 45%,transparent);background:var(--ok-wash)}
+.chip-warn{color:var(--warn);border-color:color-mix(in oklab,var(--warn) 45%,transparent);background:var(--warn-wash)}
+.chip-danger{color:var(--danger);border-color:color-mix(in oklab,var(--danger) 45%,transparent);background:var(--danger-wash)}
+.chip-accent{color:var(--accent);border-color:color-mix(in oklab,var(--bronze) 45%,transparent);background:var(--wash)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Linhas e painéis */
+.rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.rows>li{border-bottom:1px solid var(--line)}
+.panel{border:1px solid var(--line);border-radius:var(--r-lg);background:color-mix(in oklab,var(--surface) 88%,transparent);padding:24px}
+.notice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-left:2px solid var(--bronze);border-radius:var(--r-md);background:var(--surface);color:var(--text-soft);font-size:.9375rem}
+.notice.warn{border-left-color:var(--copper)}
+.notice.danger{border-left-color:var(--peril);color:var(--text)}
+.empty-state{padding:48px 24px;border:1px dashed var(--line-strong);border-radius:var(--r-lg);text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty-state h2{font-size:1.25rem;letter-spacing:-.01em}
+.empty-state p{max-width:52ch;color:var(--text-soft)}
+
+/* Campos */
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.field .label{font-weight:600;font-size:.875rem}
+.input{width:100%;min-height:var(--control);padding:0 12px;border-radius:var(--r-md);border:1px solid var(--line-strong);background:var(--ground-sunken);color:var(--text);font:inherit;font-size:.9375rem;transition:border-color var(--fast) var(--ease)}
+.input:focus{outline:2px solid var(--focus-ring);outline-offset:1px;border-color:var(--bronze)}
+select.input{appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23958c7a' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer}
+textarea.input{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.5}
+.adorn{display:flex;align-items:center;min-height:var(--control);border:1px solid var(--line-strong);border-radius:var(--r-md);background:var(--ground-sunken);transition:border-color var(--fast) var(--ease)}
+.adorn:focus-within{outline:2px solid var(--focus-ring);outline-offset:1px;border-color:var(--bronze)}
+.adorn>span{padding-left:12px;color:var(--text-muted);font-family:var(--font-machine);font-size:.875rem}
+.adorn>input{flex:1;min-width:0;min-height:38px;border:0;background:transparent;color:var(--text);padding:0 12px 0 8px;font:500 .9375rem var(--font-machine);font-variant-numeric:tabular-nums}
+.adorn>input:focus{outline:none}
+.help{font-size:.8125rem;color:var(--text-muted)}
+.err{font-size:.8125rem;color:var(--danger);min-height:1.25em}
+.field.has-error .input,.field.has-error .adorn{border-color:var(--danger)}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.form-grid .full{grid-column:1/-1}
+.switch{display:flex;gap:12px;align-items:flex-start;cursor:pointer;min-height:var(--touch);padding:4px 0}
+.switch input{appearance:none;flex:none;width:40px;height:24px;margin:0;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface-raised);position:relative;cursor:pointer;transition:background var(--fast) var(--ease),border-color var(--fast) var(--ease)}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--text-muted);transition:transform var(--fast) var(--ease),background var(--fast) var(--ease)}
+.switch input:checked{background:var(--wash);border-color:var(--bronze)}
+.switch input:checked::after{transform:translateX(16px);background:var(--bronze)}
+.switch b{display:block;font-weight:600;font-size:.9375rem}
+.switch small{display:block;color:var(--text-muted);font-size:.8125rem}
+.radio-row{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;min-height:var(--touch);transition:border-color var(--fast) var(--ease),background var(--fast) var(--ease)}
+.radio-row:has(input:checked){border-color:var(--bronze);background:var(--wash)}
+.radio-row input{accent-color:var(--bronze);margin-top:4px}
+
+/* Diálogo, toast, tour */
+.scrim{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:var(--scrim);animation:ui-fade var(--dur) var(--ease)}
+.dialog{width:min(580px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--solid);border:1px solid var(--line-strong);border-radius:var(--r-lg);padding:24px;animation:ui-rise var(--dur) var(--ease)}
+.dialog h2{font-size:1.25rem;letter-spacing:-.01em;line-height:1.3;margin-bottom:6px}
+.dialog .consequence{color:var(--text-soft);margin-bottom:18px}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:24px}
+.file-path{display:block;margin-top:6px;padding:10px 12px;border-radius:var(--r-md);background:var(--ground-sunken);border:1px solid var(--line);font:500 .8125rem/1.5 var(--font-machine);color:var(--text-soft);word-break:break-all}
+.busy{display:flex;align-items:center;gap:12px;padding:18px 0;color:var(--text-soft)}
+.spinner{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--bronze);animation:spin .9s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-mark{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-md);border:1px solid var(--line)}
+.result-mark.ok{border-color:color-mix(in oklab,var(--ok) 45%,transparent);background:var(--ok-wash)}
+.result-mark.bad{border-color:color-mix(in oklab,var(--danger) 45%,transparent);background:var(--danger-wash)}
+.result-mark .icon{margin-top:3px}
+.result-mark.ok .icon{color:var(--ok)}
+.result-mark.bad .icon{color:var(--danger)}
+.toasts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;display:flex;flex-direction:column;gap:8px;width:min(540px,calc(100% - 32px))}
+.toast{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 12px 12px 16px;border-radius:var(--r-md);border:1px solid var(--line-strong);border-left:2px solid var(--bronze);background:var(--solid);font-size:.9375rem;animation:ui-rise var(--dur) var(--ease)}
+.tour-veil{position:fixed;inset:0;z-index:80;background:color-mix(in oklab,var(--scrim) 70%,transparent);animation:ui-fade var(--dur) var(--ease)}
+.tour-target{position:relative;z-index:81;outline:2px solid var(--gold);outline-offset:6px;border-radius:12px;background:var(--ground)}
+.tour-pop{position:fixed;z-index:82;width:min(380px,calc(100% - 32px));background:var(--solid);border:1px solid var(--line-strong);border-top:2px solid var(--gold);border-radius:var(--r-lg);padding:20px;animation:ui-rise var(--dur) var(--ease)}
+.tour-pop h2{font-size:1.125rem;margin-bottom:6px}
+.tour-pop p{color:var(--text-soft);font-size:.9375rem}
+.tour-pop .step{font:500 .75rem/1 var(--font-machine);letter-spacing:.1em;color:var(--text-muted);margin-top:14px}
+.tour-pop .dialog-actions{margin-top:12px}
+
+/* Início */
+.home-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:stretch}
+.focal{display:flex;flex-direction:column;gap:18px}
+.countdown{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.countdown .big{font:500 3.5rem/1 var(--font-machine);letter-spacing:-.03em;color:var(--text)}
+.timeline-bar{position:relative;height:28px;margin-top:4px}
+.timeline-bar .track{position:absolute;left:0;right:0;top:12px;height:4px;border-radius:2px;background:var(--surface-raised);border:1px solid var(--line)}
+.timeline-bar .fill{position:absolute;left:0;top:12px;height:4px;border-radius:2px;background:var(--bronze)}
+.timeline-bar .now{position:absolute;top:4px;width:2px;height:20px;background:var(--gold)}
+.timeline-ends{display:flex;justify-content:space-between;font:500 .75rem var(--font-machine);color:var(--text-muted)}
+.lock-line{padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+.lock-line .human{font-size:1.125rem}
+.widgets{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.widget{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:18px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--text);transition:background var(--fast) var(--ease)}
+.widget:hover{background:color-mix(in oklab,var(--surface-raised) 70%,transparent)}
+.widget h2{font-size:1rem;font-weight:600}
+.widget .value{font:500 1.5rem/1.2 var(--font-machine);font-variant-numeric:tabular-nums}
+.widget .sub{grid-column:1/-1;color:var(--text-soft);font-size:.875rem}
+.widget .go{align-self:center;color:var(--accent)}
+.stage-bars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:end;height:180px;margin-top:8px}
+.stage-col{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;gap:8px;height:100%;text-decoration:none;color:var(--text);border-radius:var(--r-md);padding:4px;transition:background var(--fast) var(--ease)}
+.stage-col:hover{background:var(--surface-raised)}
+.stage-col .bar{border-radius:8px 8px 2px 2px;background:var(--bronze);min-height:4px;transition:height var(--dur) var(--ease)}
+.stage-col.none .bar{background:transparent;border:1px dashed var(--line-strong)}
+.stage-col .n{font:500 1.25rem/1 var(--font-machine);text-align:center}
+.stage-col .l{font-size:.8125rem;color:var(--text-soft);text-align:center;line-height:1.3;min-height:2.6em}
+
+/* Ações */
+.act{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:4px 16px;padding:20px 0;align-items:start}
+.act-n{font:500 .875rem/1.6 var(--font-machine);color:var(--accent)}
+.act h3{font-size:1.0625rem;font-weight:600;line-height:1.35}
+.act-reason{color:var(--text-soft);font-size:.9375rem;margin-top:2px}
+.act-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.act-note{margin-top:10px;font-size:.875rem;color:var(--text-soft);border-left:2px solid var(--line-strong);padding-left:10px}
+.act-ctrl{display:flex;flex-direction:column;gap:6px;align-items:stretch;min-width:200px}
+.act.closed{opacity:.78}
+.act.is-done h3{text-decoration:line-through;text-decoration-color:color-mix(in oklab,var(--text) 40%,transparent)}
+
+/* Diário */
+.diary-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:stretch}
+.dots{display:flex;gap:8px;margin:12px 0}
+.dots i{width:28px;height:8px;border-radius:4px;border:1px solid var(--line-strong)}
+.dots i.on{background:var(--bronze);border-color:var(--bronze)}
+.chart{display:flex;align-items:flex-end;gap:14px;height:170px;padding:8px 4px 0;border-bottom:1px solid var(--line-strong);position:relative}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;min-width:0}
+.chart .bar{width:100%;max-width:56px;border-radius:6px 6px 0 0;background:color-mix(in oklab,var(--bronze) 70%,transparent);transform-origin:bottom;animation:grow var(--dur) var(--ease)}
+.chart .col:last-child .bar{background:var(--bronze)}
+.chart .v{font:500 .75rem var(--font-machine);color:var(--text-soft);white-space:nowrap}
+.chart-x{display:flex;gap:14px;padding:6px 4px 0}
+.chart-x span{flex:1;text-align:center;font:500 .75rem var(--font-machine);color:var(--text-muted)}
+@keyframes grow{from{transform:scaleY(.2);opacity:.3}to{transform:none;opacity:1}}
+.month-row{display:grid;grid-template-columns:120px repeat(3,minmax(0,1fr)) auto;gap:12px;align-items:center;padding:16px 0}
+.month-row .m{font:500 .9375rem var(--font-machine)}
+.month-row .num{font:500 .9375rem var(--font-machine);font-variant-numeric:tabular-nums}
+.month-row .lbl{display:block;font:400 .75rem var(--font-structure);color:var(--text-muted)}
+.month-row .cac{color:var(--accent)}
+.month-actions{display:flex;gap:2px}
+
+/* Relatórios */
+.rep-types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.seg{display:inline-flex;align-items:center;gap:8px;min-height:var(--touch);padding:0 14px;border-radius:var(--r-md);border:1px solid var(--line-strong);background:none;color:var(--text-soft);font:600 .9375rem var(--font-structure);cursor:pointer;transition:all var(--fast) var(--ease)}
+.seg[aria-checked="true"]{border-color:var(--bronze);background:var(--wash);color:var(--text)}
+.seg[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.reports{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:40px;align-items:start}
+.rep-controls{display:flex;flex-direction:column;gap:20px}
+.rep-preview{position:sticky;top:16px;min-width:0}
+.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.preview-head .mono{font-size:.8125rem;color:var(--text-muted)}
+.pages{display:flex;flex-direction:column;gap:18px;max-height:calc(100vh - 160px);overflow:auto;padding:18px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--ground-sunken);scroll-snap-type:y proximity}
+.export-notice{margin-top:10px;font-size:.875rem;color:var(--text-soft)}
+.brand-line{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md)}
+.brand-line img,.brand-line .mono-mark{width:40px;height:40px;object-fit:contain;border-radius:8px;background:var(--paper);flex:none}
+.skeleton-page{aspect-ratio:210/297;border-radius:4px;background:color-mix(in oklab,var(--surface-raised) 80%,transparent);animation:ui-pulse 1.4s var(--ease) infinite}
+
+/* Papel (PDF): paleta fixa, independente do tema */
+.paper.reveal{opacity:0;transform:translateY(10px);transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.paper.reveal.in{opacity:1;transform:none}
+.paper::after{content:"";position:absolute;left:0;right:0;top:0;height:40%;pointer-events:none;opacity:0;background:linear-gradient(to bottom,transparent,color-mix(in oklab,var(--paper-accent) 22%,transparent) 85%,var(--paper-accent) 100%)}
+.paper.reprint::after{animation:reprint 700ms var(--ease) 1}
+.pages{scrollbar-color:color-mix(in oklab,var(--text-muted) 55%,transparent) transparent}
+.paper{--p-bg:var(--paper);--p-ink:#1c1710;--p-soft:#4c4436;--p-muted:#6b6252;--p-line:rgba(92,74,44,.2);--p-accent:#55692a;--p-wash:#eef0e1;--p-copper:#824421;--p-copper-wash:#f6e7dc;--p-danger:#9e2d37;--p-danger-wash:#f6dfdf;--p-gold:#8a6512;
+  position:relative;flex:none;width:100%;aspect-ratio:210/297;container-type:inline-size;background:var(--p-bg);color:var(--p-ink);border-radius:3px;overflow:hidden;scroll-snap-align:start;animation:ui-page var(--dur) var(--ease)}
+.pg{position:absolute;inset:0;padding:8cqw 8cqw 12cqw;display:flex;flex-direction:column;gap:2.4cqw;font-size:2.5cqw;line-height:1.45}
+.pg h3{font-size:4.4cqw;line-height:1.15;letter-spacing:-.02em;font-weight:700}
+.pg h4{font-size:2.9cqw;font-weight:600;margin:0}
+.pg .p-soft{color:var(--p-soft)}
+.pg .p-muted{color:var(--p-muted)}
+.pg .p-mono{font-family:var(--font-machine);font-variant-numeric:tabular-nums}
+.pg .p-human{font-family:var(--font-human);font-style:italic;color:var(--p-accent)}
+.pg .p-rule{height:.5cqw;background:var(--p-accent);width:16cqw}
+.pg .p-lines{height:2.2cqw;border-left:.5cqw solid var(--p-accent);background:repeating-linear-gradient(to bottom,var(--p-line) 0 1px,transparent 1px .55cqw)}
+.pg-foot{position:absolute;left:8cqw;right:8cqw;bottom:4.5cqw;display:flex;justify-content:space-between;gap:2cqw;padding-top:1.6cqw;border-top:1px solid var(--p-line);font:500 1.9cqw/1.3 var(--font-machine);color:var(--p-muted)}
+.cover-brand{display:flex;align-items:center;gap:2.6cqw}
+.cover-brand img{max-height:11cqw;max-width:30cqw;object-fit:contain}
+.cover-brand .mono-mark{width:11cqw;height:11cqw;border-radius:2cqw;display:grid;place-items:center;background:var(--p-wash);color:var(--p-accent);font:700 4.4cqw var(--font-structure)}
+.cover-brand b{display:block;font-size:3.2cqw;letter-spacing:-.01em}
+.cover-brand span{display:block;font:500 1.9cqw/1.4 var(--font-machine);color:var(--p-muted)}
+.cover-title{margin-top:auto;font-size:7cqw;line-height:1.04;letter-spacing:-.035em;font-weight:700}
+.cover-company{font-size:4.6cqw;font-weight:600;letter-spacing:-.02em}
+.mini-ladder{display:flex;align-items:flex-end;gap:1.6cqw;height:16cqw;margin-top:3cqw}
+.mini-ladder i{flex:1;border:1px solid var(--p-line);border-radius:1cqw 1cqw 0 0}
+.mini-ladder i.on{background:var(--p-accent);border-color:var(--p-accent)}
+.mini-ladder i.trail{border:1px dashed var(--p-accent)}
+.mini-ladder-l{display:flex;gap:1.6cqw;font-size:1.9cqw;color:var(--p-muted)}
+.mini-ladder-l span{flex:1}
+.mini-ladder-l span.on{color:var(--p-accent);font-weight:600}
+.p-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:2cqw;border-top:1px solid var(--p-line);border-bottom:1px solid var(--p-line);padding:2.4cqw 0}
+.p-kpis b{display:block;font:500 4.2cqw/1.1 var(--font-machine);letter-spacing:-.02em}
+.p-kpis span{display:block;font-size:2cqw;color:var(--p-muted);line-height:1.3}
+.p-acts{display:flex;flex-direction:column;gap:2cqw;margin:0;padding:0;list-style:none}
+.p-acts li{display:grid;grid-template-columns:5cqw 1fr auto;gap:1.6cqw;align-items:start}
+.p-acts .n{font:600 3cqw/1.2 var(--font-machine);color:var(--p-accent)}
+.p-acts strong{display:block;font-size:2.6cqw;line-height:1.3}
+.p-acts small{display:block;font-size:2cqw;color:var(--p-soft)}
+.p-tag{display:inline-block;font:500 1.7cqw/1.2 var(--font-machine);text-transform:uppercase;letter-spacing:.05em;padding:.5cqw 1.2cqw;border-radius:.8cqw;border:1px solid var(--p-line);color:var(--p-soft);white-space:nowrap}
+.p-tag.ok{color:var(--p-accent);border-color:var(--p-accent)}
+.p-tag.warn{color:var(--p-copper);border-color:var(--p-copper)}
+.p-tag.bad{color:var(--p-danger);border-color:var(--p-danger)}
+.p-bars{display:flex;flex-direction:column;gap:1.5cqw}
+.p-bar{display:grid;grid-template-columns:26cqw 1fr 7cqw;gap:2cqw;align-items:center;font-size:2.2cqw}
+.p-track{position:relative;height:2.6cqw;background:#f1ede3;border-radius:.6cqw}
+.p-track .f{position:absolute;left:0;top:0;bottom:0;border-radius:.6cqw;background:var(--p-accent)}
+.p-track .f.low{background:var(--p-copper)}
+.p-track .f.before{background:transparent;border:1px dashed var(--p-muted);top:.5cqw;bottom:.5cqw}
+.p-track .t50{position:absolute;left:50%;top:-.8cqw;bottom:-.8cqw;border-left:1px dashed var(--p-muted)}
+.p-bar .v{font:500 2.4cqw var(--font-machine);text-align:right}
+.p-bar small{display:block;font-size:1.7cqw;color:var(--p-copper);line-height:1.1}
+.p-group{font:600 2.2cqw var(--font-structure);color:var(--p-soft);margin-top:1.4cqw}
+.matrix{display:grid;grid-template-columns:5cqw repeat(5,1fr);grid-template-rows:repeat(5,1fr) 4cqw;gap:.6cqw;width:62cqw;aspect-ratio:1.05}
+.matrix .c{border-radius:.6cqw;display:flex;align-items:center;justify-content:center;gap:.6cqw}
+.matrix .c.lo{background:#eef0e1}.matrix .c.md{background:#f6e7dc}.matrix .c.hi{background:#f2d6d6}
+.matrix .ax{font:500 1.8cqw var(--font-machine);color:var(--p-muted);display:flex;align-items:center;justify-content:center}
+.matrix .dot{width:4.2cqw;height:4.2cqw;border-radius:50%;background:var(--p-ink);color:#fffdf7;display:grid;place-items:center;font:600 2cqw var(--font-machine)}
+.p-risks{display:flex;flex-direction:column;gap:1.6cqw;margin:0;padding:0;list-style:none}
+.p-risks li{display:grid;grid-template-columns:5cqw 1fr;gap:1.6cqw}
+.p-risks .dot{width:4.2cqw;height:4.2cqw;border-radius:50%;background:var(--p-ink);color:#fffdf7;display:grid;place-items:center;font:600 2cqw var(--font-machine)}
+.p-table{width:100%;border-collapse:collapse;font-size:2.1cqw}
+.p-table th{text-align:left;font-weight:600;color:var(--p-soft);border-bottom:1px solid var(--p-ink);padding:1cqw .6cqw}
+.p-table td{border-bottom:1px solid var(--p-line);padding:1.2cqw .6cqw;vertical-align:top}
+.p-cols{display:grid;grid-template-columns:1fr 1fr;gap:3cqw}
+.p-chart{display:flex;align-items:flex-end;gap:2cqw;height:20cqw;border-bottom:1px solid var(--p-ink);padding-top:2cqw}
+.p-chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.8cqw;height:100%}
+.p-chart i{display:block;width:70%;background:var(--p-accent);border-radius:.6cqw .6cqw 0 0}
+.p-chart span{font:500 1.8cqw var(--font-machine)}
+.p-chart-x{display:flex;gap:2cqw}
+.p-chart-x span{flex:1;text-align:center;font:500 1.8cqw var(--font-machine);color:var(--p-muted)}
+
+/* Configurações */
+.settings-sec{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);gap:32px;align-items:start}
+.logo-box{display:flex;align-items:center;gap:14px;padding:12px;border:1px dashed var(--line-strong);border-radius:var(--r-md)}
+.logo-box .thumb{width:72px;height:72px;border-radius:8px;background:var(--paper);display:grid;place-items:center;overflow:hidden;flex:none}
+.logo-box .thumb img{max-width:100%;max-height:100%;object-fit:contain}
+.logo-box .thumb .mono-mark{font:700 1.25rem var(--font-structure);color:var(--paper-accent)}
+.demo-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:.8125rem;color:var(--text-muted)}
+.cover-preview{max-width:300px;margin-left:auto}
+
+/* Questionário do cliente */
+.client-shell{max-width:860px;margin:0 auto;padding:24px 24px 96px}
+.client-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.client-brand{display:flex;align-items:center;gap:12px}
+.client-brand .logo{width:48px;height:48px;border-radius:10px;background:var(--paper);display:grid;place-items:center;overflow:hidden}
+.client-brand .logo img{max-width:100%;max-height:100%;object-fit:contain}
+.rail{display:flex;gap:6px;margin:24px 0 8px}
+.rail button{flex:1;height:8px;border-radius:4px;border:1px solid var(--line-strong);background:none;cursor:pointer;padding:0}
+.rail button.done{background:color-mix(in oklab,var(--bronze) 55%,transparent);border-color:transparent}
+.rail button.cur{background:var(--bronze);border-color:var(--bronze)}
+.choice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;min-height:var(--touch);transition:border-color var(--fast) var(--ease),background var(--fast) var(--ease)}
+.choice:has(input:checked){border-color:var(--bronze);background:var(--wash)}
+.choice input{accent-color:var(--bronze);margin-top:4px}
+
+/* Listas de empresas */
+.co-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1.4fr) auto;gap:16px;align-items:center;padding:16px 0}
+.co-row a.name{color:var(--text);font-weight:600;text-decoration:none}
+.co-row a.name:hover{color:var(--accent)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter{display:inline-flex;align-items:center;min-height:var(--control);padding:0 12px;border-radius:var(--r-md);border:1px solid var(--line-strong);color:var(--text-soft);text-decoration:none;font-size:.875rem;font-weight:500}
+.filter[aria-current="true"]{border-color:var(--bronze);background:var(--wash);color:var(--text)}
+.result-panel{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.result-panel .stage-word{font:700 3.5rem/1 var(--font-structure);letter-spacing:-.035em}
+.act-meta .chip{white-space:normal}
+.tl-row{display:grid;grid-template-columns:140px minmax(0,1fr) auto;gap:16px;align-items:center;padding:18px 0}
+.tl-row .d{font:500 .9375rem var(--font-machine)}
+.tl-row h3{font-size:1.0625rem;font-weight:600}
+
+@media (max-width:860px){
+  .home-grid,.diary-top,.settings-sec{grid-template-columns:1fr}
+  .reports{grid-template-columns:1fr;gap:24px}
+  .rep-preview{position:static;order:-1}
+  .pages{max-height:none;overflow:visible;padding:12px}
+  .cover-preview{margin:0 auto}
+  .co-row{grid-template-columns:1fr auto}
+  .co-row .hide-m{display:none}
+}
+@media (max-width:640px){
+  .shell{padding:12px 16px 96px}
+  .topbar{flex-wrap:wrap;row-gap:0;padding:6px 8px}
+  .brand small{display:none}
+  .main-nav{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none;border-top:1px solid var(--line)}
+  .tools{margin-left:auto}
+  .d-only{display:none}.m-only{display:inline}
+  .rep-types .seg{flex:1 1 0;justify-content:center}
+  .head-actions{gap:6px}
+  .head-actions .btn{padding:0 12px;font-size:.875rem}
+  .tabs{overflow:visible;gap:0;justify-content:space-between}
+  .tabs a{padding:0 8px;font-size:.875rem;gap:4px}
+  .tabs .count{display:none}
+  .tabs .attn-dot{display:inline-block}
+  .mode-btn{display:none}
+  .btn,.seg,.filter{min-height:var(--touch)}
+  .input,.adorn{min-height:var(--touch)}
+  .page-head{margin:20px 0 18px;gap:12px}
+  .page-head h1{font-size:1.75rem}
+  .tabs{margin-bottom:18px}
+  .form-grid{grid-template-columns:1fr}
+  .act{grid-template-columns:28px minmax(0,1fr)}
+  .act-ctrl{grid-column:2;min-width:0}
+  .month-row{grid-template-columns:1fr 1fr;gap:6px 12px}
+  .month-row .month-actions{grid-column:1/-1}
+  .tl-row{grid-template-columns:1fr}
+  .countdown .big{font-size:2.75rem}
+  .result-panel{grid-template-columns:1fr;gap:12px}
+  .result-panel .stage-word{font-size:2.5rem}
+  .stage-bars{height:150px;gap:6px}
+  .icon-btn{width:var(--touch);height:var(--touch)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .paper.reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="dialog-root"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div id="tour-root"></div>
+<script>
+"use strict";
+/* ============ Dados de demonstração (somente protótipo: atualizar a página volta ao início) ============ */
+const TODAY = "2026-10-24";
+const STAGES = ["Descoberta","Ajuste","Escala","Estruturação"];
+const STAGE_PHRASES = ["Você ainda está descobrindo quanto custa conquistar e manter um cliente.","Você já sabe o que funciona e está ajustando a máquina antes de acelerar.","Os números fecham e dá para investir mais no que traz cliente.","A empresa cresce com processo, sem depender de uma pessoa só."];
+const DIMS = [["mp","Mercado e produto","enc"],["pc","Produto e canal","enc"],["cr","Canal e receita","enc"],["rm","Receita e mercado","enc"],["aq","Aquisição","fr"],["en","Engajamento","fr"],["cv","Conversão","fr"],["rt","Retenção","fr"]];
+const DIM_NAME = Object.fromEntries(DIMS.map(d=>[d[0],d[1]]));
+const ROLES = ["Dono","Equipe de vendas","Equipe de marketing","Consultor","Outro"];
+const STATUS = {todo:"A fazer",doing:"Em andamento",done:"Feita",na:"Não se aplica"};
+const PARTS = [["ads","Anúncios"],["agency","Agência ou freelancer"],["commission","Comissões de quem vende"],["discount","Descontos e brindes"],["salary","Parte do salário"],["tools","Ferramentas"]];
+const ACTIONS = {
+  cac:{title:"Descobrir quanto custa cada cliente novo",reason:"Sem esse número, qualquer aumento de anúncio é uma aposta."},
+  origem:{title:"Anotar a origem de cada cliente",reason:"Sem a origem, não dá para saber o que funciona."},
+  meta:{title:"Conferir se o seu mercado comporta a sua meta",reason:"A meta pode exigir clientes demais para a sua região."},
+  recompra:{title:"Oferecer a segunda compra a quem já comprou",reason:"Vender de novo custa menos do que conquistar um cliente novo."},
+  teste:{title:"Testar um anúncio com orçamento pequeno",reason:"Um teste curto mostra se o canal traz cliente pelo custo que você aguenta."},
+  dep:{title:"Reduzir a dependência do maior cliente",reason:"Um cliente com mais de 30% do faturamento é um risco alto."},
+  processo:{title:"Escrever o passo a passo da venda",reason:"Sem processo, a venda depende de uma pessoa só."}
+};
+const S = {
+  mode:"owner", focus:"c1", theme:"dark", reevalDays:90,
+  brand:{name:"",logo:null,logoInfo:"",phone:"",email:"",site:""},
+  companies:[
+    {id:"c1",name:"Padaria Trigo Bom",segment:"Alimentação",channel:"Loja física e delivery"},
+    {id:"c2",name:"Ateliê Linha Fina",segment:"Moda",channel:"Loja online"},
+    {id:"c3",name:"Studio Pilates Ritmo",segment:"Saúde e bem-estar",channel:"Agendamento"},
+    {id:"c4",name:"Oficina Roda Viva",segment:"Serviços automotivos",channel:"Atendimento no local"}
+  ],
+  diagnoses:[
+    {id:"d1",co:"c1",date:"2026-04-20",stage:1,rules:1,conf:"média",lockDim:"aq",lock:"Descobrir quanto custa cada cliente novo.",
+      dims:{mp:38,pc:30,cr:22,rm:35,aq:18,en:40,cv:44,rt:28},cac:null,ratio:null,payback:null,
+      risks:[{t:"Investir em divulgação sem saber quanto custa um cliente",p:4,i:4},{t:"Vender só para gente nova",p:3,i:4}],
+      actions:[{key:"cac",status:"done",due:"2026-05-20",role:"Dono",note:"Planilha do caixa com gasto e clientes novos."},{key:"origem",status:"doing",due:"2026-06-30",role:"Dono",note:""},{key:"meta",status:"todo",due:null,role:null,note:""}]},
+    {id:"d2",co:"c1",date:"2026-08-27",stage:2,rules:1,conf:"alta",lockDim:"rt",lock:"Fazer quem comprou voltar a comprar.",
+      dims:{mp:58,pc:52,cr:47,rm:55,aq:49,en:61,cv:57,rt:46},cac:8200,ratio:"3,1×",payback:"2 meses",
+      risks:[{t:"Depender de um só canal para atrair clientes",p:4,i:4},{t:"Vender só para gente nova",p:3,i:4},{t:"Margem apertada nos produtos de festa",p:2,i:3}],
+      actions:[{key:"origem",status:"doing",due:"2026-10-15",role:"Dono",note:"Pergunta incluída no caixa; falta o delivery.",from:"d1"},{key:"recompra",status:"done",due:"2026-09-30",role:"Equipe de vendas",note:"Cupom de 10% na segunda compra."},{key:"teste",status:"todo",due:"2026-11-10",role:"Equipe de marketing",note:""}]},
+    {id:"d3",co:"c2",date:"2026-06-02",stage:1,rules:1,conf:"baixa",lockDim:"aq",lock:"Descobrir quanto custa cada cliente novo.",
+      dims:{mp:44,pc:26,cr:20,rm:31,aq:15,en:38,cv:35,rt:41},cac:null,ratio:null,payback:null,
+      risks:[{t:"Investir em divulgação sem saber quanto custa um cliente",p:5,i:4}],
+      actions:[{key:"cac",status:"doing",due:"2026-07-15",role:"Dono",note:""},{key:"origem",status:"todo",due:null,role:null,note:""},{key:"meta",status:"done",due:"2026-06-30",role:"Consultor",note:""}]},
+    {id:"d4",co:"c4",date:"2026-09-10",stage:3,rules:1,conf:"alta",lockDim:"cv",lock:"Escrever como a venda acontece para não depender de uma pessoa.",
+      dims:{mp:72,pc:66,cr:69,rm:70,aq:68,en:63,cv:58,rt:74},cac:15400,ratio:"4,2×",payback:"3 meses",
+      risks:[{t:"Um cliente responde por 38% do faturamento",p:5,i:4},{t:"Venda depende do dono",p:3,i:4}],
+      actions:[{key:"dep",status:"todo",due:"2026-10-20",role:"Consultor",note:""},{key:"processo",status:"doing",due:"2026-11-30",role:"Equipe de vendas",note:""},{key:"teste",status:"todo",due:null,role:null,note:""}]}
+  ],
+  diary:{
+    c1:[
+      {month:"2026-07",parts:{ads:120000,agency:0,commission:48000,discount:35000,salary:45000,tools:0},total:null,customers:31},
+      {month:"2026-08",parts:{ads:145000,agency:0,commission:52000,discount:39000,salary:45000,tools:10000},total:null,customers:34},
+      {month:"2026-09",parts:null,total:315000,customers:36}
+    ],
+    c2:[{month:"2026-09",parts:{ads:90000,agency:60000,commission:0,discount:12000,salary:0,tools:8900},total:null,customers:14}],
+    c3:[],c4:[]
+  },
+  sent:[{co:"c3",date:"2026-10-20"}],
+  drafts:{},
+  lastExport:{}
+};
+const IMPORT_FILES = [
+  {name:"respostas-padaria-trigo-bom.fitpulse",co:"c1",kind:"ok",when:"2026-10-23"},
+  {name:"respostas-atelie-linha-fina.fitpulse",co:"c2",kind:"ok",when:"2026-10-22"},
+  {name:"respostas-studio-pilates-ritmo.fitpulse",co:"c3",kind:"ok",when:"2026-10-24"},
+  {name:"respostas-oficina-roda-viva.fitpulse",co:"c4",kind:"newer",when:"2026-10-21"},
+  {name:"planilha-de-vendas.xlsx",co:null,kind:"invalid",when:"2026-10-19"}
+];
+const ANSWERS = [
+  ["Quanto você gastou no mês para atrair clientes?","R$ 3.150,00 (do diário, média de 3 meses)"],
+  ["Quantos clientes novos vieram no mês?","34 (do diário)"],
+  ["Quanto um cliente gasta por compra, em média?","R$ 38,00"],
+  ["Quantas vezes por ano um cliente compra?","4 a 6 vezes"],
+  ["Por quanto tempo um cliente continua comprando?","1 a 2 anos"],
+  ["Você sabe por onde chegam os seus clientes?","Anoto a origem da maioria"],
+  ["O que você faz para quem já comprou voltar?","Cupom na segunda compra"],
+  ["De cada 10 pessoas que pedem preço, quantas compram?","3 ou mais"]
+];
+const CLIENT_BLOCKS = [
+  {t:"Seus números",numbers:true},
+  {t:"Mercado e produto",q:"Quando um cliente compra de você, o que acontece depois?",o:["Quase nunca volta","Volta de vez em quando","Volta com frequência e indica para outras pessoas"]},
+  {t:"Produto e canal",q:"Você sabe por onde chegam os seus clientes?",o:["Não sei","Sei de alguns","Anoto a origem de todos"]},
+  {t:"Canal e receita",q:"Um cliente novo deixa mais ou menos do que custou para trazê-lo?",o:["Não sei","Deixa menos do que custou","Deixa mais do que custou"]},
+  {t:"Aquisição",q:"Como você atrai clientes novos hoje?",o:["Só por indicação","Por um canal pago","Por mais de um canal, sabendo o custo de cada um"]},
+  {t:"Engajamento",q:"O que acontece entre a pessoa conhecer você e comprar?",o:["Nada, ela compra ou some","Respondo quando ela pergunta","Tenho um caminho: conteúdo, contato e oferta"]},
+  {t:"Conversão",q:"De cada 10 pessoas que pedem preço, quantas compram?",o:["Não sei","Menos de 3","3 ou mais"]},
+  {t:"Retenção",q:"O que você faz para quem já comprou voltar?",o:["Nada","Algo de vez em quando","Uma ação fixa, como cupom ou lembrete"]}
+];
+const CQ = {block:0,answers:{},spend:"",spendUnknown:false,customers:"",saved:false,saving:false};
+
+/* ============ Utilidades ============ */
+const $ = (s,el=document)=>el.querySelector(s);
+const esc = s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const BRL = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const money = c=>c==null?"não calculado":BRL.format(c/100).replace(/\u00a0/g," ");
+const moneyShort = c=>c==null?"—":"R$ "+Math.round(c/100).toLocaleString("pt-BR");
+const MONTHS = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const fmtDate = d=>{ if(!d) return ""; const [y,m,dd]=d.split("-"); return dd+"/"+m+"/"+y; };
+const monthLong = ym=>{ const [y,m]=ym.split("-"); return MONTHS[+m-1]+" de "+y; };
+const monthShort = ym=>{ const [y,m]=ym.split("-"); return MONTHS[+m-1].slice(0,3)+"/"+y; };
+const cap = s=>s.charAt(0).toUpperCase()+s.slice(1);
+const dayMs = 864e5;
+const toDate = d=>new Date(d+"T12:00:00");
+const daysFrom = (a,b)=>Math.round((toDate(b)-toDate(a))/dayMs);
+const addDays = (d,n)=>{ const x=toDate(d); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
+const co = id=>S.companies.find(c=>c.id===id);
+const diagsOf = id=>S.diagnoses.filter(d=>d.co===id).sort((a,b)=>a.date<b.date?-1:1);
+const latestOf = id=>{ const l=diagsOf(id); return l[l.length-1]||null; };
+const diagById = id=>S.diagnoses.find(d=>d.id===id);
+const slug = s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const initials = s=>s.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("");
+const isOverdue = a=>a.due && a.due<TODAY && (a.status==="todo"||a.status==="doing");
+function riskLevel(r){ const n=r.p*r.i; return n>=16?"hi":n>=8?"md":"lo"; }
+const RISK_LABEL = {hi:"Alto",md:"Médio",lo:"Baixo"};
+function reevalOf(id){ const l=latestOf(id); if(!l) return null; const due=addDays(l.date,S.reevalDays); return {from:l.date,due,left:daysFrom(TODAY,due)}; }
+function closedActionsOf(id){
+  const l=diagsOf(id); const out=[];
+  for(let i=0;i<l.length-1;i++){ const next=l[i+1]; l[i].actions.forEach(a=>{ if(!next.actions.some(b=>b.key===a.key)) out.push({...a,diag:l[i],closedAt:next.date}); }); }
+  return out.reverse();
+}
+function monthSpend(m){ return m.total!=null?m.total:PARTS.reduce((a,[k])=>a+(m.parts[k]||0),0); }
+function monthCac(m){ return m.customers>0?Math.round(monthSpend(m)/m.customers):null; }
+function diaryOf(id){ return (S.diary[id]||[]).slice().sort((a,b)=>a.month<b.month?1:-1); }
+function diaryStatus(id){
+  const ms=diaryOf(id); const n=ms.length; if(!n) return {n:0};
+  const take=ms.slice(0,3); const sp=take.reduce((a,m)=>a+monthSpend(m),0); const cu=take.reduce((a,m)=>a+m.customers,0);
+  return {n,measured:n>=3,cac:cu>0?Math.round(sp/cu):null,from:take[take.length-1].month,to:take[0].month,sumSpend:sp,sumCust:cu};
+}
+const companyAlerts = id=>{
+  const r=reevalOf(id); const l=latestOf(id);
+  return {late:r&&r.left<0?-r.left:0, overdue:l?l.actions.filter(isOverdue).length:0, high:l?l.risks.some(x=>riskLevel(x)==="hi"):false, waiting:S.sent.some(s=>s.co===id)&&!S.drafts[id]};
+};
+
+/* Ícones */
+const I = {
+  download:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  folder:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  file:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>',
+  check:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  alert:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.01"/></svg>',
+  help:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.4M12 17v.01"/></svg>',
+  sun:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  arrow:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  send:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg>',
+  upload:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></svg>',
+  lock:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
+};
+const markSvg = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="11" width="3" height="5" rx="1" fill="#a8c07a" opacity=".55"/><rect x="7.5" y="7" width="3" height="9" rx="1" fill="#a8c07a"/><rect x="13" y="3" width="3" height="13" rx="1" fill="#e8ba52"/></svg>';
+
+/* ============ Roteamento ============ */
+function route(){ const h=location.hash.slice(1)||"/inicio"; const [p,qs]=h.split("?"); return {path:p,parts:p.split("/").filter(Boolean),q:Object.fromEntries(new URLSearchParams(qs||""))}; }
+function go(h){ if(location.hash===h) render(); else location.hash=h; }
+window.addEventListener("hashchange",()=>{ closeDialog(true); render(); window.scrollTo(0,0); });
+
+/* ============ Layout ============ */
+function shell(content,active){
+  const nav = S.mode==="owner"
+    ? [["#/inicio","Início","inicio"],["#/empresa/"+S.focus,"Minha empresa","empresa"],["#/configuracoes","Configurações","config"]]
+    : [["#/inicio","Início","inicio"],["#/empresas","Empresas","empresas"],["#/relatorios/carteira","Carteira","carteira"],["#/configuracoes","Configurações","config"]];
+  return `<div class="shell">
+  <header class="topbar" data-aioson-id="topbar">
+    <a class="brand" href="#/inicio" aria-label="FitPulse, início"><span class="brand-mark">${markSvg}</span><span><b>FitPulse</b><small>Diagnóstico de crescimento</small></span></a>
+    <nav class="main-nav" aria-label="Principal">${nav.map(n=>`<a href="${n[0]}" ${active===n[2]?'aria-current="page"':""}>${n[1]}</a>`).join("")}</nav>
+    <div class="tools">
+      <button class="mode-btn" data-act="toggle-mode" data-aioson-id="mode-toggle" data-aioson-tour="modo" title="Trocar o modo de uso" aria-label="Modo de uso: ${S.mode==="owner"?"minha empresa (uma empresa). Trocar para consultoria (várias empresas)":"consultoria (várias empresas). Trocar para minha empresa (uma empresa)"}">${S.mode==="owner"?"Modo: minha empresa":"Modo: consultoria"}</button>
+      <button class="icon-btn" data-act="toggle-theme" aria-label="Trocar entre tema escuro e claro">${I.sun}</button>
+      <button class="icon-btn" data-act="tour-open" aria-label="Como usar esta tela (tour)" data-aioson-id="tour-reopen">${I.help}</button>
+    </div>
+  </header>
+  <main id="main">${content}</main>
+</div>`;
+}
+
+function render(){
+  const r=route(); const p=r.parts; let html="", active="";
+  document.title = "FitPulse · Relatórios e acompanhamento (protótipo)";
+  if(p[0]==="questionario-cliente"){ $("#app").innerHTML=clientView(r); afterRender(r); return; }
+  if(p[0]==="inicio"||!p.length){ html=S.mode==="owner"?ownerHome():consultantHome(); active="inicio"; }
+  else if(p[0]==="empresas"){ if(S.mode==="owner"){ go("#/empresa/"+S.focus); return; } html=companiesPage(r); active="empresas"; }
+  else if(p[0]==="empresa"&&co(p[1])){ html=companyPage(p[1],p[2]||"diagnosticos",r); active=S.mode==="owner"?"empresa":"empresas"; }
+  else if(p[0]==="resultado"&&diagById(p[1])){ html=resultPage(diagById(p[1])); active=S.mode==="owner"?"empresa":"empresas"; }
+  else if(p[0]==="relatorios"&&p[1]==="carteira"){ html=portfolioPage(r); active="carteira"; }
+  else if(p[0]==="configuracoes"){ html=settingsPage(); active="config"; }
+  else html=`<div class="empty-state" data-state="empty" style="margin-top:48px"><h2>Página não encontrada</h2><p>O endereço não existe neste protótipo.</p><a class="btn btn-primary" href="#/inicio">Voltar ao início</a></div>`;
+  $("#app").innerHTML=shell(html,active);
+  if(S.lastHash!==location.hash){ S.lastHash=location.hash; const m=$("#main"); m.classList.add("entering"); setTimeout(()=>m.classList.remove("entering"),700); }
+  afterRender(r);
+}
+function afterRender(r){
+  revealPages();
+  const st=r.q.state;
+  const onReports=(r.parts[0]==="empresa"&&r.parts[2]==="relatorios"&&diagsOf(r.parts[1]).length)||(r.parts[0]==="relatorios"&&S.mode==="consultant");
+  if(onReports&&(st==="error"||st==="success")&&S.autoOpened!==location.hash){
+    S.autoOpened=location.hash; openExport(st==="error"?"failed":"saved");
+  }
+  if(S.tourStep!=null) positionTour();
+}
+
+// As páginas da prévia aparecem conforme rolam para dentro da área visível.
+let pageObserver=null;
+function revealPages(){
+  const box=$(".pages"); if(!box) return; const papers=[...box.querySelectorAll(".paper")];
+  if(pageObserver) pageObserver.disconnect();
+  if(!("IntersectionObserver" in window)){ return; }
+  papers.forEach((p,i)=>{ if(i>0) p.classList.add("reveal"); });
+  pageObserver=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); pageObserver.unobserve(e.target); } }),{root:box,threshold:.08});
+  papers.forEach((p,i)=>{ if(i>0) pageObserver.observe(p); });
+  if(S.reprint!=null){ const t=papers[Math.min(S.reprint,papers.length-1)]; S.reprint=null; if(t){ t.classList.add("in","reprint"); const top=t.offsetTop-box.offsetTop-12; if(box.scrollHeight>box.clientHeight) box.scrollTo({top,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); else box.scrollTo({left:t.offsetLeft-box.offsetLeft-12,behavior:"auto"}); setTimeout(()=>t.classList.remove("reprint"),800); } }
+}
+
+/* ============ Início ============ */
+function ownerHome(){
+  const c=co(S.focus); const l=latestOf(c.id); const r=reevalOf(c.id); const ds=diaryStatus(c.id);
+  const acts=l.actions; const done=acts.filter(a=>a.status==="done").length, doing=acts.filter(a=>a.status==="doing").length, over=acts.filter(isOverdue).length;
+  const span=daysFrom(r.from,r.due), passed=Math.min(span,Math.max(0,daysFrom(r.from,TODAY)));
+  const lastMonth=diaryOf(c.id)[0];
+  return `<div class="page-head">
+    <div><h1>${esc(c.name)}</h1><p class="meta">Estágio ${l.stage} de 4 · ${STAGES[l.stage-1]}, desde o diagnóstico de <span class="mono">${fmtDate(l.date)}</span></p></div>
+    <div class="head-actions"><a class="btn" href="#/empresa/${c.id}/relatorios" data-aioson-id="home-reports">${I.file} Relatórios</a><button class="btn btn-primary" data-act="new-diagnosis">Novo diagnóstico</button></div>
+  </div>
+  <div class="home-grid">
+    <section class="panel focal" aria-labelledby="h-reeval" data-aioson-id="home-reeval">
+      <h2 id="h-reeval" class="section-title">Refazer o diagnóstico</h2>
+      <div class="countdown"><span class="big">${r.left>=0?r.left:-r.left} dias</span><span class="soft">${r.left>=0?"até "+fmtDate(r.due):"de atraso desde "+fmtDate(r.due)}, a cada ${S.reevalDays} dias</span></div>
+      <div><div class="timeline-bar" aria-hidden="true"><div class="track"></div><div class="fill" style="width:${passed/span*100}%"></div><div class="now" style="left:calc(${passed/span*100}% - 1px)"></div></div>
+      <div class="timeline-ends"><span>Último: ${fmtDate(r.from)}</span><span>Hoje: ${fmtDate(TODAY)}</span><span>Próximo: ${fmtDate(r.due)}</span></div></div>
+      <div class="lock-line"><p class="soft" style="font-size:.875rem">Para subir de degrau:</p><p class="human">${esc(l.lock)}</p></div>
+      <p class="soft" style="font-size:.9375rem">Refazer mostra se as ações funcionaram. O lembrete aparece aqui no app; ele não manda aviso para o computador.</p>
+    </section>
+    <section class="widgets" aria-label="O que precisa de você">
+      <a class="widget" href="#/empresa/${c.id}/acoes" data-aioson-id="home-actions-widget"><h2>Ações do plano</h2><span class="go">${I.arrow}</span>
+        <span class="value">${done} de 3 feitas</span>
+        <span class="sub">${doing} em andamento · ${acts.filter(a=>a.status==="todo").length} a fazer${over?` · <span class="chip chip-danger">${over} com prazo vencido</span>`:""}</span></a>
+      <a class="widget" href="#/empresa/${c.id}/diario" data-aioson-id="home-diary-widget"><h2>Diário de números</h2><span class="go">${I.arrow}</span>
+        <span class="value">${ds.cac!=null?money(ds.cac):"sem dados"}</span>
+        <span class="sub">Custo por cliente pelo diário, ${ds.measured?"medido de "+monthShort(ds.from)+" a "+monthShort(ds.to):ds.n+" de 3 meses anotados"}. No último diagnóstico era ${money(l.cac)}${lastMonth&&lastMonth.month<"2026-10"?" · outubro ainda não anotado":""}</span></a>
+      <a class="widget" href="#/empresa/${c.id}/relatorios" data-aioson-id="home-reports-widget"><h2>Relatórios</h2><span class="go">${I.arrow}</span>
+        <span class="value">${S.lastExport[c.id]?"PDF salvo":"Nenhum PDF ainda"}</span>
+        <span class="sub">${S.lastExport[c.id]?esc(S.lastExport[c.id]):"Gere o relatório do diagnóstico de "+fmtDate(l.date)+" para mostrar a sócios, contador ou banco."}</span></a>
+    </section>
+  </div>
+  <div class="pauta" aria-hidden="true"></div>
+  <section aria-labelledby="h-acts">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px"><div><h2 id="h-acts" class="section-title">Suas 3 ações</h2><p class="section-sub">Do diagnóstico de <span class="mono">${fmtDate(l.date)}</span>. Mude o estado aqui mesmo.</p></div><a class="btn btn-text" href="#/empresa/${c.id}/acoes">Ver prazos e notas ${I.arrow}</a></div>
+    <ol class="rows">${acts.map((a,i)=>actionRow(l,a,i)).join("")}</ol>
+  </section>`;
+}
+function consultantHome(){
+  const withD=S.companies.filter(c=>latestOf(c.id)); const counts=[1,2,3,4].map(s=>withD.filter(c=>latestOf(c.id).stage===s).length); const none=S.companies.length-withD.length;
+  const max=Math.max(1,...counts,none);
+  const late=S.companies.filter(c=>companyAlerts(c.id).late), over=S.companies.reduce((a,c)=>a+companyAlerts(c.id).overdue,0), overCos=S.companies.filter(c=>companyAlerts(c.id).overdue).length;
+  const high=S.companies.filter(c=>companyAlerts(c.id).high), waiting=S.companies.filter(c=>companyAlerts(c.id).waiting);
+  return `<div class="page-head">
+    <div><h1>Sua carteira</h1><p class="meta"><span class="mono">${S.companies.length}</span> empresas · <span class="mono">${withD.length}</span> com diagnóstico concluído</p></div>
+    <div class="head-actions"><a class="btn btn-primary" href="#/relatorios/carteira" data-aioson-id="home-portfolio-report">${I.file} Relatório da carteira</a></div>
+  </div>
+  <div class="home-grid">
+    <section class="panel" aria-labelledby="h-stages" data-aioson-id="home-stages">
+      <h2 id="h-stages" class="section-title">Empresas por estágio</h2>
+      <p class="section-sub">Toque num estágio para ver as empresas dele.</p>
+      <div class="stage-bars">${counts.map((n,i)=>`<a class="stage-col" href="#/empresas?filtro=estagio-${i+1}"><span class="n">${n}</span><span class="bar" style="height:${n/max*100}%"></span><span class="l">${i+1}. ${STAGES[i]}</span></a>`).join("")}
+        <a class="stage-col none" href="#/empresas?filtro=sem-diagnostico"><span class="n">${none}</span><span class="bar" style="height:${none/max*100}%"></span><span class="l">Sem diagnóstico</span></a></div>
+    </section>
+    <section class="widgets" aria-label="O que precisa de você">
+      <a class="widget" href="#/empresas?filtro=atrasada"><h2>Reavaliação atrasada</h2><span class="go">${I.arrow}</span><span class="value">${late.length}</span><span class="sub">${late.length?late.map(c=>esc(c.name)+" ("+companyAlerts(c.id).late+" dias)").join(", "):"Nenhuma empresa passou dos "+S.reevalDays+" dias."}</span></a>
+      <a class="widget" href="#/empresas?filtro=vencidas"><h2>Ações vencidas</h2><span class="go">${I.arrow}</span><span class="value">${over}</span><span class="sub">em ${overCos} empresa${overCos===1?"":"s"}</span></a>
+      <a class="widget" href="#/empresas?filtro=risco"><h2>Risco alto</h2><span class="go">${I.arrow}</span><span class="value">${high.length}</span><span class="sub">${high.map(c=>esc(c.name)).join(", ")||"Nenhuma"}</span></a>
+      <a class="widget" href="#/empresas?filtro=aguardando"><h2>Questionários aguardando resposta</h2><span class="go">${I.arrow}</span><span class="value">${waiting.length}</span><span class="sub">${waiting.map(c=>{const s=S.sent.find(x=>x.co===c.id);return esc(c.name)+", enviado há "+daysFrom(s.date,TODAY)+" dias";}).join("; ")||"Nenhum"}</span></a>
+    </section>
+  </div>`;
+}
+
+/* ============ Empresas ============ */
+const FILTERS = [["","Todas"],["estagio-1","Estágio 1"],["estagio-2","Estágio 2"],["estagio-3","Estágio 3"],["sem-diagnostico","Sem diagnóstico"],["atrasada","Reavaliação atrasada"],["vencidas","Ações vencidas"],["risco","Risco alto"],["aguardando","Aguardando questionário"]];
+function companiesPage(r){
+  const f=r.q.filtro||"";
+  const list=S.companies.filter(c=>{ const l=latestOf(c.id), a=companyAlerts(c.id);
+    if(f.startsWith("estagio-")) return l&&l.stage===+f.split("-")[1];
+    if(f==="sem-diagnostico") return !l; if(f==="atrasada") return a.late; if(f==="vencidas") return a.overdue; if(f==="risco") return a.high; if(f==="aguardando") return a.waiting; return true; });
+  return `<div class="page-head"><div><h1>Empresas</h1><p class="meta">${list.length} de ${S.companies.length} empresas</p></div><div class="head-actions"><a class="btn" href="#/relatorios/carteira">${I.file} Relatório da carteira</a></div></div>
+  <nav class="filters" aria-label="Filtrar empresas">${FILTERS.map(x=>`<a class="filter" href="#/empresas${x[0]?"?filtro="+x[0]:""}" aria-current="${f===x[0]}">${x[1]}</a>`).join("")}</nav>
+  ${list.length?`<ul class="rows">${list.map(c=>{ const l=latestOf(c.id), a=companyAlerts(c.id); return `<li class="co-row"><div><a class="name" href="#/empresa/${c.id}">${esc(c.name)}</a><div class="muted" style="font-size:.875rem">${esc(c.segment)}</div></div>
+    <div class="hide-m">${l?`<span class="mono">${fmtDate(l.date)}</span><div class="muted" style="font-size:.875rem">Estágio ${l.stage} · ${STAGES[l.stage-1]}</div>`:'<span class="muted">Sem diagnóstico</span>'}</div>
+    <div class="chips hide-m">${a.late?`<span class="chip chip-warn">Reavaliação ${a.late} dias atrasada</span>`:""}${a.overdue?`<span class="chip chip-danger">${a.overdue} ${a.overdue>1?"ações vencidas":"ação vencida"}</span>`:""}${a.high?'<span class="chip chip-danger">Risco alto</span>':""}${a.waiting?'<span class="chip">Aguardando questionário</span>':""}</div>
+    <a class="btn btn-text" href="#/empresa/${c.id}">Abrir ${I.arrow}</a></li>`; }).join("")}</ul>`
+  :`<div class="empty-state" data-state="empty"><h2>Nenhuma empresa neste filtro</h2><p>Troque o filtro ou volte para todas as empresas.</p><a class="btn" href="#/empresas">Ver todas</a></div>`}`;
+}
+
+function companyPage(id,tab,r){
+  const c=co(id); const l=latestOf(id); const ds=diaryOf(id); const overdue=l?l.actions.filter(isOverdue).length:0;
+  const tabs=[["diagnosticos","Diagnósticos",`<span class="count">${diagsOf(id).length}</span>`],["acoes","Ações",overdue?`<span class="count attn">${overdue} vencida${overdue>1?"s":""}</span><span class="attn-dot" aria-hidden="true"></span>`:""],["diario",`<span class="d-only">Diário de números</span><span class="m-only">Diário</span>`,`<span class="count">${ds.length} ${ds.length===1?"mês":"meses"}</span>`],["relatorios","Relatórios",""]];
+  let body="";
+  if(tab==="acoes") body=actionsTab(c,r); else if(tab==="diario") body=diaryTab(c,r); else if(tab==="relatorios") body=reportsTab(c,r); else body=diagnosesTab(c);
+  return `<div class="page-head">
+    <div>${S.mode==="consultant"?'<a class="crumb" href="#/empresas">Empresas</a>':""}<h1>${esc(c.name)}</h1><p class="meta">${esc(c.segment)} · ${esc(c.channel)}${l?` · Estágio ${l.stage}, ${STAGES[l.stage-1]}`:""}</p></div>
+    <div class="head-actions">${S.mode==="consultant"?`<button class="btn" data-act="send-questionnaire" data-co="${id}" data-aioson-id="send-questionnaire" data-aioson-tour="remoto">${I.send} Enviar questionário</button><button class="btn" data-act="import-answers" data-co="${id}" data-aioson-id="import-answers">${I.upload} Importar respostas</button>`:""}<button class="btn btn-primary" data-act="new-diagnosis">Novo diagnóstico</button></div>
+  </div>
+  <nav class="tabs" aria-label="Seções da empresa" data-aioson-tour="abas">${tabs.map(t=>`<a href="#/empresa/${id}${t[0]==="diagnosticos"?"":"/"+t[0]}" ${tab===t[0]?'aria-current="page"':""} data-aioson-id="tab-${t[0]}">${t[1]} ${t[2]}</a>`).join("")}</nav>
+  ${body}`;
+}
+function diagnosesTab(c){
+  const l=diagsOf(c.id).slice().reverse(); const draft=S.drafts[c.id]; const sent=S.sent.find(s=>s.co===c.id);
+  const draftRow=draft?`<li class="tl-row" data-aioson-id="imported-draft"><span class="d">${fmtDate(draft.date)}<span class="muted" style="display:block;font:400 .875rem var(--font-structure)">Rascunho</span></span>
+    <div><h3>Respostas do cliente, importadas do arquivo</h3><div class="chips" style="margin-top:6px"><span class="chip chip-accent">Do arquivo do cliente</span><span class="chip">Enviado em ${fmtDate(draft.sentAt)}</span></div></div>
+    <div class="head-actions"><button class="btn btn-primary" data-act="review-draft">Revisar e concluir</button></div></li>`:"";
+  if(!l.length&&!draft) return `<div class="empty-state" data-state="empty"><h2>Nenhum diagnóstico ainda</h2><p>${sent?`O questionário foi enviado em ${fmtDate(sent.date)}. Quando o cliente devolver o arquivo, use "Importar respostas".`:"Comece um diagnóstico para ver o estágio, a trava e as 3 ações."}</p><button class="btn btn-primary" data-act="new-diagnosis">Começar o diagnóstico</button></div>`;
+  return `${sent&&!draft?`<div class="notice" style="margin-bottom:16px">${I.send}<span>Questionário à distância enviado em <span class="mono">${fmtDate(sent.date)}</span>. Quando o cliente devolver o arquivo de respostas, use "Importar respostas".</span></div>`:""}
+  <ul class="rows">${draftRow}${l.map(d=>`<li class="tl-row"><span class="d">${fmtDate(d.date)}<span class="muted" style="display:block;font:400 .875rem var(--font-structure)">Concluído</span></span>
+    <div><h3>Estágio ${d.stage} · ${STAGES[d.stage-1]}</h3><div class="chips" style="margin-top:6px"><span class="chip">Cálculo versão ${d.rules}</span><span class="chip">Confiança ${d.conf}</span></div></div>
+    <div class="head-actions"><a class="btn" href="#/resultado/${d.id}">Ver resultado</a><a class="btn btn-text" href="#/empresa/${c.id}/relatorios?diag=${d.id}">Relatório</a></div></li>`).join("")}</ul>`;
+}
+
+/* ============ Ações ============ */
+function actionRow(diag,a,i,closed){
+  const info=ACTIONS[a.key]; const over=!closed&&isOverdue(a); const uid=diag.id+"-"+a.key;
+  const chips=[];
+  if(a.from) chips.push(`<span class="chip chip-accent" title="O andamento veio junto">Continua do diagnóstico de ${fmtDate(diagById(a.from).date)}</span>`);
+  if(over) chips.push(`<span class="chip chip-danger">${I.alert.replace('class="icon"','class="icon" style="width:13px;height:13px"')} Vencida em ${fmtDate(a.due)}</span>`);
+  else if(a.due) chips.push(`<span class="chip">Prazo ${fmtDate(a.due)}</span>`);
+  else if(!closed) chips.push(`<span class="chip">Sem prazo</span>`);
+  if(a.role) chips.push(`<span class="chip">${esc(a.role)}</span>`);
+  if(closed) chips.push(`<span class="chip">Encerrada em ${fmtDate(a.closedAt)} · ${STATUS[a.status]}</span>`);
+  return `<li class="act ${a.status==="done"?"is-done":""} ${closed?"closed":""}" data-aioson-id="action-${uid}">
+    <span class="act-n">${closed?"·":String(i+1).padStart(2,"0")}</span>
+    <div><h3>${esc(info.title)}</h3><p class="act-reason">${esc(info.reason)}</p><div class="act-meta">${chips.join("")}</div>${a.note?`<p class="act-note">${esc(a.note)}</p>`:""}</div>
+    ${closed?"":`<div class="act-ctrl"><label class="sr-only" for="st-${uid}">Estado de ${esc(info.title)}</label>
+      <select class="input" id="st-${uid}" data-change="status" data-diag="${diag.id}" data-key="${a.key}" data-aioson-id="status-${uid}">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${a.status===k?"selected":""}>${v}</option>`).join("")}</select>
+      <button class="btn btn-text" data-act="edit-action" data-diag="${diag.id}" data-key="${a.key}" data-aioson-id="edit-${uid}">Prazo, responsável e nota</button></div>`}
+  </li>`;
+}
+function actionsTab(c){
+  const l=latestOf(c.id);
+  if(!l) return `<div class="empty-state" data-state="empty"><h2>Ainda não há ações</h2><p>As 3 ações nascem de um diagnóstico concluído.</p><button class="btn btn-primary" data-act="new-diagnosis">Começar o diagnóstico</button></div>`;
+  const r=reevalOf(c.id); const closed=closedActionsOf(c.id);
+  return `<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:8px">
+    <div><h2 class="section-title">Plano do diagnóstico de <span class="mono">${fmtDate(l.date)}</span></h2><p class="section-sub">O resultado do diagnóstico não muda. O andamento das ações fica registrado à parte.</p></div>
+    <p class="mono ${r.left<0?"":"soft"}" style="font-size:.875rem" data-aioson-id="reeval-line">${r.left>=0?`Refazer em ${fmtDate(r.due)} · faltam ${r.left} dias`:`Refazer desde ${fmtDate(r.due)} · ${-r.left} dias de atraso`}</p>
+  </div>
+  <ol class="rows" data-aioson-tour="acoes" data-aioson-id="actions-list">${l.actions.map((a,i)=>actionRow(l,a,i)).join("")}</ol>
+  <div class="notice" style="margin-top:20px">${I.check}<span>Quando sai um diagnóstico novo, a ação que se repete continua de onde parou, com estado, prazo e nota. As outras ficam encerradas aqui embaixo. O responsável é escolhido por papel (dono, equipe, consultor); o app não guarda nome de outras pessoas.</span></div>
+  ${closed.length?`<div class="pauta" aria-hidden="true"></div><h2 class="section-title" style="font-size:1.25rem">Encerradas com diagnósticos anteriores</h2><ul class="rows" style="margin-top:12px" data-aioson-id="closed-actions">${closed.map(a=>actionRow(a.diag,a,0,true)).join("")}</ul>`:""}`;
+}
+function findAction(diagId,key){ return diagById(diagId).actions.find(a=>a.key===key); }
+
+/* ============ Diário ============ */
+function diaryTab(c,r){
+  const forceEmpty=r.q.state==="empty"; const ms=forceEmpty?[]:diaryOf(c.id); const st=forceEmpty?{n:0}:diaryStatus(c.id);
+  const consultantNote=S.mode==="consultant"?`<div class="notice" style="margin-bottom:16px">${I.file}<span>Os números são de ${esc(c.name)}. Você anota o que o cliente passar, por mensagem ou na reunião.</span></div>`:"";
+  if(!ms.length) return `${consultantNote}<div class="empty-state" data-state="empty" data-aioson-tour="diario" data-aioson-id="diary-empty"><h2>Por que anotar todo mês?</h2><p>Com 3 meses de gasto para atrair clientes e de clientes novos, o FitPulse calcula sozinho quanto custa cada cliente. O próximo diagnóstico já vem com esse número medido.</p><button class="btn btn-primary" data-act="add-month" data-co="${c.id}" data-aioson-id="add-month">Anotar o primeiro mês</button></div>`;
+  const chartMs=ms.slice(0,6).reverse(); const maxC=Math.max(...chartMs.map(m=>monthCac(m)||0),1);
+  return `${consultantNote}<div class="diary-top" data-aioson-tour="diario">
+    <section class="panel" aria-labelledby="h-measured" data-aioson-id="diary-status">
+      <h2 id="h-measured" class="section-title" style="font-size:1.25rem">${st.measured?"Custo por cliente medido":"Faltam "+(3-st.n)+" "+(3-st.n===1?"mês":"meses")+" para medir"}</h2>
+      <div class="dots" aria-label="${Math.min(st.n,3)} de 3 meses">${[0,1,2].map(i=>`<i class="${i<st.n?"on":""}"></i>`).join("")}</div>
+      <p style="font:500 2.25rem/1.1 var(--font-machine)">${money(st.cac)}</p>
+      <p class="soft" style="margin-top:8px;font-size:.9375rem">${st.measured
+        ?`De ${monthShort(st.from)} a ${monthShort(st.to)}: ${money(st.sumSpend)} de gasto ÷ ${st.sumCust} clientes novos. O próximo diagnóstico já vem com esse número, marcado como <b>medido</b>. Você pode corrigir antes de concluir.`
+        :`Com ${st.n} ${st.n===1?"mês":"meses"}, o número entra no próximo diagnóstico só como sugestão, marcada como <b>estimado</b>. Com 3 meses, ele passa a contar como medido.`}</p>
+    </section>
+    <section aria-labelledby="h-chart">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px"><h2 id="h-chart" class="section-title" style="font-size:1.25rem">Custo por cliente, mês a mês</h2><button class="btn btn-primary" data-act="add-month" data-co="${c.id}" data-aioson-id="add-month">Anotar mês</button></div>
+      <div class="chart" role="img" aria-label="Custo por cliente por mês: ${chartMs.map(m=>monthShort(m.month)+" "+money(monthCac(m))).join(", ")}">${chartMs.map(m=>`<div class="col"><span class="v">${moneyShort(monthCac(m))}</span><span class="bar" style="height:${(monthCac(m)||0)/maxC*82}%"></span></div>`).join("")}</div>
+      <div class="chart-x">${chartMs.map(m=>`<span>${monthShort(m.month)}</span>`).join("")}</div>
+      <p class="muted" style="font-size:.8125rem;margin-top:8px">Custo por cliente = gasto para atrair clientes ÷ clientes novos do mês.</p>
+    </section>
+  </div>
+  <div class="pauta" aria-hidden="true"></div>
+  <ul class="rows" data-aioson-id="diary-list">${ms.map(m=>`<li class="month-row" data-aioson-id="month-${m.month}">
+    <span class="m">${monthShort(m.month)}</span>
+    <span class="num">${money(monthSpend(m))}<span class="lbl">gasto${m.total!=null?" (só o total)":(n=>" em "+n+(n===1?" parte":" partes"))(PARTS.filter(([k])=>m.parts[k]).length)}</span></span>
+    <span class="num">${m.customers}<span class="lbl">clientes novos</span></span>
+    <span class="num cac">${money(monthCac(m))}<span class="lbl">por cliente</span></span>
+    <span class="month-actions"><button class="btn btn-text" data-act="edit-month" data-co="${c.id}" data-month="${m.month}">Editar</button><button class="btn btn-text" data-act="delete-month" data-co="${c.id}" data-month="${m.month}" style="color:var(--danger)">Excluir</button></span></li>`).join("")}</ul>
+  ${ms[0].month<"2026-10"?`<p class="muted" style="margin-top:12px;font-size:.875rem">Outubro de 2026 ainda não foi anotado. Anote quando o mês fechar.</p>`:""}`;
+}
+
+/* ============ Relatórios ============ */
+function reportsTab(c,r){
+  const ds=diagsOf(c.id);
+  if(!ds.length) return `<div class="empty-state" data-state="empty" data-aioson-id="reports-empty" data-aioson-tour="relatorios"><h2>Ainda não há relatório</h2><p>O relatório nasce de um diagnóstico concluído. ${esc(c.name)} ainda não tem nenhum.</p><button class="btn btn-primary" data-act="new-diagnosis">Começar o diagnóstico</button></div>`;
+  const R=reportState(c.id,r);
+  return reportsLayout(R,r);
+}
+function portfolioPage(r){
+  if(S.mode!=="consultant") return `<div class="page-head"><div><h1>Relatório da carteira</h1></div></div><div class="empty-state" data-state="empty"><h2>Disponível no modo consultoria</h2><p>O relatório da carteira junta todas as empresas que você atende. No modo minha empresa há só uma empresa.</p><button class="btn btn-primary" data-act="toggle-mode">Trocar para o modo consultoria</button></div>`;
+  const R={type:"carteira",co:null};
+  return `<div class="page-head"><div><h1>Relatório da carteira</h1><p class="meta">Todas as empresas que você atende, numa visão só.</p></div></div>${reportsLayout(R,r)}`;
+}
+function reportState(id,r){
+  S.rep=S.rep||{}; const key=id; const ds=diagsOf(id);
+  const cur=S.rep[key]||(S.rep[key]={type:"diag",diag:ds[ds.length-1].id,from:ds.length>1?ds[ds.length-2].id:null,to:ds[ds.length-1].id,answers:false});
+  // O parâmetro da URL vale uma vez por visita; depois, o que o usuário escolhe na tela manda.
+  if(cur._qh!==location.hash){ cur._qh=location.hash;
+    if(r.q.diag&&diagById(r.q.diag)&&diagById(r.q.diag).co===id){ cur.type="diag"; cur.diag=r.q.diag; }
+    if(r.q.tipo==="evolucao"&&ds.length>1) cur.type="evo"; }
+  cur.co=id; return cur;
+}
+function reportsLayout(R,r){
+  const loading=r.q.state==="loading";
+  const pages=loading?null:buildPages(R);
+  const ds=R.co?diagsOf(R.co):[];
+  const canEvo=ds.length>1;
+  const types=R.type==="carteira"?"":`<div class="rep-types" role="radiogroup" aria-label="Tipo de relatório">
+      <button class="seg" role="radio" aria-checked="${R.type==="diag"}" data-act="rep-type" data-type="diag" data-aioson-id="type-diag" aria-label="Relatório do diagnóstico">${I.file} <span class="d-only">Relatório do diagnóstico</span><span class="m-only">Diagnóstico</span></button>
+      <button class="seg" role="radio" aria-checked="${R.type==="evo"}" ${canEvo?"":'aria-disabled="true"'} data-act="rep-type" data-type="evo" data-aioson-id="type-evo" aria-label="Relatório de evolução">${I.arrow} <span class="d-only">Relatório de evolução</span><span class="m-only">Evolução</span></button>
+    </div>${canEvo?"":`<p class="muted" style="margin:-10px 0 18px;font-size:.875rem">A evolução precisa de 2 diagnósticos concluídos da mesma empresa. Esta tem ${ds.length}.</p>`}`;
+  const controls = R.type==="carteira"
+    ? `<div class="field"><span class="label">O que entra</span><ul class="rows" style="font-size:.9375rem">${["Empresas por estágio, com a data do último diagnóstico","Reavaliações atrasadas e riscos altos","Ações vencidas de cada empresa","Como ler este relatório"].map(t=>`<li style="padding:10px 0;display:flex;gap:10px">${I.check}<span>${t}</span></li>`).join("")}</ul></div>
+       <p class="muted" style="font-size:.875rem">Exportar para planilha fica para uma versão seguinte.</p>`
+    : R.type==="diag"
+    ? `<div class="field"><label for="rep-diag">Diagnóstico</label><select class="input" id="rep-diag" data-change="rep-diag">${ds.slice().reverse().map(d=>`<option value="${d.id}" ${R.diag===d.id?"selected":""}>${fmtDate(d.date)} · Estágio ${d.stage}, ${STAGES[d.stage-1]}</option>`).join("")}</select></div>
+       <label class="switch" data-aioson-id="toggle-answers"><input type="checkbox" data-change="rep-answers" ${R.answers?"checked":""}><span><b>Incluir as respostas do questionário</b><small>Vem desligado porque as respostas mostram valores em reais, como gastos e preço médio. Ligue só se quem vai ler pode ver esses números.</small></span></label>`
+    : `<div class="form-grid"><div class="field"><label for="rep-from">De</label><select class="input" id="rep-from" data-change="rep-from">${ds.slice(0,-1).map(d=>`<option value="${d.id}" ${R.from===d.id?"selected":""}>${fmtDate(d.date)} · Estágio ${d.stage}</option>`).join("")}</select></div>
+       <div class="field"><label for="rep-to">Para</label><select class="input" id="rep-to" data-change="rep-to">${ds.slice(1).map(d=>`<option value="${d.id}" ${R.to===d.id?"selected":""}>${fmtDate(d.date)} · Estágio ${d.stage}</option>`).join("")}</select></div></div>
+       <p class="muted" style="font-size:.875rem">Usa a mesma conta da tela de comparação. Se as regras mudaram entre os dois, o diagnóstico anterior é recalculado.</p>`;
+  const b=S.brand; const hasBrand=b.name||b.logo;
+  return `${types}<section class="reports" data-aioson-id="reports">
+    <div class="rep-controls">${controls}
+      <div class="field"><span class="label">Marca na capa e no rodapé</span><div class="brand-line">${hasBrand?(b.logo?`<img src="${b.logo}" alt="">`:`<span class="mono-mark" style="display:grid;place-items:center;color:var(--paper-accent);font-weight:700">${esc(initials(b.name))}</span>`):`<span class="brand-mark" style="width:40px;height:40px">${markSvg}</span>`}
+        <div style="min-width:0;flex:1"><b style="display:block">${hasBrand?esc(b.name||"Sem nome"):"FitPulse"}</b><span class="muted" style="font-size:.875rem">${hasBrand?esc([b.phone,b.email,b.site].filter(Boolean).join(" · ")||"Sem contato"):"Você ainda não configurou uma marca própria."}</span></div>
+        <a class="btn btn-text" href="#/configuracoes">${hasBrand?"Mudar":"Configurar"}</a></div></div>
+      ${S.lastExportNotice&&S.lastExportNotice.key===repKey(R)?`<p class="export-notice" role="status" data-aioson-id="export-notice">${esc(S.lastExportNotice.text)}</p>`:""}
+    </div>
+    <div class="rep-preview" data-aioson-primary data-aioson-tour="relatorios" data-aioson-id="report-preview">
+      <div class="preview-head"><span class="mono">${loading?"Montando a prévia…":`Prévia · A4 · ${pages.length} páginas`}</span>
+        <button class="btn btn-primary" data-act="export" data-aioson-id="report-export" data-aioson-tour="exportar" ${loading?"disabled":""}>${I.download} Exportar PDF</button></div>
+      <div class="pages" ${loading?'aria-busy="true" data-state="loading"':""} aria-label="Prévia das páginas do PDF">${loading?'<div class="skeleton-page is-loading"></div><div class="skeleton-page"></div>':pages.map((p,i)=>pageFrame(p,i+1,pages.length,R)).join("")}</div>
+    </div>
+  </section>`;
+}
+function repKey(R){ return R.type+":"+(R.co||"all")+":"+(R.type==="diag"?R.diag:R.type==="evo"?R.from+">"+R.to:""); }
+function repFileName(R){
+  if(R.type==="carteira") return "carteira-"+TODAY+".pdf";
+  const c=co(R.co); if(R.type==="evo") return slug(c.name)+"-evolucao-"+diagById(R.from).date+"-a-"+diagById(R.to).date+".pdf";
+  return slug(c.name)+"-"+diagById(R.diag).date+".pdf";
+}
+function repTitle(R){ return R.type==="carteira"?"relatório da carteira":R.type==="evo"?"relatório de evolução":"relatório do diagnóstico"; }
+
+/* ---- Páginas do papel ---- */
+function footLeft(R){ const b=S.brand; const who=b.name||"FitPulse"; return who+" · "+(R.type==="carteira"?"Carteira de empresas":co(R.co).name); }
+function pageFrame(p,n,total,R){ return `<article class="paper" aria-label="Página ${n} de ${total}: ${esc(p.label)}"><div class="pg">${p.html}</div><footer class="pg-foot"><span>${esc(footLeft(R))}</span><span>Página ${n} de ${total}</span></footer></article>`; }
+function coverBrand(){
+  const b=S.brand; if(!b.name&&!b.logo) return `<div class="cover-brand"><span class="mono-mark" style="background:var(--paper-ink-mark)">${markSvg}</span><div><b>FitPulse</b><span>Diagnóstico de crescimento</span></div></div>`;
+  const contact=[b.phone,b.email,b.site].filter(Boolean).join(" · ");
+  return `<div class="cover-brand">${b.logo?`<img src="${b.logo}" alt="Logo de ${esc(b.name)}">`:`<span class="mono-mark">${esc(initials(b.name||"?"))}</span>`}<div><b>${esc(b.name||"")}</b>${contact?`<span>${esc(contact)}</span>`:""}</div></div>`;
+}
+function miniLadder(stage,prev){ return `<div><div class="mini-ladder">${[1,2,3,4].map(s=>`<i class="${s===stage?"on":prev&&s===prev?"trail":""}" style="height:${25+s*18}%"></i>`).join("")}</div><div class="mini-ladder-l">${STAGES.map((s,i)=>`<span class="${i+1===stage?"on":""}">${i+1}. ${s}</span>`).join("")}</div></div>`; }
+function coverPage(title,sub,company,extra){ return {label:"Capa",html:`${coverBrand()}<div class="cover-title">${title}</div><div class="p-rule"></div><div class="cover-company">${esc(company)}</div><div class="p-soft">${sub}</div>${extra||""}<div class="p-muted" style="font-size:1.9cqw">${S.brand.name?"Preparado por "+esc(S.brand.name)+" com o FitPulse":"Gerado com o FitPulse"} em ${fmtDate(TODAY)}</div>`}; }
+function statusTag(a){ if(isOverdue(a)) return `<span class="p-tag bad">${STATUS[a.status]} · vencida</span>`; const cls=a.status==="done"?"ok":a.status==="doing"?"warn":""; return `<span class="p-tag ${cls}">${STATUS[a.status]}</span>`; }
+function dimBars(d,prev){
+  const grp=g=>DIMS.filter(x=>x[2]===g).map(([k,n])=>{ const v=d.dims[k]; const pv=prev?prev.dims[k]:null;
+    return `<div class="p-bar"><span>${n}${!prev&&v<50?"<small>abaixo de 50</small>":""}</span><span class="p-track"><span class="t50"></span>${prev?`<span class="f before" style="width:${pv}%"></span>`:""}<span class="f ${!prev&&v<50?"low":""}" style="width:${v}%;${prev?"top:.9cqw;bottom:.9cqw":""}"></span></span><span class="v">${v}${prev?`<small style="color:var(--p-accent)">${v-pv>=0?"+":""}${v-pv}</small>`:""}</span></div>`; }).join("");
+  return `<div class="p-group">Encaixes do negócio</div><div class="p-bars">${grp("enc")}</div><div class="p-group">Frentes de crescimento</div><div class="p-bars">${grp("fr")}</div>`;
+}
+function matrix(risks){
+  let cells="";
+  for(let imp=5;imp>=1;imp--){ cells+=`<span class="ax">${imp}</span>`; for(let p=1;p<=5;p++){ const lv=riskLevel({p,i:imp}); const here=risks.map((r,ix)=>r.p===p&&r.i===imp?ix+1:0).filter(Boolean); cells+=`<span class="c ${lv}">${here.map(n=>`<span class="dot">${n}</span>`).join("")}</span>`; } }
+  cells+=`<span></span>${[1,2,3,4,5].map(p=>`<span class="ax">${p}</span>`).join("")}`;
+  const desc="Matriz de risco 5 por 5. "+risks.map((r,i)=>"Risco "+(i+1)+": probabilidade "+r.p+", impacto "+r.i+", nível "+RISK_LABEL[riskLevel(r)].toLowerCase()).join("; ")+".";
+  return `<div style="display:flex;gap:3cqw;align-items:flex-start"><div role="img" aria-label="${esc(desc)}"><div class="matrix" aria-hidden="true">${cells}</div><div class="p-muted" style="font-size:1.8cqw;margin-top:1cqw" aria-hidden="true">Probabilidade → · Impacto ↑</div></div>
+    <div class="p-muted" style="font-size:1.9cqw;display:flex;flex-direction:column;gap:1.2cqw;margin-top:1cqw"><span><span class="p-tag bad">Alto</span> 16 a 25</span><span><span class="p-tag warn">Médio</span> 8 a 15</span><span><span class="p-tag ok">Baixo</span> 1 a 7</span></div></div>`;
+}
+function howToRead(){ return {label:"Como ler este relatório",html:`<h3>Como ler este relatório</h3><div class="p-lines"></div>
+  <div class="p-cols"><div><h4>Os 4 estágios</h4><p class="p-soft">Descoberta, Ajuste, Escala e Estruturação. A empresa fica no estágio que a sua dimensão mais fraca consegue sustentar.</p></div>
+  <div><h4>Encaixes e frentes</h4><p class="p-soft">Os encaixes mostram se as peças do negócio combinam entre si. As frentes mostram o que você faz no dia a dia. Cada nota vai de 0 a 100; abaixo de 50 é sinal de alerta.</p></div>
+  <div><h4>Custo e lucro por cliente</h4><p class="p-soft">Custo por cliente é o gasto para atrair clientes dividido pelos clientes novos. Lucro por cliente é o que ele deixa enquanto continua comprando, já descontados produto e entrega.</p></div>
+  <div><h4>Confiança nos dados</h4><p class="p-soft">Alta quando quase tudo foi medido; média quando parte veio por faixa; baixa quando há muitos "não sei". Números do diário de 3 meses contam como medidos.</p></div></div>
+  <p class="p-muted" style="margin-top:auto;font-size:2cqw">Orientação baseada nas respostas da empresa. Não substitui uma análise financeira.</p>`}; }
+function buildPages(R){
+  if(R.type==="carteira") return portfolioPages();
+  const c=co(R.co);
+  if(R.type==="evo"){
+    const a=diagById(R.from), b=diagById(R.to); const st=diaryStatus(c.id); const ms=diaryOf(c.id).slice(0,6).reverse(); const maxC=Math.max(...ms.map(m=>monthCac(m)||0),1);
+    const prevActs=a.actions;
+    return [
+      coverPage("Relatório de evolução",`De <span class="p-mono">${fmtDate(a.date)}</span> a <span class="p-mono">${fmtDate(b.date)}</span> · ${daysFrom(a.date,b.date)} dias`,c.name,miniLadder(b.stage,a.stage)),
+      {label:"Antes e depois",html:`<h3>Antes e depois</h3><div class="p-lines"></div>
+        <div class="p-kpis"><div><b>${a.stage} → ${b.stage}</b><span>${b.stage>a.stage?"Subiu um degrau: "+STAGES[a.stage-1]+" para "+STAGES[b.stage-1]:"Mesmo estágio"}</span></div><div><b>${money(a.cac)==="não calculado"?"—":moneyShort(a.cac)} → ${moneyShort(b.cac)}</b><span>Custo por cliente</span></div><div><b>${Math.round(Object.values(a.dims).reduce((x,y)=>x+y)/8)} → ${Math.round(Object.values(b.dims).reduce((x,y)=>x+y)/8)}</b><span>Média das 8 dimensões</span></div></div>
+        <p>A trava mudou. Antes: <span class="p-human">${esc(a.lock)}</span> Agora: <span class="p-human">${esc(b.lock)}</span></p>
+        ${dimBars(b,a)}<p class="p-muted" style="font-size:1.9cqw">Barra tracejada: ${fmtDate(a.date)}. Barra cheia: ${fmtDate(b.date)}. Calculado com as regras versão ${b.rules} nos dois diagnósticos.</p>`},
+      {label:"Ações e números no período",html:`<h3>O que foi feito no período</h3><div class="p-lines"></div>
+        <ul class="p-acts">${prevActs.map((x,i)=>`<li><span class="n">${i+1}</span><span><strong>${esc(ACTIONS[x.key].title)}</strong><small>${b.actions.some(y=>y.key===x.key)?"Continua no plano novo":"Encerrada com o diagnóstico de "+fmtDate(b.date)}</small></span>${statusTag(x)}</li>`).join("")}</ul>
+        <h4 style="margin-top:2cqw">Custo por cliente no diário</h4>
+        ${ms.length?`<div class="p-chart">${ms.map(m=>`<div><span>${moneyShort(monthCac(m))}</span><i style="height:${(monthCac(m)||0)/maxC*78}%"></i></div>`).join("")}</div><div class="p-chart-x">${ms.map(m=>`<span>${monthShort(m.month)}</span>`).join("")}</div>
+        <p class="p-soft">${st.measured?`Média dos últimos 3 meses: <span class="p-mono">${money(st.cac)}</span>, medido.`:`${st.n} de 3 meses anotados: número ainda estimado.`}</p>`:`<p class="p-soft">Nenhum mês anotado no diário.</p>`}`},
+      howToRead()
+    ];
+  }
+  const d=diagById(R.diag); const ds=diagsOf(c.id); const idx=ds.indexOf(d); const prev=idx>0?ds[idx-1]:null; const top=d.risks.slice().sort((x,y)=>y.p*y.i-x.p*x.i)[0];
+  const pages=[
+    coverPage("Relatório do diagnóstico de maturidade",`Diagnóstico de <span class="p-mono">${fmtDate(d.date)}</span> · calculado com as regras da versão ${d.rules} · confiança nos dados: ${d.conf} (veja "Como ler", na última página)`,c.name,miniLadder(d.stage,prev&&prev.stage)),
+    {label:"Resumo executivo",html:`<h3>Resumo executivo</h3><div class="p-lines"></div>
+      <div><p style="font-size:3.6cqw;font-weight:700;letter-spacing:-.02em">Estágio ${d.stage} de 4 · ${STAGES[d.stage-1]}</p><p class="p-soft">${STAGE_PHRASES[d.stage-1]}</p></div>
+      <p>Para subir de degrau: <span class="p-human" style="font-size:2.9cqw">${esc(d.lock)}</span> <span class="p-muted">(${DIM_NAME[d.lockDim]}, ${d.dims[d.lockDim]} de 100)</span></p>
+      <div class="p-kpis"><div><b>${d.cac==null?"—":moneyShort(d.cac)}</b><span>Custo para conquistar um cliente, na data do diagnóstico${d.cac==null?" (não calculado)":""}</span></div><div><b>${d.ratio||"—"}</b><span>Lucro de um cliente comparado ao custo</span></div><div><b>${d.payback||"—"}</b><span>Tempo para o cliente se pagar</span></div></div>
+      <h4>As 3 ações</h4>
+      <ul class="p-acts">${d.actions.map((a,i)=>`<li><span class="n">${i+1}</span><span><strong>${esc(ACTIONS[a.key].title)}</strong><small>${[a.due?"Prazo "+fmtDate(a.due):"",a.role?"Responsável: "+a.role:""].filter(Boolean).join(" · ")||esc(ACTIONS[a.key].reason)}</small></span>${statusTag(a)}</li>`).join("")}</ul>
+      ${top?`<p class="p-soft" style="margin-top:auto">Risco mais alto: <b>${esc(top.t)}</b> <span class="p-tag ${riskLevel(top)==="hi"?"bad":riskLevel(top)==="md"?"warn":"ok"}">${RISK_LABEL[riskLevel(top)]} · ${top.p*top.i}</span></p>`:""}`},
+    {label:"As 8 dimensões",html:`<h3>As 8 dimensões</h3><div class="p-lines"></div><p class="p-soft">Os encaixes mostram se as peças do negócio combinam entre si; as frentes mostram o que você faz no dia a dia. Cada nota vai de 0 a 100 e a linha tracejada marca 50. Cada dimensão sustenta um estágio sozinha, e a empresa fica no estágio da mais fraca: <b>${DIM_NAME[d.lockDim]}, ${d.dims[d.lockDim]}</b>, que sustenta até o estágio ${d.stage}.</p>${dimBars(d)}`},
+    {label:"Riscos",html:`<h3>Riscos</h3><div class="p-lines"></div><p class="p-soft">Probabilidade e impacto de 1 a 5. A nota é um vezes o outro; a partir de 16, o risco é alto.</p>${matrix(d.risks)}
+      <ol class="p-risks">${d.risks.map((r,i)=>`<li><span class="dot">${i+1}</span><span><b>${esc(r.t)}</b><br><span class="p-mono p-muted" style="font-size:1.9cqw">Probabilidade ${r.p} · Impacto ${r.i} · Nota ${r.p*r.i}</span> <span class="p-tag ${riskLevel(r)==="hi"?"bad":riskLevel(r)==="md"?"warn":"ok"}">${RISK_LABEL[riskLevel(r)]}</span></span></li>`).join("")}</ol>`},
+    howToRead()
+  ];
+  if(R.answers) pages.push({label:"Respostas do questionário",html:`<h3>Respostas do questionário</h3><div class="p-lines"></div><table class="p-table"><thead><tr><th>Pergunta</th><th>Resposta</th></tr></thead><tbody>${ANSWERS.map(a=>`<tr><td>${esc(a[0])}</td><td class="p-mono">${esc(a[1])}</td></tr>`).join("")}</tbody></table><p class="p-muted" style="font-size:1.9cqw">Demonstração: no app, entram todas as perguntas dos 8 blocos.</p>`});
+  return pages;
+}
+function portfolioPages(){
+  const rows=S.companies.map(c=>({c,l:latestOf(c.id),a:companyAlerts(c.id)}));
+  return [
+    coverPage("Relatório da carteira",`${S.companies.length} empresas · situação em <span class="p-mono">${fmtDate(TODAY)}</span>`,S.brand.name?"Carteira de "+S.brand.name:"Carteira de empresas",""),
+    {label:"Empresas por estágio",html:`<h3>Empresas por estágio</h3><div class="p-lines"></div>
+      <table class="p-table"><thead><tr><th>Empresa</th><th>Estágio</th><th>Último diagnóstico</th><th>Atenção</th></tr></thead><tbody>${rows.map(({c,l,a})=>`<tr><td><b>${esc(c.name)}</b><br><span class="p-muted">${esc(c.segment)}</span></td><td>${l?l.stage+". "+STAGES[l.stage-1]:"—"}</td><td class="p-mono">${l?fmtDate(l.date):"sem diagnóstico"}</td><td>${[a.late?`<span class="p-tag warn">Reavaliação atrasada</span>`:"",a.overdue?`<span class="p-tag bad">${a.overdue} ação vencida</span>`:"",a.high?`<span class="p-tag bad">Risco alto</span>`:""].filter(Boolean).join(" ")||'<span class="p-muted">Em dia</span>'}</td></tr>`).join("")}</tbody></table>`},
+    {label:"O que precisa de atenção",html:`<h3>O que precisa de atenção</h3><div class="p-lines"></div>
+      ${rows.filter(x=>x.a.overdue).map(({c,l})=>`<div><h4>${esc(c.name)}</h4><ul class="p-acts" style="margin-top:1cqw">${l.actions.filter(isOverdue).map(a=>`<li><span class="n">!</span><span><strong>${esc(ACTIONS[a.key].title)}</strong><small>Venceu em ${fmtDate(a.due)}${a.role?" · "+esc(a.role):""}</small></span><span class="p-tag bad">Vencida</span></li>`).join("")}</ul></div>`).join("")}
+      ${rows.filter(x=>x.a.late).map(({c,a})=>`<p>${esc(c.name)}: reavaliação atrasada há <span class="p-mono">${a.late}</span> dias.</p>`).join("")}`},
+    howToRead()
+  ];
+}
+
+/* ============ Resultado ============ */
+function resultPage(d){
+  const c=co(d.co);
+  return `<div class="page-head">
+    <div><a class="crumb" href="#/empresa/${c.id}">${esc(c.name)}</a><h1>Diagnóstico de <span class="mono" style="font-size:.9em">${fmtDate(d.date)}</span></h1><p class="meta">Calculado com as regras da versão ${d.rules} · Confiança nos dados: ${d.conf}</p></div>
+    <div class="head-actions"><a class="btn" href="#/empresa/${c.id}/relatorios?diag=${d.id}" data-aioson-id="result-reports">${I.file} Relatórios</a><button class="btn btn-primary" data-act="export-diag" data-diag="${d.id}" data-aioson-id="result-pdf">${I.download} Exportar PDF</button></div>
+  </div>
+  ${S.lastExportNotice&&S.lastExportNotice.key==="diag:"+c.id+":"+d.id?`<p class="export-notice" role="status" style="text-align:right;margin-top:-12px">${esc(S.lastExportNotice.text)}</p>`:""}
+  <section class="panel result-panel">
+    <div class="stage-word">${STAGES[d.stage-1]}</div>
+    <div><p><b>Estágio ${d.stage} de 4.</b> <span class="soft">${STAGE_PHRASES[d.stage-1]}</span></p><p style="margin-top:8px"><span class="soft">Para subir de degrau:</span> <span class="human" style="font-size:1.125rem">${esc(d.lock)}</span></p></div>
+  </section>
+  <div class="pauta" aria-hidden="true"></div>
+  <h2 class="section-title">Suas próximas 3 ações</h2><p class="section-sub" style="margin-bottom:12px">O resultado não muda. O andamento das ações fica registrado à parte.</p>
+  ${d===latestOf(c.id)?`<ol class="rows">${d.actions.map((a,i)=>actionRow(d,a,i)).join("")}</ol>`
+    :(()=>{ const nx=diagsOf(c.id).find(x=>x.date>d.date); return `<div class="notice" style="margin-bottom:8px">${I.check}<span>Este plano foi encerrado com o diagnóstico de <span class="mono">${fmtDate(nx.date)}</span>. As ações que se repetiram continuam no plano novo.</span></div><ul class="rows">${d.actions.map(a=>actionRow(d,{...a,closedAt:nx.date},0,true)).join("")}</ul>`; })()}
+  <p class="muted" style="margin-top:20px;font-size:.875rem">O resto da tela de resultado (notas, números, riscos e confiança) continua como na versão atual do app.</p>`;
+}
+
+/* ============ Configurações ============ */
+function settingsPage(){
+  const b=S.brand; const f=S.brandForm||(S.brandForm={...b,errors:{}});
+  const er=f.errors||{};
+  const fld=(id,label,attrs,help)=>`<div class="field ${er[id]?"has-error":""}"><label for="b-${id}">${label}</label>${attrs}<span class="help">${help||""}</span><span class="err" id="e-${id}">${er[id]||""}</span></div>`;
+  return `<div class="page-head"><div><h1>Configurações</h1><p class="meta">Marca dos relatórios, lembrete e modo de uso.</p></div></div>
+  <section class="settings-sec" aria-labelledby="h-brand" data-aioson-tour="marca" data-aioson-id="brand-section">
+    <form id="brand-form" novalidate>
+      <h2 id="h-brand" class="section-title">Seus relatórios</h2>
+      <p class="section-sub" style="margin-bottom:20px">Nome, logo e contato de quem entrega. Saem na capa e no rodapé de todo PDF. Em branco, o PDF sai com a marca FitPulse.</p>
+      <div class="form-grid">
+        <div class="full">${fld("name",S.mode==="owner"?"Nome que aparece no relatório":"Nome de quem entrega",`<input class="input" id="b-name" name="name" maxlength="60" autocomplete="organization" value="${esc(f.name)}" data-input="brand" placeholder="${S.mode==="owner"?"Ex.: Padaria Trigo Bom":"Ex.: Rumo Consultoria"}">`,S.mode==="owner"?"Pode ser o nome da sua empresa ou de quem prepara o relatório. Até 60 letras.":"Até 60 letras.")}</div>
+        <div class="full field ${er.logo?"has-error":""}"><span class="label">Logo</span>
+          <div class="logo-box"><div class="thumb">${f.logo?`<img src="${f.logo}" alt="Logo atual">`:`<span class="mono-mark">${f.name?esc(initials(f.name)):"?"}</span>`}</div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn" for="b-logo" style="cursor:pointer">${I.upload} Escolher imagem</label><input id="b-logo" type="file" accept="image/png,image/jpeg" class="sr-only" data-change="logo" aria-describedby="e-logo">${f.logo?`<button type="button" class="btn btn-text" data-act="remove-logo" style="color:var(--danger)">Remover logo</button>`:""}</div>
+              <span class="help">PNG ou JPG até 2 MB. A imagem é reduzida para no máximo 600 px.${f.logoInfo?" "+esc(f.logoInfo):""}</span></div></div>
+          <span class="err" id="e-logo" ${er.logo?'role="alert"':""}>${er.logo||""}</span>
+          <div class="demo-row"><span>Só no protótipo:</span><button type="button" class="btn btn-text" data-act="demo-logo">Usar logo de exemplo</button><button type="button" class="btn btn-text" data-act="demo-logo-big">Simular PNG de 3,4 MB</button><button type="button" class="btn btn-text" data-act="demo-logo-svg">Simular arquivo SVG</button></div>
+        </div>
+        ${fld("phone","Telefone",`<input class="input" id="b-phone" name="phone" inputmode="tel" autocomplete="tel" maxlength="15" value="${esc(f.phone)}" data-mask="phone" data-input="brand" placeholder="(11) 91234-5678" ${er.phone?'aria-invalid="true"':""} aria-describedby="e-phone">`,"Opcional.")}
+        ${fld("email","E-mail",`<input class="input" id="b-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="80" value="${esc(f.email)}" data-input="brand" placeholder="voce@empresa.com.br" ${er.email?'aria-invalid="true"':""} aria-describedby="e-email">`,"Opcional.")}
+        <div class="full">${fld("site","Site",`<input class="input" id="b-site" name="site" inputmode="url" autocomplete="url" maxlength="80" value="${esc(f.site)}" data-input="brand" placeholder="empresa.com.br" ${er.site?'aria-invalid="true"':""} aria-describedby="e-site">`,"Opcional.")}</div>
+      </div>
+      <div class="dialog-actions" style="justify-content:flex-start"><button class="btn btn-primary" type="submit" data-aioson-id="brand-save">Salvar marca</button>${b.name||b.logo||b.phone||b.email||b.site?`<button type="button" class="btn btn-text" data-act="reset-brand">Voltar para a marca FitPulse</button>`:""}<button type="button" class="btn btn-text" data-act="brand-example">Preencher com um exemplo</button></div>
+    </form>
+    <div class="cover-preview" aria-label="Prévia da capa"><p class="muted" style="font-size:.8125rem;margin-bottom:8px">Prévia da capa com a marca salva</p>${pageFrame(coverPage("Relatório do diagnóstico de maturidade",`Diagnóstico de <span class="p-mono">27/08/2026</span>`,"Padaria Trigo Bom",miniLadder(2,1)),1,5,{type:"diag",co:"c1"})}</div>
+  </section>
+  <div class="pauta" aria-hidden="true"></div>
+  <section aria-labelledby="h-reeval-s" style="max-width:560px">
+    <h2 id="h-reeval-s" class="section-title">Lembrete de reavaliação</h2>
+    <p class="section-sub" style="margin-bottom:14px">A tela inicial avisa quando chega a hora de refazer o diagnóstico. O aviso aparece só aqui no app.</p>
+    <div class="field"><label for="reeval">Refazer o diagnóstico a cada</label><select class="input" id="reeval" data-change="reeval">${[60,90,120,180].map(n=>`<option value="${n}" ${S.reevalDays===n?"selected":""}>${n} dias${n===90?" (recomendado)":""}</option>`).join("")}</select></div>
+  </section>
+  <div class="pauta" aria-hidden="true"></div>
+  <section aria-labelledby="h-mode" style="max-width:560px">
+    <h2 id="h-mode" class="section-title">Modo de uso</h2>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+      <label class="radio-row"><input type="radio" name="mode" value="owner" data-change="mode" ${S.mode==="owner"?"checked":""}><span><b>Minha empresa</b><br><span class="muted" style="font-size:.875rem">Uma empresa em foco, com o lembrete e as ações na tela inicial.</span></span></label>
+      <label class="radio-row"><input type="radio" name="mode" value="consultant" data-change="mode" ${S.mode==="consultant"?"checked":""}><span><b>Consultoria</b><br><span class="muted" style="font-size:.875rem">Várias empresas, relatório da carteira e questionário à distância.</span></span></label>
+    </div>
+  </section>
+  <div class="pauta" aria-hidden="true"></div>
+  <section style="max-width:640px"><h2 class="section-title">Cópia de segurança</h2><p class="section-sub">Os botões "Exportar meus dados" e "Importar uma cópia" continuam como na versão atual do app. A diferença é que a cópia agora inclui a marca, o andamento das ações e o diário de números, e cópias feitas antes desta versão continuam sendo aceitas.</p></section>`;
+}
+
+/* ============ Questionário do cliente ============ */
+function clientView(r){
+  const c=co("c1"); const b=S.brand; const blk=CLIENT_BLOCKS[CQ.block]; const total=CLIENT_BLOCKS.length; const isEnd=CQ.block>=total;
+  const head=`<header class="client-head"><div class="client-brand"><span class="logo">${b.logo?`<img src="${b.logo}" alt="">`:(b.name?`<span style="font:700 1.125rem var(--font-structure);color:var(--paper-accent)">${esc(initials(b.name))}</span>`:markSvg)}</span><div><b>${esc(b.name||"Seu consultor")}</b><div class="muted" style="font-size:.875rem">${esc([b.phone,b.email].filter(Boolean).join(" · ")||"Questionário do FitPulse")}</div></div></div>
+    <a class="btn btn-text" href="#/empresa/c1">Voltar ao app (só no protótipo)</a></header>`;
+  const intro=`<div style="margin:28px 0 8px"><h1 style="font-size:2rem;letter-spacing:-.03em;line-height:1.15">Questionário de crescimento</h1><p class="soft" style="margin-top:6px">${esc(c.name)} · leva uns 12 minutos · suas respostas ficam guardadas neste computador até você salvar.</p></div>
+    <div class="notice ${r.q.state==="mobile"||window.innerWidth<700?"warn":""}" role="note" data-aioson-id="desktop-note">${I.alert}<span>Feito para abrir no <b>computador</b>. No celular, o formulário pode não funcionar direito. Se estiver no celular, abra este arquivo no computador.</span></div>`;
+  if(CQ.saved) return `<div class="client-shell">${head}<div style="margin-top:40px" data-state="success" class="success-state" data-aioson-id="client-saved">
+    <div class="result-mark ok">${I.check}<div><h2 style="font-size:1.25rem">Respostas salvas</h2><p class="soft">O arquivo foi salvo na pasta Downloads deste computador:</p><span class="file-path">respostas-${slug(c.name)}.fitpulse</span></div></div>
+    <h2 class="section-title" style="margin-top:28px;font-size:1.25rem">Agora envie o arquivo</h2><p class="soft" style="margin-top:6px">Mande este arquivo para ${esc(b.name||"o seu consultor")}${b.phone?" pelo WhatsApp "+esc(b.phone):""}${b.email?(b.phone?" ou":"")+" por e-mail para "+esc(b.email):""}. Ele importa as respostas no FitPulse e revisa com você.</p>
+    <div class="dialog-actions" style="justify-content:flex-start"><button class="btn" data-act="toast" data-msg="No arquivo real, abre a pasta Downloads.">${I.folder} Mostrar o arquivo</button></div></div></div>`;
+  let body="";
+  if(isEnd){
+    const answered=Object.keys(CQ.answers).length+(CQ.spend||CQ.spendUnknown?1:0);
+    body=`<section class="panel" style="margin-top:20px"><h2 class="section-title">Revise e salve</h2><p class="soft" style="margin-top:6px">${answered} de ${total} blocos respondidos.${answered<total?" Você pode salvar assim mesmo; o consultor vê o que ficou faltando.":""}</p>
+      <ul class="rows" style="margin-top:14px">${CLIENT_BLOCKS.map((x,i)=>{const ok=i===0?(CQ.spend||CQ.spendUnknown):CQ.answers[i]!=null; return `<li style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0"><span>${i+1}. ${x.t}</span>${ok?'<span class="chip chip-ok">Respondido</span>':`<button class="btn btn-text" data-act="cq-go" data-i="${i}">Responder</button>`}</li>`;}).join("")}</ul>
+      ${CQ.saving?`<div class="busy is-loading" aria-busy="true"><span class="spinner"></span>Salvando o arquivo de respostas…</div>`:`<div class="dialog-actions" style="justify-content:flex-start"><button class="btn" data-act="cq-go" data-i="${total-1}">Voltar</button><button class="btn btn-gold" data-act="cq-save" data-aioson-id="client-save">Salvar minhas respostas</button></div>`}</section>`;
+  } else if(blk.numbers){
+    body=`<section class="panel" style="margin-top:20px"><h2 class="section-title">${CQ.block+1}. ${blk.t}</h2><p class="soft" style="margin:6px 0 18px">Pense no último mês fechado.</p>
+      <div class="form-grid">
+        <div class="field ${CQ.err?"has-error":""}"><label for="cq-spend">Quanto você gastou para atrair clientes?</label><div class="adorn"><span>R$</span><input id="cq-spend" inputmode="numeric" data-mask="money" data-input="cq-spend" value="${esc(CQ.spend)}" ${CQ.spendUnknown?"disabled":""} ${CQ.err?'aria-invalid="true"':""} aria-describedby="e-cq"></div><span class="help">Anúncios, agência, comissões, descontos, parte do salário de quem vende e ferramentas.</span><span class="err" id="e-cq">${CQ.err||""}</span></div>
+        <div class="field"><label for="cq-cust">Quantos clientes novos vieram?</label><input class="input mono" id="cq-cust" inputmode="numeric" maxlength="5" data-mask="int" data-input="cq-cust" value="${esc(CQ.customers)}"><span class="help">Só quem comprou pela primeira vez.</span></div>
+      </div>
+      <label class="switch" style="margin-top:8px"><input type="checkbox" data-change="cq-unknown" ${CQ.spendUnknown?"checked":""}><span><b>Não sei o valor exato do gasto</b><small>Tudo bem. Na reunião, o consultor ajuda a estimar por faixa.</small></span></label>
+      <div class="dialog-actions" style="justify-content:flex-start"><button class="btn btn-primary" data-act="cq-next">Próximo bloco</button></div></section>`;
+  } else {
+    body=`<section class="panel" style="margin-top:20px"><h2 class="section-title">${CQ.block+1}. ${blk.t}</h2><p style="margin:10px 0 16px;font-size:1.0625rem">${blk.q}</p>
+      <div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="${esc(blk.q)}">${blk.o.map((o,i)=>`<label class="choice"><input type="radio" name="cq-${CQ.block}" value="${i}" data-change="cq-answer" ${CQ.answers[CQ.block]===i?"checked":""}><span>${o}</span></label>`).join("")}</div>
+      <p class="muted" style="font-size:.8125rem;margin-top:10px">Demonstração: 1 pergunta por bloco. No arquivo real vão todas as perguntas, com a mesma ajuda do app.</p>
+      <div class="dialog-actions" style="justify-content:flex-start"><button class="btn" data-act="cq-go" data-i="${CQ.block-1}">Voltar</button><button class="btn btn-primary" data-act="cq-next">${CQ.block===total-1?"Revisar":"Próximo bloco"}</button></div></section>`;
+  }
+  return `<div class="client-shell">${head}${intro}
+    <div class="rail" aria-label="Blocos do questionário">${CLIENT_BLOCKS.map((x,i)=>`<button aria-label="Bloco ${i+1}: ${x.t}" data-act="cq-go" data-i="${i}" class="${i===CQ.block?"cur":(i===0?(CQ.spend||CQ.spendUnknown):CQ.answers[i]!=null)?"done":""}"></button>`).join("")}</div>
+    <p class="mono muted" style="font-size:.8125rem">${isEnd?"Revisão":"Bloco "+(CQ.block+1)+" de "+total+" · "+CLIENT_BLOCKS[CQ.block].t}</p>${body}</div>`;
+}
+
+/* ============ Diálogos ============ */
+let lastFocus=null;
+function openDialog(html,opts={}){
+  lastFocus=document.activeElement;
+  $("#dialog-root").innerHTML=`<div class="scrim" data-act="${opts.busy?"":"scrim-close"}"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" ${opts.state?`data-state="${opts.state}"`:""}>${html}</div></div>`;
+  S.dlgOpen=true; S.dlgBusy=!!opts.busy;
+  const f=$("#dialog-root [autofocus]")||$("#dialog-root .dialog button, #dialog-root .dialog input, #dialog-root .dialog select");
+  if(f) f.focus();
+}
+function closeDialog(silent){ if(!S.dlgOpen) return; if(S.dlgBusy&&!silent) return; $("#dialog-root").innerHTML=""; S.dlgOpen=false; S.dlgCtx=null; if(lastFocus&&lastFocus.isConnected&&!silent) lastFocus.focus(); }
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){ if(S.tourStep!=null){ endTour(); return; } closeDialog(); }
+  if(e.key==="Tab"&&S.dlgOpen){ const els=[...document.querySelectorAll("#dialog-root .dialog button:not([disabled]), #dialog-root .dialog input:not([disabled]), #dialog-root .dialog select, #dialog-root .dialog textarea, #dialog-root .dialog a[href]")]; if(!els.length) return; const first=els[0], last=els[els.length-1];
+    if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); } else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); } }
+});
+function confirmDialog({title,consequence,verb,danger,onConfirm}){
+  S.dlgCtx={onConfirm};
+  openDialog(`<h2 id="dlg-title">${title}</h2><p class="consequence">${consequence}</p><div class="dialog-actions"><button class="btn" data-act="dlg-cancel" autofocus>Cancelar</button><button class="btn ${danger?"btn-danger":"btn-primary"}" data-act="dlg-confirm">${verb}</button></div>`);
+}
+
+/* Exportar PDF */
+function currentRep(){ const r=route(); if(r.parts[0]==="relatorios") return {type:"carteira",co:null}; const id=r.parts[1]; return reportState(id,r); }
+function openExport(stateName,R){
+  R=R||currentRep(); S.dlgCtx={R}; const pages=buildPages(R); const name=repFileName(R);
+  const scope=R.type==="carteira"?"Carteira de empresas":co(R.co).name;
+  const what=R.type==="carteira"?`${S.companies.length} empresas`:R.type==="evo"?`de ${fmtDate(diagById(R.from).date)} a ${fmtDate(diagById(R.to).date)}`:`diagnóstico de ${fmtDate(diagById(R.diag).date)}`;
+  const top=`<h2 id="dlg-title">Exportar o ${repTitle(R)} em PDF</h2><p class="consequence">${esc(scope)} · ${what} · ${pages.length} páginas${R.answers&&R.type==="diag"?" · com as respostas":""}</p>`;
+  if(stateName==="saving"){ openDialog(top+`<div class="busy is-loading" aria-busy="true" role="status"><span class="spinner"></span>Montando o PDF…</div>`,{busy:true,state:"loading"}); return; }
+  if(stateName==="saved"){ const path="C:\\Users\\voce\\Downloads\\"+name;
+    openDialog(top+`<div class="result-mark ok success-state" data-state="success" data-aioson-id="export-saved">${I.check}<div><b>PDF salvo na pasta Downloads</b><span class="file-path">${esc(path)}</span></div></div>
+      <div class="dialog-actions"><button class="btn" data-act="dlg-done">Fechar</button><button class="btn" data-act="show-folder" data-aioson-id="show-folder">${I.folder} Mostrar na pasta</button><button class="btn btn-primary" data-act="open-pdf" data-aioson-id="open-pdf" autofocus>${I.file} Abrir PDF</button></div>`,{state:"success"});
+    S.lastExport[R.co||"all"]=name+", salvo hoje"; S.lastExportNotice={key:repKey(R),text:"PDF salvo em Downloads: "+name}; return; }
+  if(stateName==="failed"){ openDialog(top+`<div class="result-mark bad error-state" role="alert" data-state="error" data-aioson-id="export-failed">${I.alert}<div><b>Não foi possível salvar o PDF na pasta Downloads.</b><p class="soft" style="margin-top:4px">Nada foi alterado. Confira se há espaço no disco e tente de novo.</p></div></div>
+      <div class="dialog-actions"><button class="btn" data-act="dlg-cancel">Fechar</button><button class="btn btn-primary" data-act="export-go" data-fail="0">Tentar de novo</button></div>`,{state:"error"}); return; }
+  openDialog(top+`<div class="field"><span class="label">Arquivo</span><span class="file-path">${esc(name)}</span><span class="help">Vai para a pasta Downloads. Depois de salvo, você pode abrir o PDF na hora.</span></div>
+    <div class="dialog-actions"><button class="btn" data-act="dlg-cancel">Cancelar</button><button class="btn btn-primary" data-act="export-go" autofocus data-aioson-id="export-confirm">${I.download} Salvar PDF</button></div>`);
+}
+function runExport(fail){
+  const R=S.dlgCtx.R; closeDialog(true); openExport("saving",R);
+  setTimeout(()=>{ S.dlgBusy=false; closeDialog(true); if(fail) openExport("failed",R); else { openExport("saved",R); } },900);
+}
+
+/* Editar ação */
+function openEditAction(diagId,key){
+  const a=findAction(diagId,key); const info=ACTIONS[key]; S.dlgCtx={diagId,key};
+  openDialog(`<h2 id="dlg-title">${esc(info.title)}</h2><p class="consequence">Prazo, responsável e nota desta ação.</p>
+    <form id="act-form" novalidate><div class="form-grid">
+      <div class="field" id="f-due"><label for="a-due">Prazo</label><input class="input mono" id="a-due" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" data-mask="date" value="${a.due?fmtDate(a.due):""}" aria-describedby="e-due"><span class="help">Deixe em branco para ficar sem prazo.</span><span class="err" id="e-due"></span></div>
+      <div class="field"><label for="a-role">Responsável</label><select class="input" id="a-role"><option value="">Ninguém definido</option>${ROLES.map(x=>`<option ${a.role===x?"selected":""}>${x}</option>`).join("")}</select><span class="help">Por papel, sem nome de pessoa.</span></div>
+      <div class="field full"><label for="a-note">Nota</label><textarea class="input" id="a-note" maxlength="280" data-counter="a-note-c">${esc(a.note||"")}</textarea><span class="help"><span id="a-note-c" class="mono">${(a.note||"").length}</span>/280</span></div>
+    </div><div class="dialog-actions"><button type="button" class="btn" data-act="dlg-cancel">Cancelar</button><button class="btn btn-primary" type="submit">Salvar</button></div></form>`);
+}
+
+/* Diário: mês */
+function nextMissingMonth(id){ const ms=diaryOf(id); if(!ms.length) return "2026-09"; const [y,m]=ms[0].month.split("-").map(Number); const n=m===12?[y+1,1]:[y,m+1]; return n[0]+"-"+String(n[1]).padStart(2,"0"); }
+function openMonth(coId,month){
+  const edit=month?diaryOf(coId).find(m=>m.month===month):null; const ym=edit?edit.month:nextMissingMonth(coId);
+  const totalOnly=edit?edit.total!=null:false; S.dlgCtx={coId,edit:edit?edit.month:null};
+  const mv=v=>v?(v/100).toLocaleString("pt-BR",{minimumFractionDigits:2}):"";
+  openDialog(`<h2 id="dlg-title">${edit?"Editar "+monthLong(ym):"Anotar um mês"}</h2><p class="consequence">Quanto foi gasto para atrair clientes e quantos clientes novos vieram.</p>
+    <form id="month-form" novalidate><div class="form-grid">
+      <div class="field" id="f-month"><label for="m-month">Mês</label><input class="input mono" id="m-month" inputmode="numeric" maxlength="7" placeholder="MM/AAAA" data-mask="month" value="${ym.split("-")[1]+"/"+ym.split("-")[0]}" aria-describedby="e-month" ${edit?"readonly":""}><span class="help">${edit?"Para mudar o mês, exclua e anote de novo.":"Mês fechado, até outubro de 2026."}</span><span class="err" id="e-month"></span></div>
+      <div class="field" id="f-cust"><label for="m-cust">Clientes novos no mês</label><input class="input mono" id="m-cust" inputmode="numeric" maxlength="5" data-mask="int" value="${edit?edit.customers:""}" aria-describedby="e-cust"><span class="help">Só quem comprou pela primeira vez.</span><span class="err" id="e-cust"></span></div>
+      <div class="full"><label class="switch"><input type="checkbox" id="m-total-only" data-change="total-only" ${totalOnly?"checked":""}><span><b>Só sei o total do gasto</b><small>Sem separar por parte. O custo por cliente sai igual.</small></span></label></div>
+      <div class="full" id="m-parts" ${totalOnly?"hidden":""}><div class="form-grid">${PARTS.map(([k,l])=>`<div class="field"><label for="m-${k}">${l}</label><div class="adorn"><span>R$</span><input id="m-${k}" inputmode="numeric" data-mask="money" value="${edit&&edit.parts?mv(edit.parts[k]):""}" placeholder="0,00"></div></div>`).join("")}</div><span class="help">As mesmas 6 partes do bloco "Seus números" do diagnóstico. Deixe em branco o que não teve.</span></div>
+      <div class="full field" id="f-total" ${totalOnly?"":"hidden"}><label for="m-total">Gasto total do mês</label><div class="adorn"><span>R$</span><input id="m-total" inputmode="numeric" data-mask="money" value="${edit&&edit.total!=null?mv(edit.total):""}" aria-describedby="e-total"></div><span class="err" id="e-total"></span></div>
+      <div class="full field" id="f-spend"><span class="err" id="e-spend"></span></div>
+    </div><div class="dialog-actions"><button type="button" class="btn" data-act="dlg-cancel">Cancelar</button><button class="btn btn-primary" type="submit" data-aioson-id="month-save">${edit?"Salvar":"Anotar mês"}</button></div></form>`);
+}
+function brandErr(name,msg){ S.brandForm.errors[name]=msg; const i=$("#b-"+name); if(!i) return; i.closest(".field").classList.add("has-error"); i.setAttribute("aria-invalid","true"); const e=$("#e-"+name); e.textContent=msg; e.setAttribute("role","alert"); }
+function setErr(fid,eid,msg,inputId){ const f=$("#"+fid); if(f) f.classList.toggle("has-error",!!msg); const e=$("#"+eid); if(e){ e.textContent=msg||""; if(msg) e.setAttribute("role","alert"); else e.removeAttribute("role"); } const i=inputId&&$("#"+inputId); if(i){ if(msg) i.setAttribute("aria-invalid","true"); else i.removeAttribute("aria-invalid"); } }
+
+/* Questionário à distância */
+function openSend(coId){
+  const c=co(coId); const b=S.brand; S.dlgCtx={coId};
+  const msg=`Olá! Segue o questionário do FitPulse para a ${c.name}. Abra o arquivo no computador (no celular ele pode não funcionar), responda com calma e, no fim, clique em "Salvar minhas respostas". Depois me envie o arquivo que for salvo. Leva uns 12 minutos.${b.name?"\n"+b.name:""}`;
+  openDialog(`<h2 id="dlg-title">Enviar questionário para ${esc(c.name)}</h2><p class="consequence">O FitPulse gera um arquivo que abre no navegador do computador do cliente, sem instalar nada. Você manda o arquivo por WhatsApp ou e-mail; o app não envia nada sozinho.</p>
+    <ol style="margin:0 0 16px;padding-left:20px;color:var(--text-soft);font-size:.9375rem;display:flex;flex-direction:column;gap:4px"><li>Gere o arquivo e mande para o cliente com a mensagem abaixo.</li><li>O cliente responde no computador e salva um arquivo de respostas.</li><li>Ele devolve o arquivo e você usa "Importar respostas".</li></ol>
+    <div class="field"><label for="send-msg">Mensagem para o cliente</label><textarea class="input" id="send-msg" rows="5">${esc(msg)}</textarea></div>
+    <div class="dialog-actions"><button class="btn" data-act="dlg-cancel">Cancelar</button><button class="btn" data-act="copy-msg">Copiar mensagem</button><button class="btn btn-primary" data-act="send-go" autofocus data-aioson-id="send-generate">Gerar arquivo</button></div>`);
+}
+function openImport(coId,stage,file){
+  const c=co(coId); S.dlgCtx={coId,file};
+  const title=`<h2 id="dlg-title">Importar respostas de ${esc(c.name)}</h2>`;
+  if(stage==="pick"||!stage){
+    openDialog(title+`<p class="consequence">Escolha o arquivo de respostas que o cliente devolveu. Ele vira um rascunho para você revisar e concluir.</p>
+      <p class="muted" style="font-size:.8125rem;margin-bottom:8px">Só no protótipo: arquivos de exemplo da pasta Downloads.</p>
+      <ul class="rows">${IMPORT_FILES.map((f,i)=>`<li><button class="btn btn-text" style="width:100%;justify-content:flex-start;min-height:48px;color:var(--text)" data-act="import-pick" data-i="${i}">${I.file}<span style="text-align:left"><span class="mono" style="font-size:.875rem">${esc(f.name)}</span><span class="muted" style="display:block;font-weight:400;font-size:.8125rem">recebido em ${fmtDate(f.when)}</span></span></button></li>`).join("")}</ul>
+      <div class="dialog-actions"><button class="btn" data-act="dlg-cancel">Cancelar</button></div>`); return; }
+  if(stage==="reading"){ openDialog(title+`<div class="busy is-loading" aria-busy="true" role="status"><span class="spinner"></span>Lendo o arquivo…</div>`,{busy:true,state:"loading"}); return; }
+  if(stage==="ok"){ openDialog(title+`<div class="result-mark ok success-state" data-state="success">${I.check}<div><b>Rascunho criado</b><p class="soft" style="margin-top:4px">As respostas que ${esc(c.name)} salvou em ${fmtDate(file.when)} viraram um rascunho. Revise com o cliente e conclua o diagnóstico.</p></div></div>
+      <div class="dialog-actions"><button class="btn" data-act="dlg-done">Fechar</button><button class="btn btn-primary" data-act="review-draft" autofocus>Revisar e concluir</button></div>`,{state:"success"}); return; }
+  const msgs={other:`Este arquivo é de ${esc(file.co?co(file.co).name:"outra empresa")}, não de ${esc(c.name)}.`,newer:"Este arquivo foi feito por uma versão mais nova do FitPulse. Atualize o app pelo Play e importe de novo.",invalid:"Este arquivo não é um arquivo de respostas do FitPulse."};
+  openDialog(title+`<div class="result-mark bad error-state" role="alert" data-state="error">${I.alert}<div><b>Não foi possível importar</b><p class="soft" style="margin-top:4px">${msgs[stage]} Nada foi alterado.</p></div></div>
+    <div class="dialog-actions"><button class="btn" data-act="dlg-cancel">Fechar</button><button class="btn btn-primary" data-act="import-again">Escolher outro arquivo</button></div>`,{state:"error"});
+}
+function doImport(coId,file){
+  closeDialog(true); openImport(coId,"reading",file);
+  setTimeout(()=>{ S.dlgBusy=false; closeDialog(true);
+    let res="ok"; if(file.kind==="invalid") res="invalid"; else if(file.kind==="newer") res="newer"; else if(file.co!==coId) res="other";
+    if(res==="ok"){ S.drafts[coId]={date:TODAY,sentAt:file.when}; S.sent=S.sent.filter(s=>s.co!==coId); render(); }
+    openImport(coId,res,file);
+  },700);
+}
+
+/* ============ Toast ============ */
+function toast(msg,undo){
+  const el=document.createElement("div"); el.className="toast"; el.innerHTML=`<span>${esc(msg)}</span>${undo?'<button class="btn btn-text">Desfazer</button>':""}`;
+  if(undo) el.querySelector("button").onclick=()=>{ undo(); el.remove(); };
+  const box=$("#toasts"); while(box.children.length>=2) box.firstElementChild.remove(); box.appendChild(el); setTimeout(()=>el.remove(),undo?6000:3200);
+}
+
+/* ============ Máscaras ============ */
+function maskValue(kind,v){
+  const d=v.replace(/\D/g,"");
+  if(kind==="money"){ const t=d.replace(/^0+/,"").slice(0,10); if(!t) return ""; return (parseInt(t,10)/100).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  if(kind==="int") return d.slice(0,5);
+  if(kind==="date"){ const x=d.slice(0,8); return x.length>4?x.slice(0,2)+"/"+x.slice(2,4)+"/"+x.slice(4):x.length>2?x.slice(0,2)+"/"+x.slice(2):x; }
+  if(kind==="month"){ const x=d.slice(0,6); return x.length>2?x.slice(0,2)+"/"+x.slice(2):x; }
+  if(kind==="phone"){ const x=d.slice(0,11); if(x.length<=2) return x.length?"("+x:""; if(x.length<=6) return "("+x.slice(0,2)+") "+x.slice(2); if(x.length<=10) return "("+x.slice(0,2)+") "+x.slice(2,6)+"-"+x.slice(6); return "("+x.slice(0,2)+") "+x.slice(2,7)+"-"+x.slice(7); }
+  return v;
+}
+const parseMoney = v=>v?parseInt(v.replace(/\D/g,""),10):0;
+function parseDateBR(v){ const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v); if(!m) return null; const [_,dd,mm,yy]=m; const dt=new Date(+yy,+mm-1,+dd); if(dt.getFullYear()!==+yy||dt.getMonth()!==+mm-1||dt.getDate()!==+dd) return null; return yy+"-"+mm+"-"+dd; }
+function validPhone(v){ const d=v.replace(/\D/g,""); return d.length===10||d.length===11; }
+function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+function validSite(v){ return /^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(v.trim()); }
+
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.mask){ t.value=maskValue(t.dataset.mask,t.value); }
+  if(t.dataset.counter){ const c=$("#"+t.dataset.counter); if(c) c.textContent=t.value.length; }
+  if(t.dataset.input==="brand"){ S.brandForm[t.name]=t.value; if(S.brandForm.errors[t.name]){ S.brandForm.errors[t.name]=""; const f=t.closest(".field"); f.classList.remove("has-error"); t.removeAttribute("aria-invalid"); $("#e-"+t.name).textContent=""; } }
+  if(t.dataset.input==="cq-spend"){ CQ.spend=t.value; if(CQ.err){ CQ.err=""; t.closest(".field").classList.remove("has-error"); t.removeAttribute("aria-invalid"); $("#e-cq").textContent=""; } }
+  if(t.dataset.input==="cq-cust"){ CQ.customers=t.value; }
+  if(t.id&&t.closest("#month-form")){ const map={"m-month":["f-month","e-month"],"m-cust":["f-cust","e-cust"],"m-total":["f-total","e-total"]}; if(map[t.id]) setErr(map[t.id][0],map[t.id][1],"",t.id); if(t.closest("#m-parts")||t.id==="m-total") setErr("f-spend","e-spend",""); }
+  if(t.id==="a-due") setErr("f-due","e-due","","a-due");
+});
+document.addEventListener("focusout",e=>{
+  const t=e.target; if(!t.matches) return;
+  // Validação no blur sem redesenhar a tela, para o próximo clique não cair fora do lugar.
+  if(t.id==="b-phone"&&t.value&&!validPhone(t.value)) brandErr("phone","Telefone incompleto. Use (11) 91234-5678 ou (11) 1234-5678.");
+  if(t.id==="b-email"&&t.value&&!validEmail(t.value)) brandErr("email","E-mail inválido. Use o formato voce@empresa.com.br.");
+  if(t.id==="b-site"&&t.value&&!validSite(t.value)) brandErr("site","Site inválido. Use o formato empresa.com.br.");
+  if(t.id==="a-due"&&t.value&&!parseDateBR(t.value)) setErr("f-due","e-due","Data inválida. Use DD/MM/AAAA, por exemplo 15/11/2026.","a-due");
+});
+
+/* ============ Eventos ============ */
+document.addEventListener("change",e=>{
+  const t=e.target; const k=t.dataset.change; if(!k) return;
+  if(k==="status"){ const a=findAction(t.dataset.diag,t.dataset.key); const before=a.status; a.status=t.value; render();
+    toast(`"${ACTIONS[a.key].title}" agora está ${STATUS[a.status].toLowerCase()}.`,()=>{ a.status=before; render(); }); }
+  else if(k==="rep-diag"){ const R=currentRep(); R.diag=t.value; S.reprint=1; render(); }
+  else if(k==="rep-from"){ const R=currentRep(); R.from=t.value; S.reprint=1; if(diagById(R.to).date<=diagById(R.from).date) R.to=diagsOf(R.co).find(d=>d.date>diagById(R.from).date).id; render(); }
+  else if(k==="rep-to"){ const R=currentRep(); R.to=t.value; S.reprint=1; if(diagById(R.from).date>=diagById(R.to).date) R.from=diagsOf(R.co).filter(d=>d.date<diagById(R.to).date).pop().id; render(); }
+  else if(k==="rep-answers"){ const R=currentRep(); R.answers=t.checked; S.reprint=t.checked?99:3; render(); }
+  else if(k==="reeval"){ S.reevalDays=+t.value; toast(`Lembrete a cada ${t.value} dias.`); render(); }
+  else if(k==="mode"){ setMode(t.value); }
+  else if(k==="total-only"){ $("#m-parts").hidden=t.checked; $("#f-total").hidden=!t.checked; setErr("f-spend","e-spend",""); }
+  else if(k==="logo"){ handleLogo(t.files&&t.files[0]); t.value=""; }
+  else if(k==="cq-answer"){ CQ.answers[CQ.block]=+t.value; }
+  else if(k==="cq-unknown"){ CQ.spendUnknown=t.checked; if(t.checked){ CQ.spend=""; CQ.err=""; } render(); }
+});
+document.addEventListener("submit",e=>{
+  e.preventDefault(); const f=e.target;
+  if(f.id==="brand-form"){
+    const B=S.brandForm; const er={};
+    if(B.phone&&!validPhone(B.phone)) er.phone="Telefone incompleto. Use (11) 91234-5678 ou (11) 1234-5678.";
+    if(B.email&&!validEmail(B.email)) er.email="E-mail inválido. Use o formato voce@empresa.com.br.";
+    if(B.site&&!validSite(B.site)) er.site="Site inválido. Use o formato empresa.com.br.";
+    B.errors=er; if(Object.keys(er).length){ render(); const first=$(".field.has-error input"); if(first) first.focus(); return; }
+    S.brand={name:B.name.trim(),logo:B.logo,logoInfo:B.logoInfo,phone:B.phone,email:B.email.trim(),site:B.site.trim()}; render(); toast("Marca salva. Os próximos PDFs saem com ela.");
+  }
+  if(f.id==="act-form"){
+    const v=$("#a-due").value.trim(); let due=null;
+    if(v){ due=parseDateBR(v); if(!due){ setErr("f-due","e-due","Data inválida. Use DD/MM/AAAA, por exemplo 15/11/2026.","a-due"); $("#a-due").focus(); return; } }
+    const a=findAction(S.dlgCtx.diagId,S.dlgCtx.key); a.due=due; a.role=$("#a-role").value||null; a.note=$("#a-note").value.trim();
+    closeDialog(); render(); toast("Ação atualizada.");
+  }
+  if(f.id==="month-form"){
+    const ctx=S.dlgCtx; let ok=true; const mv=$("#m-month").value; const mm=/^(\d{2})\/(\d{4})$/.exec(mv); let ym=null;
+    if(!mm||+mm[1]<1||+mm[1]>12){ setErr("f-month","e-month","Mês inválido. Use MM/AAAA, por exemplo 10/2026.","m-month"); ok=false; }
+    else { ym=mm[2]+"-"+mm[1]; if(ym>"2026-10"||ym<"2020-01"){ setErr("f-month","e-month","Use um mês entre 01/2020 e 10/2026.","m-month"); ok=false; }
+      else if(!ctx.edit&&(S.diary[ctx.coId]||[]).some(m=>m.month===ym)){ setErr("f-month","e-month",cap(monthLong(ym))+" já está anotado. Edite o mês na lista.","m-month"); ok=false; } }
+    const cv=$("#m-cust").value; if(cv===""){ setErr("f-cust","e-cust","Informe quantos clientes novos vieram. Pode ser 0.","m-cust"); ok=false; }
+    const totalOnly=$("#m-total-only").checked; let parts=null,total=null;
+    if(totalOnly){ const tv=$("#m-total").value; if(!tv){ setErr("f-total","e-total","Informe o gasto total do mês. Pode ser 0,00.","m-total"); ok=false; } else total=parseMoney(tv); }
+    else { parts={}; let any=false; PARTS.forEach(([k])=>{ const v=$("#m-"+k).value; if(v) any=true; parts[k]=parseMoney(v); }); if(!any){ setErr("f-spend","e-spend","Preencha pelo menos uma parte do gasto, ou marque \"Só sei o total\"."); ok=false; } }
+    if(!ok){ const fe=$("#month-form [aria-invalid='true'], #month-form .has-error input"); if(fe) fe.focus(); return; }
+    const entry={month:ym,parts,total,customers:+cv}; const list=S.diary[ctx.coId]||(S.diary[ctx.coId]=[]);
+    if(ctx.edit){ const i=list.findIndex(m=>m.month===ctx.edit); list[i]=entry; } else list.push(entry);
+    closeDialog(); render(); const c=monthCac(entry);
+    toast(`${cap(monthLong(ym))} ${ctx.edit?"atualizado":"anotado"}. ${c==null?"Sem clientes novos, o custo por cliente deste mês não é calculado.":"Custo por cliente: "+money(c)+"."}`);
+  }
+});
+function setMode(m){ if(S.mode===m) return; S.mode=m; toast(m==="owner"?"Modo minha empresa: o app mostra só a empresa em foco.":"Modo consultoria: todas as empresas cadastradas aparecem na carteira."); const r=route(); if(r.parts[0]==="empresas"||r.parts[0]==="relatorios"||r.parts[0]==="inicio") go("#/inicio"); else render(); }
+function handleLogo(file){
+  const B=S.brandForm; if(!file) return;
+  if(!/^image\/(png|jpeg)$/.test(file.type)){ B.errors.logo="Use uma imagem PNG ou JPG. Arquivos "+(file.name.split(".").pop()||"").toUpperCase()+" não são aceitos."; render(); return; }
+  if(file.size>2*1024*1024){ B.errors.logo="A imagem tem "+(file.size/1048576).toLocaleString("pt-BR",{maximumFractionDigits:1})+" MB. O limite é 2 MB."; render(); return; }
+  const rd=new FileReader(); rd.onload=()=>{ const img=new Image(); img.onload=()=>{ const sc=Math.min(1,600/Math.max(img.width,img.height)); const cv=document.createElement("canvas"); cv.width=Math.round(img.width*sc); cv.height=Math.round(img.height*sc); cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height); B.logo=cv.toDataURL("image/png"); B.logoInfo=sc<1?`Reduzida para ${cv.width} × ${cv.height} px.`:`Mantida em ${cv.width} × ${cv.height} px.`; B.errors.logo=""; render(); toast("Logo carregada. Clique em Salvar marca para usar."); }; img.src=rd.result; }; rd.readAsDataURL(file);
+}
+function exampleLogo(){ const cv=document.createElement("canvas"); cv.width=480; cv.height=160; const g=cv.getContext("2d"); g.fillStyle="#fffdf7"; g.fillRect(0,0,480,160); g.fillStyle="#55692a"; g.beginPath(); g.arc(80,80,52,0,Math.PI*2); g.fill(); g.fillStyle="#fffdf7"; g.font="700 54px Georgia"; g.textAlign="center"; g.textBaseline="middle"; g.fillText("R",80,84); g.fillStyle="#1c1710"; g.textAlign="left"; g.font="700 50px Inter, Segoe UI, sans-serif"; g.fillText("Rumo",150,70); g.fillStyle="#6b6252"; g.font="500 24px Inter, Segoe UI, sans-serif"; g.fillText("CONSULTORIA",152,116); return cv.toDataURL("image/png"); }
+
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act]"); if(!el) return; const act=el.dataset.act;
+  if(act==="scrim-close"){ if(e.target===el) closeDialog(); return; }
+  if(el.getAttribute("aria-disabled")==="true"){ e.preventDefault(); toast("A evolução precisa de 2 diagnósticos concluídos da mesma empresa."); return; }
+  switch(act){
+    case "toggle-theme": S.theme=S.theme==="dark"?"light":"dark"; document.documentElement.dataset.theme=S.theme; break;
+    case "toggle-mode": setMode(S.mode==="owner"?"consultant":"owner"); break;
+    case "tour-open": startTour(); break;
+    case "tour-next": stepTour(1); break;
+    case "tour-back": stepTour(-1); break;
+    case "tour-end": endTour(); break;
+    case "new-diagnosis": toast("No app, abre o questionário (já existe na versão atual)."); break;
+    case "review-draft": closeDialog(true); toast("No app, abre o rascunho no questionário para revisar e concluir."); break;
+    case "toast": toast(el.dataset.msg); break;
+    case "rep-type": { const R=currentRep(); if(R.type!==el.dataset.type){ R.type=el.dataset.type; S.reprint=0; } render(); break; }
+    case "export": openExport(); break;
+    case "export-diag": { const d=diagById(el.dataset.diag); const R=reportState(d.co,{q:{diag:d.id}}); R.type="diag"; R.diag=d.id; openExport(undefined,R); break; }
+    case "export-go": runExport(route().q.state==="error"&&el.dataset.fail!=="0"); break;
+    case "open-pdf": toast("Abrindo o PDF no leitor do computador…"); closeDialog(); render(); break;
+    case "show-folder": toast("Abrindo a pasta Downloads…"); break;
+    case "dlg-cancel": closeDialog(); break;
+    case "dlg-done": closeDialog(); render(); break;
+    case "dlg-confirm": { const fn=S.dlgCtx&&S.dlgCtx.onConfirm; closeDialog(true); if(fn) fn(); break; }
+    case "edit-action": openEditAction(el.dataset.diag,el.dataset.key); break;
+    case "add-month": openMonth(el.dataset.co); break;
+    case "edit-month": openMonth(el.dataset.co,el.dataset.month); break;
+    case "delete-month": { const coId=el.dataset.co, m=el.dataset.month;
+      confirmDialog({title:`Excluir ${monthLong(m)} do diário?`,consequence:"O custo por cliente desse mês sai da média e do próximo diagnóstico. Não dá para desfazer.",verb:"Excluir mês",danger:true,onConfirm:()=>{ S.diary[coId]=S.diary[coId].filter(x=>x.month!==m); render(); toast(cap(monthLong(m))+" excluído do diário."); }}); break; }
+    case "remove-logo": confirmDialog({title:"Remover a logo?",consequence:"Os próximos PDFs saem só com o nome de quem entrega. Você pode escolher outra imagem depois.",verb:"Remover logo",danger:true,onConfirm:()=>{ S.brandForm.logo=null; S.brandForm.logoInfo=""; S.brand.logo=null; render(); toast("Logo removida."); }}); break;
+    case "reset-brand": confirmDialog({title:"Voltar para a marca FitPulse?",consequence:"Nome, logo e contato serão apagados. Os próximos PDFs saem com a marca FitPulse. Não dá para desfazer.",verb:"Apagar a marca",danger:true,onConfirm:()=>{ S.brand={name:"",logo:null,logoInfo:"",phone:"",email:"",site:""}; S.brandForm={...S.brand,errors:{}}; render(); toast("Marca apagada. Os PDFs voltam a sair com a marca FitPulse."); }}); break;
+    case "brand-example": S.brandForm={...S.brandForm,name:"Rumo Consultoria",phone:"(11) 98877-6655",email:"marina@rumoconsultoria.com.br",site:"rumoconsultoria.com.br",logo:exampleLogo(),logoInfo:"Logo de exemplo, 480 × 160 px.",errors:{}}; render(); toast("Exemplo preenchido. Clique em Salvar marca."); break;
+    case "demo-logo": S.brandForm.logo=exampleLogo(); S.brandForm.logoInfo="Logo de exemplo, 480 × 160 px."; S.brandForm.errors.logo=""; render(); break;
+    case "demo-logo-big": S.brandForm.errors.logo="A imagem tem 3,4 MB. O limite é 2 MB."; render(); break;
+    case "demo-logo-svg": S.brandForm.errors.logo="Use uma imagem PNG ou JPG. Arquivos SVG não são aceitos."; render(); break;
+    case "send-questionnaire": openSend(el.dataset.co); break;
+    case "copy-msg": { const v=$("#send-msg").value; try{ navigator.clipboard.writeText(v).then(()=>toast("Mensagem copiada."),()=>toast("Selecione o texto e copie com Ctrl+C.")); }catch(_){ toast("Selecione o texto e copie com Ctrl+C."); } break; }
+    case "send-go": { const coId=S.dlgCtx.coId; const c=co(coId); closeDialog(true);
+      openDialog(`<h2 id="dlg-title">Enviar questionário para ${esc(c.name)}</h2><div class="busy is-loading" aria-busy="true" role="status"><span class="spinner"></span>Gerando o arquivo…</div>`,{busy:true,state:"loading"});
+      setTimeout(()=>{ S.dlgBusy=false; closeDialog(true); S.sent=S.sent.filter(s=>s.co!==coId).concat({co:coId,date:TODAY});
+        openDialog(`<h2 id="dlg-title">Arquivo gerado</h2><div class="result-mark ok success-state" data-state="success">${I.check}<div><b>Salvo na pasta Downloads</b><span class="file-path">questionario-${slug(c.name)}.html</span><p class="soft" style="margin-top:6px">Mande o arquivo com a mensagem que você copiou. Quando o cliente devolver as respostas, use "Importar respostas".</p></div></div>
+          <div class="dialog-actions"><button class="btn" data-act="dlg-done">Fechar</button><button class="btn" data-act="show-folder">${I.folder} Mostrar na pasta</button><a class="btn btn-primary" href="#/questionario-cliente" autofocus>Ver como o cliente vê</a></div>`,{state:"success"}); },700); break; }
+    case "import-answers": openImport(el.dataset.co,"pick"); break;
+    case "import-again": openImport(S.dlgCtx.coId,"pick"); break;
+    case "import-pick": { const coId=S.dlgCtx.coId; const file=IMPORT_FILES[+el.dataset.i];
+      if(S.drafts[coId]&&file.kind==="ok"&&file.co===coId){ closeDialog(true); confirmDialog({title:`Substituir o rascunho de ${esc(co(coId).name)}?`,consequence:"Já existe um rascunho em andamento. Ele será descartado e trocado pelas respostas deste arquivo. Não dá para desfazer.",verb:"Substituir rascunho",danger:true,onConfirm:()=>doImport(coId,file)}); }
+      else doImport(coId,file); break; }
+    case "cq-go": { const i=+el.dataset.i; CQ.block=Math.max(0,Math.min(CLIENT_BLOCKS.length,i)); render(); break; }
+    case "cq-next": { if(CQ.block===0&&!CQ.spendUnknown&&!CQ.spend){ CQ.err="Informe o gasto do mês ou marque \"Não sei o valor exato\"."; render(); const i=$("#cq-spend"); if(i) i.focus(); return; } CQ.block++; render(); break; }
+    case "cq-save": CQ.saving=true; render(); setTimeout(()=>{ CQ.saving=false; CQ.saved=true; render(); },800); break;
+  }
+});
+
+/* ============ Tour de primeiro uso ============ */
+const TOUR = [
+  {route:"#/empresa/c1/relatorios",sel:'[data-aioson-tour="relatorios"]',title:"Relatórios em PDF",text:"Esta é a prévia do PDF, página por página: capa, resumo, gráfico das 8 dimensões e riscos. \"Exportar PDF\" salva na pasta Downloads e deixa abrir o arquivo na hora."},
+  {route:"#/configuracoes",sel:'[data-aioson-tour="marca"]',title:"A sua marca no relatório",text:"Coloque nome, logo e contato de quem entrega. Eles saem na capa e no rodapé de todo PDF. Em branco, o PDF sai com a marca FitPulse."},
+  {route:"#/empresa/c1/acoes",sel:'[data-aioson-tour="acoes"]',title:"Acompanhar as 3 ações",text:"Marque o andamento de cada ação, com prazo e responsável. O app mostra o que venceu e quantos dias faltam para refazer o diagnóstico."},
+  {route:"#/empresa/c1/diario",sel:'[data-aioson-tour="diario"]',title:"Diário de números",text:"Anote todo mês o gasto para atrair clientes e quantos clientes novos vieram. Com 3 meses, o custo por cliente vira um número medido no próximo diagnóstico."},
+  {route:null,sel:'[data-aioson-tour="modo"]',title:"Modo consultoria",text:"Quem atende várias empresas troca o modo no topo ou em Configurações. Ganha o relatório da carteira e o questionário à distância, que o cliente responde no computador dele."}
+];
+function startTour(){ S.tourStep=0; showTourStep(); }
+function endTour(){ S.tourStep=null; $("#tour-root").innerHTML=""; document.querySelectorAll(".tour-target").forEach(x=>x.classList.remove("tour-target")); try{ sessionStorage.setItem("fp-tour-seen","1"); }catch(_){} }
+function stepTour(d){ S.tourStep=Math.max(0,Math.min(TOUR.length-1,S.tourStep+d)); showTourStep(); }
+function showTourStep(){ const st=TOUR[S.tourStep]; if(st.route&&location.hash!==st.route){ location.hash=st.route; } else { render(); } }
+function positionTour(){
+  const st=TOUR[S.tourStep]; document.querySelectorAll(".tour-target").forEach(x=>x.classList.remove("tour-target"));
+  let t=document.querySelector(st.sel); if(t&&getComputedStyle(t).display==="none") t=null;
+  if(t){ t.classList.add("tour-target"); t.scrollIntoView({block:"nearest"}); }
+  $("#tour-root").innerHTML=`<div class="tour-veil" data-act="tour-end"></div><div class="tour-pop" role="dialog" aria-modal="true" aria-labelledby="tour-title"><h2 id="tour-title">${st.title}</h2><p>${st.text}</p><p class="step">PASSO ${S.tourStep+1} DE ${TOUR.length}</p>
+    <div class="dialog-actions"><button class="btn btn-text" data-act="tour-end">Pular</button>${S.tourStep?'<button class="btn" data-act="tour-back">Voltar</button>':""}<button class="btn btn-primary" data-act="${S.tourStep===TOUR.length-1?"tour-end":"tour-next"}" data-aioson-id="tour-next">${S.tourStep===TOUR.length-1?"Entendi":"Próximo"}</button></div></div>`;
+  const pop=$(".tour-pop"); const vw=innerWidth, vh=innerHeight;
+  if(t){ const rc=t.getBoundingClientRect(); let top=rc.bottom+14; if(top+pop.offsetHeight>vh-12) top=Math.max(12,rc.top-pop.offsetHeight-14); if(top<12||vw<640) top=vh-pop.offsetHeight-16; let left=Math.min(Math.max(16,rc.left),vw-pop.offsetWidth-16); pop.style.top=top+"px"; pop.style.left=left+"px"; }
+  else { pop.style.top=(vh-pop.offsetHeight)/2+"px"; pop.style.left=(vw-pop.offsetWidth)/2+"px"; }
+  const nb=pop.querySelector('[data-aioson-id="tour-next"]'); if(nb) nb.focus();
+}
+
+/* ============ Início ============ */
+document.documentElement.dataset.theme=S.theme;
+if(!location.hash) location.replace("#/empresa/c1/relatorios");
+render();
+(function(){ let seen=false; try{ seen=sessionStorage.getItem("fp-tour-seen")==="1"; }catch(_){} const r=route(); if(!seen&&!r.q.state&&!r.q.tour&&r.parts[0]!=="questionario-cliente") startTour(); })();
+</script>
+</body>
+</html>

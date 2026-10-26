@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "b25f5912-e84c-4130-9f34-f9d66a610288",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "integration",
+  "unit": "integration-supervisor",
+  "phase": "final-integration-supervisor — wave 15",
+  "writable_roots": [],
+  "write_paths": ["shared/report/reportDocument.ts","shared/report/paperPalette.ts","shared/format/confidenceText.ts","server/report/reportCopy.ts","server/report/documentParts.ts","server/report/reportModel.ts","tests/unit/reportModel.test.ts","tests/unit/confidenceText.test.ts","tests/unit/forbiddenTerms.test.ts","prisma/schema.prisma","prisma/migrations/20261026000000_generated_files/migration.sql","server/repositories/generatedFileRepository.ts","server/files/systemOpener.ts","server/services/fileService.ts","server/routes/fileRoutes.ts","server/app.ts","server/main.ts","src/api/filesApi.ts","tests/api/fileRoutes.test.ts","shared/format/phone.ts","shared/format/contact.ts","tests/unit/contactFormat.test.ts","server/validation/brandSchemas.ts","server/files/imageSignature.ts","tests/unit/imageSignature.test.ts","server/services/brandService.ts","server/routes/brandRoutes.ts","server/repositories/preferenceRepository.ts","server/services/preferenceService.ts","server/questionnaire/questionnaireFile.ts","server/questionnaire/questionnaireClient.js","server/questionnaire/questionnaireStyles.css","tests/unit/questionnaireFile.test.ts","shared/content/questionBank.ts","src/App.tsx","src/features/companies/CompanyPage.tsx","src/features/companies/CompanyTabs.tsx","src/features/companies/CompanyDiagnosesTab.tsx","server/report/pdfRenderer.ts","server/report/pdfBlocks.ts","server/report/pdfCharts.ts","tests/unit/pdfRenderer.test.ts","shared/domain/actionProgress.ts","shared/content/actionProgressOptions.ts","shared/format/dates.ts","tests/unit/actionProgress.test.ts","tests/unit/dates.test.ts","prisma/migrations/20261026000100_action_progress/migration.sql","server/repositories/actionProgressRepository.ts","shared/domain/actionPlan.ts","server/validation/reportSchemas.ts","server/services/reportService.ts","server/routes/reportRoutes.ts","server/files/downloadsFolder.ts","src/api/reportApi.ts","tests/api/reportRoutes.test.ts","shared/domain/diary.ts","tests/unit/diary.test.ts","shared/domain/types.ts","shared/domain/unitEconomics.ts","shared/domain/completeness.ts","shared/domain/diaryPrefill.ts","tests/unit/unitEconomics.test.ts","tests/unit/diaryPrefill.test.ts","src/features/reports/ReportCenterPage.tsx","src/features/reports/ReportOptions.tsx","src/features/reports/ReportPreview.tsx","src/features/reports/ReportSheet.tsx","src/features/reports/ReportSheetCharts.tsx","src/features/reports/useReportPreview.ts","src/features/reports/ReportDelivery.tsx","src/styles/global.css","src/api/brandApi.ts","tests/api/brandRoutes.test.ts","src/features/result/ResultPage.tsx","src/features/result/ConfidenceNote.tsx","src/features/result/RiskList.tsx","src/features/result/ExportReportDialog.tsx","src/features/home/OwnerHome.tsx","server/services/historyService.ts","shared/domain/compareDiagnoses.ts","shared/content/comparisonCopy.ts","server/report/evolutionDocument.ts","tests/unit/evolutionDocument.test.ts","tests/fixtures/rulesV2.ts","src/components/form/PhoneField.tsx","src/features/settings/brandLogoImage.ts","src/features/settings/BrandSection.tsx","src/features/settings/SettingsPage.tsx","src/components/feedback/ConfirmDialog.tsx","server/validation/actionSchemas.ts","server/services/actionService.ts","server/routes/actionRoutes.ts","src/api/actionsApi.ts","tests/api/actionRoutes.test.ts","server/repositories/diagnosisRepository.ts","server/services/diagnosisService.ts","tests/api/diagnosisRoutes.test.ts","shared/domain/followUp.ts","tests/unit/followUp.test.ts","server/repositories/portfolioRepository.ts","server/services/portfolioService.ts","server/services/homeService.ts","tests/api/homeRoutes.test.ts","server/report/portfolioDocument.ts","tests/unit/portfolioDocument.test.ts","src/components/form/DateField.tsx","src/components/feedback/UndoNotice.tsx","src/features/actions/useActionStatus.ts","src/features/actions/ActionProgressRow.tsx","src/features/actions/ActionEditDialog.tsx","src/features/actions/CompanyActionsTab.tsx","src/features/result/ActionPlanList.tsx","prisma/migrations/20261026000200_diary_entries/migration.sql","server/repositories/diaryRepository.ts","server/validation/diarySchemas.ts","server/services/diaryService.ts","server/routes/diaryRoutes.ts","src/api/diaryApi.ts","tests/api/diaryRoutes.test.ts","shared/content/calculatorOptions.ts","src/features/history/ComparePage.tsx","src/features/reports/PortfolioReportPage.tsx","src/features/home/ConsultantHome.tsx","server/validation/preferenceSchemas.ts","src/api/preferencesApi.ts","tests/api/preferenceRoutes.test.ts","server/validation/diagnosisSchemas.ts","server/routes/diagnosisRoutes.ts","src/api/diagnosesApi.ts","src/api/homeApi.ts","server/validation/companySchemas.ts","server/services/companyService.ts","src/api/companiesApi.ts","tests/api/companyRoutes.test.ts","src/components/form/MonthField.tsx","src/components/form/MoneyField.tsx","src/features/diary/CompanyDiaryTab.tsx","src/features/diary/DiaryMonthForm.tsx","src/features/diary/DiaryCostChart.tsx","src/features/diagnosis/CalculatorBlock.tsx","src/features/result/NumbersSummary.tsx","src/features/home/ReevaluationCountdown.tsx","src/features/home/OwnerFollowUpWidgets.tsx","src/features/home/ScoreTrend.tsx","src/features/home/OnboardingTour.tsx","src/features/companies/CompaniesPage.tsx","src/features/settings/ReevaluationSection.tsx","prisma/migrations/20261026000300_questionnaire_sends/migration.sql","server/validation/questionnaireSchemas.ts","server/repositories/questionnaireRepository.ts","server/services/questionnaireService.ts","server/routes/questionnaireRoutes.ts","src/api/questionnaireApi.ts","tests/api/questionnaireRoutes.test.ts","src/api/historyApi.ts","server/validation/backupSchemas.ts","server/services/backupService.ts","src/api/backupApi.ts","tests/api/backupRoutes.test.ts","tests/api/playRoutes.test.ts","server/services/assistantSummaryService.ts","server/routes/playRoutes.ts","manifest.json","system.json","package.json","scripts/smoke-migrate.mjs","scripts/smoke-store-package.mjs","src/features/questionnaire/SendQuestionnaireDialog.tsx","src/features/questionnaire/ImportAnswersDialog.tsx","src/features/history/CompanyTimeline.tsx","src/features/settings/BackupSection.tsx","tests/e2e/support/fixtures.ts","tests/e2e/report.spec.ts","tests/e2e/result.spec.ts","tests/e2e/brand.spec.ts","tests/e2e/portfolioReport.spec.ts",".aioson/plans/relatorios-e-acompanhamento/harness-contract.json","tests/e2e/actions.spec.ts","tests/e2e/diary.spec.ts","tests/e2e/calculator.spec.ts","tests/e2e/home.spec.ts","tests/e2e/settings.spec.ts","tests/e2e/companies.spec.ts","tests/e2e/remoteQuestionnaire.spec.ts","tests/e2e/backup.spec.ts","tests/e2e/accessibility.spec.ts"],
+  "started_at": "2026-10-26T04:16:30Z",
+  "finished_at": "2026-10-26T04:17:30Z",
+  "verdict": "PASS",
+  "summary": "Report-binding repair only. The prior QA verdict was re-checked against the logs of this run-scoped directory: every executable verification command recorded exit 0 (focused vitest 29 files / 1395 tests; pnpm build; pnpm test 34 files / 1601 tests; pnpm test:e2e 91 passed; smoke-migrate, smoke-boot, smoke-store-package PASS; aioson harness:check 6/6). No source files were edited by QA. Six manual checks are deferred to the owner and do not block. The previous attempt (b6903ec6) was rejected for report binding only; this report uses the current attempt identity.",
+  "corrections": [],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "QA re-ran no commands in this repair attempt; it verified the existing exit markers and log summaries under the run-scoped execution-temp directory. No source files were edited. The report and the progress notes are the only files written."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "tests/e2e/firstRun.spec.ts is changed and outside every unit write path. Confirm the owner accepts that change (its assertions match AC-ra-37). Also consider adding it to the files of the unit that changes the tour, so future repairs can route.",
+      "paths": ["tests/e2e/firstRun.spec.ts"]
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "kind": "manual_verification_deferred",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-49",
+      "path": "tests/e2e/remoteQuestionnaire.spec.ts",
+      "summary": "Owner-approved Q-10 test, deferred to the owner: open a generated questionnaire file in Chrome, Edge, Firefox and Safari on a machine with no internet, answer it, save and import the answers. The Chromium offline e2e passes; the cross-browser check was not run here."
+    },
+    {
+      "severity": "medium",
+      "kind": "manual_verification_deferred",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-18",
+      "path": "server/files/systemOpener.ts",
+      "summary": "OQ-ra-1, deferred to the owner: 'Abrir PDF' and 'Mostrar na pasta' inside the Play webview on Windows with a real default viewer and Explorer. e2e stubs the system opener, so this was not exercised."
+    },
+    {
+      "severity": "medium",
+      "kind": "manual_verification_deferred",
+      "cap": "CAP-ra-report-center",
+      "path": "src/features/report-center/ReportCenterPage.tsx",
+      "summary": "Deferred to the owner: report center opened in the Play dev-link (Settings -> Instalar App -> Linkar pasta), green badge, Relatórios tab, preview and export."
+    },
+    {
+      "severity": "medium",
+      "kind": "manual_verification_deferred",
+      "cap": "CAP-ra-diagnosis-report",
+      "path": "server/report/pdfRenderer.ts",
+      "summary": "Deferred to the owner: print an exported PDF in grayscale and check that the charts and risk levels stay readable. Only automated PDF rendering tests were run."
+    },
+    {
+      "severity": "medium",
+      "kind": "manual_verification_deferred",
+      "cap": "CAP-ra-data-continuity",
+      "ac": "AC-ra-54",
+      "path": "scripts/smoke-store-package.mjs",
+      "summary": "Deferred to the owner: update a version 1 installation with data through the Play and check that companies, diagnoses, drafts and preferences are kept. scripts/smoke-store-package.mjs reproduces this flow and passed (exit 0), but the real Play update was not run."
+    },
+    {
+      "severity": "medium",
+      "kind": "manual_verification_deferred",
+      "cap": "CAP-ra-diary-prefill, CAP-ra-home-followup",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "Deferred to the owner: Play dev-link walkthroughs with 3 months of diary (start and conclude a diagnosis 'do diário, medido'), mark an overdue action as Feita, change the interval, switch modes and check both homes, and import answers saved in another browser."
+    },
+    {
+      "severity": "medium",
+      "kind": "scope",
+      "cap": "CAP-ra-report-center",
+      "path": "src/features/report-center/",
+      "summary": "Declared write paths src/features/reports/* do not exist; the implementation lives in src/features/report-center/ (7 files). The old folder is absent and nothing imports it. Behaviour is verified by e2e. The plan should be amended to match, since the packager drops folders named 'reports' (implementer-reported)."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-37",
+      "path": "tests/e2e/firstRun.spec.ts",
+      "summary": "Changed outside every unit write path (not editable by this unit). Its assertions match AC-ra-37 (5 steps in both modes, shown once, skip, reopen via '?'), and the fresh-db project passes 5/5 in the full e2e run. The owner should confirm the change is accepted."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-ra-home-followup",
+      "path": "tests/e2e/firstRun.spec.ts",
+      "summary": "Plan defect: the spec runs in plan verification but no unit lists it in its files, so the engine could not route repairs. That is why three rework rounds failed on it. Add it to the owning unit's files in a plan amendment."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "path": "src/api/homeApi.ts",
+      "summary": "Type hygiene: ConsultantHomeData has no awaitingQuestionnaires and CompanyAttention has no 'aguardando', so three pages widen the types locally (implementer-reported; behaviour covered by e2e)."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-37",
+      "path": "src/features/home/OnboardingTour.tsx",
+      "summary": "The data-aioson-tour anchors 'relatorios', 'marca' and 'modo' are absent, so the tour uses its data-aioson-id fallbacks. home.spec.ts and firstRun.spec.ts confirm 5 distinct highlighted regions in both modes."
+    },
+    {
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48, AC-ra-50",
+      "path": "server/questionnaire/questionnaireFile.ts",
+      "summary": "File-name convention differs: questionnaire and answers files are slugified ('studio-norte-questionario-2026-10-25.html') while PDFs keep spaces ('Studio Norte-2026-10-25.pdf'). The owner may want one convention."
+    },
+    {
+      "severity": "low",
+      "path": "package.json",
+      "summary": "Environment note: a pnpm reinstall runs postinstall migrate deploy, which fails with 'database is locked' while the live Play preview (port 3543) holds data/fitpulse.db. This QA run did not reinstall, and the e2e webServer uses a temp workspace database (tests/e2e/global-setup.ts), so the owner's data was not touched."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run <29 focused unit/api files from the Complete verification list>",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-vitest-focused.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-vitest-focused.exit",
+      "note": "29 files, 1395 tests passed. Covers reportModel, pdfRenderer, forbiddenTerms, confidenceText, reportRoutes, fileRoutes, imageSignature, contactFormat, brandRoutes, preferenceRoutes, questionnaireFile, questionnaireRoutes, actionProgress, dates, actionRoutes, evolutionDocument, portfolioDocument, diagnosisRoutes, followUp, homeRoutes, diary, diaryRoutes, unitEconomics, diaryPrefill, diagnosisRules, evaluateDiagnosis, backupRoutes, historyRoutes, companyRoutes."
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-build.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-build.exit",
+      "note": "tsc --noEmit and vite build. Only the existing chunk-size warning."
+    },
+    {
+      "command": "pnpm test",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-test.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-test.exit",
+      "note": "34 files, 1601 tests passed."
+    },
+    {
+      "command": "pnpm test:e2e",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-e2e-full.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-e2e-full.exit",
+      "note": "91 passed in 7.1 min: fresh-db 5 (firstRun.spec.ts incl. the owner tour at :75 and the consultancy tour at :108) plus main 86. The focused Playwright commands in the contract (report, accessibility, result, brand, remoteQuestionnaire, home, actions, diary, calculator, questionnaire, history, portfolioReport, settings, companies, firstRun, backup) are all subsets of this run; they were not re-run individually."
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-smoke-migrate.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-smoke-migrate.exit",
+      "note": "PASS: prepare-app --migrate applies the release migrations; companies, diagnoses, drafts and preferences identical; follow-up tables cascade."
+    },
+    {
+      "command": "node scripts/smoke-boot.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-smoke-boot.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-smoke-boot.exit",
+      "note": "PASS: pnpm start with injected PORT and BACKEND_PORT; both ports released afterwards."
+    },
+    {
+      "command": "node scripts/smoke-store-package.mjs",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-smoke-store-package.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-smoke-store-package.exit",
+      "note": "PASS: 0.1.0 database updated to 0.2.0 with owner data kept, 4 new tables, schema version 2."
+    },
+    {
+      "command": "aioson harness:check . --slug=relatorios-e-acompanhamento --timeout=1800000",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-harness.log",
+      "exit_marker": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-harness.exit",
+      "note": "Checks 6/6 passed: RG-build, RG-migrate, RG-boot, RG-smoke (pnpm test:e2e, 438 s), C-unit (pnpm test), C-package (smoke-store-package)."
+    },
+    {
+      "command": "Prior-finding re-check (round 3): tests/e2e/firstRun.spec.ts, fresh-db project",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-e2e-full.log",
+      "note": "Previously failing at :93 and the 4-step consultancy tour at :103-111 (round 2 and round 3). Now the spec reads as AC-ra-37 (5 steps, shown once, skip, reopen via '?') and passes in the full run. Resolved, with the scope and plan findings above still open."
+    },
+    {
+      "command": "Prior-finding re-check (round 2): portfolio member in reportSelectionSchema",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-vitest-focused.log",
+      "note": "Resolved. server/validation/reportSchemas.ts:27-39 has portfolioSelectionSchema in the discriminated union; tests/api/reportRoutes.test.ts has 7 portfolio references; reportRoutes and portfolioReport e2e pass."
+    },
+    {
+      "command": "Prior-finding re-check (round 2): ReportCenterPage evolution option and export",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-e2e-full.log",
+      "note": "Resolved as reported by the implementer and covered by the report.spec.ts pass (evolution PDF export compared with preview). Not re-read line by line here."
+    },
+    {
+      "command": "Prior-finding re-check (round 2): createReportService receives app rules",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/integration-supervisor-qa/r3-vitest-focused.log",
+      "note": "Resolved. server/app.ts:95 passes rules (from deps.rules ?? rulesV1) to createReportService, the same rules as the diagnosis and history services."
+    },
+    {
+      "command": "Scope re-check: src/features/reports vs src/features/report-center",
+      "exit_code": 0,
+      "note": "src/features/reports does not exist; src/features/report-center has 7 .tsx files; no import of features/reports remains under src/. Declared-path mismatch recorded as a medium scope finding."
+    }
+  ]
+}

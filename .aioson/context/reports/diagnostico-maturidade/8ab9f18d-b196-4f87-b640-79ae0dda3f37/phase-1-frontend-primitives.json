@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "e478fead-7da2-4d6c-aba5-3e6be1532c8a",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-1-frontend-primitives",
+  "started_at": "2026-10-23T03:37:17Z",
+  "finished_at": "2026-10-23T03:43:50Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/components/ui/alert-dialog.tsx",
+    "src/components/ui/input.tsx",
+    "src/components/ui/label.tsx",
+    "src/components/feedback/ConfirmDialog.tsx",
+    "src/components/feedback/StatusView.tsx",
+    "src/components/form/TextField.tsx",
+    "src/components/form/CnpjField.tsx",
+    "src/components/form/MoneyField.tsx",
+    "src/api/httpClient.ts"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "The AC-dm-17 and AC-dm-48 behavior (fix a field then click submit; confirm/cancel/Esc on every status action) has no e2e run yet. These primitives aren't mounted by any page, and tests/e2e/companies.spec.ts and the pages belong to sibling units.",
+      "paths": ["tests/e2e/companies.spec.ts"]
+    },
+    {
+      "kind": "assumption",
+      "severity": "low",
+      "summary": "server/http/errorHandler.ts did not exist yet, so httpClient assumes the error body { error: { code, message, details?, requestId? } }. It also accepts { error: \"text\" } and an x-request-id header. A network failure becomes ApiError status 0, code network_error.",
+      "paths": ["src/api/httpClient.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-dev/build.log",
+      "summary": "tsc --noEmit (covers src, server, shared, tests) found 0 errors; vite build succeeded"
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "Primitive APIs: TextField({ id, label, value, onValueChange?, hint?, optional?, error?, onErrorChange?, validate?(value)=>string|null, valid? } + input props). The error line is always reserved. With onErrorChange the parent owns the error; without it the field keeps its own copy, re-seeded whenever the error prop changes. validate runs on blur, except when focus moves to a submit button of the same form or to an element under [data-skip-blur-validation]. While an error is shown, validate runs again on each change, so fixing the value clears the error (AC-dm-17). CnpjField({ value: masked string, onValueChange(masked) }) is optional by default, has label 'CNPJ', inputMode numeric, maxLength 18 and validates with getCnpjError on blur. Pass extractCnpjDigits(value) to the API. MoneyField({ cents: number|null, onCentsChange(cents|null), validate?(cents) }) uses inputMode decimal and the caret-preserving mask; null is an empty field.",
+      "paths": ["src/components/form/TextField.tsx", "src/components/form/CnpjField.tsx", "src/components/form/MoneyField.tsx"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "ConfirmDialog({ open, onOpenChange, title, consequence, confirmLabel, cancelLabel='Cancelar', tone: 'destructive'|'gate'|'metal' (default destructive), onConfirm: () => void|Promise<void>, pending?, dataId? }). Radix traps the focus, Esc cancels and the focus starts on Cancel. The dialog stays open while onConfirm's promise runs and closes only when it resolves. A rejection shows error.message inline (role=alert) and keeps the dialog open. While busy, both buttons are aria-disabled and Esc/Cancel are blocked. The second click of a double-click (event.detail>1) never confirms. Pass the destructive count in consequence (AC-dm-07). StatusView({ state: 'loading'|'empty'|'error', title?, description?, action?, onRetry?, retryLabel='Tentar de novo', icon?, dataId? }) renders data-state, role=status for loading and role=alert for error.",
+      "paths": ["src/components/feedback/ConfirmDialog.tsx", "src/components/feedback/StatusView.tsx"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "httpClient.get/post/patch/put/delete<T>(path, body?, { query?, signal? }) only accepts paths that start with '/api/' and are same-origin. query skips null, undefined and empty values. It returns undefined on 204 or a non-JSON response and throws ApiError { status, code, message, details?, requestId? }. Use isApiError(e) to branch on e.code, e.g. 409 when deleting a company that is not archived.",
+      "paths": ["src/api/httpClient.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "httpClient expects backend errors as { error: { code, message, details?, requestId? } } with the HTTP status preserved. Please keep server/http/errorHandler.ts and domainError on this shape, or tell the frontend lane. Remaining integration checks: pnpm test:e2e -- tests/e2e/companies.spec.ts (AC-dm-17: invalid CNPJ, fix it, click Salvar right after; AC-dm-48: confirm and cancel for archive, restore and delete, Esc cancels, focus trapped, no native dialogs) and tests/e2e/calculator.spec.ts for MoneyField (AC-dm-15).",
+      "paths": ["src/api/httpClient.ts", "server/http/errorHandler.ts", "tests/e2e/companies.spec.ts", "tests/e2e/calculator.spec.ts"]
+    }
+  ]
+}

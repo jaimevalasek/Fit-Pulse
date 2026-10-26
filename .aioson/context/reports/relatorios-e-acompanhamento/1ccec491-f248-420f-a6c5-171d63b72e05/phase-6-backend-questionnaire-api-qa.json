@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "b3da289c-9068-40fc-978d-27af8d37cebe",
+  "unit": "phase-6-backend-questionnaire-api",
+  "agent": "qa",
+  "host": "claude",
+  "lane": "backend",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T00:50:00Z",
+  "finished_at": "2026-10-26T00:54:00Z",
+  "verdict": "PASS",
+  "scope": {
+    "caps": ["CAP-ra-remote-questionnaire"],
+    "acs": ["AC-ra-48", "AC-ra-51", "AC-ra-52", "AC-ra-53"],
+    "interfaces": ["IF-011"]
+  },
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "tests/e2e/remoteQuestionnaire.spec.ts",
+      "summary": "Not run: pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts. Outside this unit's Done-when (the e2e depends on the frontend unit, which has not landed). Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "Not run: pnpm exec playwright test tests/e2e/home.spec.ts. Outside this unit's Done-when; depends on the home/attention units. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-51",
+      "path": "tests/e2e/questionnaire.spec.ts",
+      "summary": "Not run: pnpm exec playwright test tests/e2e/questionnaire.spec.ts. Outside this unit's Done-when; depends on the frontend unit. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "tests/api/homeRoutes.test.ts",
+      "summary": "Not run: pnpm exec vitest run tests/api/homeRoutes.test.ts. Outside this unit's Done-when; needs the attention unit's listAwaiting consumer. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "tests/api/companyRoutes.test.ts",
+      "summary": "Not run by this QA pass: pnpm exec vitest run tests/api/companyRoutes.test.ts. Outside the Done-when; the implementer reported it passing as a neighbor regression check. Deferred to integration to re-run."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-48",
+      "path": "package.json",
+      "summary": "Not run: pnpm build. Requires the frontend units to land. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "AC-ra-49",
+      "path": "tests/e2e/remoteQuestionnaire.spec.ts",
+      "summary": "Not run: the Q-10 browser matrix (Gmail/Outlook/WhatsApp x Chrome/Edge/Firefox/Safari) and the dev-link walkthrough in the Play. Manual, owner-approved, requires running UI. Deferred to integration."
+    },
+    {
+      "kind": "other_unit_failure",
+      "severity": "low",
+      "cap": "CAP-ra-remote-questionnaire",
+      "ac": "",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "pnpm exec tsc --noEmit exits 1 with 3 errors, all in src/features/home/OwnerHome.tsx (2) and src/features/home/ScoreTrend.tsx (1). Not this unit's files; zero errors in the unit's files. Belongs to concurrent home/frontend work."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/questionnaireRoutes.test.ts tests/api/diagnosisRoutes.test.ts",
+      "result": "PASS - 2 files, 137 tests passed, exit 0 (observed by QA)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-qa/vitest.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-qa/vitest.exit"
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "result": "PASS - 5/5 steps including 20261026000300_questionnaire_sends, exit 0 (observed by QA)",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-qa/smoke-migrate.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-qa/smoke-migrate.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "result": "exit 1, 3 errors, all in src/features/home (other unit); none in unit files (informational, not in Done-when)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-6-backend-questionnaire-api-qa/tsc.exit"
+    },
+    {
+      "command": "static review of unit files against AC-ra-48/51/52/53",
+      "result": "No defect found. Code paths checked: send (company lookup, saveFile, recordSend with rollback of the file), importAnswers (size 413, invalid/newer_version/answers_other_company/answers_incompatible order, clock clamp, draft_exists 409 with draftCreatedAt, replaceDraft swap in one transaction, markSendsAnswered in afterCreate), route mounting before the app 1mb parser, requireJsonWrites satisfied by httpClient sending {} as JSON, migration SQL and Prisma model consistent with cascade. Tests use the real database (no vi.mock)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred checks to run once the frontend and attention units land: pnpm build; pnpm exec vitest run tests/api/homeRoutes.test.ts tests/api/companyRoutes.test.ts; pnpm exec playwright test tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/home.spec.ts tests/e2e/questionnaire.spec.ts; Q-10 browser matrix approved by the owner; dev-link walkthrough in the Play (send, answer in another browser, import, review)."
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "Backup and restore (IF-009: server/services/backupService.ts, backupSchemas.ts) do not carry questionnaire_sends. A restored backup forgets which companies were waiting for answers. Decide in Phase 7 whether the backup should include them. This unit did not touch the backup files.",
+      "paths": ["server/services/backupService.ts", "server/validation/backupSchemas.ts"]
+    },
+    {
+      "to": "unit:phase-6-backend-questionnaire-attention",
+      "kind": "contract_change",
+      "text": "Use createQuestionnaireRepository(prisma) from server/repositories/questionnaireRepository.ts. listAwaiting(companyId?) returns sends with answeredAt IS NULL, newest first. findClientSavedAtByDraft(draftId) returns Date or null for the timeline mark. draftId has no foreign key.",
+      "paths": ["server/repositories/questionnaireRepository.ts", "prisma/schema.prisma"]
+    }
+  ]
+}

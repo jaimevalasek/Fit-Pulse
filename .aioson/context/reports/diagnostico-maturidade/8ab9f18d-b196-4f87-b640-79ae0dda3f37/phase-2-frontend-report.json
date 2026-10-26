@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "ab384408-0c6a-4835-ab00-04d6b3d80136",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "unit": "phase-2-frontend-report",
+  "started_at": "2026-10-23T04:46:02Z",
+  "finished_at": "2026-10-23T04:48:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/reportApi.ts",
+    "src/features/result/ExportReportDialog.tsx",
+    "src/features/result/ResultPage.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "The previous attempt's upstream finding (415 json_required on body-less POST) is already fixed: httpClient now sends Content-Type application/json and a `{}` body on every POST/PUT/PATCH. exportReport() relies on that fix and posts without a body. No edit was made to httpClient.ts."
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "ResultPage now has 17 import statements. The advisory limit is 15, and the file was already at 16 before this unit. Adding ExportReportDialog was the minimum needed. Bringing the count back under 15 would mean splitting ResultView or ResultHeader into its own file, which is out of this unit's allowed files."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "AC-dm-36 capability checks were not run: `pnpm test -- tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts`, `pnpm test:e2e -- tests/e2e/report.spec.ts`, and exporting from the Play webview. The tests belong to the concurrent backend unit and phase 4-integration-e2e-features (report.spec.ts does not exist yet), and the Play dev-link smoke needs the running Play desktop. These checks are deferred to integration by the unit contract."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-frontend-report-dev/build.log",
+      "summary": "tsc --noEmit && vite build: built in 916ms, exit 0"
+    },
+    {
+      "kind": "implementation",
+      "ac": "AC-dm-36",
+      "summary": "The 'Exportar PDF' button (data-aioson-id result-pdf) sits next to CompareWithLink in ResultHeader and opens the 'Relatório em PDF' dialog (pdf-modal). 'Salvar PDF' calls POST /api/diagnoses/:id/report via exportReport(). On success, a role=status message (result-pdf-saved) shows fileName and directory from the response. On failure, a role=alert message (result-pdf-error) shows the server message plus 'Nada foi alterado no diagnóstico.', with a 'Tentar de novo' button. Esc or Fechar cannot close the dialog while a save is running. After the dialog closes, a role=status notice (result-pdf-notice) next to the button reports saved, cancelled or failed. The result page itself is never changed."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "src/api/reportApi.ts exports exportReport(diagnosisId): Promise<{ fileName, directory }> (POST /api/diagnoses/:id/report, IF-006). UI hooks for tests/e2e/report.spec.ts: button [data-aioson-id=result-pdf] with text 'Exportar PDF'; dialog [data-aioson-id=pdf-modal] titled 'Relatório em PDF'; confirm button 'Salvar PDF', which becomes 'Tentar de novo' after a failure; success role=status [data-aioson-id=result-pdf-saved] containing fileName and directory; failure role=alert [data-aioson-id=result-pdf-error]; after close, role=status [data-aioson-id=result-pdf-notice] with 'PDF salvo em {directory}: {fileName}', 'Exportação cancelada. Nenhum PDF foi salvo. Nada foi alterado no diagnóstico.' or 'A exportação falhou. ...'.",
+      "paths": ["src/api/reportApi.ts", "src/features/result/ExportReportDialog.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Deferred AC-dm-36 checks to run after all producers finish: (1) pnpm test -- tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts; (2) pnpm test:e2e -- tests/e2e/report.spec.ts, which should export from the result page and check the result-pdf-saved message and the file in the injected downloadsDir; (3) in the Play dev-link, open a completed result, click Exportar PDF, then Salvar PDF, and open the file in <home>/Downloads to confirm every AC-dm-36 field. Make sure server/app.ts mounts reportRoutes, which is owned by phase-2-backend-report.",
+      "paths": ["server/app.ts", "server/routes/reportRoutes.ts"]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "39920982-32d4-4579-b266-8cab1822b523",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-4-frontend-diary",
+  "started_at": "2026-10-26T00:42:36Z",
+  "finished_at": "2026-10-26T00:53:30Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/components/form/MonthField.tsx",
+    "src/features/diary/CompanyDiaryTab.tsx",
+    "src/features/diary/DiaryMonthForm.tsx",
+    "src/features/diary/DiaryCostChart.tsx",
+    "src/features/companies/CompanyTabs.tsx",
+    "src/App.tsx",
+    "src/features/diagnosis/CalculatorBlock.tsx",
+    "src/features/result/NumbersSummary.tsx"
+  ],
+  "summary": "Diary tab at #/empresa/:companyId/diario (tab 'Diário' between Ações and Relatórios): empty state with the approved copy and 'Anotar o primeiro mês', consultant-mode notice (F12), status panel with 'N de 3 meses anotados' / 'Medido: de {mês} a {mês}' and the recent cost, 6-month chart with the value written on every bar plus the summary sentence, month rows keyed by month with Editar/Excluir; 'Anotar um mês'/'Editar {mês}' dialog with MonthField (MM/AAAA, inputmode numeric, read-only with 'Para mudar o mês, exclua e anote de novo.' when editing), new customers (5 digits), the 6 parts or 'Só sei o total do gasto', errors on each field (client + server fields/month_taken); delete through ConfirmDialog 'Excluir {mês} do diário?' / 'Excluir mês'. CalculatorBlock shows 'do diário: ...' marks, the single total ('Total em 3 meses', 'Dividir por parte'), drops a mark locally when the number is edited (carryDiaryMarks) and offers 'Usar o diário' (IF-007 applyDiarySuggestion). NumbersSummary shows 'Origem: do diário, medido|estimado' when given the stored calculator. MoneyField reused without change. Screens call only IF-006 (diaryApi) and IF-007 (diagnosesApi.applyDiarySuggestion + shared diaryPrefill helpers).",
+  "findings": [
+    {
+      "kind": "pre_existing_failure",
+      "severity": "medium",
+      "text": "`pnpm typecheck` exits 1 with exactly 3 errors, none in this unit's files: src/features/home/OwnerHome.tsx(5,36) and (198,35), src/features/home/ScoreTrend.tsx(1,15) — HomeTrendPoint/trend removed by phase-5-backend-home; the phase-5-backend-home note says 5-frontend-owner-home (wave 10) removes them. All files of this unit typecheck clean.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx"]
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "medium",
+      "text": "AC-ra-46 result origin: NumbersSummary now takes an optional `calculator` prop and prints 'Origem: do diário, medido|estimado', but src/features/result/ResultPage.tsx (not in this unit) still renders <NumbersSummary economics={result.unitEconomics} /> and must pass calculator={diagnosis.calculator}; NumbersAside in ResultPage may also want the same origin line.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/features/result/NumbersSummary.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "tests/e2e/diary.spec.ts and the diary/prefill cases of tests/e2e/calculator.spec.ts do not exist yet (outside this unit's write paths), so AC-ra-38/40/41/42/44/46 have no e2e evidence from this unit; the Play dev-link walkthrough (3 months -> new diagnosis -> 'do diário, medido') was not run (no live Play here)."
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "Regression e2e (main project, --no-deps): calculator.spec.ts 4/4 pass; companies.spec.ts 6/7 — 'searches by name, filters by stage...' fails on a strict-mode duplicate 'Limpar filtros' link in CompaniesPage.tsx, which phase-5-frontend-consultant-settings is editing concurrently. The fresh-db firstRun owner-tour test fails on /inicio (OwnerHome trend gap above).",
+      "paths": ["src/features/companies/CompaniesPage.tsx", "tests/e2e/companies.spec.ts"]
+    },
+    {
+      "kind": "assumption",
+      "severity": "low",
+      "text": "'Usar o diário' calls POST /api/diagnoses/:id/diary-suggestion and then hands the returned calculator to the existing autosave onChange (QuestionnairePage/useDraftAutosave are outside this unit), which sends one PATCH with the same values; the server's carryDiaryMarks keeps the marks because the values are equal. A typed patch still in flight at the moment of the click could land after the POST and drop the marks."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm typecheck",
+      "result": "exit 1; 3 errors total, all in OwnerHome.tsx/ScoreTrend.tsx (other unit); 0 errors in this unit's files",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-frontend-diary-dev/typecheck.log"
+    },
+    {
+      "check": "IF-only usage: grep of @/api imports in the unit's screens",
+      "result": "diary screens import only @/api/diaryApi (IF-006) and isApiError; CalculatorBlock imports only applyDiarySuggestion from @/api/diagnosesApi (IF-007); no fetch()"
+    },
+    {
+      "check": "pnpm exec playwright test tests/e2e/calculator.spec.ts tests/e2e/companies.spec.ts --project=main --no-deps",
+      "result": "exit 1: 10 passed, 1 failed (companies filter, CompaniesPage duplicate link — concurrent unit)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-frontend-diary-dev/e2e-main.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "NumbersSummary has a new optional prop `calculator?: CalculatorInput`. ResultPage must render <NumbersSummary economics={result.unitEconomics} calculator={diagnosis.calculator} /> so the result shows 'Origem: do diário, medido' / 'Origem: do diário, estimado' (AC-ra-46); without it the typed-origin labels stay.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/features/result/NumbersSummary.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Selectors for tests/e2e/diary.spec.ts: tab [data-aioson-id=tab-diario]; container company-diary (data-state empty|success); diary-empty, add-month, diary-consultant-note, diary-status, diary-progress, diary-recent-cost, diary-chart, chart-YYYY-MM, diary-chart-summary, diary-list, month-YYYY-MM, edit-month-YYYY-MM, delete-month-YYYY-MM, diary-notice (role=status), month-modal, month-form, month-month, month-customers, month-total-only, month-total, month-parts, month-spend-error, month-save, diary-delete-confirm. Calculator: diary-suggestion, diary-use, spend-diary-mark, new-customers-diary-mark, spend-single-total, spend-split-parts. Run: pnpm exec playwright test tests/e2e/diary.spec.ts tests/e2e/calculator.spec.ts tests/e2e/questionnaire.spec.ts, then the Play dev-link walkthrough (anotar 3 meses -> novo diagnóstico -> concluir -> 'do diário, medido').",
+      "paths": ["src/features/diary/CompanyDiaryTab.tsx", "src/features/diary/DiaryMonthForm.tsx", "src/features/diagnosis/CalculatorBlock.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "'Usar o diário' replaces the draft numbers through the existing autosave onChange after the POST; if strict ordering is wanted, useDraftAutosave could expose a flush/replace that skips the follow-up PATCH (QuestionnairePage/useDraftAutosave are outside this unit).",
+      "paths": ["src/features/diagnosis/useDraftAutosave.ts", "src/features/diagnosis/QuestionnairePage.tsx"]
+    }
+  ]
+}

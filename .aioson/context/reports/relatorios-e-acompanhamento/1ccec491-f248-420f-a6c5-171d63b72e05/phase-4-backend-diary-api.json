@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "d3204517-1d6f-4499-a76a-4852f5e0a4c1",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "started_at": "2026-10-25T23:46:58Z",
+  "finished_at": "2026-10-25T23:55:00Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "The backup export/import (server/services/backupService.ts, server/validation/backupSchemas.ts) does not carry diary_entries. A restored backup brings companies and diagnoses but no diary months. Those files are outside this unit; the integration owner decides whether the diary must travel in the backup.",
+      "paths": ["server/services/backupService.ts", "server/validation/backupSchemas.ts"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "`prisma migrate diff --from-migrations --to-schema` reports only 'Redefined table diagnoses' (the dbgenerated JSON defaults, already there before this unit). The new diary_entries table has no drift against schema.prisma.",
+      "paths": ["prisma/schema.prisma", "prisma/migrations/20261026000200_diary_entries/migration.sql"]
+    },
+    {
+      "kind": "note",
+      "severity": "low",
+      "text": "shared/content/calculatorOptions.ts was listed as allowed but needs no change: SPEND_PART_OPTIONS already holds the 6 parts the diary form reuses. Left untouched on purpose.",
+      "paths": ["shared/content/calculatorOptions.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/api/diaryRoutes.test.ts tests/api/companyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "2 test files passed, 106 tests passed",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-api-dev/vitest.log"
+    },
+    {
+      "command": "node scripts/smoke-migrate.mjs",
+      "exit_code": 0,
+      "result": "PASS (5/5 steps, new migration applied on first install and on update)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-api-dev/smoke-migrate.log"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no type errors (includes server, src/api and tests)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-backend-diary-api-dev/tsc.log"
+    },
+    {
+      "ac": "AC-ra-39",
+      "result": "tests/api/diaryRoutes.test.ts 'errors on the field, with nothing written': future month (accepts the current one), invalid month (5 shapes), missing month, empty customers, empty spend (parts / total / both empty), all errors reported together, 409 month_taken with the approved text on fields.month, 6 parallel POSTs of one month give one 201 and five 409, row count unchanged after every refusal"
+    },
+    {
+      "ac": "AC-ra-43",
+      "result": "tests/api/diaryRoutes.test.ts 'money in whole cents, with limits': fraction of a cent, negative, above 9999999999 and text are refused in a part and in the total; 9999999999 is accepted and read back exact; stored as SQLite integer (typeof = integer); new customers limits 0..99999"
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-4-frontend-diary",
+      "kind": "contract_change",
+      "text": "IF-006 as built in src/api/diaryApi.ts: getDiary(companyId), addDiaryMonth(companyId, {month:'YYYY-MM', newCustomers, spendParts?|spendTotalCents?}), updateDiaryMonth(companyId, month, {newCustomers, spendParts?|spendTotalCents?}), deleteDiaryMonth(companyId, month). Every call (POST 201, PUT 200, DELETE 200, GET 200) answers the whole DiaryView {entries, progress, chart}, so redraw from the response. Send parts OR total, never both (both -> 400 on spendTotalCents). Omit empty parts (null/'' parts are refused). Error fields in the 400 validation_failed body: month, newCustomers, spendParts (empty spend in parts mode), spendParts.<part> (a bad value in one part), spendTotalCents (bad value, or empty total when only spendTotalCents:null is sent). The 409 month_taken carries the same {fields:{month}} so the error lands on the month field. 404 codes: company_not_found, diary_month_not_found. PUT accepts a month in the body only if equal to the route month (else 400 fields.month 'Para mudar o mês, exclua e anote de novo.'); simplest is to not send it. The current month is accepted; only a later month is refused.",
+      "paths": ["src/api/diaryApi.ts", "server/validation/diarySchemas.ts", "server/routes/diaryRoutes.ts"]
+    },
+    {
+      "to": "unit:phase-4-backend-diary-prefill",
+      "kind": "contract_change",
+      "text": "For the 3 most recent months use createDiaryRepository(prisma).findMostRecent(companyId, 3) from server/repositories/diaryRepository.ts: it returns DiaryEntry[] (shared/domain/diary.ts type: month, newCustomers, spendParts|null, spendTotalCents|null, spend in whole cents as plain numbers), newest first. findByCompany(companyId) returns all of them. The repository is the only place that touches the diary_entries table; the table and Prisma client (prisma.diaryEntry) are already generated.",
+      "paths": ["server/repositories/diaryRepository.ts", "prisma/schema.prisma"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Backup export/import does not include diary_entries (see finding). Also still to run at integration: pnpm build, the e2e specs of the phase (tests/e2e/diary.spec.ts) and the dev-link walkthrough in the Play, none of which belong to this unit. Reminder: `node scripts/prepare-app.mjs --generate` must run after pulling this schema change so the Prisma client in server/generated knows DiaryEntry (already regenerated in this worktree).",
+      "paths": ["server/services/backupService.ts", "server/validation/backupSchemas.ts"]
+    }
+  ]
+}

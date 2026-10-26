@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "b8e42aab-a98a-4817-a244-9beafd432a59",
+  "unit": "phase-5-frontend-consultant-settings",
+  "wave": 9,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-25T22:30:00-03:00",
+  "finished_at": "2026-10-25T22:35:00-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-home-followup"],
+    "acceptance_criteria": ["AC-ra-34", "AC-ra-35", "AC-ra-62"],
+    "interfaces": ["IF-008", "IF-009", "IF-010"],
+    "unit_files": [
+      "src/features/home/ConsultantHome.tsx",
+      "src/features/companies/CompaniesPage.tsx",
+      "src/features/settings/ReevaluationSection.tsx",
+      "src/features/settings/SettingsPage.tsx"
+    ],
+    "done_when": "pnpm typecheck passa"
+  },
+  "corrections": [],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Literal `pnpm typecheck` exits 1 in this session because pnpm's verify-deps-before-run saw package.json change (phase-7-backend-release is editing it) and ran `pnpm install`; its postinstall `prisma migrate deploy` then failed with 'database is locked' on data/fitpulse.db. The script it runs is `tsc --noEmit`, which exits 0 with the same tree. Once phase-7-backend-release finishes and no process holds data/fitpulse.db, run `pnpm install` once, then `pnpm typecheck` and confirm exit 0.",
+      "paths": ["package.json", "data/fitpulse.db"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Capability-level checks not run by this unit (owned by integration, after the sibling e2e specs exist): pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/settings.spec.ts tests/e2e/companies.spec.ts tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts, covering AC-ra-34 (interval options 60/90/120/180 with reload), AC-ra-35 (?atencao= drill-down filters), AC-ra-62 (mode switch), plus the Play dev-link walkthrough.",
+      "paths": ["src/features/home/ConsultantHome.tsx", "src/features/companies/CompaniesPage.tsx", "src/features/settings/ReevaluationSection.tsx", "src/features/settings/SettingsPage.tsx"]
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "",
+      "path": "package.json",
+      "summary": "The literal Done-when command `pnpm typecheck` was run twice in the foreground (logs typecheck-1.log and typecheck-2.log, exit codes 1 and 1). Both failed inside pnpm's automatic dependency install (postinstall prisma migrate deploy: 'database is locked' on data/fitpulse.db) before tsc ran. This is environmental: phase-7-backend-release is editing package.json and about 20 other node processes are running. It is not a type error. The same script run as `pnpm --config.verify-deps-before-run=false typecheck` exited 0 with no TS errors (typecheck-3-noverify.log, exit code 0). The literal command still needs one clean run at integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-34",
+      "path": "tests/e2e/settings.spec.ts",
+      "summary": "Behavioural check not run: the settings interval (60/90/120/180 days) must persist after reload. Only the option list was confirmed by reading ReevaluationSection.tsx line 12. The e2e spec was not run because it belongs to integration (`pnpm exec playwright test tests/e2e/settings.spec.ts`)."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-35",
+      "path": "tests/e2e/home.spec.ts",
+      "summary": "Behavioural check not run: consultant home attention links must drill down to /empresas?atencao=<atrasada|vencidas|risco|rascunhos|sem-diagnostico|aguardando> and CompaniesPage must apply the filter. Verified only by grep anchors (ConsultantHome.tsx buildAttentionHref, CompaniesPage.tsx parseAttention and listCompanies call). Integration should run tests/e2e/home.spec.ts and tests/e2e/companies.spec.ts."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-home-followup",
+      "ac": "AC-ra-62",
+      "path": "tests/e2e/firstRun.spec.ts",
+      "summary": "Behavioural check not run: consultant/owner mode switch (AC-ra-62). Not exercised here. Integration should run tests/e2e/firstRun.spec.ts and tests/e2e/accessibility.spec.ts and do the Play dev-link walkthrough."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (foreground, run 1)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-1.log",
+      "exitcode_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-1.exitcode",
+      "summary": "Failed in pnpm auto-install postinstall (prisma migrate deploy: database is locked). No tsc output reached."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm typecheck (foreground, re-run)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-2.log",
+      "exitcode_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-2.exitcode",
+      "summary": "Same DB-lock failure in the postinstall step. Not attributable to the unit."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm --config.verify-deps-before-run=false typecheck",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-3-noverify.log",
+      "exitcode_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-5-frontend-consultant-settings-qa/typecheck-3-noverify.exitcode",
+      "summary": "Runs the project's `typecheck` script (`tsc --noEmit`) without the automatic install. Exit 0. The log has no 'error TS' lines, so no type errors in the unit files or the sibling files."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/settings/ReevaluationSection.tsx",
+      "summary": "Line 12: INTERVAL_OPTIONS = [60, 90, 120, 180]; line 13: RECOMMENDED_INTERVAL = 90. Line 53: data-aioson-id=settings-reevaluation-interval. Matches the spec options."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/home/ConsultantHome.tsx",
+      "summary": "buildAttentionHref (line ~43) builds /empresas?atencao=<attention>. The 'aguardando' value is typed locally (HomeAttention). Line 34-35 reads awaitingQuestionnaires ?? [] (IF-011 optional key). Line 170 reads data.overdueActions and line 181 reads data.reevaluationDays. The anchors consult-attention (line 212) and data-attention (line 221) are present."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/companies/CompaniesPage.tsx",
+      "summary": "URL owns filters: ?atencao= parsed by parseAttention (line 57) and sent to listCompanies (line 90). 'aguardando' is a local ListAttention type (line 14) cast to CompanyAttention at the call. 'Limpar filtros' (lines 233, 269) and 'Nenhuma empresa encontrada' (line 265) are present."
+    },
+    {
+      "kind": "inspection",
+      "path": "src/features/companies/CompaniesPage.tsx",
+      "summary": "Line 14 types 'aguardando' as a local ListAttention and line 90 casts attention to CompanyAttention. This is a cast, not a type guard. Under tsc the cast compiles, and the server returns the set (IF-011). Noted for the owner; not a defect."
+    }
+  ]
+}

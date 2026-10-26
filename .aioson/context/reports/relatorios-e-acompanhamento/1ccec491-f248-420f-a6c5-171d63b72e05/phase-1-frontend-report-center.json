@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "604a7a1e-d546-48a9-b0af-c4bf017bc297",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "unit": "phase-1-frontend-report-center",
+  "started_at": "2026-10-25T23:20:21Z",
+  "finished_at": "2026-10-25T23:28:36Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/features/reports/useReportPreview.ts",
+    "src/features/reports/ReportSheetCharts.tsx",
+    "src/features/reports/ReportSheet.tsx",
+    "src/features/reports/ReportPreview.tsx",
+    "src/features/reports/ReportOptions.tsx",
+    "src/features/reports/ReportDelivery.tsx",
+    "src/features/reports/ReportCenterPage.tsx",
+    "src/styles/global.css"
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "e2e checks for AC-ra-01/02/03/04/19/58 (pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts) were not run: ReportCenterPage is not routed yet because src/App.tsx is outside this unit's allowed files, and the e2e specs belong to integration.",
+      "paths": ["src/App.tsx", "tests/e2e/report.spec.ts", "tests/e2e/accessibility.spec.ts"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "summary": "Smoke test in the Play dev-link webview (open the center, toggle answers, Exportar PDF, Abrir PDF, Mostrar na pasta) was not run: it needs the route wiring and a running Play instance.",
+      "paths": ["src/features/reports/ReportCenterPage.tsx", "src/features/reports/ReportDelivery.tsx"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "The center lists the company's completed diagnoses with getTimeline (src/api/historyApi.ts, the existing v1 history route). IF-001/IF-002 have no route that lists diagnoses. Every report and file call uses only IF-001 (getReportPreview, exportReportFile) and IF-002 (openSavedFile, revealSavedFile).",
+      "paths": ["src/features/reports/ReportCenterPage.tsx"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "The 'Relatório de evolução' option is always off for now. Below 2 completed diagnoses it shows the BR-ra-02 sentence. With 2 or more it says the evolution comes in a later version, because ReportSelection has no evolution kind yet. ReportOptions takes an evolutionSupported prop that phase 2 can turn on.",
+      "paths": ["src/features/reports/ReportOptions.tsx"]
+    },
+    {
+      "kind": "scope_note",
+      "severity": "low",
+      "summary": "The brand line in the options ('Marca na capa e no rodapé') was left out: it belongs to CAP-ra-brand (phase 2). The sheet already draws the cover brand from the document's cover block.",
+      "paths": ["src/features/reports/ReportOptions.tsx", "src/features/reports/ReportSheet.tsx"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm typecheck",
+      "result": "exit 0, 0 'error TS' lines",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-dev/typecheck.log"
+    },
+    {
+      "kind": "command",
+      "command": "pnpm exec vite build --outDir <run temp>/vite-out --emptyOutDir",
+      "result": "exit 0; the report-sheet/sheet-* CSS was compiled into the bundle; only the existing >500 kB chunk warning",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-frontend-report-center-dev/vite-build.log"
+    },
+    {
+      "kind": "contract_review",
+      "summary": "Report calls go only through src/api/reportApi.ts (getReportPreview with AbortSignal, exportReportFile) and src/api/filesApi.ts (openSavedFile, revealSavedFile, OpenFailureDetails.directory). Pages are drawn from ReportDocument/ReportPage/ReportBlock (shared/report/reportDocument.ts), with colors from PAPER_PALETTE/PAPER_TONE_* (shared/report/paperPalette.ts). Non-cover pages print page.title, like pdfRenderer.drawPage. A riskMatrix followed by a riskList share one spread, like drawRiskSpread. The footer reads 'Página N de M'."
+    },
+    {
+      "kind": "ac_mapping",
+      "summary": "AC-ra-01: ReportCenterPage is a company layout child (useCompanyOutlet) with options on the left and the paged preview on the right; ?diagnostico= picks the diagnosis. AC-ra-02: useReportPreview fetches on every selection change, aborts the call in flight, and findChangedPageId marks the changed page (JSON diff per page.id); ReportPreview remounts that sheet with the .is-reprinted band and scrolls to it. AC-ra-03: the empty state has 'Começar o diagnóstico' or 'Continuar o diagnóstico' and no export; Evolução is aria-disabled with the BR-ra-02 sentence. AC-ra-04: loading uses StatusView aria-busy and the .report-pages aria-busy skeleton; errors use role=alert with 'Tentar de novo' and show no pages. AC-ra-19: ReportDelivery shows the write_failed message and 'Tentar de novo', and nothing else changes. AC-ra-58: the reprint (700 ms), page entry (220 ms), skeleton pulse and switch transitions are only under @media (prefers-reduced-motion: no-preference)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Wire the route in src/App.tsx (not in this unit's allowed files): inside <Route path=\"empresa/:companyId\" element={<CompanyPage .../>}> add <Route path=\"relatorios\" element={<ReportCenterPage />} /> with import { ReportCenterPage } from \"@/features/reports/ReportCenterPage\". The page reads ?diagnostico=<id> to pre-select the result's diagnosis. Then run: pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/accessibility.spec.ts, and the dev-link smoke in the Play (Relatórios -> toggle answers -> Exportar PDF -> Abrir PDF / Mostrar na pasta).",
+      "paths": ["src/App.tsx", "src/features/reports/ReportCenterPage.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Stable selectors for e2e: report-type-diagnosis, report-type-evolution (aria-disabled), report-evolution-note, report-diagnosis (select), report-include-answers (label around a checkbox), report-preview, report-sheet (one per page; aria-label 'Página N de M: {page.title}', data-page-id; the changed page has class is-reprinted), report-export, report-pdf-saved, report-open-pdf, report-show-folder, report-open-error, report-export-error, report-export-retry, reports-empty, reports-loading, reports-error, report-preview-error. The preview and export calls go to /api/reports/preview and /api/reports/export, so a test can route them to simulate failures.",
+      "paths": ["src/features/reports/ReportCenterPage.tsx", "src/features/reports/ReportPreview.tsx", "src/features/reports/ReportDelivery.tsx"]
+    },
+    {
+      "to": "unit:phase-1-frontend-result",
+      "kind": "contract_change",
+      "text": "ReportDelivery is reusable for the inline delivery on the result screen: <ReportDelivery onExport={() => exportReport(diagnosisId)} /> (props: onExport(): Promise<ReportExport>, disabled?, className?). It renders the 'Exportar PDF' button (data-aioson-id report-export), then 'Salvando…', then 'PDF salvo' with Abrir PDF/Mostrar na pasta, and the write failure with 'Tentar de novo'. To link to the center on a diagnosis, use #/empresa/{companyId}/relatorios?diagnostico={diagnosisId}.",
+      "paths": ["src/features/reports/ReportDelivery.tsx"]
+    },
+    {
+      "to": "unit:phase-2-frontend-evolution-portfolio",
+      "kind": "note",
+      "text": "ReportOptions has an evolutionSupported prop (default false) and hard-selects 'diagnosis'. When the evolution selection is added to ReportSelection, make the type controlled (value + onTypeChange), add the De/Para selects, and pass evolutionSupported from ReportCenterPage.",
+      "paths": ["src/features/reports/ReportOptions.tsx", "src/features/reports/ReportCenterPage.tsx"]
+    },
+    {
+      "to": "unit:phase-2-frontend-brand",
+      "kind": "note",
+      "text": "ReportSheet CoverBlock already draws brand.logoDataUrl (img alt=\"\"), brand.name, contactLine and credit from the cover block. The sheet's paper CSS variables (--p-*) come from PAPER_PALETTE in the PAPER_STYLE constant.",
+      "paths": ["src/features/reports/ReportSheet.tsx"]
+    }
+  ]
+}

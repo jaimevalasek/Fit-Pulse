@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "098c860a-2657-4b7a-9709-a336784a0b50",
+  "unit": "phase-1-frontend-primitives",
+  "phase": "1-frontend-primitives",
+  "wave": 3,
+  "lane": "frontend",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T03:43:00Z",
+  "finished_at": "2026-10-23T03:47:00Z",
+  "verdict": "PASS",
+  "capabilities": ["CAP-dm-company", "CAP-dm-unit-economics"],
+  "acceptance_criteria": ["AC-dm-17", "AC-dm-48"],
+  "interfaces": ["IF-004", "IF-010"],
+  "done_when": "pnpm build sai com 0",
+  "corrections": [
+    {
+      "path": "src/api/httpClient.ts",
+      "summary": "Moved buildUrl(path, query) out of the fetch try-block in request(). A non-/api/ path is a caller bug and now throws its own Error instead of being reported as ApiError network_error with the 'Verifique se o app está aberto' message. Build re-run after the edit: exit 0."
+    }
+  ],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-17",
+      "path": "tests/e2e/companies.spec.ts",
+      "summary": "AC-dm-17 behavior (invalid CNPJ, fix it, click Salvar right after, no stale error) was not exercised in a browser. Not run: `pnpm test:e2e -- tests/e2e/companies.spec.ts`. tests/e2e/ does not exist yet and the page that mounts CnpjField/TextField belongs to the phase-1-frontend-companies unit. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-company",
+      "ac": "AC-dm-48",
+      "path": "tests/e2e/companies.spec.ts",
+      "summary": "AC-dm-48 behavior (confirm and cancel for archive, restore and delete; Esc cancels; focus trapped on Cancel-first dialog; no native dialogs) was not exercised in a browser. Not run: `pnpm test:e2e -- tests/e2e/companies.spec.ts`. No page mounts ConfirmDialog yet. Deferred to integration."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-unit-economics",
+      "ac": "AC-dm-17",
+      "path": "tests/e2e/calculator.spec.ts",
+      "summary": "MoneyField caret-preserving mask and money-typing flow were not exercised in a browser. Not run: `pnpm test:e2e -- tests/e2e/calculator.spec.ts`. The calculator page that mounts MoneyField is not in this unit. Deferred to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/build.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/build.exit",
+      "summary": "Run 1, before the httpClient edit: tsc --noEmit clean, vite build succeeded (31 modules, built in 915ms)."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/build2.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-primitives-qa/build2.exit",
+      "summary": "Run 2, after the httpClient edit: tsc --noEmit clean, vite build succeeded (built in 1.35s); no error lines in the log."
+    },
+    {
+      "kind": "review",
+      "summary": "Read all 9 unit files. Checked TextField blur/revalidate/caret logic, CnpjField and MoneyField against shared/format/cnpj.ts and shared/format/money.ts (maskCnpjInput/maskMoneyInput signatures and return shapes match), ConfirmDialog busy/Esc/Cancel guards against Radix AlertDialog semantics, StatusView roles, and httpClient error mapping against server/http/errorHandler.ts (emits { error: { code, message, ... } }, matching the assumed shape)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred e2e checks once the pages exist: `pnpm test:e2e -- tests/e2e/companies.spec.ts` (AC-dm-17: invalid CNPJ, fix it, click Salvar right after; AC-dm-48: confirm and cancel for archive, restore and delete, Esc cancels, focus trapped, no native dialogs) and `pnpm test:e2e -- tests/e2e/calculator.spec.ts` (money masking). Both need the companies and calculator pages to mount these primitives.",
+      "paths": ["tests/e2e/companies.spec.ts", "tests/e2e/calculator.spec.ts", "src/components/feedback/ConfirmDialog.tsx", "src/components/form/CnpjField.tsx", "src/components/form/MoneyField.tsx"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "httpClient.request() now throws the buildUrl Error (not ApiError) for a path that does not start with /api/. Callers should not catch that case as a network error.",
+      "paths": ["src/api/httpClient.ts"]
+    }
+  ]
+}

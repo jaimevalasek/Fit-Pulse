@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "11ab5230-4a4f-41c6-aa02-823ee2c3d00f",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-sonnet-5-5",
+  "model_resolved": "claude-sonnet-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "xhigh",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "write_paths": ["server/**", "shared/**", "prisma/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/helpers/**", "tests/fixtures/**", "package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vitest.config.ts", "prisma.config.ts", "manifest.json", "system.json", ".gitignore"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:32:04Z",
+  "finished_at": "2026-10-23T04:46:00Z",
+  "verdict": "PASS",
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "`pnpm test:e2e -- tests/e2e/report.spec.ts` and the manual smoke 'export the PDF from the Play webview and open the file in Downloads' were not run. They are the capability checks of CAP-dm-report (AC-dm-36 in the browser) and depend on the frontend files src/api/reportApi.ts, src/features/result/ExportReportDialog.tsx, src/features/result/ResultPage.tsx and on tests/e2e/report.spec.ts, none of which belong to this unit. Deferred integration evidence.",
+      "paths": ["tests/e2e/report.spec.ts", "src/api/reportApi.ts", "src/features/result/ExportReportDialog.tsx", "src/features/result/ResultPage.tsx"]
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "text": "The exported PDF was not looked at as a rendered page: the Read tool needs `pdftoppm` (poppler), which is not installed here, and `@napi-rs/canvas` (needed by unpdf to rasterize) is not a dependency. As a substitute, the text positions of a sample report were dumped with pdfjs (unpdf `getDocumentProxy`): 3 pages, nothing past the right margin, section headings kept with their first block; glyph coverage of the four embedded fonts was checked against every character the model and the catalogs can print (fontkit `hasGlyphForCodePoint`, none missing). The look (spacing, bars, colors) still needs a human glance at the file exported in the Play.",
+      "paths": ["server/report/pdfRenderer.ts"]
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "`pnpm test -- <files>` runs the whole vitest suite: pnpm forwards the literal `--` and vitest treats it as the end of options, so the file filter is dropped. The unit's Done-when command therefore ran 14 files / 649 tests (all passed, exit 0). The two unit files alone also pass (`pnpm exec vitest run tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts`: 49 tests, exit 0).",
+      "paths": ["package.json"]
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "The embedded fonts are the `latin` subset of @fontsource (Latin-1 plus general punctuation), which covers every fixed text of the report and Portuguese company names. A company name with characters outside it (Greek, Cyrillic, CJK, emoji, Latin Extended such as 'ł') prints as a missing-glyph box in the PDF; the file name is not affected (it keeps those characters, only unsafe ones are replaced). Widening it means embedding the `latin-ext` files too; not done because the owner's context is Brazilian Portuguese.",
+      "paths": ["server/report/pdfRenderer.ts"]
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "`@types/pdfkit` types the `font` option of `new PDFDocument` as `string`, while pdfkit also accepts a Buffer. The renderer passes `font: \"\"` (pdfkit then loads no default font) and registers the four embedded fonts by name, so the file never references Helvetica; the API test asserts there is no Helvetica/Times/Courier in the PDF bytes.",
+      "paths": ["server/report/pdfRenderer.ts", "tests/api/reportRoutes.test.ts"]
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "text": "`defaultDownloadsDir()` in server/files/downloadsFolder.ts (`<home>/Downloads`) has no caller yet: server/main.ts, which is not in this unit's files, still builds the same path inline with `path.join(os.homedir(), \"Downloads\")`. Both give the same folder; phase 4 (backup) or the integration owner may switch main.ts to the helper. The folder is created on the first save when missing (tested).",
+      "paths": ["server/files/downloadsFolder.ts", "server/main.ts"]
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm test -- tests/unit/reportModel.test.ts tests/api/reportRoutes.test.ts",
+      "exit_code": 0,
+      "result": "14 test files passed, 649 tests passed (filter dropped by the literal `--`, so the whole suite ran)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-dev/done-when.log"
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/unit/reportModel.test.ts --reporter=verbose",
+      "exit_code": 0,
+      "result": "2 files, 49 tests passed (12 in reportModel.test.ts, 37 in reportRoutes.test.ts), run before the last two small edits (font: \"\" and the Helvetica assertion); both edits were covered afterwards by the full Done-when run above",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-dev/api.log"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "result": "tsc --noEmit clean for the whole project, including the files of this unit",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-report-dev/typecheck.log"
+    },
+    {
+      "kind": "acceptance",
+      "ac": "AC-dm-36",
+      "result": "tests/api/reportRoutes.test.ts reads the saved PDF back with unpdf and finds company, date, calculation version, confidence, stage, lock, the 8 dimension names with their scores, the risks with probability/impact, the 3 actions in order and the guidance notice; the saved name is {company}-{date}.pdf; hostile names (../, ..\\, CON, nul, :*?\"<>|, ???, .., hidden) stay inside the folder; a draft answers 409 diagnosis_not_completed; an unwritable folder answers 500 write_failed with no file left and the diagnosis unchanged. The 'cancel' branch of the AC does not exist server-side: the plan saves straight to Downloads, so the server never sees a cancel."
+    },
+    {
+      "kind": "acceptance",
+      "ac": "AC-dm-29",
+      "result": "Forbidden-term scan (V1-V4, Método V4, V4 Company, PPA, CREP, vacinas) over the report model strings (3 diagnoses) and over the text extracted from two real PDFs (stage 1 and stage 4): no hit."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-006 is live: POST /api/diagnoses/:id/report (no body; send Content-Type: application/json like every write) answers 200 { fileName, directory } with the name actually used (a name already taken gets ' (2)', ' (3)', so fileName can differ from {company}-{date}.pdf). Errors use the shared shape { error: { code, message } }: 404 diagnosis_not_found, 409 diagnosis_not_completed (draft), 500 write_failed (the message is already user-facing pt-BR and says the result stays open and nothing changed). Any other failure is the generic 500 internal_error. An archived completed diagnosis can be exported. There is no save dialog and no 'cancel' on the server: the frontend shows the failure in role=\"alert\" and leaves the result as it is.",
+      "paths": ["server/routes/reportRoutes.ts", "server/services/reportService.ts"]
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "For src/api/reportApi.ts and ExportReportDialog.tsx: show `directory` and `fileName` from the response as the place the file was saved. The folder is the one `createApp` receives as `downloadsDir` (server/main.ts: <home>/Downloads). The date in the name is the diagnosis' completion day in the machine's local time zone, formatted yyyy-mm-dd.",
+      "paths": ["src/api/reportApi.ts", "src/features/result/ExportReportDialog.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks left for the integration owner: (1) `pnpm test:e2e -- tests/e2e/report.spec.ts` once the frontend files and the spec exist (the e2e Downloads folder must be a temporary one passed as `downloadsDir`); (2) in the Play dev-link, conclude a diagnosis, click 'Exportar PDF', open the file in Downloads and glance at the layout (3 pages for a typical stage 1 result: header and 4 facts, stage and lock, 3 actions and the guidance box, 8 dimension bars, numbers, risks, confidence note, footer 'Página x de y'); (3) the full `pnpm test` and `pnpm test:e2e` suites.",
+      "paths": ["tests/e2e/report.spec.ts"]
+    },
+    {
+      "to": "unit:phase-4-backend-backup",
+      "kind": "note",
+      "text": "server/files/downloadsFolder.ts is reusable for the backup export: `saveFile({ directory, stem, extension, content })` sanitizes the stem (max 80 chars, no separators or reserved characters, Windows device names prefixed with '_'), creates the folder if missing, writes to a '.<uuid>.tmp' file in the same folder, reserves the final name with an exclusive create (' (2)' suffix when taken) and renames; any failure removes the temporary file and the reserved name and throws `FileWriteError` (map it to DomainError 500 write_failed as reportService does).",
+      "paths": ["server/files/downloadsFolder.ts"]
+    }
+  ],
+  "files": {
+    "created": [
+      "server/files/downloadsFolder.ts",
+      "server/report/reportModel.ts",
+      "server/report/pdfRenderer.ts",
+      "server/services/reportService.ts",
+      "server/routes/reportRoutes.ts",
+      "tests/unit/reportModel.test.ts",
+      "tests/api/reportRoutes.test.ts"
+    ],
+    "modified": ["server/app.ts"]
+  }
+}

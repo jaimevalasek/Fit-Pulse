@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "23765bc6-bcec-4fd9-a2e2-5e3c5aeec15a",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "writable_roots": [],
+  "unit": "phase-1-backend-pdf",
+  "capabilities": ["CAP-ra-diagnosis-report"],
+  "acceptance_criteria": ["AC-ra-06", "AC-ra-07", "AC-ra-08"],
+  "started_at": "2026-10-25T23:09:00Z",
+  "finished_at": "2026-10-25T23:12:14Z",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diagnosis-report",
+      "ac": "AC-ra-07",
+      "path": "server/report/pdfCharts.ts",
+      "summary": "Grayscale print of the dimensions page was not run: no PDF rasterizer is available in this environment (pdftoppm, mutool, gs, magick absent). Legibility is checked by text extraction in tests/unit/pdfRenderer.test.ts only. Command that could not run: print or convert an exported PDF page to grayscale and confirm each bar shows 'N de 100', the dashed 50 line, and 'abaixo de 50' with a hatched fill under the line; each matrix mark shows its number."
+    },
+    {
+      "kind": "integration_dependency",
+      "severity": "medium",
+      "cap": "CAP-ra-diagnosis-report",
+      "ac": "AC-ra-06",
+      "path": "server/services/reportService.ts",
+      "summary": "Still calls the old renderReportPdf(buildReportModel(...)) signature. Re-run on the current tree: `pnpm exec tsc --noEmit` exits 1 with server/services/reportService.ts(70,9) TS2739, and `pnpm exec vitest run tests/api/reportRoutes.test.ts` exits 1 with 23 failed / 14 passed ('document.pages is not iterable'). This is outside this unit's files and belongs to phase-1-backend-report-api, which is implementing that file concurrently. The unit's own gate passes; the integration check fails until that unit rewires the service to renderReportPdf(buildDiagnosisDocument(...))."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diagnosis-report",
+      "ac": "AC-ra-05",
+      "path": "server/services/reportService.ts",
+      "summary": "End-to-end export and open (AC-ra-05 e2e, AC-ra-17..19) and `pnpm build` were not run: both need reportService and reportRoutes rewired first. Deferred to integration."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Remaining checks for this capability, not run by this unit: (1) pnpm exec tsc --noEmit must be clean after server/services/reportService.ts calls renderReportPdf(buildDiagnosisDocument({...})); (2) pnpm exec vitest run tests/api/reportRoutes.test.ts must pass (currently 23 failures from the old signature); (3) pnpm build; (4) e2e export of a diagnosis with a score under 50, opened in a PDF viewer; (5) grayscale print of the dimensions page per AC-ra-07.",
+      "paths": ["server/services/reportService.ts", "tests/api/reportRoutes.test.ts"]
+    },
+    {
+      "to": "unit:phase-1-backend-document",
+      "kind": "note",
+      "text": "The renderer relies on these ReportDocument conventions: the riskMatrix block is immediately followed by the riskList block on the risks page (drawn side by side, server/report/pdfRenderer.ts:99); page.title is the sheet heading on every page without a cover block (pdfRenderer.ts:91-93); the footer text comes from document.footer.text (pdfRenderer.ts:168). The implementer reports these hold for buildDiagnosisDocument; the unit's tests pass against it."
+    }
+  ],
+  "evidence": [
+    {
+      "command": "pnpm exec vitest run tests/unit/pdfRenderer.test.ts tests/unit/reportModel.test.ts",
+      "exit_code": 0,
+      "result": "2 files passed, 58 tests passed (run by QA, 20:10 local)",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-qa/vitest-unit.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-qa/vitest-unit.exit"
+    },
+    {
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 1,
+      "result": "single error outside this unit: server/services/reportService.ts(70,9) TS2739; no error in server/report/pdf*.ts or tests/unit/pdfRenderer.test.ts",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-qa/tsc.exit"
+    },
+    {
+      "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts (informational, not this unit's gate)",
+      "exit_code": 1,
+      "result": "1 file failed; 23 tests failed, 14 passed; TypeError: document.pages is not iterable from the old reportService call",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-qa/reportRoutes.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-pdf-qa/reportRoutes.exit"
+    },
+    {
+      "command": "code review: server/report/pdfRenderer.ts, pdfBlocks.ts (Sheet, PageOverflowError), pdfCharts.ts, tests/unit/pdfRenderer.test.ts",
+      "exit_code": 0,
+      "result": "No defect found in the unit files. renderReportPdf draws one sheet per document page; Sheet.require throws PageOverflowError above the footer; drawBar labels the 50 line, writes the score in words, hatches and writes 'abaixo de 50' under the line; drawRiskMatrix numbers every mark; drawRiskSpread places matrix and list side by side. Tests map to AC-ra-06 (line 198), AC-ra-07 (259), AC-ra-08 (308) and overflow (380)."
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "827b68af-fef0-4619-b97c-fa2aaab44b40",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "lane": "frontend",
+  "unit": "phase-4-frontend-diary",
+  "phase": "4-frontend-diary",
+  "wave": 9,
+  "write_paths": ["src/App.tsx", "src/components/**", "src/features/**", "src/styles/**"],
+  "writable_roots": [],
+  "started_at": "2026-10-26T00:52:00Z",
+  "finished_at": "2026-10-26T00:56:00Z",
+  "verdict": "BLOCKED",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "concurrent_unit_blocker",
+      "severity": "medium",
+      "cap": "CAP-ra-diary, CAP-ra-diary-prefill",
+      "ac": "AC-ra-38, AC-ra-40, AC-ra-41, AC-ra-42, AC-ra-44, AC-ra-46",
+      "path": "src/features/home/OwnerHome.tsx",
+      "summary": "pnpm typecheck exits 1. On the rerun (3 errors): OwnerHome.tsx(5,36) and (198,35) and ScoreTrend.tsx(1,15) use HomeTrendPoint/trend, which phase-5-backend-home removed. These files belong to concurrent unit phase-5-frontend-owner-home (wave 10), not to this unit. The first run also showed server/services/backupService.ts(89,5) from concurrent phase-7-backend-backup; it cleared on the rerun. Zero type errors in this unit's files, so the local Done-when ('pnpm typecheck passa') cannot pass until phase-5-frontend-owner-home lands."
+    },
+    {
+      "kind": "integration_gap",
+      "severity": "medium",
+      "cap": "CAP-ra-diary-prefill",
+      "ac": "AC-ra-46",
+      "path": "src/features/result/ResultPage.tsx",
+      "summary": "Line 314 renders <NumbersSummary economics={result.unitEconomics} /> without the new optional calculator prop, so the result never shows 'Origem: do diário, medido|estimado'. ResultPage is outside this unit's write paths. Deferred to integration: pass calculator={diagnosis.calculator}, and consider the same origin line in NumbersAside."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-diary, CAP-ra-diary-prefill",
+      "ac": "AC-ra-38, AC-ra-40, AC-ra-41, AC-ra-42, AC-ra-44, AC-ra-46",
+      "path": "tests/e2e/diary.spec.ts",
+      "summary": "Command 'pnpm exec playwright test tests/e2e/diary.spec.ts' could not run because the file does not exist. It is outside this unit's write paths, and the diary/prefill cases of tests/e2e/calculator.spec.ts are also absent. The Play dev-link walkthrough (3 months, then new diagnosis, then 'do diário, medido') was not run because no live Play instance is available here. These ACs have no e2e evidence from this unit."
+    },
+    {
+      "kind": "observation",
+      "severity": "low",
+      "cap": "",
+      "ac": "",
+      "path": "src/features/companies/CompaniesPage.tsx",
+      "summary": "Carried from the implementer's evidence, not re-run by QA: tests/e2e/companies.spec.ts 'searches by name, filters by stage...' fails on a strict-mode duplicate 'Limpar filtros' link in CompaniesPage.tsx. That file is owned by concurrent phase-5-frontend-consultant-settings and is outside this unit."
+    }
+  ],
+  "evidence": [
+    {
+      "check": "pnpm typecheck (first run)",
+      "command": "pnpm typecheck",
+      "result": "exit 1; 4 'error TS' lines; none in this unit's files (backupService.ts, OwnerHome.tsx, ScoreTrend.tsx)",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-frontend-diary-qa/typecheck.log"
+    },
+    {
+      "check": "pnpm typecheck (rerun)",
+      "command": "pnpm typecheck",
+      "result": "exit 1; 3 'error TS' lines, all in src/features/home/OwnerHome.tsx and ScoreTrend.tsx (concurrent phase-5-frontend-owner-home); 0 in this unit's files",
+      "exit_code": 1,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-frontend-diary-qa/typecheck-rerun.log"
+    },
+    {
+      "check": "IF-only usage in unit screens",
+      "command": "grep of '@/api' imports and 'fetch(' in App.tsx, components/form/MonthField+MoneyField, features/diary/*, features/companies/CompanyTabs.tsx, features/diagnosis/CalculatorBlock.tsx, features/result/NumbersSummary.tsx",
+      "result": "diary screens import only @/api/diaryApi (IF-006) plus @/api/httpClient isApiError; CalculatorBlock imports only applyDiarySuggestion from @/api/diagnosesApi (IF-007); no fetch( calls in unit files. App.tsx and CompanyTabs.tsx import pre-existing companies/diagnoses API symbols, not diary calls."
+    },
+    {
+      "check": "DiaryMonthForm payload and redraw",
+      "command": "read src/features/diary/DiaryMonthForm.tsx save() and CompanyDiaryTab.tsx onSaved/delete",
+      "result": "payload is spendTotalCents XOR spendParts (never both); save and delete redraw from the returned DiaryView via onSaved/show; matches IF-006"
+    },
+    {
+      "check": "Usar o diário handler",
+      "command": "read src/features/diagnosis/CalculatorBlock.tsx apply()",
+      "result": "calls applyDiarySuggestion(diagnosisId) and passes diagnosis.calculator to onApplied; failure shows a generic alert (no per-409 copy), acceptable for the unit"
+    },
+    {
+      "check": "Diary unit test suites (focused)",
+      "command": "pnpm exec vitest run tests/unit/diary.test.ts tests/unit/diaryPrefill.test.ts",
+      "result": "exit 0; 2 files passed; 65 tests passed",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-4-frontend-diary-qa/vitest-diary-unit.log"
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Blocker for the unit gate: pnpm typecheck stays red until concurrent phase-5-frontend-owner-home removes HomeTrendPoint/trend use in OwnerHome.tsx and deletes ScoreTrend.tsx. This unit's files are type-clean.",
+      "paths": ["src/features/home/OwnerHome.tsx", "src/features/home/ScoreTrend.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "Wire AC-ra-46 on the result screen: pass calculator={diagnosis.calculator} to NumbersSummary at ResultPage.tsx:314 (the prop is optional and already implemented). Consider the same origin line in NumbersAside.",
+      "paths": ["src/features/result/ResultPage.tsx", "src/features/result/NumbersSummary.tsx"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "e2e steps still to run once the gate is green: (1) add 3 diary months on a company (tab [data-aioson-id=tab-diario], container company-diary); (2) create a new diagnosis and check diary-suggestion ('Usar o diário'); (3) apply it and confirm 'do diário, medido' on the result. Selectors are listed in the implementer note (CompanyDiaryTab.tsx, DiaryMonthForm.tsx, CalculatorBlock.tsx). Write tests/e2e/diary.spec.ts for this.",
+      "paths": ["tests/e2e/diary.spec.ts", "tests/e2e/calculator.spec.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "question",
+      "text": "'Usar o diário' replaces the draft numbers with the POST response and then the existing autosave sends one PATCH with the same values. A typed PATCH still in flight at the click could land after the POST and drop the diary marks. Not verified by QA (useDraftAutosave and QuestionnairePage are outside this unit). Decide whether a flush/replace path is needed.",
+      "paths": ["src/features/diagnosis/useDraftAutosave.ts", "src/features/diagnosis/QuestionnairePage.tsx"]
+    }
+  ]
+}

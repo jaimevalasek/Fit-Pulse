@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>FitPulse · protótipo do diagnóstico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  /* Fundamentos: tinta (padrão) */
+  --tinta:#0b0a08; --tinta-2:#0f0d0a; --superficie:#161310; --superficie-2:#1d1914; --solido:#242019;
+  --marfim:#f5f1e8; --marfim-2:#cdc5b4; --fumaca:#8f8674;
+  --linha:rgba(224,203,163,.14); --linha-2:rgba(233,214,177,.28);
+  /* Materiais usados pelo app */
+  --bronze:#a8c07a; --bronze-tinta:#0b0a08; --ouro:#e8ba52; --ouro-tinta:#0b0a08;
+  --patina:#6ec6a2; --cobre:#d8895b; --perigo:#e25d5d;
+  --veu:rgba(5,4,3,.72);
+  /* Vozes */
+  --voz-estrutura:Inter, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --voz-humana:Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --voz-maquina:"JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+  /* Aliases semânticos (os componentes usam estes) */
+  --ground:var(--tinta); --surface:var(--superficie); --paper:var(--superficie-2); --sunken:var(--tinta-2);
+  --ink:var(--marfim); --ink-2:var(--marfim-2); --muted:var(--fumaca);
+  --accent:var(--bronze); --accent-text:var(--bronze); --accent-ink:var(--bronze-tinta);
+  --wash:color-mix(in oklab, var(--bronze) 13%, transparent);
+  --rule:var(--linha); --rule-strong:var(--linha-2);
+  --ok:var(--patina); --ok-wash:color-mix(in oklab, var(--patina) 14%, transparent);
+  --warn:var(--cobre); --warn-wash:color-mix(in oklab, var(--cobre) 14%, transparent);
+  --danger:var(--perigo); --danger-wash:color-mix(in oklab, var(--perigo) 14%, transparent);
+  --t-12:.75rem; --t-14:.875rem; --t-16:1rem; --t-18:1.125rem; --t-24:1.5rem; --t-36:2.25rem; --t-56:3.5rem;
+  --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px; --s-48:48px; --s-64:64px; --s-96:96px;
+  --r-sm:6px; --r-md:10px; --r-lg:16px;
+  --control:40px;
+  --ease:cubic-bezier(.22,.61,.36,1); --fast:160ms; --dur:220ms;
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --tinta:#f1ede3; --tinta-2:#e9e4d6; --superficie:#f9f6ee; --superficie-2:#fffdf7; --solido:#fffdf7;
+  --marfim:#1c1710; --marfim-2:#4c4436; --fumaca:#7d7362;
+  --linha:rgba(92,74,44,.14); --linha-2:rgba(92,74,44,.26);
+  --bronze:#55692a; --bronze-tinta:#fffdf7; --ouro:#8a6512; --ouro-tinta:#fffdf7;
+  --patina:#177a58; --cobre:#a55a30; --perigo:#bf3d47;
+  --veu:rgba(28,23,16,.42);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--tinta);color:var(--marfim);font-family:var(--voz-estrutura);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%;scrollbar-color:var(--linha-2) var(--tinta)}
+body{margin:0;min-height:100vh;background:var(--tinta);font-variant-numeric:tabular-nums;position:relative;isolation:isolate}
+/* D-04 poeira: nebulosa no metal do app + fagulhas ouro/bronze, numa camada única */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(2px 2px at 78% 14%, var(--ouro) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 66% 22%, var(--bronze) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 88% 30%, var(--ouro) 50%, transparent 51%),
+    radial-gradient(2px 2px at 58% 9%, var(--bronze) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 93% 8%, var(--bronze) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 71% 36%, var(--ouro) 50%, transparent 51%),
+    radial-gradient(900px 460px at 80% -8%, color-mix(in oklab, var(--bronze) 15%, transparent), transparent 72%),
+    radial-gradient(700px 380px at 6% 110%, color-mix(in oklab, var(--ouro) 6%, transparent), transparent 70%);
+  animation:respira 8s ease-in-out infinite}
+@keyframes respira{0%,100%{opacity:.62;filter:brightness(.82)}50%{opacity:1;filter:brightness(1.18)}}
+:root[data-theme="light"] body::before{animation:none;opacity:.55}
+::selection{background:var(--bronze);color:var(--bronze-tinta)}
+input,select,textarea,button{font:inherit;color:inherit;caret-color:var(--bronze)}
+:focus-visible{outline:2px solid var(--ouro);outline-offset:2px;border-radius:var(--r-sm)}
+a{color:var(--bronze);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--linha-2);border-radius:10px}::-webkit-scrollbar-track{background:var(--tinta)}
+h1,h2,h3{font-family:var(--voz-estrutura);font-weight:700;line-height:1.15;margin:0;color:var(--marfim);letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:var(--t-36);letter-spacing:-.03em}
+h2{font-size:var(--t-24)}
+h3{font-size:var(--t-18);font-weight:600;letter-spacing:-.01em}
+p{margin:0;text-wrap:pretty}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.human{font-family:var(--voz-humana);font-style:italic;font-weight:400;color:var(--bronze);letter-spacing:0}
+.mono,.tag,.meta-line{font-family:var(--voz-maquina)}
+/* D-01 batuta */
+.meta-line{display:flex;align-items:center;gap:10px;font-size:var(--t-12);font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--fumaca);margin-top:var(--s-8)}
+.meta-line.accent{color:var(--bronze)}
+.batuta::before{content:"";flex:none;display:inline-block;width:26px;height:2px;background:linear-gradient(90deg,transparent,currentColor);transform-origin:left;animation:batuta 360ms var(--ease) both}
+@keyframes batuta{from{transform:scaleX(0)}}
+/* D-02 pauta */
+.pauta{position:relative;height:33px;margin:var(--s-48) 0;background:repeating-linear-gradient(to bottom,var(--linha) 0 1px,transparent 1px 8px)}
+.pauta::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--bronze)}
+
+/* Shell */
+.proto-band{font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.08em;text-align:center;padding:6px var(--s-16);color:var(--marfim-2);background:var(--tinta-2);border-bottom:1px solid var(--linha)}
+.top{position:sticky;top:0;z-index:20;padding:var(--s-12) var(--s-24) 0}
+.top-in{max-width:1120px;margin-inline:auto;padding:0 var(--s-16);height:60px;display:flex;align-items:center;gap:var(--s-24);border:1px solid var(--linha);border-radius:var(--r-lg);background:color-mix(in oklab, var(--tinta) 82%, transparent);backdrop-filter:blur(10px) saturate(1.1)}
+.brand{display:flex;align-items:center;gap:var(--s-12);text-decoration:none;color:var(--marfim)}
+.brand-mark{width:34px;height:34px;border-radius:var(--r-md);border:1px solid var(--linha-2);display:grid;place-items:center;color:var(--bronze);background:var(--superficie)}
+.brand-mark svg{width:20px;height:20px}
+.brand-txt b{display:block;font-size:var(--t-18);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.brand-txt span{display:block;font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.12em;text-transform:uppercase;color:var(--fumaca);line-height:1.2}
+.nav{display:flex;gap:var(--s-4);flex:1;justify-content:center}
+.nav a{padding:var(--s-8) var(--s-12);border-radius:var(--r-md);color:var(--marfim-2);text-decoration:none;font-size:var(--t-14);font-weight:500;position:relative;transition:color var(--fast) var(--ease)}
+.nav a:hover{color:var(--marfim)}
+.nav a[aria-current="page"]{color:var(--marfim)}
+.nav a[aria-current="page"]::after{content:"";position:absolute;left:var(--s-12);right:var(--s-12);bottom:2px;height:2px;border-radius:2px;background:var(--bronze)}
+.mode-chip{font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.1em;text-transform:uppercase;color:var(--fumaca);white-space:nowrap}
+.icon-btn{width:var(--control);height:var(--control);display:inline-grid;place-items:center;border-radius:var(--r-md);border:1px solid var(--linha);background:var(--superficie);cursor:pointer;color:var(--marfim);transition:border-color var(--fast) var(--ease)}
+.icon-btn:hover{border-color:var(--linha-2)}
+.icon-btn svg{width:18px;height:18px}
+main{max-width:1120px;margin:0 auto;padding:var(--s-48) var(--s-24) var(--s-96);container-type:inline-size}
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s-16);margin-bottom:var(--s-24)}
+.page-head .sub{color:var(--fumaca);font-size:var(--t-14);margin-top:var(--s-8)}
+.crumb{font-size:var(--t-14);margin-bottom:var(--s-16)}
+.crumb a{color:var(--fumaca)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--control);padding:0 var(--s-16);border-radius:var(--r-md);border:1px solid var(--linha-2);background:transparent;color:var(--marfim);font-size:var(--t-14);font-weight:600;cursor:pointer;text-decoration:none;transition:border-color var(--fast) var(--ease),background-color var(--fast) var(--ease),transform var(--fast) var(--ease)}
+.btn:hover{border-color:var(--marfim-2);background:var(--superficie)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--bronze);border-color:var(--bronze);color:var(--bronze-tinta)}
+.btn.primary:hover{background:color-mix(in oklab, var(--bronze) 86%, var(--marfim))}
+.btn.gate{background:var(--ouro);border-color:var(--ouro);color:var(--ouro-tinta)}
+.btn.gate:hover{background:color-mix(in oklab, var(--ouro) 86%, var(--marfim))}
+.btn.danger{background:var(--perigo);border-color:var(--perigo);color:var(--tinta)}
+:root[data-theme="light"] .btn.danger{color:var(--superficie-2)}
+.btn.ghost{border-color:transparent}
+.btn.ghost:hover{background:var(--superficie);border-color:var(--linha)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.btn svg{width:18px;height:18px;flex:none}
+.link-btn{background:none;border:0;padding:0;color:var(--bronze);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:inherit}
+
+/* Escada com trava (assinatura) */
+.plate-wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--s-48);align-items:center}
+.plate{margin:0;padding:var(--s-32) var(--s-24) var(--s-16);background:color-mix(in oklab, var(--superficie) 88%, transparent);border:1px solid var(--linha-2);border-radius:var(--r-lg);position:relative}
+.plate::before{content:"";position:absolute;inset:6px;border:1px solid var(--linha);border-radius:12px;pointer-events:none}
+.steps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-12);height:210px;align-items:end;padding:0 var(--s-8)}
+.step{position:relative;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.riser{height:var(--h);border-radius:var(--r-sm) var(--r-sm) 0 0;background:var(--superficie-2);border:1px solid var(--linha);border-bottom:0;position:relative;transition:background-color var(--dur) var(--ease)}
+.step.is-below .riser{background:color-mix(in oklab, var(--bronze) 22%, var(--superficie-2))}
+.step.is-current .riser{background:var(--bronze);border-color:var(--bronze)}
+.step.is-trail .riser{background:repeating-linear-gradient(135deg, color-mix(in oklab, var(--bronze) 20%, transparent) 0 6px, transparent 6px 12px);border:1px dashed var(--linha-2);border-bottom:0}
+a.step:hover .riser{border-color:var(--bronze)}
+.here{position:absolute;left:50%;transform:translateX(-50%);top:-32px;background:var(--superficie);padding:2px 6px;border-radius:var(--r-sm);white-space:nowrap;font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.08em;text-transform:uppercase;color:var(--bronze);display:flex;align-items:center;gap:4px}
+.trail-tag{position:absolute;left:50%;transform:translateX(-50%);top:-28px;background:var(--superficie);padding:2px 6px;border-radius:var(--r-sm);white-space:nowrap;font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.08em;text-transform:uppercase;color:var(--fumaca)}
+.lock{position:absolute;left:50%;transform:translateX(-50%);top:-20px;width:40px;height:40px;border-radius:50%;background:var(--solido);border:1px solid var(--linha-2);display:grid;place-items:center;color:var(--marfim)}
+.lock svg{width:18px;height:18px}
+.pauta-mini{position:relative;height:25px;margin:0 var(--s-8);background:repeating-linear-gradient(to bottom,var(--linha-2) 0 1px,transparent 1px 6px)}
+.pauta-mini::before{content:"";position:absolute;left:-8px;top:0;bottom:0;width:2px;background:var(--bronze)}
+.step-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-12);padding:var(--s-8) var(--s-8) 0}
+.step-labels div{font-size:var(--t-14);color:var(--fumaca);line-height:1.3}
+.step-labels b{display:block;font-weight:600;color:var(--marfim-2)}
+.step-labels .cur b{color:var(--bronze)}
+.plate-cap{margin-top:var(--s-12);padding-top:var(--s-12);border-top:1px solid var(--linha);display:flex;justify-content:space-between;gap:var(--s-12);flex-wrap:wrap}
+.plate-cap .meta-line{margin:0}
+.stage-title{font-size:clamp(2.5rem, 2rem + 2.2vw, 3.5rem);line-height:1.02;font-weight:700;letter-spacing:-.035em}
+.stage-why{margin-top:var(--s-16);font-size:var(--t-18);color:var(--marfim-2);max-width:38ch}
+.stage-why b{color:var(--marfim);font-weight:600}
+.trava{margin-top:var(--s-24);display:flex;gap:var(--s-16);align-items:flex-start;padding:var(--s-16) var(--s-16) var(--s-16) var(--s-16);background:var(--superficie);border:1px solid var(--linha);border-radius:var(--r-lg)}
+.trava .lk{width:36px;height:36px;border-radius:50%;background:var(--solido);border:1px solid var(--linha-2);color:var(--bronze);display:grid;place-items:center;flex:none}
+.trava .lk svg{width:16px;height:16px}
+.trava p{font-size:var(--t-16);color:var(--marfim-2)}
+.trava .human{font-size:var(--t-18);display:block;margin-top:2px;line-height:1.35}
+.trava .meta{display:block;font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.06em;color:var(--fumaca);margin-top:var(--s-8)}
+
+/* Layout */
+.cols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--s-48)}
+.cols.three{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-32)}
+.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-12);margin-bottom:var(--s-16)}
+.section-title a,.section-title button{font-size:var(--t-14);white-space:nowrap}
+.rule-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--linha)}
+.rule-list>li{padding:var(--s-16) 0;border-bottom:1px solid var(--linha)}
+.actions-list{counter-reset:a}
+.actions-list li{display:grid;grid-template-columns:44px 1fr;gap:var(--s-12)}
+.actions-list li::before{counter-increment:a;content:counter(a, decimal-leading-zero);font-family:var(--voz-maquina);font-size:var(--t-14);font-weight:500;color:var(--bronze);padding-top:3px}
+.actions-list b{display:block;font-weight:600;color:var(--marfim)}
+.actions-list p{font-size:var(--t-14);color:var(--marfim-2);margin-top:2px}
+.actions-list .how{color:var(--fumaca)}
+.attn{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r-lg);background:var(--warn-wash);border:1px solid color-mix(in oklab, var(--cobre) 35%, transparent)}
+.attn svg{width:20px;height:20px;flex:none;color:var(--cobre);margin-top:2px}
+.attn b{display:block}
+.attn p{font-size:var(--t-14);color:var(--marfim-2)}
+.attn .btn{margin-top:var(--s-12)}
+.kpi{padding:var(--s-16) 0;border-bottom:1px solid var(--linha)}
+.kpi .num{font-family:var(--voz-maquina);font-size:var(--t-36);font-weight:500;line-height:1.15;letter-spacing:-.02em;color:var(--marfim)}
+.kpi .lbl{font-size:var(--t-14);color:var(--fumaca)}
+.spark{display:block;width:100%;height:56px;margin-top:var(--s-8)}
+.spark path{stroke:var(--bronze)}.spark circle{fill:var(--superficie-2);stroke:var(--bronze)}.spark line{stroke:var(--linha)}
+.note{font-size:var(--t-14);color:var(--fumaca)}
+.notice{display:flex;gap:var(--s-8);align-items:flex-start;font-size:var(--t-14);color:var(--marfim-2);padding:var(--s-12) var(--s-16);background:var(--superficie);border:1px solid var(--linha);border-radius:var(--r-md);margin-top:var(--s-24)}
+.notice svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--fumaca)}
+
+/* Tags (voz da máquina) */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:var(--t-12);font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-sm);border:1px solid var(--linha);color:var(--marfim-2);white-space:nowrap}
+.tag.accent{color:var(--bronze);border-color:color-mix(in oklab, var(--bronze) 40%, transparent);background:var(--wash)}
+.tag.ok{color:var(--patina);border-color:color-mix(in oklab, var(--patina) 40%, transparent);background:var(--ok-wash)}
+.tag.warn{color:var(--cobre);border-color:color-mix(in oklab, var(--cobre) 40%, transparent);background:var(--warn-wash)}
+.tag.danger{color:var(--perigo);border-color:color-mix(in oklab, var(--perigo) 45%, transparent);background:var(--danger-wash)}
+.tag svg{width:12px;height:12px}
+
+/* Dimensões */
+.dims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s-48)}
+@container (max-width: 760px){.dims{grid-template-columns:1fr}}
+.dim{padding:var(--s-16) 0;border-bottom:1px solid var(--linha)}
+.dim-head{display:flex;justify-content:space-between;gap:var(--s-12);align-items:baseline}
+.dim-name{font-weight:600}
+.dim-lay{font-size:var(--t-14);color:var(--fumaca)}
+.dim-score{font-family:var(--voz-maquina);font-size:var(--t-24);font-weight:500;color:var(--marfim)}
+.bar{height:6px;border-radius:6px;background:var(--superficie-2);margin-top:var(--s-8);overflow:hidden}
+.bar i{display:block;height:100%;width:var(--w);background:var(--bronze);border-radius:6px;transform-origin:left;transition:transform 700ms var(--ease)}
+[data-reveal]:not(.in) .bar i{transform:scaleX(0)}
+.bar.low i{background:var(--cobre)}
+.dim-foot{display:flex;gap:var(--s-8);flex-wrap:wrap;margin-top:var(--s-8)}
+
+/* Números */
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.nums>div{padding:var(--s-16) var(--s-16) var(--s-16) 0}
+.nums>div+div{padding-left:var(--s-16);border-left:1px solid var(--linha)}
+.nums .lbl{font-size:var(--t-14);color:var(--fumaca)}
+.nums .val{font-family:var(--voz-maquina);font-size:var(--t-24);font-weight:500;line-height:1.25;margin:4px 0}
+.nums p{font-size:var(--t-14);color:var(--marfim-2)}
+
+/* Riscos */
+.risk{display:grid;grid-template-columns:140px 1fr;gap:var(--s-16)}
+.risk .lvl{display:flex;flex-direction:column;gap:var(--s-4);align-items:flex-start}
+.risk .pi{font-family:var(--voz-maquina);font-size:var(--t-12);color:var(--fumaca)}
+.risk b{display:block}
+.risk p{font-size:var(--t-14);color:var(--marfim-2)}
+.risk .mit{margin-top:var(--s-8);font-size:var(--t-14)}
+.empty-block{padding:var(--s-24);border:1px dashed var(--linha-2);border-radius:var(--r-lg);background:var(--superficie);display:flex;gap:var(--s-16);align-items:flex-start}
+.empty-block svg{width:24px;height:24px;color:var(--bronze);flex:none}
+.empty-block p{color:var(--marfim-2);font-size:var(--t-14)}
+.empty-block b{display:block;font-size:var(--t-16);margin-bottom:2px}
+
+/* Listas e tabelas */
+.toolbar{display:flex;gap:var(--s-12);flex-wrap:wrap;align-items:center;margin-bottom:var(--s-16)}
+.search{position:relative;flex:1;min-width:220px;max-width:360px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--fumaca)}
+.search input{padding-left:36px}
+.seg{display:inline-flex;border:1px solid var(--linha-2);border-radius:var(--r-md);overflow:hidden}
+.seg a{padding:0 var(--s-12);height:38px;display:inline-flex;align-items:center;font-size:var(--t-14);color:var(--marfim-2);text-decoration:none;border-left:1px solid var(--linha)}
+.seg a:first-child{border-left:0}
+.seg a[aria-current="true"]{background:var(--bronze);color:var(--bronze-tinta)}
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:left;font-family:var(--voz-maquina);font-size:var(--t-12);font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--fumaca);padding:var(--s-8) var(--s-12) var(--s-8) 0;border-bottom:1px solid var(--linha-2)}
+.table td{padding:var(--s-12) var(--s-12) var(--s-12) 0;border-bottom:1px solid var(--linha);vertical-align:middle;font-size:var(--t-14)}
+.table td.name a{font-weight:600;font-size:var(--t-16);color:var(--marfim);text-decoration:none}
+.table td.name a:hover{text-decoration:underline}
+.table td.name small{display:block;color:var(--fumaca)}
+.table td .mono{font-size:var(--t-14)}
+.table tr.archived td{color:var(--fumaca)}
+.row-actions{display:flex;gap:var(--s-4);justify-content:flex-end}
+
+/* Linha do tempo */
+.timeline{list-style:none;margin:0;padding:0;border-top:1px solid var(--linha)}
+.timeline li{display:grid;grid-template-columns:120px 1fr auto;gap:var(--s-16);align-items:center;padding:var(--s-16) 0;border-bottom:1px solid var(--linha)}
+.timeline .when{font-size:var(--t-14);color:var(--fumaca)}
+.timeline .when b{display:block;font-family:var(--voz-maquina);font-weight:500;color:var(--marfim)}
+.timeline .what b{font-size:var(--t-18);font-weight:600}
+.timeline .what .meta{display:flex;gap:var(--s-8);flex-wrap:wrap;margin-top:var(--s-8)}
+.timeline .acts{display:flex;gap:var(--s-8);flex-wrap:wrap;justify-content:flex-end}
+.progress{height:4px;border-radius:4px;background:var(--superficie-2);overflow:hidden;width:160px;margin-top:var(--s-8)}
+.progress i{display:block;height:100%;background:var(--bronze);width:var(--w)}
+
+/* Formulários */
+.field{display:flex;flex-direction:column;gap:var(--s-4);margin-bottom:var(--s-16)}
+.field label,.field .lbl{font-size:var(--t-14);font-weight:500}
+.field .hint{font-size:var(--t-12);color:var(--fumaca)}
+.input,select.input{height:var(--control);padding:0 var(--s-12);border:1px solid var(--linha-2);border-radius:var(--r-md);background:var(--tinta-2);width:100%;transition:border-color var(--fast) var(--ease)}
+.input:hover{border-color:var(--fumaca)}
+.input:focus{border-color:var(--bronze)}
+.input[aria-invalid="true"]{border-color:var(--perigo);background:var(--danger-wash)}
+.input.is-valid{border-color:var(--patina)}
+.err{font-size:var(--t-12);color:var(--perigo);display:flex;gap:4px;align-items:center}
+.err svg{width:14px;height:14px}
+.err[hidden]{display:flex;visibility:hidden;min-height:1.25em}
+.err{min-height:1.25em}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--s-16)}
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s-8)}
+.choice{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-12) var(--s-16);border:1px solid var(--linha-2);border-radius:var(--r-md);cursor:pointer;transition:border-color var(--fast) var(--ease),background-color var(--fast) var(--ease)}
+.choice:hover{border-color:var(--marfim-2)}
+.choice input{margin-top:4px;accent-color:var(--bronze);width:16px;height:16px;flex:none}
+.choice:has(input:checked){border-color:var(--bronze);background:var(--wash)}
+.choice b{display:block;font-weight:600;font-size:var(--t-14)}
+.choice span{font-size:var(--t-14);color:var(--marfim-2)}
+
+/* Assistente */
+.wizard{max-width:760px;margin:var(--s-32) auto 0}
+.wizard h1{font-size:clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);line-height:1.04;letter-spacing:-.035em}
+.wizard .lead{font-size:var(--t-18);color:var(--marfim-2);margin:var(--s-16) 0 var(--s-16);max-width:54ch}
+.wizard-steps{display:flex;gap:var(--s-24);font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.1em;text-transform:uppercase;color:var(--fumaca);margin:var(--s-8) 0 var(--s-32)}
+.wizard-steps [aria-current="step"]{color:var(--bronze)}
+/* D-03 palavra viva */
+.live{display:inline-block;clip-path:inset(0 0 0 0);animation:digita 900ms steps(var(--n)) 300ms both;padding-right:.08em}
+@keyframes digita{from{clip-path:inset(0 100% 0 0)}}
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-16)}
+.mode-card{padding:var(--s-24);border:1px solid var(--linha-2);border-radius:var(--r-lg);background:var(--superficie);cursor:pointer;text-align:left;color:var(--marfim);transition:border-color var(--fast) var(--ease),transform var(--dur) var(--ease)}
+.mode-card:hover{border-color:var(--bronze);transform:translateY(-2px)}
+.mode-card h2{font-size:var(--t-24);margin:var(--s-16) 0 var(--s-8)}
+.mode-card p{font-size:var(--t-14);color:var(--marfim-2)}
+.mode-card svg{width:28px;height:28px;color:var(--bronze)}
+.form-foot{display:flex;justify-content:space-between;gap:var(--s-12);margin-top:var(--s-24);padding-top:var(--s-16);border-top:1px solid var(--linha)}
+
+/* Questionário */
+.quiz{display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--s-48)}
+.rail{position:sticky;top:104px;align-self:start}
+.rail ol{list-style:none;margin:0;padding:0}
+.rail li a{display:flex;align-items:center;gap:var(--s-12);padding:var(--s-8) var(--s-12);border-radius:var(--r-md);text-decoration:none;color:var(--marfim-2);font-size:var(--t-14);border:1px solid transparent}
+.rail li a:hover{background:var(--superficie)}
+.rail li a[aria-current="step"]{background:var(--superficie);border-color:var(--linha);color:var(--marfim);font-weight:600}
+.dot{width:22px;height:22px;border-radius:50%;border:1px solid var(--linha-2);display:grid;place-items:center;flex:none;font-family:var(--voz-maquina);font-size:var(--t-12)}
+.dot.done{background:var(--bronze);border-color:var(--bronze);color:var(--bronze-tinta)}
+.dot svg{width:12px;height:12px}
+.saved{font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.04em;color:var(--fumaca);margin-top:var(--s-16);display:flex;gap:6px;align-items:center}
+.saved svg{width:14px;height:14px;color:var(--patina)}
+.block-head h1{font-size:clamp(2rem, 1.6rem + 1.6vw, 2.75rem);letter-spacing:-.03em}
+.block-head p{color:var(--marfim-2);margin-top:var(--s-8);max-width:60ch}
+.item{padding:var(--s-24) 0;border-bottom:1px solid var(--linha)}
+.item-q{display:flex;gap:var(--s-8);align-items:flex-start;justify-content:space-between}
+.item-q h2{font-size:var(--t-18);font-weight:600;line-height:1.4;letter-spacing:-.01em}
+.help-btn{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--linha-2);background:transparent;cursor:pointer;display:grid;place-items:center;font-family:var(--voz-humana);font-style:italic;font-size:var(--t-16);color:var(--bronze)}
+.help-btn:hover{border-color:var(--bronze)}
+.help-text{margin-top:var(--s-8);font-size:var(--t-14);color:var(--marfim-2);background:var(--superficie);border:1px solid var(--linha);padding:var(--s-12) var(--s-16);border-radius:var(--r-md)}
+.opts{display:grid;gap:var(--s-8);margin-top:var(--s-16)}
+.opt{display:flex;gap:var(--s-12);align-items:center;padding:var(--s-12) var(--s-16);border:1px solid var(--linha-2);border-radius:var(--r-md);cursor:pointer;transition:border-color var(--fast) var(--ease),background-color var(--fast) var(--ease)}
+.opt:hover{border-color:var(--marfim-2)}
+.opt input{accent-color:var(--bronze);width:16px;height:16px;flex:none}
+.opt:has(input:checked){border-color:var(--bronze);background:var(--wash)}
+.opt.unknown{border-style:dashed}
+.calc{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--s-32);align-items:start}
+.calc-out{position:sticky;top:104px;padding:var(--s-24);background:var(--superficie);border:1px solid var(--linha-2);border-radius:var(--r-lg)}
+.calc-out h3{margin-bottom:var(--s-8)}
+.calc-out dl{margin:0}
+.calc-out dt{font-size:var(--t-14);color:var(--fumaca);margin-top:var(--s-16)}
+.calc-out dd{margin:0;font-family:var(--voz-maquina);font-size:var(--t-24);font-weight:500;line-height:1.3}
+.calc-out dd small{display:block;font-family:var(--voz-estrutura);font-size:var(--t-12);color:var(--marfim-2);margin-top:2px}
+.mode-row{display:flex;gap:var(--s-8);flex-wrap:wrap;margin:var(--s-12) 0}
+.mode-row label{display:inline-flex;gap:6px;align-items:center;padding:6px var(--s-12);border:1px solid var(--linha-2);border-radius:var(--r-md);font-size:var(--t-14);cursor:pointer}
+.mode-row label:has(input:checked){border-color:var(--bronze);background:var(--wash)}
+.mode-row input{accent-color:var(--bronze)}
+.spend{display:grid;grid-template-columns:1fr 180px;gap:var(--s-8) var(--s-16);align-items:center}
+.spend label{font-size:var(--t-14)}
+.spend .total{font-weight:600;padding-top:var(--s-8);border-top:1px solid var(--linha)}
+.spend .total.mono{font-family:var(--voz-maquina)}
+.quiz-foot{display:flex;justify-content:space-between;align-items:center;gap:var(--s-12);margin-top:var(--s-32)}
+.alert{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r-lg);background:var(--danger-wash);border:1px solid color-mix(in oklab, var(--perigo) 40%, transparent);margin-top:var(--s-24)}
+.alert svg{width:20px;height:20px;color:var(--perigo);flex:none;margin-top:2px}
+.alert b{display:block}
+.alert ul{margin:var(--s-8) 0 0;padding-left:var(--s-16);font-size:var(--t-14)}
+.success{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r-lg);background:var(--ok-wash);border:1px solid color-mix(in oklab, var(--patina) 40%, transparent);margin-top:var(--s-16)}
+.success svg{width:20px;height:20px;color:var(--patina);flex:none;margin-top:2px}
+
+/* Carregando */
+.skeleton{background:linear-gradient(90deg,var(--superficie) 0%,var(--superficie-2) 50%,var(--superficie) 100%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;border-radius:var(--r-md)}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* Entrada das seções (uma vez por tela) */
+.rise{animation:sobe var(--dur) var(--ease) both;animation-delay:calc(var(--i, 0) * 60ms)}
+@keyframes sobe{from{opacity:0;transform:translateY(8px)}}
+
+/* Comparar */
+.cmp-row{display:grid;grid-template-columns:minmax(0,1.4fr) 90px 90px 130px;gap:var(--s-12);align-items:center;padding:var(--s-12) 0;border-bottom:1px solid var(--linha);font-size:var(--t-14)}
+.cmp-row.head{font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.1em;text-transform:uppercase;color:var(--fumaca);border-bottom:1px solid var(--linha-2)}
+.cmp-row .v{font-family:var(--voz-maquina);font-size:var(--t-18)}
+.delta{display:inline-flex;align-items:center;gap:4px;font-weight:600}
+.delta svg{width:14px;height:14px}
+.delta.up{color:var(--patina)}.delta.down{color:var(--perigo)}.delta.same{color:var(--fumaca)}
+
+/* Configurações */
+.settings section{display:grid;grid-template-columns:260px minmax(0,1fr);gap:var(--s-32);padding:var(--s-32) 0;border-bottom:1px solid var(--linha)}
+.settings section>div:first-child p{font-size:var(--t-14);color:var(--fumaca);margin-top:var(--s-4)}
+.read-list{margin:var(--s-8) 0 0;padding-left:var(--s-16);font-size:var(--t-14);color:var(--marfim-2)}
+
+/* Modal (sem sombra: o véu separa) */
+.backdrop{position:fixed;inset:0;background:var(--veu);display:grid;place-items:center;padding:var(--s-16);z-index:60;animation:fade var(--dur) var(--ease)}
+.modal{width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--solido);border:1px solid var(--linha-2);border-radius:var(--r-lg);padding:var(--s-24);animation:sobe var(--dur) var(--ease)}
+.modal.wide{width:min(820px,100%)}
+.modal h2{margin-bottom:var(--s-8)}
+.modal .consequence{color:var(--marfim-2);font-size:var(--t-14)}
+.modal-foot{display:flex;justify-content:flex-end;gap:var(--s-12);margin-top:var(--s-24);flex-wrap:wrap}
+@keyframes fade{from{opacity:0}}
+.report{border:1px solid var(--linha-2);border-radius:var(--r-md);padding:var(--s-24);background:var(--superficie-2);font-size:var(--t-14)}
+.report h3{font-size:var(--t-24)}
+.report .r-row{display:flex;justify-content:space-between;border-bottom:1px solid var(--linha);padding:6px 0}
+.report .r-row b{font-family:var(--voz-maquina);font-weight:500}
+
+/* Aviso rápido */
+.toasts{position:fixed;bottom:var(--s-24);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:var(--s-8);z-index:80;width:min(520px,calc(100% - 32px))}
+.toast{display:flex;gap:var(--s-12);align-items:center;background:var(--solido);color:var(--marfim);border:1px solid var(--linha-2);padding:var(--s-12) var(--s-16);border-radius:var(--r-md);font-size:var(--t-14);animation:sobe var(--dur) var(--ease)}
+.toast svg{width:18px;height:18px;flex:none;color:var(--patina)}
+
+/* Tour */
+.tour-hole{position:fixed;z-index:70;border-radius:var(--r-lg);outline:9999px solid var(--veu);border:2px solid var(--bronze);transition:top var(--dur) var(--ease),left var(--dur) var(--ease),width var(--dur) var(--ease),height var(--dur) var(--ease);pointer-events:none}
+.tour-card{position:fixed;z-index:71;width:min(360px,calc(100% - 32px));background:var(--solido);border:1px solid var(--linha-2);border-radius:var(--r-lg);padding:var(--s-24)}
+.tour-card .count{font-family:var(--voz-maquina);font-size:var(--t-12);letter-spacing:.1em;text-transform:uppercase;color:var(--bronze)}
+.tour-card h2{font-size:var(--t-24);margin:var(--s-8) 0}
+.tour-card p{font-size:var(--t-14);color:var(--marfim-2)}
+.tour-card .row{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s-16);gap:var(--s-8)}
+
+@media (max-width:860px){
+  .plate-wrap,.cols,.cols.three,.quiz,.calc,.settings section{grid-template-columns:1fr;gap:var(--s-24)}
+  .rail{position:static}
+  .rail ol{display:flex;overflow-x:auto;gap:var(--s-4);padding-bottom:var(--s-8)}
+  .rail li a{white-space:nowrap}
+  .calc-out{position:static}
+  .nums{grid-template-columns:1fr 1fr}
+  .nums>div:nth-child(3){border-left:0;padding-left:0}
+  .nums>div:nth-child(n+3){border-top:1px solid var(--linha)}
+  .mode-cards{grid-template-columns:1fr}
+  .timeline li{grid-template-columns:1fr;gap:var(--s-8)}
+  .timeline .acts{justify-content:flex-start}
+  .cmp-row{grid-template-columns:minmax(0,1fr) 56px 56px 96px}
+  .risk{grid-template-columns:1fr}
+  .nav{justify-content:flex-start}
+}
+@media (max-width:640px){
+  .top{padding:var(--s-8) var(--s-12) 0}
+  .top-in{height:auto;flex-wrap:wrap;padding:var(--s-8) var(--s-12);gap:var(--s-8)}
+  .nav{order:3;flex-basis:100%;overflow-x:auto}
+  .mode-chip,.brand-txt span{display:none}
+  main{padding:var(--s-32) var(--s-16) var(--s-64)}
+  .steps{height:170px;gap:var(--s-8)}
+  .step-labels{gap:var(--s-8)}
+  .step-labels div{font-size:var(--t-12)}
+  .grid2{grid-template-columns:1fr}
+  .spend{grid-template-columns:1fr}
+  .table thead{display:none}
+  .table tr{display:grid;grid-template-columns:1fr auto;padding:var(--s-12) 0;border-bottom:1px solid var(--linha)}
+  .table td{border:0;padding:2px 0}
+  .table td.hide-sm{display:none}
+  .btn{min-height:44px}
+  .pauta{margin:var(--s-32) 0}
+  .here-long{display:none}
+  .brand{min-height:44px}
+  .icon-btn{width:44px;height:44px}
+  a.solo{display:inline-flex;align-items:center;min-height:44px}
+  .crumb a{display:inline-flex;align-items:center;min-height:44px}
+  .input,select.input{height:44px}
+  .choice input,.opt input{width:20px;height:20px}
+  [data-action="theme-toggle"]{margin-left:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  [data-reveal]:not(.in) .bar i{transform:none}
+}
+
+.plate-cap>span{display:flex;align-items:center;gap:10px;font-family:var(--voz-maquina);font-size:var(--t-12);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--fumaca)}
+.plate-cap>span:first-child{color:var(--bronze)}
+.plate-cap>span:first-child::before{content:"";flex:none;width:26px;height:2px;background:linear-gradient(90deg,transparent,currentColor);transform-origin:left;animation:batuta 360ms var(--ease) both}
+</style>
+</head>
+<body>
+<div class="proto-band" role="note">Protótipo de demonstração: dados fictícios e em memória. Atualizar a página volta ao início.</div>
+<header class="top" data-aioson-id="top-bar">
+  <div class="top-in">
+    <a class="brand" href="#/inicio" data-aioson-id="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="16" width="4.5" height="5" rx="1" opacity=".55"/><rect x="7.2" y="12" width="4.5" height="9" rx="1" opacity=".7"/><rect x="12.4" y="8" width="4.5" height="13" rx="1"/><rect x="17.6" y="4" width="4.5" height="17" rx="1" opacity=".35"/></svg></span><span class="brand-txt"><b>FitPulse</b><span>diagnóstico de crescimento</span></span></a>
+    <nav class="nav" id="nav" aria-label="Principal" data-aioson-tour="nav" data-aioson-id="nav"></nav>
+    <span class="mode-chip" id="mode-chip"></span>
+    <button class="icon-btn" type="button" data-action="theme-toggle" aria-label="Alternar entre tema escuro e claro" data-aioson-id="theme-toggle" title="Tema">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>
+    </button>
+    <button class="icon-btn" type="button" data-action="tour-open" aria-label="Abrir o tour de apresentação" data-aioson-id="tour-reopen" title="Como usar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 0 1 4.8 1c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01"/></svg>
+    </button>
+  </div>
+</header>
+<main id="app" tabindex="-1"></main>
+<div id="modal-root"></div>
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+<div id="tour-root"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Icons ---------- */
+const I = {
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4"/><path d="M12 17.5h.01"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+  same:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V9M7 14l5-5 5 5"/><path d="M5 4h14"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  archive:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/></svg>',
+  restore:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  store:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v10h16V10"/><path d="M3 10l2-6h14l2 6"/><path d="M10 20v-5h4v5"/></svg>',
+  people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c2.8.4 5 2.8 5 5.8"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  compare:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"/></svg>'
+};
+
+/* ---------- Format ---------- */
+const TODAY = new Date(2026, 9, 22);
+const brlFmt = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
+const brl = (cents) => brlFmt.format((cents || 0) / 100);
+const brl0 = (cents) => new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0}).format(Math.round((cents || 0) / 100));
+const MONTHS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const MONTHS_LONG = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function parseISO(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function dateBR(s){ const d = parseISO(s); return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear(); }
+function dateShort(s){ const d = parseISO(s); return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+function monthName(s){ return MONTHS_LONG[parseISO(s).getMonth()]; }
+function daysSince(s){ return Math.round((TODAY - parseISO(s)) / 86400000); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function nowTime(){ const d = new Date(); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+let seq = 100;
+const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+const uid = (p) => p + (++seq);
+
+/* ---------- Domain ---------- */
+const RULES = 'v1';
+const STAGES = [
+  {n:1, name:'Descoberta', desc:'Você ainda está descobrindo quanto custa conquistar e manter um cliente.'},
+  {n:2, name:'Ajuste', desc:'Os números básicos existem. Agora o foco é deixá-los saudáveis e mais baratos.'},
+  {n:3, name:'Escala', desc:'Os números sustentam investir mais para crescer mais rápido.'},
+  {n:4, name:'Estruturação', desc:'Crescer agora depende de dividir o trabalho e cuidar da margem.'}
+];
+const DIMS = {
+  mp:{kind:'fit', name:'Mercado e produto', lay:'As pessoas querem o que você vende, a ponto de voltar?'},
+  pc:{kind:'fit', name:'Produto e canal', lay:'Você sabe por onde os clientes chegam?'},
+  cm:{kind:'fit', name:'Canal e receita', lay:'O que um cliente deixa paga o que ele custou?'},
+  mm:{kind:'fit', name:'Receita e mercado', lay:'O seu mercado comporta a meta que você tem?'},
+  aq:{kind:'pillar', name:'Aquisição', lay:'Atrair as pessoas certas'},
+  en:{kind:'pillar', name:'Engajamento', lay:'Ganhar a confiança de quem chegou'},
+  co:{kind:'pillar', name:'Conversão', lay:'Transformar interesse em venda'},
+  re:{kind:'pillar', name:'Retenção', lay:'Vender de novo para quem já comprou'}
+};
+const ITEMS = {
+  mp1:{dim:'mp', q:'Dos clientes que compraram há uns 6 meses, quantos ainda compram de você?', help:'Pense em quem comprou entre abril e junho. Quem volta a comprar mostra que o produto resolve algo de verdade.', opts:[['Menos de 1 em cada 4',0],['Cerca de 1 em cada 3',1],['Mais ou menos metade',2],['Mais da metade',3],['Não acompanho',null]]},
+  mp2:{dim:'mp', q:'Se você parasse toda a divulgação paga por um mês, as vendas…', help:'Divulgação paga inclui anúncios em redes sociais, Google, iFood patrocinado e panfleto pago.', opts:[['Iriam quase a zero',0],['Cairiam muito',1],['Cairiam um pouco',2],['Continuariam, por indicação e clientes antigos',3]]},
+  mp3:{dim:'mp', q:'De cada 10 clientes novos, quantos chegam por indicação ou procurando o seu nome?', help:'Indicação de amigo, alguém que já conhecia a marca ou digitou o nome da empresa na busca.', opts:[['Nenhum ou 1',0],['2 ou 3',1],['4 a 6',2],['7 ou mais',3],['Não sei dizer',null]]},
+  pc1:{dim:'pc', q:'Que parte dos clientes novos vem do seu principal canal?', help:'Canal é o lugar onde o cliente te encontra: Instagram, WhatsApp, iFood, Google, indicação, vitrine da loja.', opts:[['Não sei de onde eles vêm',0],['Vem um pouco de cada lugar',1],['Mais ou menos metade vem de um canal',2],['Mais de 70% vem de um canal só',3]]},
+  pc2:{dim:'pc', q:'Você sabe quanto cada canal custa e quantos clientes traz?', help:'Por exemplo: "Instagram custou R$ 600 e trouxe 20 clientes este mês".', opts:[['Não sei',0],['Tenho uma ideia',1],['Anoto para alguns canais',2],['Anoto para todos os canais, todo mês',3]]},
+  cm1:{dim:'cm', q:'Quando um cliente novo compra, o lucro paga o que você gastou para atrair esse cliente?', help:'Lucro aqui é o que sobra depois de pagar produto, insumo e entrega.', opts:[['Só depois de muitas compras, ou nunca',0],['Depois de várias compras',1],['Na segunda ou terceira compra',2],['Já na primeira compra',3],['Não sei',null]]},
+  mm1:{dim:'mm', q:'Para bater a sua meta de faturamento, que parte dos clientes possíveis você precisaria conquistar?', help:'Clientes possíveis são as pessoas ou empresas da sua região ou nicho que poderiam comprar de você. Se a conta der mais de 30%, a meta pede um mercado maior.', opts:[['Mais de 30%',0],['Entre 10% e 30%',1],['Entre 3% e 10%',2],['Menos de 3%',3],['Não sei calcular',null]]},
+  es1:{dim:null, q:'Como o trabalho de marketing e vendas está dividido hoje?', help:'Esta resposta conta para o último estágio, quando crescer depende de ter responsáveis por área.', opts:[['Eu faço tudo',0],['Tenho ajuda de vez em quando',1],['Uma pessoa cuida disso comigo',2],['Áreas separadas, cada uma com responsável',3]]},
+  aq1:{dim:'aq', q:'Você sabe de onde veio cada cliente?', help:'Basta perguntar "como você nos conheceu?" e anotar.', opts:[['Não sei',0],['Tenho uma ideia',1],['Pergunto às vezes',2],['Anoto a origem de cada cliente',3]]},
+  aq2:{dim:'aq', q:'Quantos canais trazem clientes todo mês, com resultado que você mede?', help:'Conte só os canais em que você sabe quantos clientes chegaram.', opts:[['Nenhum constante',0],['Um',1],['Dois',2],['Três ou mais',3]]},
+  en1:{dim:'en', q:'Quem conhece a sua marca encontra um lugar claro para comprar ou pedir orçamento?', help:'Pode ser uma página, um catálogo no WhatsApp ou um link fixo na bio.', opts:[['Não tenho',0],['Só o perfil na rede social',1],['Uma página geral',2],['Uma página para cada oferta, com botão de contato',3]]},
+  en2:{dim:'en', q:'Com que frequência você publica algo útil para o seu cliente?', help:'Útil é o que ajuda a decidir: dica, bastidor, prova de cliente, tabela de preço.', opts:[['Quase nunca',0],['Quando sobra tempo',1],['Toda semana',2],['Toda semana, com calendário planejado',3]]},
+  co1:{dim:'co', q:'De cada 10 orçamentos ou conversas sobre compra, quantos viram venda?', help:'Se você vende no balcão, pense em quem pergunta o preço e leva.', opts:[['1 ou menos',0],['2 ou 3',1],['4 a 6',2],['7 ou mais',3],['Não acompanho',null]]},
+  co2:{dim:'co', q:'Quando alguém decide comprar, quantos passos existem até pagar?', help:'Passos são mensagens, telas, formulários e esperas até o pagamento.', opts:[['Muitos, e perco vendas no caminho',0],['Alguns, às vezes travam',1],['Poucos',2],['Um clique ou um contato e pronto',3]]},
+  re1:{dim:'re', q:'Você tem a lista dos seus clientes com um contato?', help:'Nome e WhatsApp ou e-mail já bastam.', opts:[['Não tenho',0],['Tenho parte, espalhada',1],['Sim, numa planilha',2],['Sim, num sistema, atualizada',3]]},
+  re2:{dim:'re', q:'Depois da compra, você volta a falar com o cliente?', help:'Por exemplo: mensagem de agradecimento, aviso de novidade ou oferta de recompra.', opts:[['Não',0],['Às vezes',1],['Sim, quando tenho oferta',2],['Sim, com mensagens planejadas para recompra',3]]}
+};
+const BLOCKS = [
+  {id:'numeros', title:'Seus números', intro:'Com seis respostas, o app calcula quanto custa conquistar um cliente e quanto ele deixa ao longo do tempo. Se não souber um valor, escolha uma faixa.', calc:true},
+  {id:'clientes', title:'Clientes e produto', intro:'Se as pessoas voltam a comprar, o produto resolve algo de verdade.', items:['mp1','mp2','mp3']},
+  {id:'canais', title:'Canais e preço', intro:'Por onde os clientes chegam e se o preço paga o esforço de trazê-los.', items:['pc1','pc2','cm1']},
+  {id:'mercado', title:'Mercado e equipe', intro:'Se a sua meta cabe no seu mercado e como o trabalho está dividido.', items:['mm1','es1']},
+  {id:'atrair', title:'Atrair', intro:'Como as pessoas certas descobrem a sua empresa.', items:['aq1','aq2']},
+  {id:'conversar', title:'Conversar', intro:'O que a pessoa encontra depois que conhece você.', items:['en1','en2']},
+  {id:'vender', title:'Vender', intro:'O caminho entre o interesse e o pagamento.', items:['co1','co2']},
+  {id:'manter', title:'Manter', intro:'O que acontece depois da primeira compra.', items:['re1','re2']}
+];
+const SPEND_PARTS = [['ads','Anúncios (redes sociais, Google, iFood patrocinado)'],['agency','Agência ou freelancer de marketing'],['commission','Comissões de quem vende'],['discount','Descontos e brindes de primeira compra'],['salary','Parte do salário de quem vende ou divulga'],['tools','Ferramentas (CRM, WhatsApp Business pago, e-mail)']];
+const SPEND_RANGES = [['Até R$ 1.000', 50000],['R$ 1.000 a R$ 5.000', 300000],['R$ 5.000 a R$ 15.000', 1000000],['R$ 15.000 a R$ 50.000', 3250000],['Acima de R$ 50.000', 6000000]];
+const NEW_RANGES = [['1 a 10', 5],['11 a 30', 20],['31 a 100', 65],['101 a 300', 200],['Mais de 300', 400]];
+const FREQ = [['1 vez por ano', 1],['2 ou 3 vezes', 2.5],['4 a 6 vezes', 5],['7 a 12 vezes', 9.5],['Mais de 12 vezes', 15]];
+const LIFE = [['Menos de 6 meses', 0.4],['6 a 12 meses', 0.75],['1 a 2 anos', 1.5],['2 a 4 anos', 3],['Mais de 4 anos', 5]];
+const SEGMENTS = ['Alimentação','Saúde e bem-estar','Beleza','Serviços automotivos','Varejo','Educação','Serviços profissionais','Indústria','Outro'];
+const SALES_MODELS = [['loja','Loja física ou balcão'],['consultiva','Venda com orçamento ou visita'],['online','E-commerce ou delivery'],['assinatura','Assinatura ou mensalidade'],['misto','Mais de um jeito de vender (ex.: loja e delivery)']];
+const REVENUE = ['Até R$ 81 mil por ano (microempreendedor)','Até R$ 360 mil por ano (microempresa)','Até R$ 4,8 milhões por ano (pequena empresa)','Acima de R$ 4,8 milhões por ano'];
+
+const ACTIONS = {
+  cac:{t:'Descobrir quanto custa cada cliente novo', w:'Sem esse número, qualquer aumento de anúncio é uma aposta.', h:'Durante 30 dias, anote o que gastou para atrair clientes e quantos compraram pela primeira vez. Divida um pelo outro.'},
+  mp:{t:'Perguntar a 10 clientes por que eles voltam, ou por que não voltaram', w:'Quem volta a comprar mostra o que o produto resolve.', h:'Mande uma mensagem curta para 10 clientes de 3 a 6 meses atrás e anote as respostas.'},
+  ratio:{t:'Aumentar o que cada cliente deixa antes de atrair mais gente', w:'Hoje cada cliente deixa menos de 3 vezes o que custou para conquistá-lo.', h:'Teste um combo ou uma oferta de recompra para quem já comprou e meça por 30 dias.'},
+  payback:{t:'Recuperar mais rápido o custo de cada cliente', w:'O dinheiro gasto para atrair um cliente demora mais de um ano para voltar.', h:'Crie uma segunda compra para os primeiros 60 dias, como um pacote ou uma assinatura.'},
+  pc:{t:'Medir o resultado de cada canal todo mês', w:'Sem saber o que cada canal traz, o orçamento vai para o canal errado.', h:'Pergunte "como nos conheceu?" em toda venda e some por canal no fim do mês.'},
+  re:{t:'Falar com quem já comprou, 15 dias depois da compra', w:'Vender de novo custa menos do que conquistar alguém novo.', h:'Junte nome e WhatsApp de quem comprou nos últimos 6 meses e mande uma mensagem com uma sugestão de recompra.'},
+  mm:{t:'Conferir se o seu mercado comporta a sua meta', w:'A meta pode exigir clientes demais para a sua região ou nicho.', h:'Estime quantos clientes possíveis existem e quantos você precisaria ter. Se passar de 30%, amplie a região ou a oferta.'},
+  co:{t:'Encurtar o caminho até o pagamento', w:'Vendas estão se perdendo entre o interesse e o pagamento.', h:'Liste cada passo de uma compra e corte um deles nesta semana, como um link de pagamento direto.'},
+  aq:{t:'Anotar a origem de cada cliente', w:'Sem a origem, não dá para saber o que funciona.', h:'Inclua a pergunta "como nos conheceu?" no atendimento e registre numa planilha.'},
+  en:{t:'Criar um lugar claro para a sua oferta principal', w:'Quem chega não encontra com facilidade como comprar.', h:'Monte uma página ou um catálogo de WhatsApp com preço, fotos e um botão de contato.'},
+  es:{t:'Dar um responsável para marketing e outro para vendas', w:'Crescer mais depende de dividir o trabalho.', h:'Escreva o que cada função entrega por semana e quem responde por isso.'},
+  dep:{t:'Testar um segundo canal com orçamento pequeno', w:'Mais de 70% dos clientes vêm de um só lugar.', h:'Separe 10% do orçamento por 60 dias para um canal novo e compare o custo por cliente.'}
+};
+const LOCKS = {
+  cac:'descobrir quanto custa cada cliente novo',
+  mp:'provar que os clientes voltam a comprar',
+  ratio:'cada cliente precisa deixar pelo menos 3 vezes o que custou',
+  payback:'recuperar o custo de cada cliente em até 12 meses',
+  pc:'saber qual canal traz clientes e quanto ele custa',
+  re:'voltar a vender para quem já comprou',
+  mm:'confirmar que o mercado comporta a sua meta',
+  co:'transformar mais orçamentos em venda',
+  es:'dividir marketing e vendas em áreas com responsáveis'
+};
+const LOCK_DIM = {mp:'mp', pc:'pc', re:'re', mm:'mm', co:'co', ratio:'cm', payback:'cm', cac:'cm', es:null};
+
+/* ---------- Engine (demonstração) ---------- */
+function calcOut(c){
+  if (!c) return {known:false};
+  let spend = null, spendOrigin = 'desconhecido', news = null, newOrigin = 'desconhecido';
+  if (c.spendMode === 'exact'){ spend = SPEND_PARTS.reduce((s,[k]) => s + (c.spend[k] || 0), 0); spendOrigin = 'medido'; }
+  else if (c.spendMode === 'range' && c.spendRange != null){ spend = SPEND_RANGES[c.spendRange][1]; spendOrigin = 'estimado'; }
+  if (c.newMode === 'exact' && c.newCustomers > 0){ news = c.newCustomers; newOrigin = 'medido'; }
+  else if (c.newMode === 'range' && c.newRange != null){ news = NEW_RANGES[c.newRange][1]; newOrigin = 'estimado'; }
+  const out = {spend, news, spendOrigin, newOrigin};
+  out.known = spend != null && news != null && news > 0;
+  out.origin = !out.known ? 'desconhecido' : (spendOrigin === 'medido' && newOrigin === 'medido' ? 'medido' : 'estimado');
+  if (out.known) out.cac = Math.round(spend / news);
+  const ticket = c.ticket, freq = c.freq != null ? FREQ[c.freq][1] : null, life = c.life != null ? LIFE[c.life][1] : null, margin = c.margin;
+  if (ticket && freq && life && margin != null){
+    out.ltv = Math.round(ticket * freq * life * (margin / 100));
+    out.monthlyProfit = ticket * freq / 12 * (margin / 100);
+  }
+  if (out.known && out.ltv != null){
+    out.ratio = out.cac > 0 ? out.ltv / out.cac : null;
+    out.payback = out.monthlyProfit > 0 ? out.cac / out.monthlyProfit : null;
+  }
+  return out;
+}
+function ratioSignal(r){
+  if (r == null) return {cls:'', label:'Sem dados', txt:'Falta o custo de um cliente para calcular.'};
+  if (r < 1) return {cls:'danger', label:'Crítico', txt:'Cada cliente deixa menos do que custou: crescer aumenta o prejuízo.'};
+  if (r < 3) return {cls:'warn', label:'Atenção', txt:'Cada cliente deixa menos de 3 vezes o que custou.'};
+  if (r <= 5) return {cls:'ok', label:'Saudável', txt:'Cada cliente deixa entre 3 e 5 vezes o que custou.'};
+  return {cls:'accent', label:'Pode investir mais', txt:'Retorno alto: talvez você esteja investindo pouco para atrair clientes.'};
+}
+function dimScore(answers, dim){
+  const ids = Object.keys(ITEMS).filter(id => ITEMS[id].dim === dim);
+  let sum = 0, unknown = 0;
+  ids.forEach(id => { const v = answers[id]; if (v === null) unknown++; else sum += (v || 0); });
+  return {score: Math.round(sum / (ids.length * 3) * 100), unknown, total: ids.length};
+}
+function evaluate(d){
+  const a = d.answers || {};
+  const calc = calcOut(d.calc);
+  const dims = {};
+  Object.keys(DIMS).forEach(k => { dims[k] = dimScore(a, k); });
+  // Canal e receita combina a resposta com a razão calculada
+  let ratioLevel = null;
+  if (calc.ratio != null) ratioLevel = calc.ratio < 1 ? 0 : calc.ratio < 3 ? 1 : calc.ratio <= 5 ? 3 : 2;
+  const cmItem = a.cm1;
+  if (ratioLevel != null && cmItem != null) dims.cm.score = Math.round((ratioLevel + cmItem) / 6 * 100);
+  else if (ratioLevel != null) dims.cm.score = Math.round(ratioLevel / 3 * 100);
+  if (!calc.known) dims.cm.unknown += 1;
+  const s = (k) => dims[k].score;
+  const checks = [
+    [2, [['cac', calc.known], ['mp', s('mp') >= 50]]],
+    [3, [['ratio', calc.ratio != null && calc.ratio >= 3], ['payback', calc.payback != null && calc.payback <= 12], ['pc', s('pc') >= 60], ['re', s('re') >= 50]]],
+    [4, [['mm', s('mm') >= 60], ['co', s('co') >= 70], ['es', a.es1 === 3]]]
+  ];
+  let stage = 1, lock = null;
+  for (const [target, conds] of checks){
+    const fail = conds.find(([, ok]) => !ok);
+    if (fail){ lock = fail[0]; break; }
+    stage = target;
+  }
+  // Riscos por sinais (matriz 5x5)
+  const risks = [];
+  const add = (id, title, cause, p, i, mit) => risks.push({id, title, cause, p, i, score:p*i, mit});
+  if (!calc.known) add('cac','Investir em divulgação sem saber quanto custa um cliente','O gasto ou o número de clientes novos não é conhecido.',4,4,ACTIONS.cac.h);
+  if (calc.ratio != null && calc.ratio < 1) add('ratio1','Cada venda nova aumenta o prejuízo','Cada cliente deixa menos do que custou para ser conquistado.',4,5,ACTIONS.ratio.h);
+  else if (calc.ratio != null && calc.ratio < 3) add('ratio3','Margem apertada para crescer com anúncio','Cada cliente deixa menos de 3 vezes o que custou.',3,3,ACTIONS.ratio.h);
+  if (a.pc1 === 3) add('dep','Depender de um só canal','Mais de 70% dos clientes novos vêm do mesmo lugar. Se ele mudar as regras, as vendas caem.',3,4,ACTIONS.dep.h);
+  if (s('re') < 40) add('re','Vender só para gente nova','Quase nada é feito para o cliente comprar de novo.',3,4,ACTIONS.re.h);
+  if (calc.payback != null && calc.payback > 12) add('pb','Caixa preso em clientes novos','O custo de um cliente leva mais de 12 meses para voltar.',3,3,ACTIONS.payback.h);
+  if (a.mm1 === 0) add('mm','Meta maior do que o mercado','A meta pede mais de 30% dos clientes possíveis.',2,4,ACTIONS.mm.h);
+  risks.sort((x,y) => y.score - x.score);
+  // Ações: trava primeiro, depois as dimensões mais fracas
+  const acts = [];
+  const pushAct = (k) => { if (k && ACTIONS[k] && !acts.includes(k)) acts.push(k); };
+  if (stage < 4) pushAct(lock);
+  if (a.pc1 === 3) pushAct('dep');
+  Object.keys(DIMS).filter(k => k !== 'cm').sort((x,y) => s(x) - s(y)).forEach(pushAct);
+  // Confiança
+  let unknown = Object.keys(ITEMS).filter(id => a[id] === null).length;
+  if (calc.spendOrigin === 'desconhecido') unknown++;
+  if (calc.newOrigin === 'desconhecido') unknown++;
+  const total = Object.keys(ITEMS).length + 2;
+  let conf = unknown / total <= 0.1 ? 'alta' : unknown / total <= 0.25 ? 'média' : 'baixa';
+  if (conf === 'alta' && calc.origin === 'estimado') conf = 'média';
+  const weakest = Object.keys(DIMS).sort((x,y) => s(x) - s(y))[0];
+  const avg = Math.round(Object.keys(DIMS).reduce((t,k) => t + s(k), 0) / 8);
+  return {dims, calc, stage, lock: stage < 4 ? lock : null, risks: risks.slice(0,5), actions: acts.slice(0,3), conf, unknown, weakest, avg};
+}
+
+/* ---------- Seed ---------- */
+const P = {
+  weak:{answers:{mp1:0,mp2:0,mp3:1,pc1:1,pc2:0,cm1:null,mm1:null,es1:0,aq1:1,aq2:1,en1:1,en2:1,co1:null,co2:1,re1:1,re2:0}, calc:{spendMode:'unknown', spend:{}, newMode:'range', newRange:1, ticket:4500, freq:2, life:2, margin:40}},
+  mid:{answers:{mp1:2,mp2:2,mp3:2,pc1:3,pc2:2,cm1:2,mm1:2,es1:1,aq1:3,aq2:2,en1:2,en2:2,co1:2,co2:2,re1:2,re2:0}, calc:{spendMode:'exact', spend:{ads:180000,agency:0,commission:0,discount:45000,salary:120000,tools:9000}, newMode:'exact', newCustomers:59, ticket:4800, freq:3, life:2, margin:40}},
+  strong:{answers:{mp1:3,mp2:3,mp3:2,pc1:2,pc2:3,cm1:3,mm1:2,es1:2,aq1:3,aq2:3,en1:3,en2:2,co1:2,co2:2,re1:3,re2:2}, calc:{spendMode:'exact', spend:{ads:1500000,agency:600000,commission:300000,discount:0,salary:0,tools:0}, newMode:'exact', newCustomers:80, ticket:45000, freq:1, life:3, margin:55}},
+  pilates:{answers:{mp1:3,mp2:2,mp3:2,pc1:2,pc2:1,cm1:2,mm1:2,es1:1,aq1:2,aq2:1,en1:1,en2:2,co1:2,co2:2,re1:3,re2:2}, calc:{spendMode:'range', spend:{}, spendRange:0, newMode:'exact', newCustomers:12, ticket:28000, freq:4, life:2, margin:60}}
+};
+const clone = (o) => JSON.parse(JSON.stringify(o));
+function seedState(){
+  const st = {mode:'empresa', theme:'dark', ownCompanyId:'c1', tourDone:false, companies:[], diagnoses:[]};
+  st.companies = [
+    {id:'c1', name:'Doce Ofício Confeitaria', segment:'Alimentação', model:'misto', revenue:1, cnpj:'', archived:false},
+    {id:'c2', name:'Clínica Sorriso Pleno', segment:'Saúde e bem-estar', model:'consultiva', revenue:2, cnpj:'', archived:false},
+    {id:'c3', name:'Oficina Mecânica Torque', segment:'Serviços automotivos', model:'loja', revenue:1, cnpj:'', archived:false},
+    {id:'c4', name:'Studio Pilates Equilíbrio', segment:'Saúde e bem-estar', model:'assinatura', revenue:1, cnpj:'', archived:false},
+    {id:'c5', name:'Loja Verde Mel', segment:'Varejo', model:'online', revenue:0, cnpj:'', archived:true}
+  ];
+  const D = (id, companyId, date, preset, status, extra) => Object.assign({id, companyId, createdAt:date, updatedAt:date, completedAt: status === 'done' ? date : null, status, rules:RULES, block:0}, clone(P[preset]), extra || {});
+  st.diagnoses = [
+    D('d1','c1','2026-04-14','weak','done',{rules:'v0.9', original:{stage:1, avg:28}}),
+    D('d2','c1','2026-07-21','mid','done'),
+    D('d3','c1','2026-10-20','mid','draft',{block:3}),
+    D('d4','c2','2026-09-02','strong','done'),
+    D('d5','c3','2026-06-10','weak','done'),
+    D('d6','c4','2026-05-15','pilates','done'),
+    D('d7','c4','2026-10-04','pilates','draft',{block:2}),
+    D('d8','c5','2025-11-03','weak','done')
+  ];
+  // Rascunho de outubro da confeitaria: blocos 4 em diante ainda sem resposta
+  const d3 = st.diagnoses.find(x => x.id === 'd3');
+  ['mm1','es1','aq1','aq2','en1','en2','co1','co2','re1','re2'].forEach(k => delete d3.answers[k]);
+  d3.calc.newCustomers = 64; d3.calc.spend.ads = 210000;
+  const d7 = st.diagnoses.find(x => x.id === 'd7');
+  ['cm1','mm1','es1','aq1','aq2','en1','en2','co1','co2','re1','re2'].forEach(k => delete d7.answers[k]);
+  d7.updatedAt = '2026-10-04';
+  return st;
+}
+let S = seedState();
+
+/* ---------- Selectors ---------- */
+const company = (id) => S.companies.find(c => c.id === id);
+const diag = (id) => S.diagnoses.find(d => d.id === id);
+const diagsOf = (cid) => S.diagnoses.filter(d => d.companyId === cid).sort((x,y) => y.createdAt.localeCompare(x.createdAt));
+const lastDone = (cid) => diagsOf(cid).find(d => d.status === 'done');
+const prevDone = (d) => diagsOf(d.companyId).filter(x => x.status === 'done' && x.createdAt < d.createdAt)[0];
+const draftOf = (cid) => diagsOf(cid).find(d => d.status === 'draft');
+function blockDone(d, b){
+  if (b.calc){ const c = d.calc || {}; const spendOk = c.spendMode === 'unknown' || (c.spendMode === 'range' && c.spendRange != null) || (c.spendMode === 'exact'); const newOk = c.newMode === 'unknown' || (c.newMode === 'range' && c.newRange != null) || (c.newMode === 'exact' && c.newCustomers > 0); return spendOk && newOk && !!c.ticket && c.freq != null && c.life != null && c.margin != null; }
+  return b.items.every(id => id in (d.answers || {}));
+}
+const doneBlocks = (d) => BLOCKS.filter(b => blockDone(d, b)).length;
+
+/* ---------- Shell ---------- */
+const app = document.getElementById('app');
+function route(){
+  const raw = location.hash.slice(1) || '/inicio';
+  const [path, qs] = raw.split('?');
+  return {parts: path.split('/').filter(Boolean), q: Object.fromEntries(new URLSearchParams(qs || '')), raw};
+}
+function go(h){ if (location.hash === h) render(); else location.hash = h; }
+function renderNav(r){
+  const nav = document.getElementById('nav');
+  const first = r.parts[0] || 'inicio';
+  const own = S.ownCompanyId && company(S.ownCompanyId);
+  const links = [['#/inicio','Início', first === 'inicio']];
+  if (S.mode === 'consultoria') links.push(['#/empresas','Empresas', first === 'empresas' || first === 'empresa']);
+  else if (own) links.push(['#/empresa/' + own.id,'Minha empresa', first === 'empresa' || first === 'empresas']);
+  links.push(['#/configuracoes','Configurações', first === 'configuracoes']);
+  nav.innerHTML = first === 'boas-vindas' ? '' : links.map(([h,l,cur]) => '<a href="' + h + '"' + (cur ? ' aria-current="page"' : '') + ' data-aioson-id="nav-' + l.toLowerCase().replace(/\s/g,'-').normalize('NFD').replace(/[̀-ͯ]/g,'') + '">' + l + '</a>').join('');
+  document.getElementById('mode-chip').textContent = first === 'boas-vindas' ? '' : (S.mode === 'consultoria' ? 'Modo consultoria' : 'Modo minha empresa');
+}
+function render(){
+  const r = route();
+  const first = r.parts[0] || 'inicio';
+  if (!S.companies.length && first !== 'boas-vindas' && !(first === 'empresas' && r.q.state === 'empty') && first !== 'configuracoes'){ go('#/boas-vindas'); return; }
+  renderNav(r);
+  closeTour(true);
+  let html = '';
+  try {
+    switch (first){
+      case 'boas-vindas': html = r.parts[1] === 'empresa' ? viewWizardCompany() : viewWizardMode(); break;
+      case 'inicio': html = S.mode === 'consultoria' ? viewHomeConsult() : viewHomeOwner(); break;
+      case 'empresas': html = viewCompanies(r.q); break;
+      case 'empresa': html = viewCompany(r.parts[1], r.q); break;
+      case 'diagnostico': html = viewQuiz(r.parts[1], r.q); break;
+      case 'resultado': html = viewResult(r.parts[1], r.q); break;
+      case 'comparar': html = viewCompare(r.parts[1]); break;
+      case 'configuracoes': html = viewSettings(r.q); break;
+      default: html = viewNotFound();
+    }
+  } catch (e){ html = viewNotFound(); console.error(e); }
+  app.innerHTML = html;
+  afterRender(first, r);
+  window.scrollTo(0,0);
+}
+function viewNotFound(){
+  return '<div class="empty-block" data-state="error" role="alert">' + I.alert + '<div><b>Esta página não existe no protótipo</b><p>O endereço pode ter mudado. Volte para o início.</p><p style="margin-top:12px"><a class="btn" href="#/inicio">Ir para o início</a></p></div></div>';
+}
+
+/* ---------- Signature: escada com trava ---------- */
+function escada(opts){
+  const {stage, prev, lock, caption, primary, tour, counts, linkStages} = opts;
+  const heights = [28, 48, 68, 88];
+  const label = counts ? 'Carteira por estágio' : ('Estágio ' + stage + ' de 4: ' + STAGES[stage-1].name + (prev ? '. Diagnóstico anterior no estágio ' + prev + '.' : '.')) + (lock ? ' Trava para subir: ' + LOCKS[lock] + '.' : '');
+  let steps = '';
+  for (let i = 1; i <= 4; i++){
+    const cls = counts ? (counts[i] ? 'is-current' : '') : (i === stage ? 'is-current' : (prev && i === prev && prev !== stage ? 'is-trail' : (i < stage ? 'is-below' : '')));
+    let over = '';
+    if (counts) over = '<span class="here">' + (counts[i] || 0) + (counts[i] === 1 ? ' empresa' : ' empresas') + '</span>';
+    else if (i === stage) over = '<span class="here">' + I.pin + '<span class="here-long">Você está </span>aqui</span>';
+    else if (prev && i === prev && prev !== stage) over = '<span class="trail-tag">antes</span>';
+    else if (lock && i === stage + 1) over = '<span class="lock" title="Trava">' + I.lock + '</span>';
+    const inner = '<div class="riser" style="--h:' + heights[i-1] + '%">' + over + '</div>';
+    steps += linkStages ? '<a class="step ' + cls + '" href="#/empresas?estagio=' + i + '" aria-label="Ver empresas no estágio ' + i + '" style="text-decoration:none">' + inner + '</a>' : '<div class="step ' + cls + '">' + inner + '</div>';
+  }
+  const labels = STAGES.map(st => '<div class="' + (!counts && st.n === stage ? 'cur' : '') + '"><b>' + st.n + '. ' + st.name + '</b></div>').join('');
+  return '<figure class="plate"' + (primary ? ' data-aioson-primary' : '') + (tour ? ' data-aioson-tour="' + tour + '"' : '') + ' data-aioson-id="escada">' +
+    '<div class="steps" role="img" aria-label="' + esc(label) + '">' + steps + '</div><div class="pauta-mini" aria-hidden="true"></div>' +
+    '<div class="step-labels">' + labels + '</div>' +
+    '<figcaption class="plate-cap">' + caption + '</figcaption></figure>';
+}
+
+/* ---------- Home: minha empresa ---------- */
+function viewHomeOwner(){
+  const c = company(S.ownCompanyId) || S.companies[0];
+  const last = lastDone(c.id);
+  const draft = draftOf(c.id);
+  if (!last){
+    return '<div class="page-head"><div><h1>' + esc(c.name) + '</h1><p class="sub">Nenhum diagnóstico concluído ainda.</p></div></div>' +
+      '<div class="empty-block" data-state="empty">' + I.info + '<div><b>Faça o primeiro diagnóstico</b><p>São 8 blocos curtos, cerca de 12 minutos. Dá para parar e continuar depois.</p><p style="margin-top:12px">' + (draft ? '<a class="btn primary" href="#/diagnostico/' + draft.id + '">Continuar o diagnóstico</a>' : '<button class="btn primary" data-action="diag-new" data-company="' + c.id + '">Começar o diagnóstico</button>') + '</p></div></div>';
+  }
+  const ev = evaluate(last);
+  const prev = prevDone(last);
+  const evPrev = prev ? evaluate(prev) : null;
+  const st = STAGES[ev.stage - 1];
+  const done = S.diagnoses.filter(d => d.companyId === c.id && d.status === 'done').sort((x,y) => x.createdAt.localeCompare(y.createdAt));
+  const points = done.map(d => ({d, avg: evaluate(d).avg}));
+  const delta = evPrev ? ev.avg - evPrev.avg : null;
+  const lockTxt = ev.lock ? LOCKS[ev.lock] : null;
+  const weak = DIMS[ev.weakest];
+  return '' +
+  '<div class="page-head"><div><h1>' + esc(c.name) + '</h1><p class="sub">Último diagnóstico em ' + dateBR(last.createdAt) + ', há ' + daysSince(last.createdAt) + ' dias</p></div>' +
+  '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (draft ? '' : '<button class="btn primary" data-action="diag-new" data-company="' + c.id + '" data-aioson-id="home-new-diag">' + I.plus + 'Novo diagnóstico</button>') + '</div></div>' +
+  '<div class="plate-wrap rise" style="--i:0">' +
+    escada({stage: ev.stage, prev: evPrev ? evPrev.stage : null, lock: ev.lock, primary: true, tour: 'escada', caption: '<span>Estágio da empresa em ' + dateShort(last.createdAt) + '</span><span>' + (evPrev ? 'Antes: estágio ' + evPrev.stage + ' em ' + monthName(prev.createdAt) : 'Primeiro diagnóstico') + '</span>'}) +
+    '<div><h2 class="stage-title">' + st.name + '</h2>' +
+    '<p class="stage-why"><b>Estágio ' + ev.stage + ' de 4.</b> ' + st.desc + '</p>' +
+    (lockTxt ? '<div class="trava" data-aioson-tour="trava" data-aioson-id="home-trava"><span class="lk">' + I.lock + '</span><p>Para subir de degrau:<span class="human">' + cap(lockTxt) + '.</span><span class="meta">O que mais trava agora: ' + weak.name + ' · ' + ev.dims[ev.weakest].score + '/100</span></p></div>' : '<div class="trava" data-aioson-tour="trava"><span class="lk">' + I.check + '</span><p><b>Último degrau.</b> Manter a casa em ordem: margem, equipe e números em dia.</p></div>') +
+    '<p style="margin-top:16px"><a class="solo" href="#/resultado/' + last.id + '" data-aioson-id="home-see-result">Ver o resultado completo</a></p></div>' +
+  '</div>' +
+  '<div class="pauta" aria-hidden="true"></div><div class="cols rise" style="--i:1">' +
+    '<section data-aioson-tour="acoes" data-aioson-id="home-actions"><div class="section-title"><div><h2>Suas próximas 3 ações</h2><p class="meta-line accent batuta">Para os próximos 30 dias</p></div><a class="solo" href="#/resultado/' + last.id + '">Por que estas</a></div>' +
+      '<ol class="rule-list actions-list">' + ev.actions.map(k => '<li><div><b>' + ACTIONS[k].t + '</b><p>' + ACTIONS[k].w + '</p><p class="how">' + ACTIONS[k].h + '</p></div></li>').join('') + '</ol></section>' +
+    '<aside>' +
+      (draft ? '<div class="attn" data-aioson-tour="rascunho" data-aioson-id="home-draft">' + I.clock + '<div><b>Diagnóstico de ' + monthName(draft.createdAt) + ' em andamento</b><p>' + doneBlocks(draft) + ' de 8 blocos respondidos. Salvo em ' + dateBR(draft.updatedAt) + '.</p><a class="btn" href="#/diagnostico/' + draft.id + '">Continuar de onde parei</a></div></div>'
+             : '<div class="attn" data-aioson-tour="rascunho">' + I.clock + '<div><b>Nenhum diagnóstico em andamento</b><p>Refazer a cada 3 meses mostra se as ações funcionaram.</p></div></div>') +
+      '<div class="kpi" data-aioson-id="home-evolution"><div class="lbl">Pontuação média (4 encaixes e 4 frentes)</div><div class="num">' + ev.avg + '<span class="note"> de 100</span></div>' +
+      (delta != null ? '<div class="lbl"><span class="delta ' + (delta > 0 ? 'up' : delta < 0 ? 'down' : 'same') + '">' + (delta > 0 ? I.up : delta < 0 ? I.down : I.same) + (delta > 0 ? '+' : '') + delta + ' pontos</span> desde ' + monthName(prev.createdAt) + '</div>' : '') +
+      sparkline(points) + (prev ? '<a class="solo" href="#/comparar/' + last.id + '">Comparar com ' + monthName(prev.createdAt) + '</a>' : '') + '</div>' +
+    '</aside>' +
+  '</div>';
+}
+function sparkline(points){
+  if (points.length < 2) return '';
+  const w = 320, h = 56, pad = 6;
+  const xs = points.map((_, i) => pad + i * (w - pad*2) / (points.length - 1));
+  const ys = points.map(p => h - pad - (p.avg / 100) * (h - pad*2));
+  const path = xs.map((x,i) => (i ? 'L' : 'M') + x.toFixed(1) + ' ' + ys[i].toFixed(1)).join(' ');
+  return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" role="img" aria-label="Evolução: ' + points.map(p => dateShort(p.d.createdAt) + ' ' + p.avg + ' pontos').join(', ') + '">' +
+    '<line x1="0" x2="' + w + '" y1="' + (h-pad) + '" y2="' + (h-pad) + '"/>' +
+    '<path d="' + path + '" fill="none" stroke-width="2"/>' + xs.map((x,i) => '<circle cx="' + x.toFixed(1) + '" cy="' + ys[i].toFixed(1) + '" r="3.5" stroke-width="2"/>').join('') + '</svg>';
+}
+
+/* ---------- Home: consultoria ---------- */
+function companyFacts(c){
+  const last = lastDone(c.id), draft = draftOf(c.id);
+  const ev = last ? evaluate(last) : null;
+  return {c, last, draft, ev, stage: ev ? ev.stage : null, days: last ? daysSince(last.createdAt) : null, draftIdle: draft ? daysSince(draft.updatedAt) : null, highRisk: ev ? ev.risks.some(r => r.score >= 16) : false};
+}
+function viewHomeConsult(){
+  const active = S.companies.filter(c => !c.archived).map(companyFacts);
+  if (!active.length) return emptyCompanies();
+  const counts = {1:0,2:0,3:0,4:0};
+  active.forEach(f => { if (f.stage) counts[f.stage]++; });
+  const stalled = active.filter(f => f.draftIdle != null && f.draftIdle > 7);
+  const old = active.filter(f => f.days == null || f.days > 90);
+  const risky = active.filter(f => f.highRisk);
+  const row = (f, extra) => '<li style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><a href="#/empresa/' + f.c.id + '" style="font-weight:600;color:var(--ink);text-decoration:none">' + esc(f.c.name) + '</a><div class="note">' + extra + '</div></div>' + (f.stage ? '<span class="tag accent">Estágio ' + f.stage + '</span>' : '') + '</li>';
+  return '' +
+  '<div class="page-head"><div><h1>Sua carteira</h1><p class="sub">' + active.length + ' empresas ativas · ' + S.companies.filter(c => c.archived).length + ' arquivada</p></div>' +
+  '<button class="btn primary" data-action="company-new" data-aioson-id="consult-new-company">' + I.plus + 'Nova empresa</button></div>' +
+  '<div class="plate-wrap rise" style="--i:0">' +
+    escada({counts, linkStages:true, primary:true, tour:'carteira', caption:'<span>Empresas por estágio no último diagnóstico</span><span>Toque num degrau para ver a lista</span>'}) +
+    '<div><h2 class="stage-title">' + (counts[2] >= counts[1] ? 'Maioria em Ajuste' : 'Maioria em Descoberta') + '</h2><p class="stage-why">' + counts[1] + ' em Descoberta, ' + counts[2] + ' em Ajuste, ' + counts[3] + ' em Escala e ' + counts[4] + ' em Estruturação.</p></div>' +
+  '</div>' +
+  '<div class="pauta" aria-hidden="true"></div><div class="cols three rise" style="--i:1">' +
+    '<section data-aioson-tour="parados" data-aioson-id="consult-stalled"><div class="section-title"><h2>Rascunhos parados</h2><a href="#/empresas?filtro=parados">Ver lista</a></div><p class="note" style="margin-bottom:8px">Sem resposta há mais de 7 dias.</p>' + (stalled.length ? '<ul class="rule-list">' + stalled.map(f => row(f, 'Parado há ' + f.draftIdle + ' dias · ' + doneBlocks(f.draft) + ' de 8 blocos')).join('') + '</ul>' : '<p class="note">Nenhum rascunho parado.</p>') + '</section>' +
+    '<section data-aioson-tour="antigos" data-aioson-id="consult-old"><div class="section-title"><h2>Sem diagnóstico recente</h2><a href="#/empresas?filtro=antigos">Ver lista</a></div><p class="note" style="margin-bottom:8px">Último diagnóstico há mais de 90 dias.</p>' + (old.length ? '<ul class="rule-list">' + old.map(f => row(f, f.days != null ? 'Há ' + f.days + ' dias' : 'Nunca diagnosticada')).join('') + '</ul>' : '<p class="note">Todas em dia.</p>') + '</section>' +
+    '<section data-aioson-id="consult-risk"><div class="section-title"><h2>Com risco alto</h2><a href="#/empresas?filtro=risco">Ver lista</a></div><p class="note" style="margin-bottom:8px">Pelo menos um risco com nota 16 ou mais.</p>' + (risky.length ? '<ul class="rule-list">' + risky.map(f => row(f, f.ev.risks[0].title)).join('') + '</ul>' : '<p class="note">Nenhuma empresa com risco alto.</p>') + '</section>' +
+  '</div>';
+}
+
+/* ---------- Empresas ---------- */
+function emptyCompanies(){
+  return '<div class="page-head"><div><h1>Empresas</h1></div></div><div class="empty-block" data-state="empty" data-aioson-id="companies-empty">' + I.people + '<div><b>Nenhuma empresa cadastrada</b><p>Cadastre a primeira empresa para começar um diagnóstico. Cada empresa guarda o seu histórico.</p><p style="margin-top:12px"><button class="btn primary" data-action="company-new">' + I.plus + 'Cadastrar a primeira empresa</button></p></div></div>';
+}
+function viewCompanies(q){
+  if (q.state === 'empty') return emptyCompanies();
+  const showArch = q.arquivadas === '1';
+  const term = (q.busca || '').toLowerCase();
+  let list = S.companies.map(companyFacts).filter(f => showArch ? f.c.archived : !f.c.archived);
+  if (q.estagio) list = list.filter(f => String(f.stage) === q.estagio);
+  if (q.filtro === 'parados') list = list.filter(f => f.draftIdle != null && f.draftIdle > 7);
+  if (q.filtro === 'antigos') list = list.filter(f => f.days == null || f.days > 90);
+  if (q.filtro === 'risco') list = list.filter(f => f.highRisk);
+  if (term) list = list.filter(f => f.c.name.toLowerCase().includes(term));
+  const filters = [['', 'Todos'], ['1','Estágio 1'], ['2','Estágio 2'], ['3','Estágio 3'], ['4','Estágio 4']];
+  const filterLabel = q.filtro === 'parados' ? 'Rascunhos parados' : q.filtro === 'antigos' ? 'Sem diagnóstico há mais de 90 dias' : q.filtro === 'risco' ? 'Com risco alto' : null;
+  const rows = list.map(f => '<tr class="' + (f.c.archived ? 'archived' : '') + '" data-row-id="' + f.c.id + '">' +
+    '<td class="name"><a href="#/empresa/' + f.c.id + '">' + esc(f.c.name) + '</a><small>' + esc(f.c.segment) + '</small></td>' +
+    '<td>' + (f.stage ? '<span class="tag accent">Estágio ' + f.stage + ' · ' + STAGES[f.stage-1].name + '</span>' : '<span class="tag">Sem diagnóstico</span>') + '</td>' +
+    '<td class="hide-sm">' + (f.last ? '<span class="mono">' + dateBR(f.last.createdAt) + '</span><div class="note">há ' + f.days + ' dias</div>' : '-') + '</td>' +
+    '<td class="hide-sm">' + (f.draft ? '<span class="tag warn">' + I.clock + 'Rascunho ' + doneBlocks(f.draft) + '/8</span>' : '') + (f.highRisk ? ' <span class="tag danger">' + I.alert + 'Risco alto</span>' : '') + '</td>' +
+    '<td><div class="row-actions">' + (f.c.archived
+        ? '<button class="btn ghost" data-action="company-restore" data-id="' + f.c.id + '" aria-label="Restaurar ' + esc(f.c.name) + '">' + I.restore + '<span class="hide-sm">Restaurar</span></button><button class="btn ghost" data-action="company-delete" data-id="' + f.c.id + '" aria-label="Excluir ' + esc(f.c.name) + '">' + I.trash + '</button>'
+        : '<button class="btn ghost" data-action="company-edit" data-id="' + f.c.id + '" aria-label="Editar ' + esc(f.c.name) + '">' + I.edit + '</button><button class="btn ghost" data-action="company-archive" data-id="' + f.c.id + '" aria-label="Arquivar ' + esc(f.c.name) + '">' + I.archive + '</button>') +
+    '</div></td></tr>').join('');
+  return '' +
+  '<div class="page-head"><div><h1>Empresas</h1><p class="sub">' + (filterLabel ? 'Filtro: ' + filterLabel + ' · <a href="#/empresas">limpar</a>' : (showArch ? 'Empresas arquivadas' : 'Empresas ativas')) + '</p></div><button class="btn primary" data-action="company-new" data-aioson-id="companies-new">' + I.plus + 'Nova empresa</button></div>' +
+  '<div class="toolbar"><div class="search">' + I.search + '<label class="sr-only" for="busca">Buscar empresa</label><input id="busca" class="input" type="search" autocomplete="off" placeholder="Buscar pelo nome" value="' + esc(q.busca || '') + '" data-action="search"></div>' +
+  '<nav class="seg" aria-label="Filtrar por estágio">' + filters.map(([v,l]) => '<a href="#/empresas' + (v ? '?estagio=' + v : '') + (showArch ? (v ? '&' : '?') + 'arquivadas=1' : '') + '" aria-current="' + ((q.estagio || '') === v && !q.filtro ? 'true' : 'false') + '">' + l + '</a>').join('') + '</nav>' +
+  '<a class="btn ghost" href="#/empresas' + (showArch ? '' : '?arquivadas=1') + '">' + I.archive + (showArch ? 'Ver ativas' : 'Ver arquivadas') + '</a></div>' +
+  (list.length ? '<table class="table" data-aioson-id="companies-table"><thead><tr><th>Empresa</th><th>Estágio atual</th><th class="hide-sm">Último diagnóstico</th><th class="hide-sm">Atenção</th><th><span class="sr-only">Ações</span></th></tr></thead><tbody>' + rows + '</tbody></table>'
+    : '<div class="empty-block" data-state="empty">' + I.search + '<div><b>Nenhuma empresa encontrada</b><p>' + (term ? 'Nenhum nome contém "' + esc(q.busca) + '".' : showArch ? 'Nenhuma empresa arquivada.' : 'Nenhuma empresa com esse filtro.') + '</p><p style="margin-top:12px"><a class="btn" href="#/empresas">Limpar filtros</a></p></div></div>');
+}
+
+/* ---------- Empresa ---------- */
+function viewCompany(id, q){
+  const c = company(id);
+  if (!c) return viewNotFound();
+  const list = q.state === 'empty' ? [] : diagsOf(c.id);
+  const model = (SALES_MODELS.find(m => m[0] === c.model) || ['', ''])[1];
+  const active = list.filter(d => d.status !== 'archived');
+  const archived = list.filter(d => d.status === 'archived');
+  const last = lastDone(c.id), draft = draftOf(c.id);
+  const item = (d) => {
+    if (d.status === 'draft'){
+      const n = doneBlocks(d);
+      return '<li data-row-id="' + d.id + '"><div class="when"><b>' + dateBR(d.createdAt) + '</b>Rascunho</div><div class="what"><b>Em andamento</b><div class="meta"><span class="tag warn">' + I.clock + n + ' de 8 blocos</span><span class="note">Salvo em ' + dateBR(d.updatedAt) + '</span></div><div class="progress"><i style="--w:' + Math.round(n/8*100) + '%"></i></div></div><div class="acts"><a class="btn primary" href="#/diagnostico/' + d.id + '">Continuar</a><button class="btn ghost" data-action="diag-discard" data-id="' + d.id + '" title="Apaga as respostas deste rascunho">' + I.trash + 'Descartar rascunho</button></div></li>';
+    }
+    const ev = evaluate(d);
+    return '<li data-row-id="' + d.id + '"><div class="when"><b>' + dateBR(d.createdAt) + '</b>' + (d.status === 'archived' ? 'Arquivado' : 'Concluído') + '</div><div class="what"><b>Estágio ' + ev.stage + ' · ' + STAGES[ev.stage-1].name + '</b><div class="meta"><span class="tag" title="Versão do cálculo usada neste diagnóstico">Cálculo ' + d.rules + '</span><span class="tag" title="Quanto das respostas foi medido">Dados: confiança ' + ev.conf + '</span>' + (ev.risks.some(r => r.score >= 16) ? '<span class="tag danger">' + I.alert + 'Risco alto</span>' : '') + '</div></div><div class="acts">' +
+      (d.status === 'archived' ? '<button class="btn" data-action="diag-restore" data-id="' + d.id + '">' + I.restore + 'Restaurar</button>' : '<a class="btn" href="#/resultado/' + d.id + '">Ver resultado</a>' + (prevDone(d) ? '<a class="btn ghost" href="#/comparar/' + d.id + '">' + I.compare + 'Comparar</a>' : '') + '<button class="btn ghost" data-action="diag-archive" data-id="' + d.id + '" aria-label="Arquivar diagnóstico de ' + dateBR(d.createdAt) + '" title="Tira da linha do tempo sem apagar">' + I.archive + 'Arquivar</button>') +
+      '</div></li>';
+  };
+  return '' +
+  (S.mode === 'consultoria' ? '<div class="crumb"><a href="#/empresas">Empresas</a></div>' : '') +
+  '<div class="page-head"><div><h1>' + esc(c.name) + '</h1><p class="sub">' + esc(c.segment) + ' · ' + esc(model) + ' · ' + esc(REVENUE[c.revenue] || '') + (c.cnpj ? ' · CNPJ ' + esc(c.cnpj) : '') + (c.archived ? ' · <span class="tag">Arquivada</span>' : '') + '</p></div>' +
+  '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-action="company-edit" data-id="' + c.id + '" data-aioson-id="company-edit">' + I.edit + 'Editar dados</button>' +
+  (c.archived ? '' : (draft ? '<a class="btn primary" href="#/diagnostico/' + draft.id + '">Continuar diagnóstico</a>' : '<button class="btn primary" data-action="diag-new" data-company="' + c.id + '" data-aioson-id="company-new-diag">' + I.plus + 'Novo diagnóstico</button>')) + '</div></div>' +
+  (last && !draft ? '<p class="note" style="margin-bottom:16px">O novo diagnóstico começa com as respostas de ' + dateBR(last.createdAt) + ' já preenchidas. Você só muda o que mudou.</p>' : '') +
+  '<h2 style="margin:24px 0 12px">Diagnósticos</h2>' +
+  (active.length ? '<ul class="timeline" data-aioson-id="company-timeline">' + active.map(item).join('') + '</ul>'
+    : '<div class="empty-block" data-state="empty" data-aioson-id="company-empty">' + I.file + '<div><b>Nenhum diagnóstico ainda</b><p>O primeiro diagnóstico leva cerca de 12 minutos. Ele fica salvo enquanto você responde.</p><p style="margin-top:12px"><button class="btn primary" data-action="diag-new" data-company="' + c.id + '">Começar o primeiro diagnóstico</button></p></div></div>') +
+  (archived.length ? '<details style="margin-top:24px"><summary class="note" style="cursor:pointer">Diagnósticos arquivados (' + archived.length + ')</summary><ul class="timeline" style="margin-top:12px">' + archived.map(item).join('') + '</ul></details>' : '') +
+  (S.mode === 'consultoria' && !c.archived ? '<p style="margin-top:32px"><button class="link-btn" data-action="company-archive" data-id="' + c.id + '">Arquivar esta empresa</button></p>' : '') +
+  (c.archived ? '<p style="margin-top:32px;display:flex;gap:16px"><button class="link-btn" data-action="company-restore" data-id="' + c.id + '">Restaurar empresa</button><button class="link-btn" style="color:var(--danger)" data-action="company-delete" data-id="' + c.id + '">Excluir empresa e diagnósticos</button></p>' : '');
+}
+
+/* ---------- Questionário ---------- */
+let showErrors = {};
+function viewQuiz(id, q){
+  const d = diag(id);
+  if (!d) return viewNotFound();
+  if (d.status !== 'draft') { setTimeout(() => go('#/resultado/' + d.id), 0); return ''; }
+  const c = company(d.companyId);
+  const bi = Math.min(Math.max(parseInt(q.bloco || d.block || 0, 10) || 0, 0), BLOCKS.length - 1);
+  d.block = bi;
+  const b = BLOCKS[bi];
+  const rail = BLOCKS.map((x, i) => '<li><a href="#/diagnostico/' + d.id + '?bloco=' + i + '"' + (i === bi ? ' aria-current="step"' : '') + '><span class="dot ' + (blockDone(d, x) ? 'done' : '') + '">' + (i + 1) + '</span>' + x.title + (blockDone(d, x) ? '<span class="sr-only"> (respondido)</span>' : '') + '</a></li>').join('');
+  const body = b.calc ? viewCalc(d) : b.items.map(itemId => viewItem(d, itemId)).join('');
+  const last = bi === BLOCKS.length - 1;
+  const missing = BLOCKS.filter(x => !blockDone(d, x));
+  return '' +
+  '<div class="crumb"><a href="#/empresa/' + c.id + '">' + esc(c.name) + '</a></div>' +
+  '<div class="quiz">' +
+    '<aside class="rail" aria-label="Blocos do diagnóstico"><ol>' + rail + '</ol><p class="saved" id="saved" aria-live="polite">' + I.check + 'Salvo automaticamente às ' + (d.savedAt || nowTime()) + '</p>' +
+      '<p style="margin-top:12px"><a class="note" href="#/empresa/' + c.id + '">Sair e continuar depois</a></p></aside>' +
+    '<section data-aioson-id="quiz-block">' +
+      '<div class="block-head"><h1>' + b.title + '</h1><p>' + b.intro + '</p><p class="note" style="margin-top:4px">Bloco ' + (bi + 1) + ' de 8</p></div>' +
+      body +
+      (showErrors[d.id] && missing.length ? '<div class="alert" role="alert" data-state="error" data-aioson-id="quiz-missing"> ' + I.alert + '<div><b>Faltam respostas para concluir</b><ul>' + missing.map(x => '<li><a href="#/diagnostico/' + d.id + '?bloco=' + BLOCKS.indexOf(x) + '">' + x.title + '</a></li>').join('') + '</ul></div></div>' : '') +
+      '<div class="quiz-foot">' + (bi > 0 ? '<a class="btn" href="#/diagnostico/' + d.id + '?bloco=' + (bi - 1) + '">' + I.back + 'Bloco anterior</a>' : '<span></span>') +
+      (last ? '<button class="btn gate" data-action="diag-finish" data-id="' + d.id + '" data-aioson-id="quiz-finish">Ver meu resultado' + I.arrow + '</button>' : '<a class="btn primary" href="#/diagnostico/' + d.id + '?bloco=' + (bi + 1) + '" data-aioson-id="quiz-next">Próximo bloco' + I.arrow + '</a>') + '</div>' +
+    '</section>' +
+  '</div>';
+}
+function viewItem(d, itemId){
+  const it = ITEMS[itemId];
+  const val = d.answers[itemId];
+  const answered = itemId in d.answers;
+  return '<fieldset class="item" style="border:0;margin:0" data-aioson-id="item-' + itemId + '"><div class="item-q"><legend style="padding:0"><h2>' + it.q + '</h2></legend><button type="button" class="help-btn" data-action="help" data-target="h-' + itemId + '" aria-expanded="false" aria-controls="h-' + itemId + '" aria-label="O que significa esta pergunta?">?</button></div>' +
+    '<p class="help-text" id="h-' + itemId + '" hidden>' + it.help + '</p>' +
+    '<div class="opts">' + it.opts.map(([label, v], i) => '<label class="opt' + (v === null ? ' unknown' : '') + '"><input type="radio" name="' + d.id + '-' + itemId + '" data-action="answer" data-diag="' + d.id + '" data-item="' + itemId + '" value="' + (v === null ? 'null' : v) + '"' + (answered && val === v ? ' checked' : '') + '><span>' + label + '</span></label>').join('') + '</div></fieldset>';
+}
+function moneyInput(id, cents, diagId, key, opts){
+  opts = opts || {};
+  return '<input class="input money" id="' + id + '" type="text" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="R$ 0,00" value="' + (cents != null ? brl(cents) : '') + '" data-action="money" data-diag="' + diagId + '" data-key="' + key + '"' + (opts.describedby ? ' aria-describedby="' + opts.describedby + '"' : '') + '>';
+}
+function viewCalc(d){
+  const c = d.calc;
+  const out = calcOut(c);
+  const sig = ratioSignal(out.ratio);
+  const radios = (name, cur, opts) => '<div class="mode-row" role="radiogroup">' + opts.map(([v, l]) => '<label><input type="radio" name="' + d.id + '-' + name + '" value="' + v + '" data-action="calc-mode" data-diag="' + d.id + '" data-key="' + name + '"' + (cur === v ? ' checked' : '') + '>' + l + '</label>').join('') + '</div>';
+  const spendExact = c.spendMode === 'exact' ? '<div class="spend">' + SPEND_PARTS.map(([k, l]) => '<label for="sp-' + k + '">' + l + '</label>' + moneyInput('sp-' + k, c.spend[k] || null, d.id, 'spend.' + k)).join('') + '<span class="total">Total em 3 meses</span><span class="total mono" id="spend-total">' + brl(out.spend || 0) + '</span></div><p class="hint note" style="margin-top:8px">Deixe em branco o que você não usa. Contar só o anúncio deixa o custo do cliente menor do que é.</p>' : '';
+  const spendRange = c.spendMode === 'range' ? '<label class="sr-only" for="sp-range">Faixa de gasto</label><select class="input" id="sp-range" data-action="calc-select" data-diag="' + d.id + '" data-key="spendRange"><option value="">Escolha uma faixa</option>' + SPEND_RANGES.map(([l], i) => '<option value="' + i + '"' + (c.spendRange === i ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>' : '';
+  const newExact = c.newMode === 'exact' ? '<input class="input" id="new-exact" type="text" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Ex.: 40" value="' + (c.newCustomers || '') + '" data-action="int" data-diag="' + d.id + '" data-key="newCustomers" aria-describedby="new-err" style="max-width:180px"><span class="err" id="new-err" hidden></span>' : '';
+  const newRange = c.newMode === 'range' ? '<label class="sr-only" for="new-range">Faixa de clientes novos</label><select class="input" id="new-range" style="max-width:240px" data-action="calc-select" data-diag="' + d.id + '" data-key="newRange"><option value="">Escolha uma faixa</option>' + NEW_RANGES.map(([l], i) => '<option value="' + i + '"' + (c.newRange === i ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>' : '';
+  const sel = (key, list, cur, label) => '<div class="field"><label for="f-' + key + '">' + label + '</label><select class="input" id="f-' + key + '" data-action="calc-select" data-diag="' + d.id + '" data-key="' + key + '"><option value="">Escolha</option>' + list.map(([l], i) => '<option value="' + i + '"' + (cur === i ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div>';
+  return '<div class="calc" data-aioson-id="cac-ltv-calculator">' +
+    '<div>' +
+      '<div class="item"><div class="item-q"><h2>Quanto você gastou para atrair clientes nos últimos 3 meses?</h2><button type="button" class="help-btn" data-action="help" data-target="h-spend" aria-expanded="false" aria-controls="h-spend" aria-label="O que entra nesse gasto?">?</button></div><p class="help-text" id="h-spend" hidden>Entra tudo o que você pagou para alguém novo comprar: anúncio, agência, comissão, desconto de primeira compra e a parte do salário de quem vende.</p>' +
+        radios('spendMode', c.spendMode, [['exact','Sei os valores'],['range','Sei mais ou menos'],['unknown','Não sei']]) + spendExact + spendRange + '</div>' +
+      '<div class="item"><div class="item-q"><h2>Quantos clientes compraram de você pela primeira vez nesses 3 meses?</h2></div>' +
+        radios('newMode', c.newMode, [['exact','Sei o número'],['range','Sei mais ou menos'],['unknown','Não sei']]) + newExact + newRange + '</div>' +
+      '<div class="item"><div class="item-q"><h2>Como é uma compra típica?</h2></div><div class="grid2" style="margin-top:16px">' +
+        '<div class="field"><label for="f-ticket">Valor médio de uma compra</label>' + moneyInput('f-ticket', c.ticket, d.id, 'ticket', {describedby:'ticket-err'}) + '<span class="err" id="ticket-err" hidden></span></div>' +
+        sel('freq', FREQ, c.freq, 'Quantas vezes por ano um cliente compra') +
+        sel('life', LIFE, c.life, 'Por quanto tempo um cliente continua comprando') +
+        '<div class="field"><label for="f-margin">De cada R$ 100 vendidos, quanto sobra depois de pagar produto, insumo e entrega?</label><input class="input" id="f-margin" type="text" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="R$ 35" value="' + (c.margin != null ? 'R$ ' + c.margin : '') + '" data-action="margin" data-diag="' + d.id + '" aria-describedby="margin-err"><span class="err" id="margin-err" hidden></span></div>' +
+      '</div></div>' +
+    '</div>' +
+    '<aside class="calc-out" aria-live="polite" data-aioson-id="calc-output"><h3>Seus números, calculados</h3>' +
+      (out.known ? '' : '<p class="note">Sem o gasto ou o número de clientes novos, o app não calcula o custo de um cliente. Tudo bem: isso vira a primeira ação do seu plano.</p>') +
+      '<dl>' +
+      '<dt>Custo para conquistar um cliente</dt><dd>' + (out.known ? brl(out.cac) : 'não calculado') + '<small>' + (out.known ? 'Gasto ÷ clientes novos' + (out.origin === 'estimado' ? ' (estimado por faixa)' : '') : '') + '</small></dd>' +
+      '<dt>Quanto um cliente deixa de lucro</dt><dd>' + (out.ltv != null ? brl(out.ltv) : 'não calculado') + '<small>' + (out.ltv != null ? 'Valor × compras por ano × tempo × margem' : 'Preencha a compra típica') + '</small></dd>' +
+      '<dt>Relação entre os dois</dt><dd>' + (out.ratio != null ? out.ratio.toFixed(1).replace('.', ',') + ' vezes' : 'não calculada') + '<small>' + (out.ratio != null ? '<span class="tag ' + sig.cls + '">' + sig.label + '</span> ' + sig.txt : '') + '</small></dd>' +
+      '<dt>Tempo para o cliente se pagar</dt><dd>' + (out.payback != null ? Math.ceil(out.payback) + (Math.ceil(out.payback) === 1 ? ' mês' : ' meses') : 'não calculado') + '<small>' + (out.payback != null ? (out.payback <= 12 ? 'Dentro de 12 meses.' : 'Mais de 12 meses: o caixa fica preso.') : '') + '</small></dd>' +
+      '</dl></aside></div>';
+}
+
+/* ---------- Resultado ---------- */
+const transient = {};
+function viewResult(id, q){
+  const d = diag(id);
+  if (!d) return viewNotFound();
+  if (d.status === 'draft') { setTimeout(() => go('#/diagnostico/' + d.id), 0); return ''; }
+  const c = company(d.companyId);
+  if (q.state === 'loading' || transient[id]){
+    return '<div data-state="loading" aria-busy="true" data-aioson-id="result-loading"><p class="note">' + esc(c.name) + '</p><h1 style="margin:8px 0 24px">Calculando o seu diagnóstico</h1>' +
+      '<div class="plate-wrap"><div class="skeleton" style="height:300px"></div><div><div class="skeleton" style="height:56px;width:70%"></div><div class="skeleton" style="height:20px;margin-top:16px"></div><div class="skeleton" style="height:20px;width:80%;margin-top:8px"></div><div class="skeleton" style="height:84px;margin-top:24px"></div></div></div>' +
+      '<p class="note" style="margin-top:16px">Comparando as respostas com as regras ' + RULES + '. Leva poucos segundos.</p></div>';
+  }
+  const ev = evaluate(d);
+  const prev = prevDone(d);
+  const evPrev = prev ? evaluate(prev) : null;
+  const st = STAGES[ev.stage - 1];
+  const dimRow = (k) => {
+    const v = ev.dims[k];
+    const lvl = v.score < 40 ? 1 : v.score < 60 ? 2 : v.score < 80 ? 3 : 4;
+    return '<div class="dim" data-aioson-id="dim-' + k + '"><div class="dim-head"><div><div class="dim-name">' + DIMS[k].name + '</div><div class="dim-lay">' + DIMS[k].lay + '</div></div><div class="dim-score">' + v.score + '</div></div>' +
+      '<div class="bar' + (v.score < 50 ? ' low' : '') + '" role="img" aria-label="' + v.score + ' de 100"><i style="--w:' + v.score + '%"></i></div>' +
+      '<div class="dim-foot"><span class="tag">Sustentaria o estágio ' + lvl + '</span>' + (v.score < 50 ? '<span class="tag warn">' + I.alert + 'Abaixo de 50</span>' : '') + (v.unknown ? '<span class="tag">' + v.unknown + (v.unknown === 1 ? ' resposta' : ' respostas') + ' "não sei"</span>' : '') + '</div></div>';
+  };
+  const sig = ratioSignal(ev.calc.ratio);
+  const lvlTag = (sc) => sc >= 16 ? '<span class="tag danger">' + I.alert + 'Alto · ' + sc + '</span>' : sc >= 6 ? '<span class="tag warn">Médio · ' + sc + '</span>' : '<span class="tag">Baixo · ' + sc + '</span>';
+  return '' +
+  '<div class="crumb"><a href="#/empresa/' + c.id + '">' + esc(c.name) + '</a></div>' +
+  '<div class="page-head" data-state="success"><div><h1>Diagnóstico de ' + dateBR(d.createdAt) + '</h1><p class="sub">Calculado com as regras ' + d.rules + ' · Confiança nos dados: ' + ev.conf + (ev.unknown ? ' (' + ev.unknown + ' respostas "não sei")' : '') + '</p></div>' +
+  '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (prev ? '<a class="btn" href="#/comparar/' + d.id + '" data-aioson-id="result-compare">' + I.compare + 'Comparar com ' + monthName(prev.createdAt) + '</a>' : '') + '<button class="btn" data-action="pdf" data-id="' + d.id + '" data-aioson-id="result-pdf">' + I.download + 'Exportar PDF</button></div></div>' +
+  '<div class="plate-wrap rise" style="--i:0">' +
+    escada({stage: ev.stage, prev: evPrev ? evPrev.stage : null, lock: ev.lock, primary: true, caption: '<span>Estágio em ' + dateShort(d.createdAt) + '</span><span>' + (evPrev ? 'Antes: estágio ' + evPrev.stage : 'Primeiro diagnóstico') + '</span>'}) +
+    '<div><h2 class="stage-title">' + st.name + '</h2><p class="stage-why"><b>Estágio ' + ev.stage + ' de 4.</b> ' + st.desc + '</p>' +
+    (ev.lock ? '<div class="trava" data-aioson-id="result-trava"><span class="lk">' + I.lock + '</span><p>Para subir de degrau:<span class="human">' + cap(LOCKS[ev.lock]) + '.</span><span class="meta">O que mais trava agora: ' + DIMS[ev.weakest].name + ' · ' + ev.dims[ev.weakest].score + '/100</span></p></div>' : '<div class="trava"><span class="lk">' + I.check + '</span><p><b>Último degrau.</b> Manter margem, equipe e números em dia.</p></div>') + '</div>' +
+  '</div>' +
+  '<div class="pauta" aria-hidden="true"></div><div class="cols rise" style="--i:1"><section data-aioson-id="result-actions"><div class="section-title"><div><h2>Suas próximas 3 ações</h2><p class="meta-line accent batuta">Para os próximos 30 dias</p></div></div><ol class="rule-list actions-list">' + ev.actions.map(k => '<li><div><b>' + ACTIONS[k].t + '</b><p>' + ACTIONS[k].w + '</p><p class="how">' + ACTIONS[k].h + '</p></div></li>').join('') + '</ol></section>' +
+  '<aside><h2 style="margin-bottom:16px">Seus números</h2><div class="kpi"><div class="lbl">Custo para conquistar um cliente</div><div class="num">' + (ev.calc.known ? brl0(ev.calc.cac) : 'não sei') + '</div></div><div class="kpi"><div class="lbl">Lucro de um cliente comparado ao custo dele</div><div class="num">' + (ev.calc.ratio != null ? ev.calc.ratio.toFixed(1).replace('.', ',') + '×' : '-') + '</div><div class="lbl">' + (ev.calc.ratio != null ? '<span class="tag ' + sig.cls + '">' + sig.label + '</span>' : 'Sem o custo de um cliente, não há comparação.') + '</div></div></aside></div>' +
+  '<p class="notice" role="note">' + I.info + '<span>Orientação baseada nas suas respostas. Não substitui uma análise financeira. Ações que aumentam investimento só aparecem quando o custo de um cliente foi medido.</span></p>' +
+  '<h2 style="margin:48px 0 8px">Os detalhes</h2><p class="note" style="margin-bottom:16px">Os encaixes mostram se as peças do negócio combinam entre si. As frentes mostram o que você faz no dia a dia. Cada uma indica o estágio que sustentaria sozinha; o estágio da empresa fica limitado pela mais fraca.</p>' +
+  '<h3 style="margin:24px 0 4px">Encaixes do negócio</h3><div class="dims" data-reveal>' + ['mp','pc','cm','mm'].map(dimRow).join('') + '</div>' +
+  '<h3 style="margin:32px 0 4px">Frentes de crescimento</h3><div class="dims" data-reveal>' + ['aq','en','co','re'].map(dimRow).join('') + '</div>' +
+  '<h3 style="margin:32px 0 12px">Seus números</h3><div class="nums" data-aioson-id="result-numbers">' +
+    '<div><div class="lbl">Custo de um cliente</div><div class="val">' + (ev.calc.known ? brl(ev.calc.cac) : 'não sei') + '</div><p>' + (ev.calc.known ? (ev.calc.origin === 'medido' ? 'Medido' : 'Estimado por faixa') : 'Gasto ou clientes novos desconhecidos') + '</p></div>' +
+    '<div><div class="lbl">Lucro de um cliente no tempo</div><div class="val">' + (ev.calc.ltv != null ? brl(ev.calc.ltv) : '-') + '</div><p>Depois de pagar produto, insumo e entrega</p></div>' +
+    '<div><div class="lbl">Relação lucro ÷ custo</div><div class="val">' + (ev.calc.ratio != null ? ev.calc.ratio.toFixed(1).replace('.', ',') + '×' : '-') + '</div><p>' + sig.txt + '</p></div>' +
+    '<div><div class="lbl">Tempo para se pagar</div><div class="val">' + (ev.calc.payback != null ? Math.ceil(ev.calc.payback) + ' meses' : '-') + '</div><p>' + (ev.calc.payback != null ? (ev.calc.payback <= 12 ? 'Dentro de 12 meses' : 'Mais de 12 meses') : 'Sem dados') + '</p></div></div>' +
+  '<h3 style="margin:32px 0 4px">Riscos</h3><p class="note" style="margin-bottom:12px">Probabilidade e impacto de 1 a 5. A partir de 16, o risco é alto.</p>' +
+  (ev.risks.length ? '<ul class="rule-list" data-aioson-id="result-risks">' + ev.risks.map(r => '<li class="risk"><div class="lvl">' + lvlTag(r.score) + '<span class="pi">Probabilidade ' + r.p + ' de 5</span><span class="pi">Impacto ' + r.i + ' de 5</span><span class="pi">Nota ' + r.p + ' × ' + r.i + ' = ' + r.score + '</span></div><div><b>' + r.title + '</b><p>' + r.cause + '</p><p class="mit"><b style="display:inline">Como reduzir:</b> ' + r.mit + '</p></div></li>').join('') + '</ul>'
+    : '<div class="empty-block" data-state="empty">' + I.check + '<div><b>Nenhum risco encontrado nas suas respostas</b><p>Continue medindo os seus números: um risco novo aparece aqui no próximo diagnóstico.</p></div></div>') +
+  '<p class="note" style="margin-top:32px">Confiança ' + ev.conf + ': ' + (ev.conf === 'alta' ? 'quase todas as respostas são medidas.' : ev.conf === 'média' ? 'parte das respostas é estimada por faixa.' : 'muitas respostas "não sei". O resultado é provisório até você medir esses números.') + '</p>';
+}
+
+/* ---------- Comparar ---------- */
+function viewCompare(id){
+  const d = diag(id);
+  if (!d) return viewNotFound();
+  const p = prevDone(d);
+  const c = company(d.companyId);
+  if (!p) return '<div class="crumb"><a href="#/empresa/' + c.id + '">' + esc(c.name) + '</a></div><div class="empty-block" data-state="empty">' + I.compare + '<div><b>Ainda não há o que comparar</b><p>A comparação aparece a partir do segundo diagnóstico concluído.</p></div></div>';
+  const a = evaluate(p), b = evaluate(d);
+  const row = (k) => { const x = a.dims[k].score, y = b.dims[k].score, dl = y - x; return '<div class="cmp-row"><div><b>' + DIMS[k].name + '</b><div class="note">' + DIMS[k].lay + '</div></div><div class="v">' + x + '</div><div class="v">' + y + '</div><div><span class="delta ' + (dl > 0 ? 'up' : dl < 0 ? 'down' : 'same') + '">' + (dl > 0 ? I.up : dl < 0 ? I.down : I.same) + (dl > 0 ? '+' : '') + dl + (dl > 0 ? ' subiu' : dl < 0 ? ' caiu' : ' igual') + '</span></div></div>'; };
+  const resolved = a.risks.filter(r => !b.risks.some(x => x.id === r.id));
+  const fresh = b.risks.filter(r => !a.risks.some(x => x.id === r.id));
+  return '' +
+  '<div class="crumb"><a href="#/empresa/' + c.id + '">' + esc(c.name) + '</a></div>' +
+  '<div class="page-head"><div><h1>De ' + monthName(p.createdAt) + ' para ' + monthName(d.createdAt) + '</h1><p class="sub">' + dateBR(p.createdAt) + ' → ' + dateBR(d.createdAt) + ' · ' + (daysSince(p.createdAt) - daysSince(d.createdAt)) + ' dias entre os dois</p></div><a class="btn" href="#/resultado/' + d.id + '">Ver resultado de ' + monthName(d.createdAt) + '</a></div>' +
+  (p.rules !== d.rules ? '<div class="notice" role="note" data-aioson-id="compare-rules">' + I.info + '<span>O diagnóstico de ' + monthName(p.createdAt) + ' foi feito com as regras ' + p.rules + '. Para a comparação ser justa, recalculamos as respostas dele com as regras ' + d.rules + ': a média de ' + monthName(p.createdAt) + ' fica em ' + a.avg + ' pontos, e é esse o número usado aqui. A nota registrada na época (estágio ' + p.original.stage + ', média ' + p.original.avg + ') continua guardada no histórico.</span></div>' : '') +
+  '<div class="plate-wrap rise" style="--i:0">' + escada({stage: b.stage, prev: a.stage, lock: b.lock, primary: true, caption: '<span>Estágio em ' + dateShort(d.createdAt) + '</span><span>Antes: estágio ' + a.stage + ' em ' + monthName(p.createdAt) + '</span>'}) +
+  '<div><h2 class="stage-title">' + STAGES[a.stage-1].name + ' → ' + STAGES[b.stage-1].name + '</h2><p class="stage-why"><b>' + (b.stage > a.stage ? 'Subiu de degrau.' : b.stage < a.stage ? 'Desceu de degrau.' : 'Mesmo degrau.') + '</b> Média das 8 dimensões: ' + a.avg + ' → ' + b.avg + ' pontos.</p></div></div>' +
+  '<div class="pauta" aria-hidden="true"></div><h2 style="margin:0 0 12px">Dimensão por dimensão</h2><div data-aioson-id="compare-table"><div class="cmp-row head"><div>Dimensão</div><div>' + MONTHS[parseISO(p.createdAt).getMonth()] + '</div><div>' + MONTHS[parseISO(d.createdAt).getMonth()] + '</div><div>Mudança</div></div>' + Object.keys(DIMS).map(row).join('') + '</div>' +
+  '<div class="cols"><section><h2 style="margin-bottom:12px">Riscos resolvidos</h2>' + (resolved.length ? '<ul class="rule-list">' + resolved.map(r => '<li><span class="tag ok">' + I.check + 'Resolvido</span> ' + r.title + '</li>').join('') + '</ul>' : '<p class="note">Nenhum risco deixou de existir.</p>') + '</section>' +
+  '<section><h2 style="margin-bottom:12px">Riscos novos</h2>' + (fresh.length ? '<ul class="rule-list">' + fresh.map(r => '<li><span class="tag warn">Novo</span> ' + r.title + '</li>').join('') + '</ul>' : '<p class="note">Nenhum risco novo.</p>') + '</section></div>';
+}
+
+/* ---------- Configurações ---------- */
+let importResult = null, exportDone = false;
+function viewSettings(q){
+  const err = q.state === 'error' || importResult === 'error';
+  const ok = importResult === 'ok';
+  return '' +
+  '<div class="page-head"><div><h1>Configurações</h1><p class="sub">Tudo fica salvo só neste computador.</p></div></div>' +
+  '<div class="settings">' +
+  '<section data-aioson-id="settings-mode"><div><h2>Como você usa o app</h2><p>Muda a tela inicial e o menu. Os dados não mudam.</p></div><div><div class="choice-grid" role="radiogroup" aria-label="Modo de uso">' +
+    '<label class="choice"><input type="radio" name="mode" value="empresa" data-action="set-mode"' + (S.mode === 'empresa' ? ' checked' : '') + '><div><b>Minha empresa</b><span>Uma empresa em foco, com o histórico dela.</span></div></label>' +
+    '<label class="choice"><input type="radio" name="mode" value="consultoria" data-action="set-mode"' + (S.mode === 'consultoria' ? ' checked' : '') + '><div><b>Consultoria</b><span>Várias empresas, com a carteira por estágio.</span></div></label></div>' +
+    (S.mode === 'empresa' && S.companies.length > 1 ? '<div class="field" style="margin-top:16px;max-width:360px"><label for="own">Empresa em foco</label><select class="input" id="own" data-action="set-own">' + S.companies.filter(c => !c.archived).map(c => '<option value="' + c.id + '"' + (S.ownCompanyId === c.id ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</select></div>' : '') + '</div></section>' +
+  '<section data-aioson-id="settings-theme"><div><h2>Aparência</h2><p>O tema escuro acompanha o AIOSON Play. O claro é melhor sob muita luz.</p></div><div><div class="choice-grid" role="radiogroup" aria-label="Tema">' +
+    '<label class="choice"><input type="radio" name="theme" value="dark" data-action="set-theme"' + (S.theme !== 'light' ? ' checked' : '') + '><div><b>Escuro</b><span>Padrão, igual ao AIOSON Play.</span></div></label>' +
+    '<label class="choice"><input type="radio" name="theme" value="light" data-action="set-theme"' + (S.theme === 'light' ? ' checked' : '') + '><div><b>Claro</b><span>Fundo claro, bom sob muita luz.</span></div></label></div></div></section>' +
+  '<section data-aioson-id="settings-backup"><div><h2>Cópia de segurança</h2><p>Guarde uma cópia antes de trocar de computador. A atualização do app pela loja mantém os seus dados.</p></div><div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-action="export" data-aioson-id="backup-export">' + I.download + 'Exportar meus dados</button><button class="btn" data-action="import" data-aioson-id="backup-import">' + I.upload + 'Importar uma cópia</button></div>' +
+    (exportDone ? '<div class="success" data-state="success" role="status">' + I.check + '<div><b>Cópia salva</b><p class="note">fitpulse-copia-2026-10-22.json, com ' + S.companies.length + ' empresas e ' + S.diagnoses.length + ' diagnósticos. No protótipo, nenhum arquivo é criado.</p></div></div>' : '') +
+    (ok ? '<div class="success" data-state="success" role="status">' + I.check + '<div><b>Cópia importada</b><p class="note">2 empresas e 4 diagnósticos adicionados. Nada que já existia foi apagado.</p></div></div>' : '') +
+    (err ? '<div class="alert" role="alert" data-state="error" data-aioson-id="backup-import-error">' + I.alert + '<div><b>Não foi possível importar fitpulse-copia-regras-v2.json</b><p class="note" style="color:var(--ink-2)">O arquivo veio de uma versão mais nova do app (regras v2). Atualize o FitPulse pela loja do Play e tente de novo. Nenhum dado foi alterado.</p><p style="margin-top:8px"><button class="btn" data-action="import">Escolher outro arquivo</button></p></div></div>' : '') +
+  '</div></section>' +
+  '<section><div><h2>Sobre os resultados</h2><p>Como ler as recomendações.</p></div><div><p class="note" style="color:var(--ink-2)">O diagnóstico é uma orientação baseada nas suas respostas e não substitui uma análise financeira. Cada diagnóstico guarda a versão das regras usada no cálculo. Uma atualização do app nunca muda a nota de um diagnóstico antigo.</p></div></section>' +
+  '<section><div><h2>Assistente do Play</h2><p>O que o assistente de IA do AIOSON Play consegue ver deste app.</p></div><div><ul class="read-list"><li>O estágio do último diagnóstico de cada empresa, o principal gargalo e a data.</li><li>Se o app está funcionando.</li></ul><p class="note" style="margin-top:8px">O assistente não cria nem altera diagnósticos e não vê os números da empresa.</p></div></section>' +
+  '<section data-aioson-id="settings-demo"><div><h2>Demonstração</h2><p>Controles que existem só no protótipo.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-action="tour-open">Rever o tour</button><button class="btn" data-action="reset">Recomeçar do zero</button></div></section>' +
+  '</div>';
+}
+
+/* ---------- Wizard ---------- */
+let wizard = {mode:null, errors:{}, data:{name:'', segment:'', model:'', revenue:'', cnpj:''}};
+function viewWizardMode(){
+  return '<div class="wizard" data-aioson-id="wizard-mode">' +
+    '<h1>Vamos descobrir em que <em class="human live" style="--n:6">degrau</em> a sua empresa está</h1><p class="lead">O FitPulse faz um diagnóstico de crescimento em cerca de 12 minutos e mostra o que trava o próximo passo. Os dados ficam só neste computador.</p>' +
+    '<div class="wizard-steps"><span aria-current="step">1. Como vai usar</span><span>2. Sua empresa</span><span>3. Primeiro diagnóstico</span></div>' +
+    '<div class="mode-cards"><button class="mode-card" data-action="wizard-mode" data-mode="empresa" data-aioson-id="wizard-mode-empresa">' + I.store + '<h2>Para a minha empresa</h2><p>Você é dono ou sócio e quer entender onde o seu negócio está.</p></button>' +
+    '<button class="mode-card" data-action="wizard-mode" data-mode="consultoria" data-aioson-id="wizard-mode-consultoria">' + I.people + '<h2>Atendo várias empresas</h2><p>Você é consultor e acompanha a evolução de cada cliente.</p></button></div></div>';
+}
+function companyFormFields(data, errors, prefix){
+  const e = (k) => errors[k] ? '<span class="err" id="' + prefix + k + '-err">' + I.alert + errors[k] + '</span>' : '';
+  return '' +
+    '<div class="field"><label for="' + prefix + 'name">Nome da empresa</label><input class="input" id="' + prefix + 'name" name="name" type="text" autocomplete="organization" maxlength="80" value="' + esc(data.name) + '"' + (errors.name ? ' aria-invalid="true" aria-describedby="' + prefix + 'name-err"' : '') + '>' + e('name') + '</div>' +
+    '<div class="grid2"><div class="field"><label for="' + prefix + 'segment">Segmento</label><select class="input" id="' + prefix + 'segment" name="segment"' + (errors.segment ? ' aria-invalid="true" aria-describedby="' + prefix + 'segment-err"' : '') + '><option value="">Escolha</option>' + SEGMENTS.map(s => '<option' + (data.segment === s ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>' + e('segment') + '</div>' +
+    '<div class="field"><label for="' + prefix + 'revenue">Faturamento por ano</label><select class="input" id="' + prefix + 'revenue" name="revenue"><option value="">Prefiro não informar</option>' + REVENUE.map((r, i) => '<option value="' + i + '"' + (String(data.revenue) === String(i) ? ' selected' : '') + '>' + r + '</option>').join('') + '</select></div></div>' +
+    '<fieldset class="field" style="border:0;padding:0;margin:0 0 16px"><legend class="lbl" style="margin-bottom:6px;font-size:.875rem;font-weight:500">Como você vende</legend><div class="choice-grid">' + SALES_MODELS.map(([v, l]) => '<label class="choice"><input type="radio" name="model" value="' + v + '"' + (data.model === v ? ' checked' : '') + '><div><b>' + l + '</b></div></label>').join('') + '</div>' + e('model') + '</fieldset>' +
+    '<div class="field" style="max-width:320px"><label for="' + prefix + 'cnpj">CNPJ <span class="note">(opcional)</span></label><input class="input cnpj' + (data.cnpj && !errors.cnpj && cnpjValid(data.cnpj) ? ' is-valid' : '') + '" id="' + prefix + 'cnpj" name="cnpj" type="text" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" value="' + esc(data.cnpj) + '" data-action="cnpj"' + (errors.cnpj ? ' aria-invalid="true"' : '') + ' aria-describedby="' + prefix + 'cnpj-err">' + (errors.cnpj ? e('cnpj') : '<span class="err" id="' + prefix + 'cnpj-err" hidden></span>') + '<span class="hint">Usado só para diferenciar empresas com nomes parecidos.</span></div>';
+}
+function viewWizardCompany(){
+  return '<div class="wizard" data-aioson-id="wizard-company">' +
+    '<h1>' + (wizard.mode === 'consultoria' ? 'Cadastre a primeira empresa que você atende' : 'Conte um pouco sobre a sua empresa') + '</h1><p class="lead">Quatro informações e você já começa o diagnóstico.</p>' +
+    '<div class="wizard-steps"><span>1. Como vai usar</span><span aria-current="step">2. Sua empresa</span><span>3. Primeiro diagnóstico</span></div>' +
+    '<form id="wizard-form" novalidate data-action="wizard-submit">' + companyFormFields(wizard.data, wizard.errors, 'w-') +
+    '<div class="form-foot"><a class="btn" href="#/boas-vindas">' + I.back + 'Voltar</a><button class="btn primary" type="submit" data-aioson-id="wizard-submit">Começar o diagnóstico' + I.arrow + '</button></div></form></div>';
+}
+
+/* ---------- Masks & validation ---------- */
+function cnpjDigits(s){ return (s || '').replace(/\D/g, '').slice(0, 14); }
+function cnpjMask(s){ const d = cnpjDigits(s); let o = d.slice(0,2); if (d.length > 2) o += '.' + d.slice(2,5); if (d.length > 5) o += '.' + d.slice(5,8); if (d.length > 8) o += '/' + d.slice(8,12); if (d.length > 12) o += '-' + d.slice(12,14); return o; }
+function cnpjValid(s){
+  const d = cnpjDigits(s);
+  if (d.length !== 14 || /^(\d)\1+$/.test(d)) return false;
+  const calc = (len) => { const w = len === 12 ? [5,4,3,2,9,8,7,6,5,4,3,2] : [6,5,4,3,2,9,8,7,6,5,4,3,2]; let sum = 0; for (let i = 0; i < len; i++) sum += Number(d[i]) * w[i]; const r = sum % 11; return r < 2 ? 0 : 11 - r; };
+  return calc(12) === Number(d[12]) && calc(13) === Number(d[13]);
+}
+function moneyCents(s){ const d = (s || '').replace(/\D/g, '').slice(0, 13); return d ? parseInt(d, 10) : null; }
+function clearInlineError(el){
+  el.removeAttribute('aria-invalid');
+  const field = el.closest('.field');
+  const err = field && field.querySelector('.err');
+  if (err){ err.hidden = true; err.textContent = ''; }
+  if (wizard.errors && el.name) delete wizard.errors[el.name];
+}
+function setFieldError(input, msg){
+  const errId = input.getAttribute('aria-describedby');
+  const err = errId ? document.getElementById(errId.split(' ')[0]) : null;
+  if (msg){ input.setAttribute('aria-invalid', 'true'); input.classList.remove('is-valid'); if (err){ err.hidden = false; err.innerHTML = I.alert + msg; } }
+  else { input.removeAttribute('aria-invalid'); if (err){ err.hidden = true; err.textContent = ''; } }
+}
+
+/* ---------- Modal ---------- */
+let lastFocus = null;
+function openModal({title, body, actions, wide, id}){
+  const root = document.getElementById('modal-root');
+  if (!root.innerHTML) lastFocus = document.activeElement;
+  root.innerHTML = '<div class="backdrop" data-modal-backdrop><div class="modal' + (wide ? ' wide' : '') + '" role="dialog" aria-modal="true" aria-labelledby="m-title"' + (id ? ' data-aioson-id="' + id + '"' : '') + '><h2 id="m-title">' + title + '</h2>' + body + '<div class="modal-foot">' + actions.map((a, i) => '<button class="btn ' + (a.kind || '') + '" data-modal-act="' + i + '"' + (a.submit ? ' type="submit" form="' + a.submit + '"' : ' type="button"') + '>' + a.label + '</button>').join('') + '</div></div></div>';
+  const modal = root.querySelector('.modal');
+  root.querySelectorAll('[data-modal-act]').forEach(btn => btn.addEventListener('click', (e) => { const a = actions[+btn.dataset.modalAct]; if (a.submit) return; e.preventDefault(); if (a.onClick) a.onClick(); else closeModal(); }));
+  root.querySelector('[data-modal-backdrop]').addEventListener('mousedown', (e) => { if (e.target.matches('[data-modal-backdrop]')) closeModal(); });
+  const focusables = () => [...modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter(el => !el.disabled && el.offsetParent !== null);
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape'){ e.preventDefault(); closeModal(); }
+    if (e.key === 'Tab'){ const f = focusables(); if (!f.length) return; const first = f[0], last = f[f.length - 1]; if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); } }
+  });
+  const f = focusables();
+  const cancel = [...modal.querySelectorAll('[data-modal-act]')][0];
+  (modal.querySelector('input,select') || cancel || f[0]).focus();
+  return modal;
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML = ''; if (lastFocus && document.contains(lastFocus)) lastFocus.focus(); }
+function confirmModal({title, consequence, verb, danger, gate, onConfirm}){
+  openModal({title, body:'<p class="consequence">' + consequence + '</p>', actions:[{label:'Cancelar'}, {label:verb, kind: danger ? 'danger' : (gate ? 'gate' : 'primary'), onClick: () => { closeModal(); onConfirm(); }}]});
+}
+function toast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = I.check + '<span>' + msg + '</span>';
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3600);
+}
+
+/* ---------- Company form modal ---------- */
+function companyModal(existing){
+  let data = existing ? {name:existing.name, segment:existing.segment, model:existing.model, revenue:existing.revenue, cnpj:existing.cnpj} : {name:'', segment:'', model:'', revenue:'', cnpj:''};
+  const draw = (errors) => {
+    openModal({title: existing ? 'Editar ' + esc(existing.name) : 'Nova empresa', id: existing ? 'company-edit-modal' : 'company-create-modal', wide:true,
+      body:'<form id="company-form" novalidate style="margin-top:16px">' + companyFormFields(data, errors || {}, 'm-') + '</form>',
+      actions:[{label:'Cancelar'}, {label: existing ? 'Salvar alterações' : 'Cadastrar empresa', kind:'primary', submit:'company-form'}]});
+    const form = document.getElementById('company-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      data = readCompanyForm(form);
+      const errs = validateCompany(data);
+      if (Object.keys(errs).length){ draw(errs); const firstBad = document.querySelector('#company-form [aria-invalid="true"]'); if (firstBad) firstBad.focus(); return; }
+      if (existing){ Object.assign(existing, data, {revenue: data.revenue === '' ? '' : +data.revenue}); closeModal(); toast('Dados de ' + esc(existing.name) + ' salvos.'); render(); }
+      else { const c = Object.assign({id: uid('c'), archived:false}, data, {revenue: data.revenue === '' ? '' : +data.revenue}); S.companies.push(c); closeModal(); toast(esc(c.name) + ' cadastrada.'); go('#/empresa/' + c.id); }
+    });
+  };
+  draw({});
+}
+function readCompanyForm(form){
+  const fd = new FormData(form);
+  return {name:(fd.get('name') || '').trim(), segment:fd.get('segment') || '', model:fd.get('model') || '', revenue:fd.get('revenue') || '', cnpj:cnpjMask(fd.get('cnpj') || '')};
+}
+function validateCompany(d){
+  const e = {};
+  if (!d.name) e.name = 'Informe o nome da empresa.';
+  else if (d.name.length < 2) e.name = 'O nome precisa ter pelo menos 2 letras.';
+  if (!d.segment) e.segment = 'Escolha o segmento mais próximo.';
+  if (!d.model) e.model = 'Escolha como você vende.';
+  if (d.cnpj && !cnpjValid(d.cnpj)) e.cnpj = 'CNPJ inválido. Formato: 00.000.000/0000-00.';
+  return e;
+}
+
+/* ---------- Diagnosis lifecycle ---------- */
+function newDiagnosis(companyId){
+  const last = lastDone(companyId);
+  const d = {id: uid('d'), companyId, createdAt:'2026-10-22', updatedAt:'2026-10-22', completedAt:null, status:'draft', rules:RULES, block:0, answers: last ? clone(last.answers) : {}, calc: last ? clone(last.calc) : {spendMode:null, spend:{}, newMode:null, ticket:null, freq:null, life:null, margin:null}};
+  S.diagnoses.push(d);
+  return d;
+}
+function touch(d){ d.updatedAt = '2026-10-22'; d.savedAt = nowTime(); const s = document.getElementById('saved'); if (s) s.innerHTML = I.check + 'Salvo automaticamente às ' + d.savedAt; }
+
+/* ---------- PDF / import ---------- */
+function pdfModal(d){
+  const c = company(d.companyId), ev = evaluate(d);
+  openModal({title:'Relatório em PDF', wide:true, id:'pdf-modal',
+    body:'<p class="consequence">Prévia do relatório. Ele inclui estágio, notas, riscos, ações, data e versão das regras.</p><div class="report" style="margin-top:16px"><h3>' + esc(c.name) + '</h3><p class="note">Diagnóstico de ' + dateBR(d.createdAt) + ' · regras ' + d.rules + ' · confiança ' + ev.conf + '</p>' +
+      '<p style="margin:16px 0 8px;font-weight:700;letter-spacing:-.02em;font-size:1.75rem">Estágio ' + ev.stage + ' · ' + STAGES[ev.stage-1].name + '</p>' + (ev.lock ? '<p>Para subir: ' + LOCKS[ev.lock] + '.</p>' : '') +
+      '<div style="margin-top:16px">' + Object.keys(DIMS).map(k => '<div class="r-row"><span>' + DIMS[k].name + '</span><b>' + ev.dims[k].score + '</b></div>').join('') + '</div>' +
+      '<p style="margin-top:16px"><b>Próximas ações</b></p><ol style="margin:4px 0 0;padding-left:20px">' + ev.actions.map(k => '<li>' + ACTIONS[k].t + '</li>').join('') + '</ol>' +
+      '<p class="note" style="margin-top:16px">Orientação baseada nas respostas. Não substitui uma análise financeira.</p></div>',
+    actions:[{label:'Fechar'}, {label:'Salvar PDF', kind:'primary', onClick: () => { closeModal(); toast('PDF salvo: ' + c.name.toLowerCase().replace(/\s+/g,'-').normalize('NFD').replace(/[̀-ͯ]/g,'') + '-' + d.createdAt + '.pdf (simulado no protótipo).'); }}]});
+}
+function importModal(){
+  openModal({title:'Importar uma cópia', id:'import-modal',
+    body:'<p class="consequence">Escolha o arquivo exportado pelo FitPulse. Os dados importados entram junto com os atuais: nada é apagado.</p><div class="choice-grid" style="margin-top:16px;grid-template-columns:1fr" role="radiogroup" aria-label="Arquivos de exemplo"><label class="choice"><input type="radio" name="imp" value="ok" checked><div><b>fitpulse-copia-2026-09-30.json</b><span>Exemplo de arquivo válido</span></div></label><label class="choice"><input type="radio" name="imp" value="error"><div><b>fitpulse-copia-regras-v2.json</b><span>Exemplo de arquivo de uma versão mais nova</span></div></label></div>',
+    actions:[{label:'Cancelar'}, {label:'Importar', kind:'primary', onClick: () => { const v = document.querySelector('input[name="imp"]:checked').value; importResult = v; exportDone = false; closeModal(); if (v === 'ok') toast('Cópia importada.'); render(); }}]});
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const act = el.dataset.action;
+  if (['answer','calc-mode','set-mode','set-theme','money','int','margin','cnpj','search','calc-select','set-own','wizard-submit'].includes(act)) return;
+  e.preventDefault();
+  const id = el.dataset.id;
+  switch (act){
+    case 'tour-open': if ((route().parts[0] || 'inicio') !== 'inicio'){ go('#/inicio'); setTimeout(() => openTour(), 60); } else openTour(); break;
+    case 'theme-toggle': S.theme = S.theme === 'light' ? 'dark' : 'light'; applyTheme(); if ((route().parts[0] || '') === 'configuracoes') render(); break;
+    case 'help': { const t = document.getElementById(el.dataset.target); const open = t.hidden; t.hidden = !open; el.setAttribute('aria-expanded', String(open)); break; }
+    case 'wizard-mode': wizard.mode = el.dataset.mode; go('#/boas-vindas/empresa'); break;
+    case 'company-new': companyModal(null); break;
+    case 'company-edit': companyModal(company(id)); break;
+    case 'company-archive': { const c = company(id); confirmModal({title:'Arquivar ' + esc(c.name) + '?', consequence:'A empresa sai da carteira e da tela inicial. O histórico fica guardado e você pode restaurá-la quando quiser.', verb:'Arquivar empresa', onConfirm: () => { c.archived = true; if (S.ownCompanyId === c.id) S.ownCompanyId = (S.companies.find(x => !x.archived) || {}).id; toast(esc(c.name) + ' arquivada.'); render(); }}); break; }
+    case 'company-restore': { const c = company(id); c.archived = false; toast(esc(c.name) + ' restaurada.'); render(); break; }
+    case 'company-delete': { const c = company(id); const n = S.diagnoses.filter(d => d.companyId === id).length; confirmModal({title:'Excluir ' + esc(c.name) + '?', consequence:'A empresa e ' + n + (n === 1 ? ' diagnóstico' : ' diagnósticos') + ' serão apagados deste computador. Não dá para desfazer. Se quiser guardar, exporte uma cópia antes em Configurações.', verb:'Excluir definitivamente', danger:true, onConfirm: () => { S.companies = S.companies.filter(x => x.id !== id); S.diagnoses = S.diagnoses.filter(d => d.companyId !== id); toast(esc(c.name) + ' excluída.'); go('#/empresas?arquivadas=1'); }}); break; }
+    case 'diag-new': { const d = newDiagnosis(el.dataset.company); toast(lastDone(d.companyId) ? 'Novo diagnóstico com as respostas anteriores já preenchidas.' : 'Diagnóstico iniciado.'); go('#/diagnostico/' + d.id); break; }
+    case 'diag-discard': { const d = diag(id); confirmModal({title:'Descartar o rascunho de ' + dateBR(d.createdAt) + '?', consequence:'As respostas deste rascunho serão apagadas. Os diagnósticos concluídos não mudam.', verb:'Descartar rascunho', danger:true, onConfirm: () => { S.diagnoses = S.diagnoses.filter(x => x.id !== id); toast('Rascunho descartado.'); render(); }}); break; }
+    case 'diag-archive': { const d = diag(id); confirmModal({title:'Arquivar o diagnóstico de ' + dateBR(d.createdAt) + '?', consequence:'Ele sai da linha do tempo e das comparações. Fica guardado em "Diagnósticos arquivados" e pode ser restaurado.', verb:'Arquivar diagnóstico', onConfirm: () => { d.status = 'archived'; toast('Diagnóstico arquivado.'); render(); }}); break; }
+    case 'diag-restore': { const d = diag(id); d.status = 'done'; toast('Diagnóstico restaurado.'); render(); break; }
+    case 'diag-finish': {
+      const d = diag(id);
+      const missing = BLOCKS.filter(x => !blockDone(d, x));
+      if (missing.length){ showErrors[d.id] = true; render(); const al = document.querySelector('[data-aioson-id="quiz-missing"]'); if (al) al.scrollIntoView({block:'center'}); return; }
+      confirmModal({title:'Concluir o diagnóstico?', consequence:'Depois de concluído, as respostas ficam guardadas como estão e o resultado não muda. Para mudar algo, você faz um novo diagnóstico.', verb:'Concluir e ver resultado', gate:true, onConfirm: () => { d.status = 'done'; d.completedAt = '2026-10-22'; transient[d.id] = true; go('#/resultado/' + d.id); setTimeout(() => { delete transient[d.id]; if (route().parts[1] === d.id) render(); }, 900); }});
+      break;
+    }
+    case 'pdf': pdfModal(diag(id)); break;
+    case 'export': exportDone = true; importResult = null; toast('Cópia salva (simulado).'); render(); break;
+    case 'import': importModal(); break;
+    case 'reset': confirmModal({title:'Recomeçar do zero?', consequence:'Apaga todas as empresas e diagnósticos de demonstração e abre o assistente de primeiro uso.', verb:'Recomeçar', danger:true, onConfirm: () => { S = {mode:'empresa', theme:S.theme, ownCompanyId:null, tourDone:true, companies:[], diagnoses:[]}; wizard = {mode:null, errors:{}, data:{name:'', segment:'', model:'', revenue:'', cnpj:''}}; go('#/boas-vindas'); }}); break;
+  }
+});
+document.addEventListener('change', (e) => {
+  const el = e.target;
+  const act = el.dataset.action;
+  if (act === 'answer'){
+    const d = diag(el.dataset.diag);
+    d.answers[el.dataset.item] = el.value === 'null' ? null : +el.value;
+    touch(d);
+    const dot = document.querySelector('.rail [aria-current="step"] .dot');
+    if (dot && blockDone(d, BLOCKS[d.block])){ dot.classList.add('done'); }
+  }
+  if (act === 'calc-mode'){ const d = diag(el.dataset.diag); d.calc[el.dataset.key] = el.value; if (el.value === 'exact' && el.dataset.key === 'spendMode') d.calc.spend = d.calc.spend || {}; touch(d); rerenderKeep(); }
+  if (act === 'calc-select'){ const d = diag(el.dataset.diag); d.calc[el.dataset.key] = el.value === '' ? null : +el.value; touch(d); rerenderKeep(el.id); }
+  if (act === 'set-mode'){ S.mode = el.value; if (S.mode === 'empresa' && !S.ownCompanyId) S.ownCompanyId = (S.companies.find(c => !c.archived) || {}).id; toast(S.mode === 'consultoria' ? 'Modo consultoria ativado.' : 'Modo minha empresa ativado.'); render(); }
+  if (el.closest && el.closest('#wizard-form, #company-form')){ const fs2 = el.closest('fieldset.field'); if (el.type === 'radio' && fs2){ const er = fs2.querySelector('.err'); if (er){ er.hidden = true; er.textContent = ''; } if (wizard.errors) delete wizard.errors[el.name]; } else if (el.getAttribute('aria-invalid') === 'true') clearInlineError(el); }
+  if (act === 'set-theme'){ S.theme = el.value; applyTheme(); }
+  if (act === 'set-own'){ S.ownCompanyId = el.value; toast('Empresa em foco alterada.'); }
+});
+document.addEventListener('input', (e) => {
+  const el = e.target;
+  const act = el.dataset.action;
+  if (act === 'money'){
+    const cents = moneyCents(el.value);
+    el.value = cents == null ? '' : brl(cents);
+    const d = diag(el.dataset.diag);
+    const key = el.dataset.key;
+    if (key.startsWith('spend.')) d.calc.spend[key.split('.')[1]] = cents || 0; else d.calc[key] = cents;
+    touch(d);
+    updateCalcOut(d);
+  }
+  if (act === 'int'){
+    const digits = el.value.replace(/\D/g, '').slice(0, 6);
+    el.value = digits;
+    const d = diag(el.dataset.diag);
+    d.calc[el.dataset.key] = digits ? parseInt(digits, 10) : null;
+    touch(d); updateCalcOut(d);
+  }
+  if (act === 'margin'){
+    const digits = el.value.replace(/\D/g, '').slice(0, 3);
+    el.value = digits ? 'R$ ' + digits : '';
+    const d = diag(el.dataset.diag);
+    d.calc.margin = digits ? parseInt(digits, 10) : null;
+    touch(d); updateCalcOut(d);
+  }
+  if (act === 'cnpj'){ el.value = cnpjMask(el.value); el.classList.remove('is-valid'); }
+  if (el.closest && el.closest('#wizard-form, #company-form') && el.getAttribute('aria-invalid') === 'true' && el.dataset.action !== 'cnpj'){ clearInlineError(el); }
+  if (act === 'search'){ clearTimeout(window.__s); window.__s = setTimeout(() => { const q = route().q; q.busca = el.value; const qs = new URLSearchParams(Object.entries(q).filter(([,v]) => v)).toString(); history.replaceState(null, '', '#/empresas' + (qs ? '?' + qs : '')); app.innerHTML = viewCompanies(q); afterRender('empresas', route()); const s = document.getElementById('busca'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }, 220); }
+});
+document.addEventListener('blur', (e) => {
+  const el = e.target;
+  if (!el.dataset) return;
+  // Foco indo direto para enviar/avançar: a validação do envio cuida disso, sem deslocar o botão no meio do clique.
+  const next = e.relatedTarget;
+  if (next && (next.type === 'submit' || (next.closest && next.closest('.form-foot, .modal-foot, .quiz-foot')))) return;
+  const act = el.dataset.action;
+  if (act === 'cnpj'){
+    if (!el.value) setFieldError(el, null);
+    else if (!cnpjValid(el.value)) setFieldError(el, 'CNPJ inválido. Formato: 00.000.000/0000-00.');
+    else { setFieldError(el, null); el.classList.add('is-valid'); }
+  }
+  if (act === 'money' && el.dataset.key === 'ticket'){ setFieldError(el, el.value ? null : 'Informe o valor médio em reais, por exemplo R$ 45,00.'); }
+  if (act === 'int'){ setFieldError(el, el.value && +el.value > 0 ? null : 'Informe quantos clientes compraram pela primeira vez, só números. Ex.: 40.'); }
+  if (act === 'margin'){ const v = parseInt((el.value || '').replace(/\D/g,''), 10); setFieldError(el, !el.value ? 'Informe quanto sobra de cada R$ 100, por exemplo R$ 35.' : v > 100 ? 'O valor precisa estar entre R$ 0 e R$ 100.' : null); }
+}, true);
+document.addEventListener('submit', (e) => {
+  const form = e.target;
+  if (form.id !== 'wizard-form') return;
+  e.preventDefault();
+  wizard.data = readCompanyForm(form);
+  wizard.errors = validateCompany(wizard.data);
+  if (Object.keys(wizard.errors).length){ render(); const bad = document.querySelector('#wizard-form [aria-invalid="true"]'); if (bad) bad.focus(); return; }
+  const c = Object.assign({id: uid('c'), archived:false}, wizard.data, {revenue: wizard.data.revenue === '' ? '' : +wizard.data.revenue});
+  S.companies.push(c);
+  S.mode = wizard.mode || 'empresa';
+  if (S.mode === 'empresa') S.ownCompanyId = c.id;
+  const d = newDiagnosis(c.id);
+  toast(esc(c.name) + ' cadastrada. Vamos ao diagnóstico.');
+  go('#/diagnostico/' + d.id);
+});
+function rerenderKeep(focusId){ const y = window.scrollY; const r = route(); app.innerHTML = viewQuiz(r.parts[1], r.q); window.scrollTo(0, y); if (focusId){ const f = document.getElementById(focusId); if (f) f.focus(); } }
+function updateCalcOut(d){
+  const box = document.querySelector('[data-aioson-id="calc-output"]');
+  if (!box) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = viewCalc(d);
+  box.replaceWith(tmp.querySelector('[data-aioson-id="calc-output"]'));
+  const tot = document.getElementById('spend-total');
+  if (tot) tot.textContent = brl(calcOut(d.calc).spend || 0);
+  const dot = document.querySelector('.rail [aria-current="step"] .dot');
+  if (dot && blockDone(d, BLOCKS[0])){ dot.classList.add('done'); }
+}
+
+/* ---------- Tour ---------- */
+const TOURS = {
+  empresa:[
+    ['escada','Este é o degrau da sua empresa','São quatro estágios, de Descoberta a Estruturação. O degrau tracejado mostra onde você estava no diagnóstico anterior.'],
+    ['trava','O cadeado mostra o que segura você','Antes de investir mais, resolva esta trava. Ela vem das respostas mais fracas do diagnóstico.'],
+    ['acoes','Três ações para os próximos 30 dias','Elas são escolhidas pelas suas respostas, não por uma lista genérica.'],
+    ['rascunho','Pare quando quiser','O questionário salva cada resposta. Você continua de onde parou, mesmo dias depois.'],
+    ['nav','Configurações e modo consultoria','Em Configurações você troca para o modo de várias empresas e guarda uma cópia dos seus dados.']
+  ],
+  consultoria:[
+    ['carteira','Sua carteira em degraus','Cada degrau mostra quantas empresas estão naquele estágio. Toque num degrau para ver a lista.'],
+    ['parados','Rascunhos parados','Clientes que começaram o diagnóstico e não terminaram aparecem aqui.'],
+    ['antigos','Hora de refazer','Empresas sem diagnóstico há mais de 90 dias. Refazer mostra se as ações funcionaram.'],
+    ['nav','Empresas e configurações','Em Empresas você cadastra, edita e arquiva clientes. Em Configurações, faz a cópia de segurança.']
+  ]
+};
+let tourIdx = 0, tourOn = false;
+function openTour(){ tourOn = true; tourIdx = 0; drawTour(); }
+function closeTour(silent){ document.getElementById('tour-root').innerHTML = ''; if (tourOn && !silent){ S.tourDone = true; } tourOn = false; window.removeEventListener('resize', drawTourPos); }
+function drawTourPos(){ if (tourOn) drawTour(); }
+function drawTour(){
+  const steps = TOURS[S.mode] || TOURS.empresa;
+  const [anchor, title, text] = steps[tourIdx];
+  const target = document.querySelector('[data-aioson-tour="' + anchor + '"]');
+  const root = document.getElementById('tour-root');
+  if (!target){ closeTour(); return; }
+  target.scrollIntoView({block:'center', behavior:'instant'});
+  const r = target.getBoundingClientRect();
+  const pad = 8;
+  const cardW = Math.min(360, window.innerWidth - 32);
+  let top = r.bottom + 16, left = Math.min(Math.max(16, r.left), window.innerWidth - cardW - 16);
+  if (top + 220 > window.innerHeight) top = Math.max(16, r.top - 236);
+  root.innerHTML = '<div class="tour-hole" style="top:' + (r.top - pad) + 'px;left:' + (r.left - pad) + 'px;width:' + (r.width + pad*2) + 'px;height:' + (r.height + pad*2) + 'px"></div>' +
+    '<div class="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-title" style="top:' + top + 'px;left:' + left + 'px" data-aioson-id="tour-card"><div class="count">' + (tourIdx + 1) + ' de ' + steps.length + '</div><h2 id="tour-title">' + title + '</h2><p>' + text + '</p>' +
+    '<div class="row"><button class="btn ghost" type="button" data-tour="close">Pular o tour</button><div style="display:flex;gap:8px">' + (tourIdx > 0 ? '<button class="btn" type="button" data-tour="prev">Voltar</button>' : '') + '<button class="btn primary" type="button" data-tour="next">' + (tourIdx === steps.length - 1 ? 'Entendi' : 'Próximo') + '</button></div></div></div>';
+  root.querySelectorAll('[data-tour]').forEach(b => b.addEventListener('click', () => {
+    const a = b.dataset.tour;
+    if (a === 'close' || (a === 'next' && tourIdx === steps.length - 1)) closeTour();
+    else { tourIdx += a === 'next' ? 1 : -1; drawTour(); }
+  }));
+  root.querySelector('[data-tour="next"]').focus({preventScroll:true});
+  window.removeEventListener('resize', drawTourPos);
+  window.addEventListener('resize', drawTourPos);
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && tourOn) closeTour(); });
+
+/* ---------- After render ---------- */
+function observeReveals(){
+  const els = [...document.querySelectorAll('[data-reveal]:not(.in)')];
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches){ els.forEach(el => el.classList.add('in')); return; }
+  const io = new IntersectionObserver((entries) => { entries.forEach(en => { if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } }); }, {threshold:0.2});
+  els.forEach(el => io.observe(el));
+}
+function afterRender(first, r){
+  observeReveals();
+  if (first === 'inicio' && !S.tourDone && !r.q.state){ setTimeout(() => { if (!S.tourDone && (route().parts[0] || 'inicio') === 'inicio') openTour(); }, 350); }
+  if (first !== 'configuracoes'){ importResult = null; exportDone = false; }
+}
+
+function applyTheme(){ document.documentElement.dataset.theme = S.theme === 'light' ? 'light' : 'dark'; }
+window.addEventListener('hashchange', render);
+applyTheme();
+render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+  "feature": "relatorios-e-acompanhamento",
+  "contract_mode": "BALANCED",
+  "governor": {
+    "max_steps": 50,
+    "error_streak_limit": 5,
+    "cost_ceiling_tokens": null,
+    "max_runtime_minutes": null,
+    "max_changed_files": null,
+    "max_diff_lines": null
+  },
+  "forbidden_files": [],
+  "criteria": [
+    {
+      "id": "RG-build",
+      "description": "Typecheck and production build of the app (tsc --noEmit + vite build)",
+      "assertion": "build exits 0",
+      "binary": true,
+      "verification": "pnpm build"
+    },
+    {
+      "id": "RG-migrate",
+      "description": "The 5 migrations apply on a clean database and over a version 1 database with data, and a repeated deploy is a no-op",
+      "assertion": "migrations apply cleanly and keep the version 1 data",
+      "binary": true,
+      "verification": "node scripts/smoke-migrate.mjs"
+    },
+    {
+      "id": "RG-boot",
+      "description": "The app boots on the ports the Play injects (PORT, BACKEND_PORT), answers on loopback only and stops cleanly",
+      "assertion": "app boots and responds",
+      "binary": true,
+      "verification": "node scripts/smoke-boot.mjs"
+    },
+    {
+      "id": "RG-smoke",
+      "description": "End-to-end specs on the real stack (report center, PDFs, brand, actions, diary, home, remote questionnaire, backup, accessibility) — part 1 of 2 (the full suite takes about 5 min, past the 5-min check timeout)",
+      "assertion": "e2e suite passes",
+      "binary": true,
+      "verification": "pnpm exec playwright test tests/e2e/firstRun.spec.ts tests/e2e/accessibility.spec.ts tests/e2e/actions.spec.ts tests/e2e/backup.spec.ts tests/e2e/brand.spec.ts tests/e2e/calculator.spec.ts tests/e2e/companies.spec.ts tests/e2e/diary.spec.ts tests/e2e/history.spec.ts"
+    },
+    {
+      "id": "RG-smoke-2",
+      "description": "End-to-end specs on the real stack (report center, PDFs, brand, actions, diary, home, remote questionnaire, backup, accessibility) — part 2 of 2",
+      "assertion": "e2e suite passes",
+      "binary": true,
+      "verification": "pnpm exec playwright test tests/e2e/home.spec.ts tests/e2e/portfolioReport.spec.ts tests/e2e/questionnaire.spec.ts tests/e2e/remoteQuestionnaire.spec.ts tests/e2e/report.spec.ts tests/e2e/result.spec.ts tests/e2e/settings.spec.ts tests/e2e/shell.spec.ts"
+    },
+    {
+      "id": "C-unit",
+      "description": "Unit and API tests",
+      "assertion": "vitest suite passes",
+      "binary": true,
+      "verification": "pnpm test"
+    },
+    {
+      "id": "C-package",
+      "description": "Store package of version 2 installs over a version 1 installation with data and keeps it (AC-ra-54)",
+      "assertion": "store package update keeps the data",
+      "binary": true,
+      "verification": "node scripts/smoke-store-package.mjs"
+    }
+  ]
+}

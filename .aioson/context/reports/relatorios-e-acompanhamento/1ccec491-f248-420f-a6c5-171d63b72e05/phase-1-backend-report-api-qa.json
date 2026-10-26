@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "feature": "relatorios-e-acompanhamento",
+  "run_id": "1ccec491-f248-420f-a6c5-171d63b72e05",
+  "attempt_id": "6f1f12b8-80a6-473c-a6fa-00c8fe6ad183",
+  "unit": "phase-1-backend-report-api",
+  "lane": "backend",
+  "write_paths": ["prisma/**", "server/**", "shared/**", "src/api/**", "scripts/**", "tests/api/**", "tests/unit/**", "tests/fixtures/**", "manifest.json", "system.json", "package.json"],
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "d790618835598b0aba2d552e83fc0309bda75103fce1472fcc02bcbbf8b16719",
+  "writable_roots": [],
+  "started_at": "2026-10-25T20:19:00-03:00",
+  "finished_at": "2026-10-25T20:21:38-03:00",
+  "verdict": "PASS",
+  "scope": {
+    "capabilities": ["CAP-ra-report-center", "CAP-ra-pdf-delivery"],
+    "acceptance_criteria": ["AC-ra-17", "AC-ra-19"],
+    "interfaces": ["IF-001"]
+  },
+  "done_when": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts passes",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-17",
+      "path": "server/routes/reportRoutes.ts",
+      "summary": "Manual smoke in the Play webview on Windows (OQ-ra-1) not run: 'Exportar PDF' then 'Abrir PDF' opens the default reader and 'Mostrar na pasta' opens Explorer with the file selected. This unattended session has no Play webview and the report-center screen belongs to later frontend units. The API half is covered by tests/api/reportRoutes.test.ts with a fake SystemOpener; not re-run by QA here."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-ra-report-center",
+      "ac": "AC-ra-19",
+      "path": "tests/e2e/report.spec.ts",
+      "summary": "Playwright flow for AC-ra-17 / AC-ra-19 (button states 'Salvando…' / 'PDF salvo', 'Tentar de novo' on simulated write failure) not run: the screens and tests/e2e files are outside this unit and depend on later frontend units. Server side of AC-ra-19 (500 write_failed, no file, no record, retry saves) is covered by the API tests, which pass in this QA run. Deferred to integration."
+    },
+    {
+      "kind": "contract_gap",
+      "severity": "low",
+      "cap": "CAP-ra-pdf-delivery",
+      "ac": "AC-ra-17",
+      "path": "server/app.ts",
+      "summary": "server/app.ts:68 builds createReportService({ prisma, downloadsDir }) without the app clock `now`. Confirmed by QA. `now` is optional (defaults to the real clock), so the build and this unit's tests pass; in production the cover credit date and generated_files.created_at use the machine clock rather than db.setNow(). Requires an integration change in server/app.ts, which is outside this unit's allowed files."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "contract_change",
+      "text": "IF-001 as implemented: GET /api/reports/preview?kind=diagnosis&diagnosisId=<id>&includeAnswers=true|false answers ReportDocument without drawing or saving; POST /api/reports/export with JSON { kind: \"diagnosis\", diagnosisId, includeAnswers } answers { fileId, fileName, directory }. includeAnswers defaults to false; unknown keys are dropped. Errors: 400 validation, 404 diagnosis_not_found / company_not_found, 409 diagnosis_not_completed, 500 write_failed. src/api/reportApi.ts exports getReportPreview, exportReportFile, exportReport(diagnosisId) (unchanged call used by src/features/result/ExportReportDialog.tsx:123) and types ReportSelection and ReportExport (with fileId for openSavedFile / revealSavedFile in src/api/filesApi.ts).",
+      "paths": ["server/routes/reportRoutes.ts", "server/validation/reportSchemas.ts", "server/services/reportService.ts", "src/api/reportApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Apply the app clock: in server/app.ts:68 pass now: deps.now to createReportService. Not required for the build; needed so tests and production use db.setNow() for the cover credit date and generated_files.created_at.",
+      "paths": ["server/app.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Checks to run after integration, not run by QA here: (1) pnpm exec playwright test tests/e2e/report.spec.ts tests/e2e/result.spec.ts tests/e2e/accessibility.spec.ts; (2) node scripts/smoke-migrate.mjs; (3) on Windows dev-link in the Play: company -> Relatórios -> Exportar PDF -> 'Abrir PDF' and 'Mostrar na pasta' (OQ-ra-1). Any e2e server bootstrap that clicks those buttons must inject a fake SystemOpener or it launches the real reader and Explorer."
+    },
+    {
+      "to": "unit:phase-1-frontend-report-center",
+      "kind": "note",
+      "text": "The 500 write_failed message is now 'Não foi possível salvar o PDF na pasta Downloads. Nada foi alterado. Confira se há espaço no disco e tente de novo.' A new export after a failure needs no cleanup: nothing was written or registered. Confirmed by reading reportService.ts writeFailed() and the API tests at reportRoutes.test.ts:444-523."
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Scope note (no defect): reportSelectionSchema only has the diagnosis kind; evolution and portfolio (Phase 2) extend the union and the exhaustive switch in reportService.prepare. Brand (Phase 2) and action progress (Phase 3) are not passed to buildDiagnosisDocument yet, so the document uses the FitPulse brand and has no 'Andamento das ações' page. server/files/downloadsFolder.ts needed no change."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/api/reportRoutes.test.ts tests/api/fileRoutes.test.ts",
+      "result": "exit 0; Test Files 2 passed (2); Tests 113 passed (113); Duration 26.74s",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-qa/vitest.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-qa/vitest.exit"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "result": "exit 0; empty output",
+      "log": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-qa/tsc.log",
+      "exit_file": ".aioson/runtime/execution-temp/relatorios-e-acompanhamento/1ccec491-f248-420f-a6c5-171d63b72e05/phase-1-backend-report-api-qa/tsc.exit"
+    },
+    {
+      "kind": "code_review",
+      "command": "read: server/services/reportService.ts, server/routes/reportRoutes.ts, server/validation/reportSchemas.ts, src/api/reportApi.ts; grep formatFileDate, sanitizeFileStem; grep createReportService in server/app.ts; grep callers of exportReport",
+      "result": "No critical or high defect found. Filename length budget (DATE_SUFFIX_LENGTH=11) matches YYYY-MM-DD plus dash. Write failures map to 500 write_failed; registration failure removes the saved PDF. Only UI caller of exportReport keeps its signature."
+    }
+  ]
+}

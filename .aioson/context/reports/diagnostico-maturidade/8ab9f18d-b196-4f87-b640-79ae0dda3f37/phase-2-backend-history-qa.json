@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "3fdf870d-4868-4910-b991-6977ee8146a4",
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "backend",
+  "phase": "2-backend-history",
+  "wave": 6,
+  "unit": "phase-2-backend-history",
+  "capability": "CAP-dm-history",
+  "acceptance_criteria": ["AC-dm-30", "AC-dm-31"],
+  "interfaces": ["IF-005"],
+  "write_paths": [
+    "server/**",
+    "shared/**",
+    "prisma/**",
+    "scripts/**",
+    "tests/api/**",
+    "tests/unit/**",
+    "tests/helpers/**",
+    "tests/fixtures/**",
+    "package.json",
+    "pnpm-workspace.yaml",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "manifest.json",
+    "system.json",
+    ".gitignore"
+  ],
+  "writable_roots": [],
+  "started_at": "2026-10-23T01:29:00-03:00",
+  "finished_at": "2026-10-23T01:31:30-03:00",
+  "verdict": "PASS",
+  "corrections": [],
+  "findings": [
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-history",
+      "ac": "AC-dm-30, AC-dm-31, AC-dm-48",
+      "path": "tests/e2e/history.spec.ts",
+      "summary": "`pnpm test:e2e -- tests/e2e/history.spec.ts` was not run: it is the browser capability check and depends on the frontend lane files (src/api/historyApi.ts, src/features/history/*, CompanyPage, ResultPage, App.tsx) that have not landed. It is outside this unit's Done-when and is deferred to integration."
+    },
+    {
+      "kind": "maintainability",
+      "severity": "low",
+      "cap": "CAP-dm-history",
+      "ac": "AC-dm-30",
+      "path": "server/services/historyService.ts",
+      "summary": "findPrevious and toCalculator duplicate the private ordering and calculator helpers of diagnosisService.ts (same-instant tie-break at diagnosisService.ts:124). Both copies must stay in sync; they are identical today. Move them to a shared export when phase-1-backend-diagnoses is next touched."
+    },
+    {
+      "kind": "process",
+      "severity": "low",
+      "cap": "CAP-dm-history",
+      "ac": "",
+      "path": "package.json",
+      "summary": "`pnpm test -- <files>` forwards a literal `--`, so vitest ignores the file filter and the Done-when command runs the whole suite (12 files, 600 tests). The Done-when still passes (exit 0), but it does not isolate this unit. Use `pnpm exec vitest run <files>` for the focused run."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "test",
+      "command": "pnpm test -- tests/unit/compareDiagnoses.test.ts tests/api/historyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "12 test files passed, 600 tests passed (file filter dropped by the literal --, so the whole suite ran)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-qa/done-when.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-qa/done-when.exit"
+    },
+    {
+      "kind": "test",
+      "command": "pnpm exec vitest run tests/unit/compareDiagnoses.test.ts tests/api/historyRoutes.test.ts",
+      "exit_code": 0,
+      "result": "2 test files passed, 34 tests passed (14 unit in compareDiagnoses.test.ts, 20 API in historyRoutes.test.ts)",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-qa/focused.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-qa/focused.exit"
+    },
+    {
+      "kind": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "exit_code": 0,
+      "result": "no diagnostics",
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-qa/tsc.log",
+      "exit_log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-2-backend-history-qa/tsc.exit"
+    },
+    {
+      "kind": "code_review",
+      "command": "read shared/domain/compareDiagnoses.ts, server/services/historyService.ts, server/routes/historyRoutes.ts, server/app.ts, tests/api/historyRoutes.test.ts (507-566), tests/unit/compareDiagnoses.test.ts (165-229)",
+      "result": "Recalculation only when stored rulesVersion differs; originalScore taken from the stored result; compare and canCompare use listCompleted which filters archivedAt null (diagnosisRepository.ts:70-75); archive/restore idempotent; 404 diagnosis_not_found, 409 diagnosis_not_completed, 409 no_previous_diagnosis match the implementer's IF-005 contract. API tests run against a real Prisma client on a test database."
+    }
+  ],
+  "messages": [
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run the deferred capability check after the frontend lane lands: `pnpm test:e2e -- tests/e2e/history.spec.ts` (second diagnosis from the first, comparison with arrow and text, archive/restore confirming and cancelling with ConfirmDialog, no comparison offered for the first diagnosis). Then the full `pnpm test` and `pnpm test:e2e`. Use `pnpm exec vitest run <files>` for a focused vitest run, because `pnpm test -- <files>` ignores the file filter."
+    },
+    {
+      "to": "lane:frontend",
+      "kind": "note",
+      "text": "IF-005 as implemented was checked against the code and matches: GET /api/companies/:id/timeline -> { draft: TimelineDraft | null, completed: TimelineEntry[], archived: TimelineEntry[] } (newest first). POST /api/diagnoses/:id/archive and /restore return TimelineEntry and are idempotent; a draft gives 409 diagnosis_not_completed, an unknown id 404 diagnosis_not_found. GET /api/diagnoses/:id/comparison gives 409 no_previous_diagnosis for the first diagnosis. The recalculated block is present only when the versions differ.",
+      "paths": ["server/services/historyService.ts", "server/routes/historyRoutes.ts", "shared/domain/compareDiagnoses.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Recalculation uses the rules injected into createApp (currently rulesV1 by default; the v2 fixture in tests). Only two rules versions exist today, so this is correct. If three or more versions ever exist, a previous diagnosis frozen with an intermediate version is recalculated with the current rules. That will need a registry of historical Rules by version.",
+      "paths": ["shared/domain/compareDiagnoses.ts", "server/app.ts"]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "packet_id": "sha256:fafb2e722ecd927715b04bd50abc56aabfe240b5e8f600829e48321e0419f32f",
+  "schema_version": "review-packet/v1",
+  "feature_slug": "relatorios-e-acompanhamento",
+  "agent": "sheldon",
+  "profile": "specification",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/context/prd-relatorios-e-acompanhamento.md",
+    "sha256": "aa9ce19392c75dc0d46ce19a7fa66338d20e5fc480b1e884f507caee94dae56b",
+    "bytes": 70514
+  },
+  "authorities": [
+    {
+      "kind": "project-context",
+      "path": ".aioson/context/project.context.md",
+      "sha256": "aa5d52c18597a00efa424f8855b0eee6f05a4f0158a574686e3c128c20db102c",
+      "bytes": 5400
+    },
+    {
+      "kind": "briefing",
+      "path": ".aioson/briefings/relatorios-e-acompanhamento/briefings.md",
+      "sha256": "fd0a1e854d4c618a0fead55259159119ee5ebbf4ce004756610bdebc8e12caba",
+      "bytes": 28133
+    },
+    {
+      "kind": "briefing-refinement",
+      "path": ".aioson/briefings/relatorios-e-acompanhamento/refinement-report.md",
+      "sha256": "69ec0db60acf3d8092c0826c6d4315c815eabc66c9e23c185dbbf13bac0295a5",
+      "bytes": 11536
+    },
+    {
+      "kind": "prototype",
+      "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype.html",
+      "sha256": "d7613726a192610c8b3f2cb6f9de1c79eaefbb9f8966c730eeeb9fd6e932e446",
+      "bytes": 147753
+    },
+    {
+      "kind": "prototype-manifest",
+      "path": ".aioson/briefings/relatorios-e-acompanhamento/prototype-manifest.md",
+      "sha256": "ee9a7a00a03592cc637f9aefd55cce16e85f4c3bfc3599b19b1853c04501ad51",
+      "bytes": 12681
+    }
+  ],
+  "reference_path": ".aioson/skills/process/review-intelligence/references/specification.md",
+  "challenge_lenses": [
+    "coverage",
+    "ambiguity",
+    "edge-cases",
+    "failure-modes",
+    "ownership",
+    "verifiability"
+  ],
+  "max_passes": 2,
+  "prepared_at": "2026-10-25T02:57:34.516Z"
+}

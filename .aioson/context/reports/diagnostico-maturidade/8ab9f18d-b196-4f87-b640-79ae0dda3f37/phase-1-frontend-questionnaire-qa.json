@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "5165071e-df6a-4dea-bffa-b50a77232adf",
+  "unit": "phase-1-frontend-questionnaire",
+  "phase": "1-frontend-questionnaire",
+  "wave": 5,
+  "agent": "qa",
+  "host": "claude",
+  "model_requested": "claude-haiku-5-5",
+  "model_resolved": "claude-haiku-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "lane": "frontend",
+  "write_paths": ["src/**", "index.html", "components.json", "vite.config.ts"],
+  "writable_roots": [],
+  "started_at": "2026-10-23T04:03:36Z",
+  "finished_at": "2026-10-23T04:06:50Z",
+  "verdict": "FAIL",
+  "capabilities": ["CAP-dm-questionnaire", "CAP-dm-unit-economics"],
+  "acceptance_criteria": ["AC-dm-12", "AC-dm-14"],
+  "interfaces": ["IF-003", "IF-004"],
+  "done_when": "pnpm build sai com 0 e as telas usam só as rotas e campos do IF-003",
+  "done_when_result": "met: pnpm build exit 0 before and after the correction; the screens call only the IF-003 routes (diagnosesApi.ts) and read only the IF-003 Diagnosis fields. getCompany (IF-002) is used only for the breadcrumb name.",
+  "corrections": [
+    {
+      "path": "src/api/diagnosesApi.ts",
+      "summary": "readPendingBlocks now returns null when a 422 carries no non-empty block list (it returned []), so CompletionGate shows its error line instead of an empty, silent state after 'Ver meu resultado'."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "high",
+      "kind": "contract_mismatch",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-14",
+      "path": "src/api/diagnosesApi.ts",
+      "summary": "A server-detected incomplete diagnosis never shows the pending-blocks alert. The server sends the 422 as { error: { pendingBlocks, code, message } } (server/services/diagnosisService.ts:85-91 via server/http/errorHandler.ts:77 and sendError), but src/api/httpClient.ts toApiError only copies error.details into ApiError.details. readPendingBlocks therefore reads undefined and cannot list the blocks, so the gate shows nothing (after the local correction it shows only the generic error line). This is outside the unit's write paths: the fix is on the server (nest pendingBlocks under error.details) or in httpClient (keep the extra error keys). Owner: phase-1-backend-diagnoses or phase-1-frontend-primitives; route the choice to integration."
+    },
+    {
+      "severity": "medium",
+      "kind": "verification_not_run",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-12",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "Runtime walkthrough not run: answer, reload #/diagnostico/:id and check answers plus 'Salvo automaticamente às HH:MM', 'Ver meu resultado' with gaps, gate confirm/cancel and 'Descartar rascunho' confirm/cancel. Needs the running backend (phase-1-backend-diagnoses still in progress) and a browser; not started here because a detached server would violate the single-session rule. The e2e specs tests/e2e/questionnaire.spec.ts and tests/e2e/calculator.spec.ts belong to integration."
+    },
+    {
+      "severity": "low",
+      "kind": "contract_gap",
+      "cap": "CAP-dm-questionnaire",
+      "ac": "AC-dm-16",
+      "path": "src/features/diagnosis/QuestionnairePage.tsx",
+      "summary": "The discard confirmation date uses savedAt (the last save) because IF-003 Diagnosis has no createdAt. If integration adds createdAt to IF-003, swap the date in DiscardDraftDialog. Reported by the implementer; confirmed by reading the code."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build.exit",
+      "summary": "First run, before the correction: tsc --noEmit && vite build exited 0 (dist index-DcPYUwHn.js 408.33 kB)."
+    },
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "log": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build-after-fix.log",
+      "exit_file": ".aioson/runtime/execution-temp/diagnostico-maturidade/8ab9f18d-b196-4f87-b640-79ae0dda3f37/phase-1-frontend-questionnaire-qa/build-after-fix.exit",
+      "summary": "After the readPendingBlocks correction: exit 0, built in 912ms (dist index-RosZCbLR.js 408.35 kB)."
+    },
+    {
+      "kind": "static_check",
+      "summary": "Read diagnosesApi.ts, useDraftAutosave.ts, CompletionGate.tsx, QuestionnairePage.tsx, BlockRail.tsx, AnchoredQuestion.tsx, UnitEconomicsPanel.tsx, CalculatorBlock.tsx and App.tsx against IF-003 (implementation-plan-diagnostico-maturidade.md:442). Routes match: POST /api/companies/:id/diagnoses, GET/PATCH/DELETE /api/diagnoses/:id, POST /api/diagnoses/:id/complete. PATCH sends answers (whole map), calculator (whole object, cents) and currentBlock (1..8). AC-dm-12 autosave (one PATCH at a time, 600 ms typing pause, flush on pagehide/unmount, 'Salvo automaticamente às HH:MM', retry) and AC-dm-14 gate (role=alert list with ?bloco links, no conclusion while pending, gold confirm, cancel keeps draft) are implemented as described."
+    },
+    {
+      "kind": "static_check",
+      "summary": "Grep of src for /api/, fetch( and onStartDiagnosis: no other route is called from the diagnosis screens; App.tsx passes startDiagnosis to CompanyPage, which navigates to /diagnostico/<draft.id>."
+    }
+  ],
+  "messages": [
+    {
+      "to": "unit:phase-1-backend-diagnoses",
+      "kind": "contract_change",
+      "text": "The 422 incomplete body is { error: { pendingBlocks, code, message } } (diagnosisService.incomplete -> DomainError details spread by errorHandler.ts:77). The frontend reads error.details.pendingBlocks, and httpClient only exposes error.details. Please nest the list under error.details (for example, have errorHandler send details: error.details) so the gate can list the pending blocks. The frontend already falls back to the generic error line if no list comes back.",
+      "paths": ["server/http/errorHandler.ts", "server/services/diagnosisService.ts", "src/api/diagnosesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Before merging: (1) resolve the 422 pendingBlocks shape finding above (backend nest under error.details, or httpClient keeps the extra error keys). (2) Run pnpm test:e2e -- tests/e2e/questionnaire.spec.ts tests/e2e/calculator.spec.ts once phase-1-backend-diagnoses has landed. (3) Manual pass: Empresa -> 'Começar o primeiro diagnóstico' -> answer one question -> reload #/diagnostico/:id and check the answer and 'Salvo automaticamente às HH:MM' -> 'Ver meu resultado' with gaps (list and links) -> gate confirm and cancel -> 'Descartar rascunho' confirm and cancel. (4) Decide whether IF-003 gets createdAt so the discard dialog can show the draft's creation date instead of its last save.",
+      "paths": ["src/features/diagnosis/CompletionGate.tsx", "src/features/diagnosis/QuestionnairePage.tsx", "src/api/diagnosesApi.ts"]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Selectors for e2e (from the implementer, confirmed in code): rail nav aria-label 'Blocos do diagnóstico', links #/diagnostico/:id?bloco=1..8 with aria-current=step; questions fieldset data-aioson-id=item-{questionId}; calculator data-aioson-id=cac-ltv-calculator, output calc-output, field wrappers calc-{field}; quiz-next, quiz-finish, quiz-missing, diagnosis-discard, diagnosis-discard-confirm, diagnosis-complete-confirm, draft-saved.",
+      "paths": ["src/features/diagnosis/BlockRail.tsx", "src/features/diagnosis/CalculatorBlock.tsx", "src/features/diagnosis/CompletionGate.tsx"]
+    }
+  ]
+}

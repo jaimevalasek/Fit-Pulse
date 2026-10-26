@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "feature": "diagnostico-maturidade",
+  "run_id": "8ab9f18d-b196-4f87-b640-79ae0dda3f37",
+  "attempt_id": "ca615b10-4e54-4d63-9bd1-cf4f285fb489",
+  "agent": "dev",
+  "host": "claude",
+  "model_requested": "claude-opus-5-5",
+  "model_resolved": "claude-opus-5-5",
+  "model_resolution_strategy": "unverified_literal",
+  "reasoning_effort": "high",
+  "manifest_digest": "b10a7ad612a68101d9b19f49d50f645336a845677db971789e4d2e40ac98b95e",
+  "writable_roots": [],
+  "lane": "frontend",
+  "write_paths": [
+    "src/**",
+    "index.html",
+    "components.json",
+    "vite.config.ts"
+  ],
+  "unit": "phase-3-frontend-settings",
+  "started_at": "2026-10-23T04:46:02Z",
+  "finished_at": "2026-10-23T04:52:27Z",
+  "verdict": "PASS",
+  "files_changed": [
+    "src/api/preferencesApi.ts",
+    "src/features/preferences/PreferencesProvider.tsx",
+    "src/features/settings/SettingsPage.tsx",
+    "src/components/layout/AppShell.tsx",
+    "src/main.tsx",
+    "src/App.tsx"
+  ],
+  "findings": [
+    {
+      "kind": "note",
+      "severity": "low",
+      "path": "src/api/httpClient.ts",
+      "summary": "The previous attempt finding (415 json_required on body-less writes) is already fixed upstream: httpClient.ts now sends Content-Type application/json on every POST/PUT/PATCH with a `{}` body by default. This unit did not need to edit it, and requireJsonWrites is untouched."
+    },
+    {
+      "kind": "verification_not_run",
+      "severity": "medium",
+      "cap": "CAP-dm-settings",
+      "ac": "AC-dm-38",
+      "summary": "`pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts` was not run: those specs belong to 4-integration-e2e-features and do not exist yet. AC-dm-38/39/46 runtime evidence is deferred to integration."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "command",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "summary": "tsc --noEmit + vite build OK (log .aioson/runtime/execution-temp/.../phase-3-frontend-settings-dev/build.log)"
+    },
+    {
+      "kind": "command",
+      "command": "aioson rules:check . --paths=<6 unit files>",
+      "exit_code": 0,
+      "summary": "0 violations (code-size, coupling, source-code-language)"
+    },
+    {
+      "kind": "contract",
+      "summary": "src/api/preferencesApi.ts checked against server/validation/preferenceSchemas.ts and server/services/preferenceService.ts: partial PUT, focusCompanyId nullable (null clears it), tourSeen merges per key, GET returns focusCompanyId null for an archived company."
+    },
+    {
+      "kind": "ac",
+      "ac": "AC-dm-39",
+      "summary": "SettingsPage renders \"Como ler os resultados\" (guidance, not a financial analysis; every diagnosis keeps its calculation version; new ones use RULES_VERSION; updates never change old scores) and \"O que o assistente do Play pode ler\", which lists exactly the RULE-dm-17 fields (health, plus name, stage, most-blocking dimension and last-diagnosis date for each active company) and says no money values or answers are visible. Security note per OQ-6 (plan:45)."
+    }
+  ],
+  "messages": [
+    {
+      "to": "lane:frontend",
+      "kind": "contract_change",
+      "text": "PreferencesProvider (src/features/preferences/PreferencesProvider.tsx) wraps <App/> in main.tsx and renders children only after GET /api/preferences resolves (loading/error+retry screens otherwise). usePreferences() returns { preferences: Preferences, savePreferences(update: PreferencesUpdate): Promise<Preferences> }. A save applies at once; on failure it restores the last saved value and rejects with the ApiError. It applies html[data-theme] and color-scheme. First-run should call savePreferences({ usageMode, focusCompanyId }) and the tour savePreferences({ tourSeen: { owner|consultant: true } }).",
+      "paths": [
+        "src/features/preferences/PreferencesProvider.tsx",
+        "src/api/preferencesApi.ts"
+      ]
+    },
+    {
+      "to": "unit:phase-3-frontend-home",
+      "kind": "note",
+      "text": "App.tsx registers `inicio` as a placeholder <Navigate to=\"/empresas\" replace/>; replace its element with HomePage. AppShell nav already links Início -> /inicio, Minha empresa -> /empresa/:focusCompanyId (owner mode with focus) or Empresas -> /empresas, and Configurações -> /configuracoes. It also shows the mode chip and the theme toggle (data-aioson-id theme-toggle).",
+      "paths": [
+        "src/App.tsx",
+        "src/components/layout/AppShell.tsx"
+      ]
+    },
+    {
+      "to": "unit:phase-3-frontend-first-run",
+      "kind": "note",
+      "text": "AppShell exports only AppShell. The header right side is HeaderTools (mode chip + ThemeToggle); add the tour \"?\" button there. Hide the nav during #/boas-vindas if the wizard needs it (the prototype hides it). The index route still redirects to /empresas, and the wizard owns that decision (BR-dm-11).",
+      "paths": [
+        "src/components/layout/AppShell.tsx",
+        "src/App.tsx"
+      ]
+    },
+    {
+      "to": "unit:phase-4-frontend-backup",
+      "kind": "note",
+      "text": "SettingsPage is composed of SettingsSection blocks (UsageModeSection, ThemeSection, ResultsGuideSection, AssistantSection, SecuritySection). Insert <BackupSection/> after ThemeSection to match prototype order; SettingsSection(title, description, dataId) is local to the file.",
+      "paths": [
+        "src/features/settings/SettingsPage.tsx"
+      ]
+    },
+    {
+      "to": "integration",
+      "kind": "note",
+      "text": "Run `pnpm test:e2e -- tests/e2e/settings.spec.ts tests/e2e/accessibility.spec.ts` once 4-integration-e2e-features creates them. Selectors: radiogroups aria-label \"Modo de uso\" and \"Tema\", select #settings-focus-company (owner mode), data-aioson-id settings-assistant-fields, theme-toggle, mode-chip. The whole UI is gated on GET /api/preferences, so if that route is not mounted in server/app.ts every screen shows the \"Não foi possível abrir o FitPulse\" error."
+    }
+  ]
+}
